@@ -1,13 +1,14 @@
 package com.xkball.xklib.ui.backend.gl.font;
 
 import com.ibm.icu.text.BreakIterator;
+import com.xkball.xklib.api.render.IFont;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Font {
+public class Font implements IFont {
     
     private final FontAtlas atlas;
     private final int fontSize;

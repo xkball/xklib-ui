@@ -24,5 +24,22 @@ public class RenderPipelines {
             .cullFace(false)
             .blendFunction(BlendFunction.TRANSLUCENT)
             .build();
+    
+    public static final RenderPipeline GUI = RenderPipeline.builder(ResourceLocation.of("pos_tex_color"))
+            .vertexShader(ResourceLocation.of("shaders/core/pos_color.vsh"))
+            .fragmentShader(ResourceLocation.of("shaders/core/pos_color.fsh"))
+            .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_COLOR)
+            .depthTest(false)
+            .cullFace(false)
+            .build();
+    
+    public static final RenderPipeline GUI_TEXTURED = RenderPipeline.builder(ResourceLocation.of("gui_textured"))
+            .vertexShader(ResourceLocation.of("shaders/core/pos_tex_color.vsh"))
+            .fragmentShader(ResourceLocation.of("shaders/core/pos_tex_color.fsh"))
+            .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_TEX_COLOR)
+            .sampler("uTexture", () -> null)
+            .depthTest(false)
+            .cullFace(false)
+            .build();
 
 }

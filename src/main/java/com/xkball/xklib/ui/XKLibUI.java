@@ -37,6 +37,7 @@ public class XKLibUI {
                 RenderPipelines.POSITION_TEX_COLOR.setSampler(0,() -> texture);
                 RenderPipelines.POSITION_TEX_COLOR.draw(vbo);
                 OpenGLWorkaround.fontRenderer.drawString(OpenGLWorkaround.font,"114514abcd中文", 100, 100, 0xFF0000FF);
+                OpenGLWorkaround.fontRenderer.drawString(OpenGLWorkaround.font,String.valueOf(window.getHeight()), 500, 100, 0xFFFF0000);
                 window.tickAndFlip();
             }
         } finally {

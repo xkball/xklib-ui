@@ -25,7 +25,7 @@ public class FontRenderer {
         }
         
         var window = OpenGLWorkaround.window;
-        projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F,-1000, 1000);
+        projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F,-10, 1000,true);
         
         FontAtlas atlas = font.getAtlas();
         

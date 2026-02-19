@@ -133,6 +133,7 @@ public class Window {
             this.minimized = true;
         }
         GLStateManager.bindFramebuffer(GL45.GL_FRAMEBUFFER, 0);
+        GL45.glViewport(0,0,width,height);
     }
     
     private void onMove(long window, int x, int y) {
@@ -141,8 +142,8 @@ public class Window {
     }
     
     private void onResize(long window, int width, int height) {
-        this.width = width;
-        this.height = height;
+//        this.width = width;
+//        this.height = height;
     }
     
     private void onFocus(long window, boolean hasFocus) {

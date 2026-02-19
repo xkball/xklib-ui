@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.backend.gl.texture;
 import com.xkball.xklib.api.resource.IResource;
 import com.xkball.xklib.api.resource.IResourceManager;
 import com.xkball.xklib.resource.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +15,17 @@ public class TextureManager {
     
     private final Logger LOGGER = LoggerFactory.getLogger(TextureManager.class);
     private final Map<ResourceLocation, AbstractTexture> byPath = new HashMap<>();
+    private final Map<ResourceLocation, TextureAtlas> atlasMap = new HashMap<>();
     private final IResourceManager resourceManager;
     
     public TextureManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;
+    }
+    
+    @Nullable
+    public TextureAtlasSprite getSprite(ResourceLocation location){
+        var texture = atlasMap.get(location);
+        return texture.getSprite(location);
     }
     
     public AbstractTexture getTexture(ResourceLocation path) {
@@ -36,7 +44,11 @@ public class TextureManager {
             IResource resource = resourceStacks.values().iterator().next().getFirst();
             return new SimpleTexture(resource);
         } else {
-            return new TextureAtlas(resourceStacks);
+            var result = new TextureAtlas(resourceStacks);
+            for(var entry : resourceStacks.entrySet()){
+                atlasMap.put(entry.getKey(), result);
+            }
+            return result;
         }
     }
     

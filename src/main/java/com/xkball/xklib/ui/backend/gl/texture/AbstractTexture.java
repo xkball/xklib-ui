@@ -1,10 +1,11 @@
 package com.xkball.xklib.ui.backend.gl.texture;
 
+import com.xkball.xklib.api.render.ITexture;
 import com.xkball.xklib.ui.backend.gl.GLStateManager;
 
 import static org.lwjgl.opengl.GL45.*;
 
-public abstract class AbstractTexture {
+public abstract class AbstractTexture implements ITexture {
     
     protected int id;
     protected int width;

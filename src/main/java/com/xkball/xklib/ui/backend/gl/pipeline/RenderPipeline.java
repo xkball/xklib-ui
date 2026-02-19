@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.backend.gl.pipeline;
 
+import com.xkball.xklib.api.render.IRenderPipeline;
 import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.ui.backend.gl.GLStateManager;
 import com.xkball.xklib.ui.backend.gl.buffer.IBOBuffer;
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 
-public class RenderPipeline {
+public class RenderPipeline implements IRenderPipeline {
     public final ResourceLocation location;
     public final ResourceLocation vertexShader;
     public final ResourceLocation fragmentShader;

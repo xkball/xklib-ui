@@ -4,9 +4,6 @@ import com.xkball.xklib.ui.backend.gl.pipeline.BlendFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;

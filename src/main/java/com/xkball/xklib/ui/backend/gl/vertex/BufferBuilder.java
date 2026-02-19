@@ -1,6 +1,8 @@
 package com.xkball.xklib.ui.backend.gl.vertex;
 
 import com.xkball.xklib.ui.backend.gl.buffer.VBOBuffer;
+import org.joml.Matrix3x2fc;
+import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,11 @@ public class BufferBuilder {
         filledElements.set(posElement.id());
         
         return this;
+    }
+    
+    public BufferBuilder addVertexWith2DPose(Matrix3x2fc pose, float x, float y) {
+        Vector2f pos = pose.transformPosition(x, y, new Vector2f());
+        return this.addVertex(pos.x(), pos.y(), 0.0F);
     }
     
     public BufferBuilder setColor(int red, int green, int blue, int alpha){
