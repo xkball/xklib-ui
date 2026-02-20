@@ -72,7 +72,7 @@ public class FontRenderer {
             prevCodepoint = codepoint;
         }
         
-        pipeline.setSampler(0, () -> atlas);
+        pipeline.bindSampler(0, () -> atlas);
         
         pipeline.getShader().getUniform("uModelViewProjection").set(projectionMatrix);
         pipeline.draw(builder);

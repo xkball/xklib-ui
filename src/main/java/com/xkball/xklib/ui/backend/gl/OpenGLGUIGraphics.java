@@ -1,14 +1,21 @@
 package com.xkball.xklib.ui.backend.gl;
 
-import com.xkball.xklib.api.gui.IComponent;
-import com.xkball.xklib.api.gui.IGUIGraphics;
+import com.xkball.xklib.api.gui.render.IComponent;
+import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.api.render.IFont;
 import com.xkball.xklib.api.render.IRenderPipeline;
+import com.xkball.xklib.api.render.IRenderPipelineSource;
 import com.xkball.xklib.api.render.ITexture;
 import com.xkball.xklib.api.render.ITextureAtlasSprite;
 import com.xkball.xklib.resource.ResourceLocation;
+import com.xkball.xklib.ui.backend.gl.font.Font;
+import com.xkball.xklib.ui.backend.gl.pipeline.RenderPipelines;
+import com.xkball.xklib.ui.backend.gl.state.BlitRenderState;
 import com.xkball.xklib.ui.backend.gl.state.ColoredRectangleRenderState;
 import com.xkball.xklib.ui.backend.gl.state.GuiRenderState;
+import com.xkball.xklib.ui.backend.gl.state.RoundedRectangleRenderState;
+import com.xkball.xklib.ui.backend.gl.state.TextRenderState;
+import com.xkball.xklib.ui.backend.gl.state.TextureSetup;
 import com.xkball.xklib.ui.navigation.ScreenRectangle;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
@@ -59,19 +66,59 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
         this.guiRenderState
                 .submitGuiElement(
                         new ColoredRectangleRenderState(
-                                pipeline, () -> null, new Matrix3x2f(this.pose), x0, y0, x1, y1, colorFrom, colorTo, this.scissorStack.peek()
+                                pipeline, TextureSetup.EMPTY, new Matrix3x2f(this.pose), x0, y0, x1, y1, colorFrom, colorTo, this.scissorStack.peek()
+                        )
+                );
+    }
+    
+    @Override
+    public void submitColoredRoundedRectangle(int minX, int minY, int maxX, int maxY, int colorFrom, int colorTo, int radius) {
+        this.guiRenderState
+                .submitGuiElement(
+                        new RoundedRectangleRenderState(
+                                IRenderPipelineSource.getInstance().getGuiRoundedRect(), TextureSetup.EMPTY, new Matrix3x2f(this.pose), minX, minY, maxX, maxY, colorFrom, colorTo, radius, this.scissorStack.peek()
                         )
                 );
     }
     
     @Override
     public void drawString(IFont font, IComponent text, int x, int y, int color, boolean drawShadow) {
-    
+        if (!(font instanceof Font glFont)) {
+            return;
+        }
+        String textContent = text.visit();
+        if (textContent == null || textContent.isEmpty()) {
+            return;
+        }
+        this.guiRenderState
+                .submitGuiElement(
+                        new TextRenderState(
+                                RenderPipelines.FONT,
+                                TextureSetup.singleTexture(glFont.getAtlas()),
+                                new Matrix3x2f(this.pose),
+                                glFont,
+                                textContent,
+                                x, y,
+                                color,
+                                drawShadow,
+                                this.scissorStack.peek()
+                        )
+                );
     }
     
     @Override
     public void submitBlit(IRenderPipeline pipeline, ITexture textureView, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color) {
-    
+        this.guiRenderState
+                .submitGuiElement(
+                        new BlitRenderState(
+                                pipeline,
+                                TextureSetup.singleTexture(textureView),
+                                new Matrix3x2f(this.pose),
+                                x0, y0, x1, y1,
+                                u0, u1, v0, v1,
+                                color, this.scissorStack.peek()
+                        )
+                );
     }
     
     public static class ScissorStack {

@@ -12,6 +12,7 @@ public abstract class AbstractTexture implements ITexture {
     protected int height;
     protected boolean destroyed;
     
+    @Override
     public int getId(){
         return id;
     }

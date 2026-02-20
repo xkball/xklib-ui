@@ -12,4 +12,6 @@ public interface IRenderPipelineSource {
     
     IRenderPipeline getGuiTextured();
     
+    IRenderPipeline getGuiRoundedRect();
+    
 }

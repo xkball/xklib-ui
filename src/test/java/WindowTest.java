@@ -1,4 +1,4 @@
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.window.Window;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;

@@ -1,4 +1,4 @@
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.window.Window;
 import com.xkball.xklib.ui.backend.gl.buffer.IBOBuffer;
 import com.xkball.xklib.ui.backend.gl.buffer.VAOBuffer;
 import com.xkball.xklib.ui.backend.gl.buffer.VBOBuffer;

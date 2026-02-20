@@ -15,4 +15,9 @@ public class OpenGLRenderPipelinesSource implements IRenderPipelineSource {
     public IRenderPipeline getGuiTextured() {
         return RenderPipelines.GUI_TEXTURED;
     }
+    
+    @Override
+    public IRenderPipeline getGuiRoundedRect() {
+        return RenderPipelines.GUI_ROUNDED_RECT;
+    }
 }

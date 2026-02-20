@@ -112,8 +112,8 @@ public class IBOBuffer implements AutoCloseable {
     }
     
     public static final class AutoStorageIBO {
-        private final int vertexStride;
-        private final int indexStride;
+        public final int vertexStride;
+        public final int indexStride;
         private final IndexGenerator generator;
         private @Nullable IBOBuffer buffer;
         private VertexFormat.IndexType type = VertexFormat.IndexType.SHORT;

@@ -1,19 +1,14 @@
 package com.xkball.xklib.ui.backend.gl.state;
 
 import com.xkball.xklib.api.render.IRenderPipeline;
-import com.xkball.xklib.ui.backend.gl.pipeline.RenderPipeline;
-import com.xkball.xklib.ui.backend.gl.texture.AbstractTexture;
 import com.xkball.xklib.ui.backend.gl.vertex.BufferBuilder;
 import com.xkball.xklib.ui.navigation.ScreenRectangle;
-import com.xkball.xklib.utils.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fc;
 
-import java.util.function.Supplier;
-
 public record ColoredRectangleRenderState(
     IRenderPipeline pipeline,
-    Supplier<Pair<Integer, AbstractTexture>> textureSetup,
+    TextureSetup textureSetup,
     Matrix3x2fc pose,
     int x0,
     int y0,
@@ -26,7 +21,7 @@ public record ColoredRectangleRenderState(
 ) implements GuiElementRenderState {
     public ColoredRectangleRenderState(
         IRenderPipeline pipeline,
-        Supplier<Pair<Integer, AbstractTexture>> textureSetup,
+        TextureSetup textureSetup,
         Matrix3x2fc pose,
         int x0,
         int y0,
@@ -40,11 +35,11 @@ public record ColoredRectangleRenderState(
     }
 
     @Override
-    public void buildVertices(BufferBuilder vertexConsumer) {
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col1());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setColor(this.col2());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col2());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setColor(this.col1());
+    public void buildVertices(BufferBuilder vertexConsumer, float zOffset) {
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setColor(this.col1());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), zOffset).setColor(this.col2());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setColor(this.col2());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), zOffset).setColor(this.col1());
     }
 
     private static @Nullable ScreenRectangle getBounds(int x0, int y0, int x1, int y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {

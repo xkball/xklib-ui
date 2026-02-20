@@ -1,4 +1,6 @@
-package com.xkball.xklib.api.gui;
+package com.xkball.xklib.api.gui.render;
+
+import com.xkball.xklib.api.annotation.NoImplInMinecraft;
 
 public interface IComponent {
     
@@ -6,7 +8,7 @@ public interface IComponent {
         return () -> literal;
     }
     
-    //在mc实现时 返回空字符串即可
+    @NoImplInMinecraft
     String visit();
     
 }

@@ -16,8 +16,10 @@ public record VertexFormatElement(int id, int index, VertexFormatElement.Type ty
     public static final VertexFormatElement POSITION = register(0, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.POSITION, 3);
     public static final VertexFormatElement COLOR = register(1, 0, VertexFormatElement.Type.UBYTE, VertexFormatElement.Usage.COLOR, 4);
     public static final VertexFormatElement UV = register(2, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.UV, 2);
+    public static final VertexFormatElement UV2 = register(3, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.UV, 2);
     public static final VertexFormatElement NORMAL = register(5, 0, VertexFormatElement.Type.BYTE, VertexFormatElement.Usage.NORMAL, 3);
     public static final VertexFormatElement LINE_WIDTH = register(6, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    public static final VertexFormatElement EXTRA_FLOAT = register(7,0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
     
     public VertexFormatElement(int id, int index, VertexFormatElement.Type type, VertexFormatElement.Usage usage, int count) {
         if (id < 0 ) {

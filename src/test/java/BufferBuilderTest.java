@@ -1,4 +1,4 @@
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.window.Window;
 import com.xkball.xklib.ui.backend.gl.buffer.VBOBuffer;
 import com.xkball.xklib.ui.backend.gl.vertex.BufferBuilder;
 import com.xkball.xklib.ui.backend.gl.vertex.VertexFormat;

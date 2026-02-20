@@ -1,4 +1,4 @@
-package com.xkball.xklib.api.gui;
+package com.xkball.xklib.api.gui.render;
 
 import com.xkball.xklib.api.render.IFont;
 import com.xkball.xklib.api.render.IRenderPipelineSource;
@@ -25,6 +25,11 @@ public interface IGUIGraphics {
                                 int maxX, int maxY,
                                 int colorFrom, int colorTo);
     
+    void submitColoredRoundedRectangle(
+                                int minX, int minY,
+                                int maxX, int maxY,
+                                int colorFrom, int colorTo, int radius);
+    
     void drawString(IFont font, IComponent text, int x, int y, int color, boolean drawShadow);
     
     void submitBlit(
@@ -42,6 +47,14 @@ public interface IGUIGraphics {
         this.fill(x, y + height - 1, x + width, y + height, color);
         this.fill(x, y + 1, x + 1, y + height - 1, color);
         this.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
+    }
+    
+    default void fillRounded(int minX, int minY, int maxX, int maxY, int color, int radius){
+        this.submitColoredRoundedRectangle(minX, minY, maxX, maxY, color, color, radius);
+    }
+    
+    default void fillGradientRounded(int minX, int minY, int maxX, int maxY, int colorFrom, int colorTo, int radius){
+        this.submitColoredRoundedRectangle(minX, minY, maxX, maxY, colorFrom, colorTo, radius);
     }
     
     default void fill(int minX, int minY, int maxX, int maxY, int color) {

@@ -54,6 +54,10 @@ public class FrameBuffer {
             GL45.glClearNamedFramebufferfi(fbo, GL_DEPTH_STENCIL, 0, 1.0f, 0);
         }
     }
+    
+    public void clearDepthStencil() {
+        GL45.glClearNamedFramebufferfi(fbo, GL_DEPTH_STENCIL, 0, 1.0f, 0);
+    }
 
     public void blitToDefault() {
         GL45.glBlitNamedFramebuffer(fbo, 0,

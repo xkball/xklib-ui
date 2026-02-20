@@ -38,15 +38,17 @@ public class GuiRenderState {
             this.current
                     .submitGuiElement(
                             new ColoredRectangleRenderState(
-                                    RenderPipelines.GUI, () -> null, new Matrix3x2f(), 0, 0, 10000, 10000, 2000962815, 2000962815, bounds
+                                    RenderPipelines.GUI, TextureSetup.EMPTY, new Matrix3x2f(), 0, 0, 10000, 10000, 2000962815, 2000962815, bounds
                             )
                     );
+            this.down();
         }
     }
     
     private void up(){
         if(this.current.up == null){
             this.current.up = new Layer(current);
+            this.layers.add(this.current.up);
         }
         this.current = this.current.up;
     }
@@ -55,6 +57,10 @@ public class GuiRenderState {
         if(this.current.parent != null){
             this.current = this.current.parent;
         }
+    }
+    
+    public List<Layer> layers() {
+        return this.layers;
     }
     
     public static class Layer{

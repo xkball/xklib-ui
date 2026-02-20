@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui.backend.gl.pipeline;
 
 import com.xkball.xklib.api.render.IRenderPipeline;
+import com.xkball.xklib.api.render.ITexture;
 import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.ui.backend.gl.GLStateManager;
 import com.xkball.xklib.ui.backend.gl.buffer.IBOBuffer;
@@ -27,18 +28,19 @@ public class RenderPipeline implements IRenderPipeline {
     public final ResourceLocation location;
     public final ResourceLocation vertexShader;
     public final ResourceLocation fragmentShader;
-    public final List<Pair<String, Supplier<AbstractTexture>>> samplers;
+    public final List<Pair<String, Supplier<ITexture>>> samplers;
     public final List<Pair<String, Consumer<Uniform>>> uniforms;
     public final VertexFormat format;
     public final VertexFormat.Mode mode;
     public final boolean depthTest;
+    public final boolean depthMask;
     public final boolean cullFace;
     public final Optional<BlendFunction> blendFunction;
     
     private boolean init;
     private ShaderProgram shader;
     
-    private RenderPipeline(ResourceLocation location, ResourceLocation vertexShader, ResourceLocation fragmentShader, List<Pair<String, Supplier<AbstractTexture>>> samplers, List<Pair<String, Consumer<Uniform>>> uniforms, VertexFormat format, VertexFormat.Mode mode, boolean depthTest, boolean cullFace, Optional<BlendFunction> blendFunction) {
+    private RenderPipeline(ResourceLocation location, ResourceLocation vertexShader, ResourceLocation fragmentShader, List<Pair<String, Supplier<ITexture>>> samplers, List<Pair<String, Consumer<Uniform>>> uniforms, VertexFormat format, VertexFormat.Mode mode, boolean depthTest, boolean depthMask, boolean cullFace, Optional<BlendFunction> blendFunction) {
         this.location = location;
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
@@ -47,6 +49,7 @@ public class RenderPipeline implements IRenderPipeline {
         this.format = format;
         this.mode = mode;
         this.depthTest = depthTest;
+        this.depthMask = depthMask;
         this.cullFace = cullFace;
         this.blendFunction = blendFunction;
     }
@@ -63,15 +66,17 @@ public class RenderPipeline implements IRenderPipeline {
         vbo.bind();
         this.apply();
         var count = vbo.getSize()/this.format.getVertexSize();
-        var iboHoder = IBOBuffer.getSequentialBuffer(this.mode);
-        var ibo = iboHoder.getBuffer(count);
+        var iboHolder = IBOBuffer.getSequentialBuffer(this.mode);
+        count = (int) (count * ((float)iboHolder.indexStride/(float) iboHolder.vertexStride));
+        var ibo = iboHolder.getBuffer(count);
         ibo.bind();
-        GL45.glDrawElements(this.mode.toGl(), count, iboHoder.type().toGl(), 0);
+        GL45.glDrawElements(this.mode.toGl(), count, iboHolder.type().toGl(), 0);
         IBOBuffer.unbind();
         VBOBuffer.unbind();
         VAOBuffer.unbind();
     }
     
+    @Override
     public void draw(BufferBuilder builder){
         this.format.uploadImmediateVertexBuffer(builder.build());
         builder.free();
@@ -93,6 +98,8 @@ public class RenderPipeline implements IRenderPipeline {
             GLStateManager.disableDepthTest();
         }
         
+        GLStateManager.depthMask(depthMask);
+        
         if (cullFace) {
             GLStateManager.enableCullFace();
         } else {
@@ -108,7 +115,7 @@ public class RenderPipeline implements IRenderPipeline {
         
         for (int i = 0; i < samplers.size(); i++) {
             var sampler = samplers.get(i);
-            AbstractTexture texture = sampler.getSecond().get();
+            ITexture texture = sampler.getSecond().get();
             GLStateManager.activeTexture(GL_TEXTURE0 + i);
             GLStateManager.bindTexture(GL_TEXTURE_2D, texture.getId());
             shader.getUniform(sampler.getFirst()).set(i);
@@ -125,7 +132,8 @@ public class RenderPipeline implements IRenderPipeline {
         format.getFormatVertexArrayBuffer().bind();
     }
     
-    public void setSampler(int binding, Supplier<AbstractTexture> texture){
+    @Override
+    public void bindSampler(int binding, Supplier<ITexture> texture){
         this.samplers.set(binding, Pair.of(samplers.get(binding).getFirst(), texture));
     }
     
@@ -146,15 +154,37 @@ public class RenderPipeline implements IRenderPipeline {
         return new Builder(location);
     }
     
+    @Override
+    public ResourceLocation location() {
+        return location;
+    }
+    
+    @Override
+    public VertexFormat.Mode mode() {
+        return mode;
+    }
+    
+    @Override
+    public VertexFormat format() {
+        return format;
+    }
+    
+    @Override
+    public ShaderProgram shader() {
+        this.init();
+        return shader;
+    }
+    
     public static class Builder {
         private final ResourceLocation location;
         private ResourceLocation vertexShader;
         private ResourceLocation fragmentShader;
-        private final List<Pair<String, Supplier<AbstractTexture>>> samplers;
+        private final List<Pair<String, Supplier<ITexture>>> samplers;
         private final List<Pair<String, Consumer<Uniform>>> uniforms;
         private VertexFormat format;
         private VertexFormat.Mode mode;
         private boolean depthTest;
+        private boolean depthMask = true;
         private boolean cullFace;
         private Optional<BlendFunction> blendFunction;
         
@@ -178,7 +208,7 @@ public class RenderPipeline implements IRenderPipeline {
             return this;
         }
         
-        public Builder sampler(String name, Supplier<AbstractTexture> textureSupplier) {
+        public Builder sampler(String name, Supplier<ITexture> textureSupplier) {
             this.samplers.add(Pair.of(name, textureSupplier));
             return this;
         }
@@ -196,6 +226,11 @@ public class RenderPipeline implements IRenderPipeline {
         
         public Builder depthTest(boolean depthTest) {
             this.depthTest = depthTest;
+            return this;
+        }
+        
+        public Builder depthMask(boolean depthMask) {
+            this.depthMask = depthMask;
             return this;
         }
         
@@ -234,6 +269,7 @@ public class RenderPipeline implements IRenderPipeline {
                 format,
                 mode,
                 depthTest,
+                depthMask,
                 cullFace,
                 blendFunction
             );

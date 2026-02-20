@@ -75,9 +75,9 @@ public class BufferBuilder {
         return this;
     }
     
-    public BufferBuilder addVertexWith2DPose(Matrix3x2fc pose, float x, float y) {
+    public BufferBuilder addVertexWith2DPose(Matrix3x2fc pose, float x, float y, float zOffset) {
         Vector2f pos = pose.transformPosition(x, y, new Vector2f());
-        return this.addVertex(pos.x(), pos.y(), 0.0F);
+        return this.addVertex(pos.x(), pos.y(), zOffset);
     }
     
     public BufferBuilder setColor(int red, int green, int blue, int alpha){
@@ -117,6 +117,25 @@ public class BufferBuilder {
         VertexFormatElement uvElement = VertexFormatElement.UV;
         if (!format.contains(uvElement)) {
             LOGGER.warn("VertexFormat does not contain UV element, skipping");
+            return this;
+        }
+        
+        int offset = format.getOffset(uvElement);
+        MemoryUtil.memPutFloat(vertexPointer + offset, u);
+        MemoryUtil.memPutFloat(vertexPointer + offset + 4, v);
+        filledElements.set(uvElement.id());
+        
+        return this;
+    }
+    
+    public BufferBuilder setUv2(float u, float v){
+        if (vertexPointer == -1L) {
+            throw new IllegalStateException("Must call addVertex first");
+        }
+        
+        VertexFormatElement uvElement = VertexFormatElement.UV2;
+        if (!format.contains(uvElement)) {
+            LOGGER.warn("VertexFormat does not contain UV2 element, skipping");
             return this;
         }
         

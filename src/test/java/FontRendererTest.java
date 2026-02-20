@@ -1,4 +1,4 @@
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.window.Window;
 import com.xkball.xklib.ui.backend.gl.font.Font;
 import org.junit.jupiter.api.Test;
 

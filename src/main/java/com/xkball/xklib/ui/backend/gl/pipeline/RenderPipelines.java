@@ -20,7 +20,7 @@ public class RenderPipelines {
             .fragmentShader(ResourceLocation.of("shaders/core/font.fsh"))
             .format(VertexFormat.Mode.TRIANGLES, VertexFormats.POSITION_TEX_COLOR)
             .sampler("uTexture", () -> null)
-            .depthTest(false)
+            .depthTest(true)
             .cullFace(false)
             .blendFunction(BlendFunction.TRANSLUCENT)
             .build();
@@ -29,7 +29,7 @@ public class RenderPipelines {
             .vertexShader(ResourceLocation.of("shaders/core/pos_color.vsh"))
             .fragmentShader(ResourceLocation.of("shaders/core/pos_color.fsh"))
             .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_COLOR)
-            .depthTest(false)
+            .depthTest(true)
             .cullFace(false)
             .build();
     
@@ -38,7 +38,16 @@ public class RenderPipelines {
             .fragmentShader(ResourceLocation.of("shaders/core/pos_tex_color.fsh"))
             .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_TEX_COLOR)
             .sampler("uTexture", () -> null)
-            .depthTest(false)
+            .blendFunction(BlendFunction.TRANSLUCENT)
+            .depthTest(true)
+            .cullFace(false)
+            .build();
+    
+    public static final RenderPipeline GUI_ROUNDED_RECT = RenderPipeline.builder(ResourceLocation.of("gui_rounded_rect"))
+            .vertexShader(ResourceLocation.of("shaders/core/gui_rounded_rect.vsh"))
+            .fragmentShader(ResourceLocation.of("shaders/core/gui_rounded_rect.fsh"))
+            .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_TEX_UV2_COLOR_EXTRA)
+            .depthTest(true)
             .cullFace(false)
             .build();
 

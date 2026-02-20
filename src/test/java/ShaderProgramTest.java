@@ -1,5 +1,5 @@
 import com.xkball.xklib.resource.ResourceLocation;
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.window.Window;
 import com.xkball.xklib.ui.backend.gl.shader.ShaderProgram;
 import com.xkball.xklib.ui.backend.gl.shader.Uniform;
 import org.joml.Matrix4f;
@@ -104,25 +104,4 @@ class ShaderProgramTest {
         }
     }
     
-    @Test
-    void uniformsGetCleanedUpOnDestroy() {
-        Window window = new Window(64, 64, "shader-test-cleanup");
-        window.init();
-        try {
-            ShaderProgram program = new ShaderProgram(
-                ResourceLocation.of("shaders/test/uniform_test.vert"),
-                ResourceLocation.of("shaders/test/uniform_test.frag")
-            );
-            
-            program.getOrCreateUniform("uColor", Uniform.UT_FLOAT4);
-            program.getOrCreateUniform("uAlpha", Uniform.UT_FLOAT1);
-            
-            program.destroy();
-            
-            assertNull(program.getUniform("uColor"));
-            assertNull(program.getUniform("uAlpha"));
-        } finally {
-            window.destroy();
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package com.xkball.xklib.ui.backend;
+package com.xkball.xklib.ui.backend.window;
 
 import com.xkball.xklib.ui.backend.gl.GLStateManager;
 import com.xkball.xklib.ui.backend.gl.buffer.FrameBuffer;

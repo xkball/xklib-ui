@@ -32,7 +32,7 @@ public class SimpleTexture extends AbstractTexture{
             imageBuffer.put(data);
             imageBuffer.flip();
             
-            STBImage.stbi_set_flip_vertically_on_load(true);
+            STBImage.stbi_set_flip_vertically_on_load(false);
             ByteBuffer pixels = STBImage.stbi_load_from_memory(
                 imageBuffer, widthBuf, heightBuf, channelsBuf, 4
             );

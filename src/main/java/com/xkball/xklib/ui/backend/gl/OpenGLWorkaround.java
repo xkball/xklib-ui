@@ -2,7 +2,8 @@ package com.xkball.xklib.ui.backend.gl;
 
 import com.xkball.xklib.XKLibWorkaround;
 import com.xkball.xklib.ui.XKLibUI;
-import com.xkball.xklib.ui.backend.Window;
+import com.xkball.xklib.ui.backend.gl.state.GuiRenderer;
+import com.xkball.xklib.ui.backend.window.Window;
 import com.xkball.xklib.ui.backend.gl.font.Font;
 import com.xkball.xklib.ui.backend.gl.font.FontRenderer;
 import com.xkball.xklib.ui.backend.gl.texture.TextureManager;
@@ -13,6 +14,7 @@ public class OpenGLWorkaround {
     public static Window window;
     public static Font font;
     public static FontRenderer fontRenderer;
+    public static GuiRenderer guiRenderer;
     
     public static void init(){
         textureManager = new TextureManager(XKLibWorkaround.resourceManager);
@@ -20,5 +22,7 @@ public class OpenGLWorkaround {
         window.init();
         font = new Font(32);
         fontRenderer = new FontRenderer();
+        guiRenderer = new GuiRenderer();
+        XKLibWorkaround.gui.initGLFWCallbacks();
     }
 }

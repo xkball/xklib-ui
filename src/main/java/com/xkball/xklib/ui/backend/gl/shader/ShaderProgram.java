@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL20C.*;
 
@@ -44,21 +45,15 @@ public final class ShaderProgram {
         this.buildUniformMap();
     }
     
+    public void safeSetUniform(String name, Consumer<Uniform> uniformSetter){
+        Uniform uniform = uniformMap.get(name);
+        if (uniform != null) {
+            uniformSetter.accept(uniform);
+        }
+    }
+    
     public Uniform getUniform(String name){
         return uniformMap.get(name);
-    }
-    
-    public Uniform getOrCreateUniform(String name, int type, int count) {
-        return uniformMap.computeIfAbsent(name, k -> {
-            Uniform uniform = new Uniform(name, type, count, this);
-            int location = glGetUniformLocation(programId, name);
-            uniform.setLocation(location);
-            return uniform;
-        });
-    }
-    
-    public Uniform getOrCreateUniform(String name, int type) {
-        return getOrCreateUniform(name, type, getDefaultCount(type));
     }
     
     private void buildUniformMap() {
