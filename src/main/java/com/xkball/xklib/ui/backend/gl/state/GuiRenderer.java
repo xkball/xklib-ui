@@ -24,7 +24,7 @@ public class GuiRenderer {
     
     public void draw() {
         var window = OpenGLWorkaround.window;
-//        state.setDebug(true);
+        //state.setDebug(true);
         window.getFramebuffer().clearDepthStencil();
         projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F, 1, 10000, true);
         var z = 2f;

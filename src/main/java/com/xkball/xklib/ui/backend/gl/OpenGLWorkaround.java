@@ -23,6 +23,7 @@ public class OpenGLWorkaround {
         font = new Font(32);
         fontRenderer = new FontRenderer();
         guiRenderer = new GuiRenderer();
-        XKLibWorkaround.gui.initGLFWCallbacks();
+        XKLibWorkaround.gui.initGLFWCallbacks(window.getHandle());
+        XKLibWorkaround.gui.setGraphics(guiRenderer.getGuiGraphics());
     }
 }

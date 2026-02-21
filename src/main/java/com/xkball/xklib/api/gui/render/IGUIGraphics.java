@@ -12,6 +12,8 @@ import org.jspecify.annotations.Nullable;
 
 public interface IGUIGraphics {
     
+    IFont defaultFont();
+    
     ITextureAtlasSprite getSprite(ResourceLocation location);
     
     ITexture getTexture(ResourceLocation location);
@@ -39,6 +41,8 @@ public interface IGUIGraphics {
             float u0, float u1, float v0, float v1,
             int color
     );
+    
+    void draw();
     
     Matrix3x2fStack getPose();
     
@@ -108,6 +112,10 @@ public interface IGUIGraphics {
     
     default void drawCenteredString(IFont font, String text, int x, int y, int color) {
         this.drawString(font, text, x - font.width(text) / 2, y, color);
+    }
+    
+    default void drawString(@Nullable String text, int x, int y, int color) {
+        this.drawString(this.defaultFont(), text, x, y, color, true);
     }
     
     default void drawString(IFont font, @Nullable String text, int x, int y, int color) {

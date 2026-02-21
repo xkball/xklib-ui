@@ -9,6 +9,8 @@ repositories {
     mavenCentral()
 }
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
 dependencies {
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")

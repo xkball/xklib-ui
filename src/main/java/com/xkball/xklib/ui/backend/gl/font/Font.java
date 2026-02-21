@@ -23,6 +23,11 @@ public class Font implements IFont {
         this(32);
     }
     
+    @Override
+    public int lineHeight() {
+        return this.fontSize;
+    }
+    
     private byte[] loadSystemFont() {
         String os = System.getProperty("os.name").toLowerCase();
         Path fontPath;

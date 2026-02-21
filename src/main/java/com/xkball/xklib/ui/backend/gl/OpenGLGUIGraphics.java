@@ -36,6 +36,11 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
+    public IFont defaultFont() {
+        return OpenGLWorkaround.font;
+    }
+    
+    @Override
     public ITextureAtlasSprite getSprite(ResourceLocation location) {
         return Objects.requireNonNull(OpenGLWorkaround.textureManager.getSprite(location));
     }
@@ -119,6 +124,11 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
                                 color, this.scissorStack.peek()
                         )
                 );
+    }
+    
+    @Override
+    public void draw() {
+        OpenGLWorkaround.guiRenderer.draw();
     }
     
     public static class ScissorStack {

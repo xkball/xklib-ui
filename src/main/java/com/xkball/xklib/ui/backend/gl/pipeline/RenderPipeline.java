@@ -9,7 +9,6 @@ import com.xkball.xklib.ui.backend.gl.buffer.VAOBuffer;
 import com.xkball.xklib.ui.backend.gl.buffer.VBOBuffer;
 import com.xkball.xklib.ui.backend.gl.shader.ShaderProgram;
 import com.xkball.xklib.ui.backend.gl.shader.Uniform;
-import com.xkball.xklib.ui.backend.gl.texture.AbstractTexture;
 import com.xkball.xklib.ui.backend.gl.vertex.BufferBuilder;
 import com.xkball.xklib.ui.backend.gl.vertex.VertexFormat;
 import com.xkball.xklib.utils.Pair;

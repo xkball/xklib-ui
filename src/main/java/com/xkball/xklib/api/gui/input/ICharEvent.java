@@ -5,4 +5,6 @@ public interface ICharEvent {
     int codepoint();
     
     int modifiers();
+    
+    String codepointAsString();
 }

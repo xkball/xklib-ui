@@ -19,6 +19,6 @@ public class DrawTestGuiGraphics extends WindowAppBase{
         guiGraphics.fillRounded(800, 400, 1000, 600, 0xFF0000FF, 80);
         guiGraphics.fillRounded(800, 200, 1000, 300, 0xFF0000FF, 20);
         guiGraphics.fillRounded(800, 100, 1000, 150, 0xFF0000FF, 25);
-        guiRenderer.draw();
+        guiGraphics.draw();
     }
 }

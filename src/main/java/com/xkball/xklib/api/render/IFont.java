@@ -4,4 +4,5 @@ public interface IFont {
     
     int width(String text);
     
+    int lineHeight();
 }

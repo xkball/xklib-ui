@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui;
 
-import com.xkball.xklib.ui.backend.window.DrawTestGuiGraphics;
+import com.xkball.xklib.ui.backend.window.WidgetTestFrame;
+import com.xkball.xklib.ui.widget.widgets.EventTestWidget;
 
 public class XKLibUI {
 
@@ -8,6 +9,6 @@ public class XKLibUI {
     
     public static void main(String[] args) {
         Thread.currentThread().setName("xklib-ui-test-main");
-        new DrawTestGuiGraphics().run();
+        new WidgetTestFrame(EventTestWidget::new).run();
     }
 }
