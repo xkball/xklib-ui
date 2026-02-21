@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class OpenGLGUIGraphics implements IGUIGraphics {
     
-    private final Matrix3x2fStack pose = new Matrix3x2fStack();
+    private final Matrix3x2fStack pose = new Matrix3x2fStack(32);
     private final ScissorStack scissorStack = new ScissorStack();
     private final GuiRenderState guiRenderState;
     

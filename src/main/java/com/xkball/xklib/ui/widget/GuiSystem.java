@@ -79,7 +79,19 @@ public class GuiSystem {
             MouseButtonEvent event = new MouseButtonEvent(x, y, this.dragButton, 0);
             this.dispatchEventReversed(widget -> widget.mouseDragged(event, dx, dy));
         } else {
-            this.dispatchEventToAll(widget -> widget.mouseMoved(x, y));
+            boolean handled = false;
+            for (int i = this.screenLayers.size() - 1; i >= 0; i--) {
+                AbstractWidget layer = this.screenLayers.get(i);
+                if (!handled && layer.mouseMoved(x, y)) {
+                    handled = true;
+                    continue;
+                }
+                if (layer instanceof AbstractContainerWidget acw) {
+                    acw.clearHoveredRecursive();
+                } else {
+                    layer.hovered = false;
+                }
+            }
         }
     }
     
@@ -100,7 +112,19 @@ public class GuiSystem {
             this.dragStartX = this.lastMouseX;
             this.dragStartY = this.lastMouseY;
             
-            this.dispatchEventReversed(widget -> widget.mouseClicked(event, isDoubleClick));
+            boolean handled = false;
+            for (int i = this.screenLayers.size() - 1; i >= 0; i--) {
+                AbstractWidget layer = this.screenLayers.get(i);
+                if (!handled && layer.mouseClicked(event, isDoubleClick)) {
+                    handled = true;
+                    continue;
+                }
+                if (layer instanceof AbstractContainerWidget acw) {
+                    acw.clearFocusedRecursive();
+                } else {
+                    layer.focused = false;
+                }
+            }
         } else if (action == GLFW.GLFW_RELEASE) {
             this.isDragging = false;
             this.dragButton = -1;

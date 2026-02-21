@@ -114,12 +114,35 @@ public interface IGUIGraphics {
         this.drawString(font, text, x - font.width(text) / 2, y, color);
     }
     
+    default void drawCenteredString(String text, int x, int y, int color) {
+        var font = this.defaultFont();
+        this.drawString(font, text, x - font.width(text) / 2, y, color);
+    }
+    
+    default void drawCenteredString(String text, int x, int y, int color, int height) {
+        var font = this.defaultFont();
+        var scale = height / (float)font.lineHeight();
+        this.drawString(font, text, (int) (x - font.width(text) * scale / 2), y, color, height);
+    }
+    
+    default void drawString(IFont font, @Nullable String text, int x, int y, int color, int height){
+        this.getPose().pushMatrix();
+        var scale = height / (float)font.lineHeight();
+        this.getPose().scale(scale,scale);
+        this.drawString(font, text, (int) (x/scale), (int) (y/scale), color);
+        this.getPose().popMatrix();
+    }
+    
+    default void drawString(@Nullable String text, int x, int y, int color, int height){
+        this.drawString(this.defaultFont(), text, x, y, color, height);
+    }
+    
     default void drawString(@Nullable String text, int x, int y, int color) {
-        this.drawString(this.defaultFont(), text, x, y, color, true);
+        this.drawString(this.defaultFont(), text, x, y, color, false);
     }
     
     default void drawString(IFont font, @Nullable String text, int x, int y, int color) {
-        this.drawString(font, text, x, y, color, true);
+        this.drawString(font, text, x, y, color, false);
     }
     
     default void drawString(IFont font, @Nullable String text, int x, int y, int color, boolean drawShadow) {
@@ -129,7 +152,7 @@ public interface IGUIGraphics {
     }
     
     default void drawString(IFont font, IComponent text, int x, int y, int color) {
-        this.drawString(font, text, x, y, color, true);
+        this.drawString(font, text, x, y, color, false);
     }
     
     default void blitSprite(IRenderPipeline renderPipeline, ResourceLocation location, int x, int y, int width, int height, int color) {

@@ -32,11 +32,46 @@ public class AbstractContainerWidget extends AbstractWidget {
     }
     
     @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        super.mouseMoved(mouseX, mouseY);
+    public boolean mouseMoved(double mouseX, double mouseY) {
+        if (!this.enabled || !this.visible) {
+            this.hovered = false;
+            return false;
+        }
+        
+        boolean handled = false;
+        for (var child : this.children) {
+            if (!handled && child.visible) {
+                if (child.mouseMoved(mouseX, mouseY)) {
+                    handled = true;
+                    continue;
+                }
+            }
+            if (child instanceof AbstractContainerWidget acw) {
+                acw.clearHoveredRecursive();
+            } else {
+                child.hovered = false;
+            }
+        }
+        
+        if (!handled) {
+            boolean wasMouseOver = this.isMouseOver(mouseX, mouseY);
+            if (wasMouseOver) {
+                this.hovered = true;
+                return true;
+            }
+        }
+        
+        this.hovered = false;
+        return handled;
+    }
+    
+    public void clearHoveredRecursive() {
+        this.hovered = false;
         for (AbstractWidget child : this.children) {
-            if (child.visible) {
-                child.mouseMoved(mouseX, mouseY);
+            if (child instanceof AbstractContainerWidget acw) {
+                acw.clearHoveredRecursive();
+            } else {
+                child.hovered = false;
             }
         }
     }
@@ -52,13 +87,41 @@ public class AbstractContainerWidget extends AbstractWidget {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) event.x(), (int) event.y())) {
                     if (child.mouseClicked(event, doubleClick)) {
+                        clearFocusedExcept(child);
                         return true;
                     }
                 }
             }
         }
         
-        return super.mouseClicked(event, doubleClick);
+        boolean handled = super.mouseClicked(event, doubleClick);
+        if (handled) {
+            clearFocusedExcept(null);
+        }
+        return handled;
+    }
+    
+    private void clearFocusedExcept(AbstractWidget except) {
+        for (AbstractWidget child : this.children) {
+            if (child != except) {
+                if (child instanceof AbstractContainerWidget acw) {
+                    acw.clearFocusedRecursive();
+                } else {
+                    child.focused = false;
+                }
+            }
+        }
+    }
+    
+    public void clearFocusedRecursive() {
+        this.focused = false;
+        for (AbstractWidget child : this.children) {
+            if (child instanceof AbstractContainerWidget acw) {
+                acw.clearFocusedRecursive();
+            } else {
+                child.focused = false;
+            }
+        }
     }
     
     @Override

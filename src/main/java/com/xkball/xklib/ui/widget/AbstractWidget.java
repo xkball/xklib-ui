@@ -6,10 +6,13 @@ import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
+import com.xkball.xklib.api.gui.widget.ILayoutElement;
 import com.xkball.xklib.api.gui.widget.IRenderable;
+import com.xkball.xklib.ui.navigation.HorizontalAlign;
 import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.navigation.VerticalAlign;
 
-public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener {
+public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener, ILayoutElement {
     
     protected int x;
     protected int y;
@@ -21,6 +24,33 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     protected boolean hovered = false;
     protected volatile boolean dirty = false;
     
+    protected int contentX;
+    protected int contentY;
+    protected int contentWidth;
+    protected int contentHeight;
+    protected boolean useFixWidth = false;
+    protected boolean useFixHeight = false;
+    protected int fixWidth;
+    protected int fixHeight;
+    protected HorizontalAlign innerHorizontalAlign = HorizontalAlign.CENTER;
+    protected VerticalAlign innerVerticalAlign = VerticalAlign.CENTER;
+    protected boolean paddingLeftPercent = false;
+    protected boolean paddingRightPercent = false;
+    protected boolean paddingTopPercent = false;
+    protected boolean paddingBottomPercent = false;
+    protected float paddingLeft;
+    protected float paddingRight;
+    protected float paddingTop;
+    protected float paddingBottom;
+    protected boolean marginLeftPercent = false;
+    protected boolean marginRightPercent = false;
+    protected boolean marginTopPercent = false;
+    protected boolean marginBottomPercent = false;
+    protected float marginLeft;
+    protected float marginRight;
+    protected float marginTop;
+    protected float marginBottom;
+    
     public AbstractWidget(){
         this.markDirty();
     }
@@ -30,11 +60,18 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
         this.y = y;
         this.width = width;
         this.height = height;
+        this.markDirty();
     }
     
     @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        this.hovered = this.isMouseOver(mouseX, mouseY);
+    public boolean mouseMoved(double mouseX, double mouseY) {
+        boolean wasMouseOver = this.isMouseOver(mouseX, mouseY);
+        if (wasMouseOver && this.enabled && this.visible) {
+            this.hovered = true;
+            return true;
+        }
+        this.hovered = false;
+        return false;
     }
     
     @Override
@@ -109,8 +146,8 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return this.enabled && this.visible &&
-               mouseX >= this.x && mouseX < this.x + this.width &&
-               mouseY >= this.y && mouseY < this.y + this.height;
+               mouseX >= this.contentX && mouseX < this.contentX + this.contentWidth &&
+               mouseY >= this.contentY && mouseY < this.contentY + this.contentHeight;
     }
     
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
@@ -142,7 +179,15 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     }
     
     @Override
+    public boolean isFocusable() {
+        return true;
+    }
+    
+    @Override
     public void setFocused(boolean focused) {
+        if (focused && !this.isFocusable()) {
+            return;
+        }
         this.focused = focused;
     }
     
@@ -234,5 +279,176 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
     
+    }
+    
+    @Override
+    public void resize() {
+        if(this.useFixWidth){
+            this.contentWidth = this.fixWidth;
+            this.contentX = switch (this.innerHorizontalAlign) {
+                case LEFT -> this.x;
+                case CENTER -> (int) (this.x + (this.width - this.fixWidth) / 2.0);
+                case RIGHT -> this.x + this.width - this.fixWidth;
+            };
+        }
+        else{
+            var paddingL = this.paddingLeftPercent ? (int)(this.paddingLeft * this.width) : this.paddingLeft;
+            var paddingR = this.paddingRightPercent ? (int)(this.paddingRight * this.width) : this.paddingRight;
+            this.contentX = (int) (this.x + paddingL);
+            this.contentWidth = (int) (Math.max(0, this.width - paddingL - paddingR));
+        }
+        if(this.useFixHeight){
+            this.contentHeight = this.fixHeight;
+            this.contentY = switch (this.innerVerticalAlign) {
+                case TOP -> this.y;
+                case CENTER -> (int) (this.y + (this.height - this.fixHeight) / 2.0);
+                case BOTTOM -> this.y + this.height - this.fixHeight;
+            };
+        }
+        else{
+            var paddingT = this.paddingTopPercent ? (int)(this.paddingTop * this.height) : this.paddingTop;
+            var paddingB = this.paddingBottomPercent ? (int)(this.paddingBottom * this.height) : this.paddingBottom;
+            this.contentY = (int) (this.y + paddingT);
+            this.contentHeight = (int) (Math.max(0, this.height - paddingT - paddingB));
+        }
+        
+    }
+    
+    @Override
+    public int getContentX() {
+        return this.contentX;
+    }
+    
+    @Override
+    public int getContentY() {
+        return this.contentY;
+    }
+    
+    @Override
+    public int getContentWidth() {
+        return this.contentWidth;
+    }
+    
+    @Override
+    public int getContentHeight() {
+        return this.contentHeight;
+    }
+    
+    @Override
+    public void setFixWidth(int width) {
+        this.fixWidth = width;
+        this.useFixWidth = true;
+    }
+    
+    @Override
+    public void setFixHeight(int height) {
+        this.fixHeight = height;
+        this.useFixHeight = true;
+    }
+    
+    @Override
+    public void setInnerHorizontalAlign(HorizontalAlign align) {
+        this.innerHorizontalAlign = align;
+    }
+    
+    @Override
+    public void setInnerVerticalAlign(VerticalAlign align) {
+        this.innerVerticalAlign = align;
+    }
+    
+    @Override
+    public void setPaddingLeft(int padding) {
+        this.paddingLeft = padding;
+        this.paddingLeftPercent = false;
+    }
+    
+    @Override
+    public void setPaddingRight(int padding) {
+        this.paddingRight = padding;
+        this.paddingRightPercent = false;
+    }
+    
+    @Override
+    public void setPaddingTop(int padding) {
+        this.paddingTop = padding;
+        this.paddingTopPercent = false;
+    }
+    
+    @Override
+    public void setPaddingBottom(int padding) {
+        this.paddingBottom = padding;
+        this.paddingBottomPercent = false;
+    }
+    
+    @Override
+    public void setPaddingLeftPercent(float percent) {
+        this.paddingLeftPercent = true;
+        this.paddingLeft = percent;
+    }
+    
+    @Override
+    public void setPaddingRightPercent(float percent) {
+        this.paddingRightPercent = true;
+        this.paddingRight = percent;
+    }
+    
+    @Override
+    public void setPaddingTopPercent(float percent) {
+        this.paddingTopPercent = true;
+        this.paddingTop = percent;
+    }
+    
+    @Override
+    public void setPaddingBottomPercent(float percent) {
+        this.paddingBottomPercent = true;
+        this.paddingBottom = percent;
+    }
+    
+    @Override
+    public void setMarginLeft(int margin) {
+        this.marginLeft = margin;
+        this.marginLeftPercent = false;
+    }
+    
+    @Override
+    public void setMarginRight(int margin) {
+        this.marginRight = margin;
+        this.marginRightPercent = false;
+    }
+    
+    @Override
+    public void setMarginTop(int margin) {
+        this.marginTop = margin;
+        this.marginTopPercent = false;
+    }
+    
+    @Override
+    public void setMarginBottom(int margin) {
+        this.marginBottom = margin;
+        this.marginBottomPercent = false;
+    }
+    
+    @Override
+    public void setMarginLeftPercent(float percent) {
+        this.marginLeftPercent = true;
+        this.marginLeft = percent;
+    }
+    
+    @Override
+    public void setMarginRightPercent(float percent) {
+        this.marginRightPercent = true;
+        this.marginRight = percent;
+    }
+    
+    @Override
+    public void setMarginTopPercent(float percent) {
+        this.marginTopPercent = true;
+        this.marginTop = percent;
+    }
+    
+    @Override
+    public void setMarginBottomPercent(float percent) {
+        this.marginBottomPercent = true;
+        this.marginBottom = percent;
     }
 }

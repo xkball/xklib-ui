@@ -6,7 +6,8 @@ import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.navigation.ScreenRectangle;
 
 public interface IGuiEventListener {
-    default void mouseMoved(double x, double y) {
+    default boolean mouseMoved(double x, double y) {
+        return false;
     }
 
     default boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
@@ -41,6 +42,8 @@ public interface IGuiEventListener {
         return false;
     }
 
+    boolean isFocusable();
+    
     void setFocused(final boolean focused);
 
     boolean isFocused();
