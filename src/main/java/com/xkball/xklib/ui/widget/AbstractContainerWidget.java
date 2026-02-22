@@ -5,22 +5,33 @@ import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.api.gui.widget.ILayoutParma;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 
-import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
-public class AbstractContainerWidget extends AbstractWidget {
+public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T extends ILayoutParma> extends AbstractWidget {
     
-    protected final List<AbstractWidget> children = new ArrayList<>();
+    protected final Map<AbstractWidget,T> children = new IdentityHashMap<>();
     
     public AbstractContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
     
-    public void addChild(AbstractWidget widget) {
-        this.children.add(widget);
+    public AbstractContainerWidget() {
+        super();
+    }
+    
+    public S addChild(AbstractWidget widget, T layoutParam) {
+        this.children.put(widget, layoutParam);
+        return (S)this;
+    }
+    
+    public T getLayoutParam(AbstractWidget widget) {
+        return this.children.get(widget);
     }
     
     public void removeChild(AbstractWidget widget) {
@@ -28,7 +39,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     }
     
     public List<AbstractWidget> getChildren() {
-        return this.children;
+        return this.children.keySet().stream().toList();
     }
     
     @Override
@@ -39,7 +50,7 @@ public class AbstractContainerWidget extends AbstractWidget {
         }
         
         boolean handled = false;
-        for (var child : this.children) {
+        for (var child : this.children.keySet()) {
             if (!handled && child.visible) {
                 if (child.mouseMoved(mouseX, mouseY)) {
                     handled = true;
@@ -67,7 +78,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     
     public void clearHoveredRecursive() {
         this.hovered = false;
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child instanceof AbstractContainerWidget acw) {
                 acw.clearHoveredRecursive();
             } else {
@@ -82,7 +93,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) event.x(), (int) event.y())) {
@@ -102,7 +113,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     }
     
     private void clearFocusedExcept(AbstractWidget except) {
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child != except) {
                 if (child instanceof AbstractContainerWidget acw) {
                     acw.clearFocusedRecursive();
@@ -115,7 +126,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     
     public void clearFocusedRecursive() {
         this.focused = false;
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child instanceof AbstractContainerWidget acw) {
                 acw.clearFocusedRecursive();
             } else {
@@ -130,7 +141,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled) {
                 if (child.mouseReleased(event)) {
                     return true;
@@ -147,7 +158,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled) {
                 if (child.mouseDragged(event, dx, dy)) {
                     return true;
@@ -164,7 +175,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) x, (int) y)) {
@@ -184,7 +195,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled && child.isFocused()) {
                 if (child.keyPressed(event)) {
                     return true;
@@ -201,7 +212,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled && child.isFocused()) {
                 if (child.keyReleased(event)) {
                     return true;
@@ -218,7 +229,7 @@ public class AbstractContainerWidget extends AbstractWidget {
             return false;
         }
         
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible && child.enabled && child.isFocused()) {
                 if (child.charTyped(event)) {
                     return true;
@@ -231,11 +242,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if (!this.visible) {
-            return;
-        }
-        
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             if (child.visible) {
                 child.render(graphics, mouseX, mouseY, a);
             }
@@ -245,7 +252,7 @@ public class AbstractContainerWidget extends AbstractWidget {
     @Override
     public void visitWidgets(Consumer<IGuiWidget> widgetVisitor) {
         widgetVisitor.accept(this);
-        for (AbstractWidget child : this.children) {
+        for (AbstractWidget child : this.children.keySet()) {
             child.visitWidgets(widgetVisitor);
         }
     }

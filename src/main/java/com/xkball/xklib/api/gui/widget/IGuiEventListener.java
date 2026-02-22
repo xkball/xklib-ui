@@ -3,7 +3,7 @@ package com.xkball.xklib.api.gui.widget;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 
 public interface IGuiEventListener {
     default boolean mouseMoved(double x, double y) {

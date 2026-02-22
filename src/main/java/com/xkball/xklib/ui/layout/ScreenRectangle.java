@@ -1,11 +1,12 @@
-package com.xkball.xklib.ui.navigation;
+package com.xkball.xklib.ui.layout;
 
+import com.xkball.xklib.api.gui.widget.ILayoutParma;
 import com.xkball.xklib.utils.MathUtils;
 import org.joml.Matrix3x2fc;
 import org.joml.Vector2f;
 import org.jspecify.annotations.Nullable;
 
-public record ScreenRectangle(ScreenPosition pos, int width, int height) {
+public record ScreenRectangle(ScreenPosition pos, int width, int height) implements ILayoutParma {
     
     private static final ScreenRectangle EMPTY = new ScreenRectangle(0, 0, 0, 0);
     
@@ -23,6 +24,10 @@ public record ScreenRectangle(ScreenPosition pos, int width, int height) {
         int right = Math.min(this.right(), other.right());
         int bottom = Math.min(this.bottom(), other.bottom());
         return left < right && top < bottom ? new ScreenRectangle(left, top, right - left, bottom - top) : null;
+    }
+    
+    public ScreenRectangle offset(int dx, int dy) {
+        return new ScreenRectangle(this.left() + dx, this.top() + dy, this.width, this.height);
     }
     
     public boolean intersects(ScreenRectangle other) {

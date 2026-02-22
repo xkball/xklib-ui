@@ -1,4 +1,4 @@
-package com.xkball.xklib.ui.navigation;
+package com.xkball.xklib.ui.layout;
 
 public enum HorizontalAlign {
     LEFT,

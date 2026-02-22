@@ -49,11 +49,13 @@ public class GuiSystem {
         this.graphics = graphics;
     }
     
+    public IGUIGraphics getGuiGraphics() {
+        return this.graphics;
+    }
+    
     public void submitTreeUpdate(Runnable runnable) {
         this.treeUpdateQueue.offer(runnable);
     }
-    
-
     
     public void initGLFWCallbacks(long windowHandle) {
         this.windowHandle = windowHandle;

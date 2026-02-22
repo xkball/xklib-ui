@@ -1,7 +1,7 @@
 package com.xkball.xklib.api.gui.widget;
 
 import com.xkball.xklib.XKLibWorkaround;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -41,6 +41,14 @@ public interface IGuiWidget {
     
     boolean isDirty();
     
+    void setOverflow(boolean overflow);
+    
+    boolean overflow();
+    
+    int expectWidth();
+    
+    int expectHeight();
+    
     /**
      * 应该计算子组件的大小, 不用调用子组件resize
      */
@@ -78,6 +86,13 @@ public interface IGuiWidget {
     default void setSize(int width, int height) {
         this.setWidth(width);
         this.setHeight(height);
+    }
+    
+    default void setRectangle(ScreenRectangle rectangle) {
+        this.setX(rectangle.left());
+        this.setY(rectangle.top());
+        this.setWidth(rectangle.width());
+        this.setHeight(rectangle.height());
     }
 
     default void visitWidgets(final Consumer<IGuiWidget> widgetVisitor){

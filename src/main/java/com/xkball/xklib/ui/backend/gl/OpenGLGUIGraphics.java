@@ -16,7 +16,7 @@ import com.xkball.xklib.ui.backend.gl.state.GuiRenderState;
 import com.xkball.xklib.ui.backend.gl.state.RoundedRectangleRenderState;
 import com.xkball.xklib.ui.backend.gl.state.TextRenderState;
 import com.xkball.xklib.ui.backend.gl.state.TextureSetup;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.Nullable;

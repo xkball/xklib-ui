@@ -1,7 +1,7 @@
 package com.xkball.xklib.api.gui.widget;
 
-import com.xkball.xklib.ui.navigation.HorizontalAlign;
-import com.xkball.xklib.ui.navigation.VerticalAlign;
+import com.xkball.xklib.ui.layout.HorizontalAlign;
+import com.xkball.xklib.ui.layout.VerticalAlign;
 
 /**
  * 盒模型的布局元素, 不支持子元素扩大父元素大小

@@ -110,13 +110,15 @@ public class FontAtlas extends AbstractTexture {
                 return new GlyphInfo(codepoint, 0, 0, 0, 0, 0, 0, advance, 0, 0, 0, 0);
             }
             
-            if (currentX + glyphWidth > width) {
+            int padding = 2;
+            
+            if (currentX + glyphWidth + padding > width) {
                 currentX = 0;
-                currentY += maxRowHeight;
+                currentY += maxRowHeight + padding;
                 maxRowHeight = 0;
             }
             
-            if (currentY + glyphHeight > height) {
+            if (currentY + glyphHeight + padding > height) {
                 STBTruetype.stbtt_FreeBitmap(bitmap);
                 throw new RuntimeException("Font atlas is full");
             }
@@ -150,7 +152,7 @@ public class FontAtlas extends AbstractTexture {
                 v1
             );
             
-            currentX += glyphWidth;
+            currentX += glyphWidth + padding;
             maxRowHeight = Math.max(maxRowHeight, glyphHeight);
             
             return glyphInfo;

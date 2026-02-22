@@ -6,7 +6,7 @@ import com.xkball.xklib.ui.backend.gl.font.Font;
 import com.xkball.xklib.ui.backend.gl.font.FontAtlas;
 import com.xkball.xklib.ui.backend.gl.font.GlyphInfo;
 import com.xkball.xklib.ui.backend.gl.vertex.BufferBuilder;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2fc;
 

@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.XKLibWorkaround;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 
@@ -44,12 +45,19 @@ public class Button extends AbstractWidget{
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        if (!this.visible) {
-            return;
-        }
         this.style.render(graphics, this, mouseX, mouseY, partialTicks);
-        var textHeight = (int) Math.min(this.contentHeight*0.6f, graphics.defaultFont().lineHeight());
-        graphics.drawCenteredString(this.getText(), this.contentX + this.contentWidth/2, this.contentY + (this.contentHeight - textHeight)/2, 0xFF000000, textHeight);
+        var textHeight = (int) Math.min(this.contentHeight*0.9f, graphics.defaultFont().lineHeight());
+        graphics.drawCenteredString(this.getText(), this.contentX + this.contentWidth/2, this.contentY + (this.contentHeight - textHeight)/2 - 2, 0xFF000000, textHeight);
+    }
+    
+    @Override
+    public int expectWidth() {
+        return (int) (XKLibWorkaround.gui.getGuiGraphics().defaultFont().width(this.getText()) * 1.2f);
+    }
+    
+    @Override
+    public int expectHeight() {
+        return (int) (XKLibWorkaround.gui.getGuiGraphics().defaultFont().lineHeight() * 1.2f);
     }
     
     public String getText() {

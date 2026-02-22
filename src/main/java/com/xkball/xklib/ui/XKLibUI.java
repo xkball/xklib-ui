@@ -11,7 +11,7 @@ public class XKLibUI {
         Thread.currentThread().setName("xklib-ui-test-main");
         new WidgetTestFrame(() -> {
             var result = new Button("Click me", () -> System.out.println("Button clicked!"));
-            result.setFixSize(200, 200);
+            result.setFixSize(200, 30);
             return result;
         }).run();
     }

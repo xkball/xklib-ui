@@ -6,11 +6,12 @@ import com.xkball.xklib.ui.backend.gl.GLStateManager;
 import com.xkball.xklib.ui.backend.gl.OpenGLGUIGraphics;
 import com.xkball.xklib.ui.backend.gl.OpenGLWorkaround;
 import com.xkball.xklib.ui.backend.gl.vertex.BufferBuilder;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GuiRenderer {
     
@@ -31,7 +32,7 @@ public class GuiRenderer {
         for (var layer : state.layers()) {
             if (layer.elements.isEmpty()) continue;
             var offset = 1f / layer.elements.size();
-            var builderMap = new HashMap<Draw, BufferBuilder>();
+            var builderMap = new LinkedHashMap<Draw, BufferBuilder>();
             for (var ele : layer.elements) {
                 var builder = builderMap.computeIfAbsent(Draw.of(ele), rl -> BufferBuilder.start(ele.pipeline().mode(), ele.pipeline().format()));
                 ele.buildVertices(builder, z);

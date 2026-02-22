@@ -8,9 +8,9 @@ import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutElement;
 import com.xkball.xklib.api.gui.widget.IRenderable;
-import com.xkball.xklib.ui.navigation.HorizontalAlign;
-import com.xkball.xklib.ui.navigation.ScreenRectangle;
-import com.xkball.xklib.ui.navigation.VerticalAlign;
+import com.xkball.xklib.ui.layout.HorizontalAlign;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.layout.VerticalAlign;
 
 public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener, ILayoutElement {
     
@@ -50,6 +50,7 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     protected float marginRight;
     protected float marginTop;
     protected float marginBottom;
+    protected boolean overflow = true;
     
     public AbstractWidget(){
         this.markDirty();
@@ -269,6 +270,26 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     @Override
     public boolean isDirty() {
         return this.dirty;
+    }
+    
+    @Override
+    public void setOverflow(boolean overflow) {
+        this.overflow = overflow;
+    }
+    
+    @Override
+    public boolean overflow() {
+        return this.overflow;
+    }
+    
+    @Override
+    public int expectWidth() {
+        return 0;
+    }
+    
+    @Override
+    public int expectHeight() {
+        return 0;
     }
     
     @Override
