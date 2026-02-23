@@ -42,14 +42,14 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     protected float paddingRight;
     protected float paddingTop;
     protected float paddingBottom;
-    protected boolean marginLeftPercent = false;
-    protected boolean marginRightPercent = false;
-    protected boolean marginTopPercent = false;
-    protected boolean marginBottomPercent = false;
-    protected float marginLeft;
-    protected float marginRight;
-    protected float marginTop;
-    protected float marginBottom;
+    public boolean marginLeftPercent = false;
+    public boolean marginRightPercent = false;
+    public boolean marginTopPercent = false;
+    public boolean marginBottomPercent = false;
+    public float marginLeft;
+    public float marginRight;
+    public float marginTop;
+    public float marginBottom;
     protected boolean overflow = true;
     
     public AbstractWidget(){

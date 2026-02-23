@@ -50,6 +50,14 @@ public interface IGuiWidget {
     int expectHeight();
     
     /**
+     * 在此方法创建子组件
+     */
+    default void init(){
+    
+    }
+    
+    
+    /**
      * 应该计算子组件的大小, 不用调用子组件resize
      */
     default void resize(){

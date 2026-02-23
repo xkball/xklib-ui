@@ -1,28 +1,50 @@
 package com.xkball.xklib.ui.layout;
 
+import com.xkball.xklib.ui.widget.layout.GridLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GridParam {
     
-    private final List<Param> col;
-    private final List<Param> row;
+    private final List<SizeParam> col;
+    private final List<SizeParam> row;
     
-    public GridParam(List<Param> col, List<Param> row) {
+    public GridParam(List<SizeParam> col, List<SizeParam> row) {
         this.col = col;
         this.row = row;
     }
     
+    public List<SizeParam> getCols() {
+        return this.col;
+    }
+    
+    public List<SizeParam> getRows() {
+        return this.row;
+    }
+    
+    public int getColCount() {
+        return this.col.size();
+    }
+    
+    public int getRowCount() {
+        return this.row.size();
+    }
+    
+    public GridLayout newLayout(){
+        return new GridLayout(this);
+    }
+    
     public static class Builder{
-        private final List<Param> col = new ArrayList<>();
-        private final List<Param> row = new ArrayList<>();
+        private final List<SizeParam> col = new ArrayList<>();
+        private final List<SizeParam> row = new ArrayList<>();
         
-        public Builder addCol(Param param){
+        public Builder addCol(SizeParam param){
             this.col.add(param);
             return this;
         }
         
-        public Builder addRow(Param param){
+        public Builder addRow(SizeParam param){
             this.row.add(param);
             return this;
         }
@@ -32,23 +54,17 @@ public class GridParam {
          */
         public Builder addCol(String value){
             if(value.endsWith("px")){
-                this.col.add(new Pixel(Integer.parseInt(value.substring(0, value.length() - 2))));
+                this.col.add(new SizeParam.Pixel(Integer.parseInt(value.substring(0, value.length() - 2))));
             }else if(value.endsWith("%")){
-                this.col.add(new Percent(Float.parseFloat(value.substring(0, value.length() - 1))));
+                this.col.add(new SizeParam.Percent(Float.parseFloat(value.substring(0, value.length() - 1))));
             }else{
-                this.col.add(new Weight(Integer.parseInt(value)));
+                this.col.add(new SizeParam.Weight(Integer.parseInt(value)));
             }
             return this;
         }
         
         public Builder addRow(String value){
-            if(value.endsWith("px")){
-                this.row.add(new Pixel(Integer.parseInt(value.substring(0, value.length() - 2))));
-            }else if(value.endsWith("%")){
-                this.row.add(new Percent(Float.parseFloat(value.substring(0, value.length() - 1))));
-            }else{
-                this.row.add(new Weight(Integer.parseInt(value)));
-            }
+            this.row.add(SizeParam.parse(value));
             return this;
         }
         
@@ -57,12 +73,4 @@ public class GridParam {
         }
     }
     
-    public sealed interface Param permits Pixel, Percent, Weight {
-    }
-    
-    public record Pixel(int value) implements Param{}
-    
-    public record Percent(float value) implements Param{}
-    
-    public record Weight(int value) implements Param{}
 }

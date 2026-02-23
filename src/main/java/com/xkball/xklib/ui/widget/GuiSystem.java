@@ -5,6 +5,8 @@ import com.xkball.xklib.ui.backend.input.CharacterEvent;
 import com.xkball.xklib.ui.backend.input.KeyEvent;
 import com.xkball.xklib.ui.backend.input.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.function.Function;
 
 public class GuiSystem {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GuiSystem.class);
     public final List<AbstractWidget> screenLayers = new ArrayList<>();
     
     private long windowHandle;
@@ -38,6 +41,7 @@ public class GuiSystem {
     }
     
     public void resize(int width, int height){
+        LOGGER.debug("Resize GUI System to {}x{}", width, height);
         this.screenWidth = width;
         this.screenHeight = height;
         for(var layer : this.screenLayers){
@@ -232,6 +236,8 @@ public class GuiSystem {
     }
     
     public void addScreenLayer(AbstractWidget layer) {
+        layer.init();
+        layer.markDirty();
         this.screenLayers.add(layer);
     }
     

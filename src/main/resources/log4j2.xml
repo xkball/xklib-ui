@@ -2,11 +2,11 @@
 <Configuration status="WARN">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="[%d{HH:mm:ss}][%t][%c{1.}]%msg%n"/>
+      <PatternLayout pattern="[%d{HH:mm:ss}][%level][%t][%c{1.}]%msg%n"/>
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="info">
+    <Root level="trace">
       <AppenderRef ref="Console"/>
     </Root>
   </Loggers>

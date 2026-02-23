@@ -25,8 +25,11 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         super();
     }
     
+    @SuppressWarnings("unchecked")
     public S addChild(AbstractWidget widget, T layoutParam) {
         this.children.put(widget, layoutParam);
+        widget.init();
+        this.markDirty();
         return (S)this;
     }
     
@@ -36,6 +39,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     public void removeChild(AbstractWidget widget) {
         this.children.remove(widget);
+        this.markDirty();
     }
     
     public List<AbstractWidget> getChildren() {
@@ -242,10 +246,18 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        var flag = !this.overflow();
+        var selfRect = this.getRectangle();
+        if(flag){
+            graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
+        }
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible) {
+            if (child.visible && (!flag || child.getRectangle().intersects(selfRect))) {
                 child.render(graphics, mouseX, mouseY, a);
             }
+        }
+        if(flag){
+            graphics.disableScissor();
         }
     }
     

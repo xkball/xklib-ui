@@ -79,4 +79,18 @@ public interface ILayoutElement {
         this.setMarginTop(top);
         this.setMarginBottom(bottom);
     }
+    
+    default void setMargin(int margin){
+        this.setMarginLeft(margin);
+        this.setMarginRight(margin);
+        this.setMarginTop(margin);
+        this.setMarginBottom(margin);
+    }
+    
+    default void setMarginPercent(float percent){
+        this.setMarginLeftPercent(percent);
+        this.setMarginRightPercent(percent);
+        this.setMarginTopPercent(percent);
+        this.setMarginBottomPercent(percent);
+    }
 }

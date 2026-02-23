@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.widget.layout;
 
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.widget.AbstractContainerWidget;
 
@@ -22,16 +21,4 @@ public class AbsolutePosLayout extends AbstractContainerWidget<AbsolutePosLayout
         }
     }
     
-    @Override
-    public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(this.overflow()){
-            graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        }
-        
-        super.render(graphics, mouseX, mouseY, a);
-        
-        if(this.overflow()){
-            graphics.disableScissor();
-        }
-    }
 }
