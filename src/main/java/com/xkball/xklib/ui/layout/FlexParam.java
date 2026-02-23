@@ -93,4 +93,15 @@ public class FlexParam {
         SPACE_BETWEEN,
         SPACE_AROUND
     }
+    
+    @Override
+    public String toString() {
+        return "FlexParam{" +
+                "direction=" + direction +
+                ", align=" + align +
+                ", justify=" + justify +
+                ", overflow=" + overflow +
+                ", baseSize=" + baseSize +
+                '}';
+    }
 }

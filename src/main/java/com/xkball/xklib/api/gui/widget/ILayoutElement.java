@@ -1,6 +1,7 @@
 package com.xkball.xklib.api.gui.widget;
 
 import com.xkball.xklib.ui.layout.HorizontalAlign;
+import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.layout.VerticalAlign;
 
 /**
@@ -24,38 +25,54 @@ public interface ILayoutElement {
     
     void setInnerVerticalAlign(VerticalAlign align);
     
-    void setPaddingLeft(int padding);
+    void setPaddingLeft(SizeParam padding);
     
-    void setPaddingRight(int padding);
+    void setPaddingRight(SizeParam padding);
     
-    void setPaddingTop(int padding);
+    void setPaddingTop(SizeParam padding);
     
-    void setPaddingBottom(int padding);
+    void setPaddingBottom(SizeParam padding);
     
-    void setPaddingLeftPercent(float percent);
+    void setMarginLeft(SizeParam margin);
     
-    void setPaddingRightPercent(float percent);
+    void setMarginRight(SizeParam margin);
     
-    void setPaddingTopPercent(float percent);
+    void setMarginTop(SizeParam margin);
     
-    void setPaddingBottomPercent(float percent);
+    void setMarginBottom(SizeParam margin);
     
-    void setMarginLeft(int margin);
-    
-    void setMarginRight(int margin);
-    
-    void setMarginTop(int margin);
-    
-    void setMarginBottom(int margin);
-    
-    void setMarginLeftPercent(float percent);
-    
-    void setMarginRightPercent(float percent);
-    
-    void setMarginTopPercent(float percent);
-    
-    void setMarginBottomPercent(float percent);
+    default void setPaddingLeft(String padding){
+        this.setPaddingLeft(SizeParam.parse(padding));
+    }
 
+    default void setPaddingRight(String padding){
+        this.setPaddingRight(SizeParam.parse(padding));
+    }
+    
+    default void setPaddingTop(String padding){
+        this.setPaddingTop(SizeParam.parse(padding));
+    }
+    
+    default void setPaddingBottom(String padding){
+        this.setPaddingBottom(SizeParam.parse(padding));
+    }
+    
+    default void setMarginLeft(String margin){
+        this.setMarginLeft(SizeParam.parse(margin));
+    }
+    
+    default void setMarginRight(String margin){
+        this.setMarginRight(SizeParam.parse(margin));
+    }
+    
+    default void setMarginTop(String margin){
+        this.setMarginTop(SizeParam.parse(margin));
+    }
+    
+    default void setMarginBottom(String margin){
+        this.setMarginBottom(SizeParam.parse(margin));
+    }
+    
     default void setFixSize(int width, int height){
         this.setFixWidth(width);
         this.setFixHeight(height);
@@ -66,7 +83,7 @@ public interface ILayoutElement {
         this.setInnerVerticalAlign(vertical);
     }
     
-    default void setPadding(int left, int right, int top, int bottom){
+    default void setPadding(String left, String right, String top, String bottom){
         this.setPaddingLeft(left);
         this.setPaddingRight(right);
         this.setPaddingTop(top);
@@ -74,23 +91,23 @@ public interface ILayoutElement {
     }
     
     default void setMargin(int left, int right, int top, int bottom){
+        this.setMarginLeft(new SizeParam.Pixel(left));
+        this.setMarginRight(new SizeParam.Pixel(right));
+        this.setMarginTop(new SizeParam.Pixel(top));
+        this.setMarginBottom(new SizeParam.Pixel(bottom));
+    }
+    
+    default void setMargin(String left, String right, String top, String bottom){
         this.setMarginLeft(left);
         this.setMarginRight(right);
         this.setMarginTop(top);
         this.setMarginBottom(bottom);
     }
     
-    default void setMargin(int margin){
+    default void setMargin(String margin){
         this.setMarginLeft(margin);
         this.setMarginRight(margin);
         this.setMarginTop(margin);
         this.setMarginBottom(margin);
-    }
-    
-    default void setMarginPercent(float percent){
-        this.setMarginLeftPercent(percent);
-        this.setMarginRightPercent(percent);
-        this.setMarginTopPercent(percent);
-        this.setMarginBottomPercent(percent);
     }
 }

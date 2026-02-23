@@ -31,4 +31,14 @@ public class GridElementParam implements ILayoutParma {
     public int colspan() {
         return this.colspan;
     }
+    
+    @Override
+    public String toString() {
+        return "GridElementParam{" +
+                "row=" + row +
+                ", col=" + col +
+                ", rowspan=" + rowspan +
+                ", colspan=" + colspan +
+                '}';
+    }
 }

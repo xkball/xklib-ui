@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.widget.layout;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.ui.layout.GridElementParam;
 import com.xkball.xklib.ui.layout.GridParam;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.widget.AbstractContainerWidget;
 import com.xkball.xklib.ui.widget.AbstractWidget;
@@ -75,15 +76,16 @@ public class GridLayout extends AbstractContainerWidget<GridLayout, GridElementP
             int cellWidth = calculateSpanSize(this.colSizes, col, colspan);
             int cellHeight = calculateSpanSize(this.rowSizes, row, rowspan);
             
-            int marginL = child.marginLeftPercent ? (int)(child.marginLeft * cellWidth) : (int)child.marginLeft;
-            int marginR = child.marginRightPercent ? (int)(child.marginRight * cellWidth) : (int)child.marginRight;
-            int marginT = child.marginTopPercent ? (int)(child.marginTop * cellHeight) : (int)child.marginTop;
-            int marginB = child.marginBottomPercent ? (int)(child.marginBottom * cellHeight) : (int)child.marginBottom;
+            int marginL = child.marginLeft.calculateSize(cellWidth,0);
+            int marginR = child.marginRight.calculateSize(cellWidth,0);
+            int marginT = child.marginTop.calculateSize(cellHeight,0);
+            int marginB = child.marginBottom.calculateSize(cellHeight,0);
             
             child.setX(cellX + marginL);
             child.setY(cellY + marginT);
             child.setWidth(cellWidth - marginL - marginR);
             child.setHeight(cellHeight - marginT - marginB);
+            child.marginRect = new ScreenRectangle(cellX, cellY, cellWidth, cellHeight);
             child.markDirty();
         }
     }

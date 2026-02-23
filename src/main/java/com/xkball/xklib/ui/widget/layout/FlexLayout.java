@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.widget.layout;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.ui.layout.FlexElementParam;
 import com.xkball.xklib.ui.layout.FlexParam;
+import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.widget.AbstractContainerWidget;
 import com.xkball.xklib.ui.widget.AbstractWidget;
@@ -172,25 +173,27 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
             
             int marginL, marginR, marginT, marginB;
             if (isRow) {
-                marginL = child.marginLeftPercent ? (int)(child.marginLeft * mainSize) : (int)child.marginLeft;
-                marginR = child.marginRightPercent ? (int)(child.marginRight * mainSize) : (int)child.marginRight;
-                marginT = child.marginTopPercent ? (int)(child.marginTop * crossSize) : (int)child.marginTop;
-                marginB = child.marginBottomPercent ? (int)(child.marginBottom * crossSize) : (int)child.marginBottom;
+                marginL = child.marginLeft.calculateSize(mainSize,0);
+                marginR = child.marginRight.calculateSize(mainSize,0);
+                marginT = child.marginTop.calculateSize(crossSize,0);
+                marginB = child.marginBottom.calculateSize(crossSize,0);
                 
                 child.setX(mainPos + marginL);
                 child.setY(crossPos + marginT);
                 child.setWidth(mainSize - marginL - marginR);
                 child.setHeight(crossSize - marginT - marginB);
+                child.marginRect = new ScreenRectangle(mainPos, crossPos, mainSize, crossSize);
             } else {
-                marginL = child.marginLeftPercent ? (int)(child.marginLeft * crossSize) : (int)child.marginLeft;
-                marginR = child.marginRightPercent ? (int)(child.marginRight * crossSize) : (int)child.marginRight;
-                marginT = child.marginTopPercent ? (int)(child.marginTop * mainSize) : (int)child.marginTop;
-                marginB = child.marginBottomPercent ? (int)(child.marginBottom * mainSize) : (int)child.marginBottom;
+                marginL = child.marginLeft.calculateSize(crossSize,0);
+                marginR = child.marginRight.calculateSize(crossSize,0);
+                marginT = child.marginTop.calculateSize(mainSize,0);
+                marginB = child.marginBottom.calculateSize(mainSize,0);
                 
                 child.setX(crossPos + marginL);
                 child.setY(mainPos + marginT);
                 child.setWidth(crossSize - marginL - marginR);
                 child.setHeight(mainSize - marginT - marginB);
+                child.marginRect = new ScreenRectangle(crossPos, mainPos, crossSize, mainSize);
             }
             child.markDirty();
             

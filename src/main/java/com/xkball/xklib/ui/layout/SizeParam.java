@@ -1,11 +1,14 @@
 package com.xkball.xklib.ui.layout;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizeParam.Percent, SizeParam.Pixel, SizeParam.Weight {
     
     Logger LOGGER = LoggerFactory.getLogger(SizeParam.class);
+    
+    SizeParam ZERO = new SizeParam.Pixel(0);
     
     static SizeParam parse(String value){
         SizeParam result;
@@ -51,6 +54,11 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
         public int calculateSize(int fullSize, int baseSize) {
             return Math.max(a.calculateSize(fullSize, baseSize), b.calculateSize(fullSize, baseSize));
         }
+        
+        @Override
+        public String toString() {
+            return "Max{" + a + ", " + b + '}';
+        }
     }
     
     final class Min implements SizeParam {
@@ -66,6 +74,11 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
         public int calculateSize(int fullSize, int baseSize) {
             return Math.min(a.calculateSize(fullSize, baseSize), b.calculateSize(fullSize, baseSize));
         }
+        
+        @Override
+        public String toString() {
+            return "Min{" + a + ", " + b + '}';
+        }
     }
     
     record Pixel(int value) implements SizeParam {
@@ -73,12 +86,24 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
         public int calculateSize(int fullSize, int baseSize) {
             return value;
         }
+        
+        @NotNull
+        @Override
+        public String toString() {
+            return "Pixel{" + value + '}';
+        }
     }
     
     record Percent(float value) implements SizeParam {
         @Override
         public int calculateSize(int fullSize, int baseSize) {
             return (int)(value / 100.0f * fullSize);
+        }
+        
+        @NotNull
+        @Override
+        public String toString() {
+            return "Percent{"  + value + '}';
         }
     }
     
@@ -96,6 +121,12 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
         @Override
         public int getWeight() {
             return value;
+        }
+        
+        @NotNull
+        @Override
+        public String toString() {
+            return "Weight{" + value + '}';
         }
     }
 }

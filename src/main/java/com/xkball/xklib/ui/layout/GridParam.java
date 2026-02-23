@@ -73,4 +73,11 @@ public class GridParam {
         }
     }
     
+    @Override
+    public String toString() {
+        return "GridParam{" +
+                "col=" + col +
+                ", row=" + row +
+                '}';
+    }
 }

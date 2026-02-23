@@ -13,6 +13,7 @@ import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.layout.HorizontalAlign;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.layout.VerticalAlign;
 
 public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener, ILayoutElement {
@@ -37,24 +38,17 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     protected int fixHeight;
     protected HorizontalAlign innerHorizontalAlign = HorizontalAlign.CENTER;
     protected VerticalAlign innerVerticalAlign = VerticalAlign.CENTER;
-    protected boolean paddingLeftPercent = false;
-    protected boolean paddingRightPercent = false;
-    protected boolean paddingTopPercent = false;
-    protected boolean paddingBottomPercent = false;
-    protected float paddingLeft;
-    protected float paddingRight;
-    protected float paddingTop;
-    protected float paddingBottom;
-    public boolean marginLeftPercent = false;
-    public boolean marginRightPercent = false;
-    public boolean marginTopPercent = false;
-    public boolean marginBottomPercent = false;
-    public float marginLeft;
-    public float marginRight;
-    public float marginTop;
-    public float marginBottom;
+    protected SizeParam paddingLeft = SizeParam.ZERO;
+    protected SizeParam paddingRight = SizeParam.ZERO;
+    protected SizeParam paddingTop = SizeParam.ZERO;
+    protected SizeParam paddingBottom = SizeParam.ZERO;
+    public SizeParam marginLeft = SizeParam.ZERO;
+    public SizeParam marginRight = SizeParam.ZERO;
+    public SizeParam marginTop = SizeParam.ZERO;
+    public SizeParam marginBottom = SizeParam.ZERO;
     protected boolean overflow = true;
     public IDecoration decoration;
+    public ScreenRectangle marginRect = null;
     
     public AbstractWidget(){
         this.markDirty();
@@ -329,6 +323,9 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
             int paddingColor = 0x8000FF00;
             int contentColor = 0x800000FF;
             
+            if (this.marginRect != null) {
+                graphics.renderOutline(this.marginRect.left(), this.marginRect.top(), this.marginRect.width(), this.marginRect.height(), marginColor);
+            }
             graphics.renderOutline(this.x, this.y, this.width, this.height, paddingColor);
             graphics.renderOutline(this.contentX, this.contentY, this.contentWidth, this.contentHeight, contentColor);
         }
@@ -345,10 +342,10 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
             };
         }
         else{
-            var paddingL = this.paddingLeftPercent ? (int)(this.paddingLeft * this.width) : this.paddingLeft;
-            var paddingR = this.paddingRightPercent ? (int)(this.paddingRight * this.width) : this.paddingRight;
-            this.contentX = (int) (this.x + paddingL);
-            this.contentWidth = (int) (Math.max(0, this.width - paddingL - paddingR));
+            var paddingL = this.paddingLeft.calculateSize(this.width,0);
+            var paddingR = this.paddingRight.calculateSize(this.width,0);
+            this.contentX = this.x + paddingL;
+            this.contentWidth = Math.max(0, this.width - paddingL - paddingR);
         }
         if(this.useFixHeight){
             this.contentHeight = this.fixHeight;
@@ -359,10 +356,10 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
             };
         }
         else{
-            var paddingT = this.paddingTopPercent ? (int)(this.paddingTop * this.height) : this.paddingTop;
-            var paddingB = this.paddingBottomPercent ? (int)(this.paddingBottom * this.height) : this.paddingBottom;
-            this.contentY = (int) (this.y + paddingT);
-            this.contentHeight = (int) (Math.max(0, this.height - paddingT - paddingB));
+            var paddingT = this.paddingTop.calculateSize(this.height,0);
+            var paddingB = this.paddingBottom.calculateSize(this.height,0);
+            this.contentY = this.y + paddingT;
+            this.contentHeight = Math.max(0, this.height - paddingT - paddingB);
         }
         
     }
@@ -410,99 +407,43 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     }
     
     @Override
-    public void setPaddingLeft(int padding) {
+    public void setPaddingLeft(SizeParam padding) {
         this.paddingLeft = padding;
-        this.paddingLeftPercent = false;
     }
     
     @Override
-    public void setPaddingRight(int padding) {
+    public void setPaddingRight(SizeParam padding) {
         this.paddingRight = padding;
-        this.paddingRightPercent = false;
     }
     
     @Override
-    public void setPaddingTop(int padding) {
+    public void setPaddingTop(SizeParam padding) {
         this.paddingTop = padding;
-        this.paddingTopPercent = false;
     }
     
     @Override
-    public void setPaddingBottom(int padding) {
+    public void setPaddingBottom(SizeParam padding) {
         this.paddingBottom = padding;
-        this.paddingBottomPercent = false;
     }
     
     @Override
-    public void setPaddingLeftPercent(float percent) {
-        this.paddingLeftPercent = true;
-        this.paddingLeft = percent;
-    }
-    
-    @Override
-    public void setPaddingRightPercent(float percent) {
-        this.paddingRightPercent = true;
-        this.paddingRight = percent;
-    }
-    
-    @Override
-    public void setPaddingTopPercent(float percent) {
-        this.paddingTopPercent = true;
-        this.paddingTop = percent;
-    }
-    
-    @Override
-    public void setPaddingBottomPercent(float percent) {
-        this.paddingBottomPercent = true;
-        this.paddingBottom = percent;
-    }
-    
-    @Override
-    public void setMarginLeft(int margin) {
+    public void setMarginLeft(SizeParam margin) {
         this.marginLeft = margin;
-        this.marginLeftPercent = false;
     }
     
     @Override
-    public void setMarginRight(int margin) {
+    public void setMarginRight(SizeParam margin) {
         this.marginRight = margin;
-        this.marginRightPercent = false;
     }
     
     @Override
-    public void setMarginTop(int margin) {
+    public void setMarginTop(SizeParam margin) {
         this.marginTop = margin;
-        this.marginTopPercent = false;
     }
     
     @Override
-    public void setMarginBottom(int margin) {
+    public void setMarginBottom(SizeParam margin) {
         this.marginBottom = margin;
-        this.marginBottomPercent = false;
-    }
-    
-    @Override
-    public void setMarginLeftPercent(float percent) {
-        this.marginLeftPercent = true;
-        this.marginLeft = percent;
-    }
-    
-    @Override
-    public void setMarginRightPercent(float percent) {
-        this.marginRightPercent = true;
-        this.marginRight = percent;
-    }
-    
-    @Override
-    public void setMarginTopPercent(float percent) {
-        this.marginTopPercent = true;
-        this.marginTop = percent;
-    }
-    
-    @Override
-    public void setMarginBottomPercent(float percent) {
-        this.marginBottomPercent = true;
-        this.marginBottom = percent;
     }
     
     public void renderInScissor(IGUIGraphics graphics, Runnable renderer){

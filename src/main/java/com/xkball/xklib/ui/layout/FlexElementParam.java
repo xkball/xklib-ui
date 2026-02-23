@@ -37,4 +37,13 @@ public class FlexElementParam implements ILayoutParma {
     public static FlexElementParam of(SizeParam width, SizeParam height){
         return new FlexElementParam(0, width, height);
     }
+    
+    @Override
+    public String toString() {
+        return "FlexElementParam{" +
+                "order=" + order +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }
