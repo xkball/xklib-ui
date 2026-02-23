@@ -1,11 +1,14 @@
 package com.xkball.xklib.ui.backend.window;
 
 import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.ui.layout.FlexElementParam;
+import com.xkball.xklib.ui.layout.FlexParam;
 import com.xkball.xklib.ui.layout.GridElementParam;
 import com.xkball.xklib.ui.layout.GridParam;
 import com.xkball.xklib.ui.widget.AbstractWidget;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.GuiSystem;
+import com.xkball.xklib.ui.widget.layout.FlexLayout;
 import com.xkball.xklib.ui.widget.layout.GridLayout;
 
 import java.util.function.Supplier;
@@ -77,5 +80,103 @@ public class WidgetTestFrame extends WindowAppBase{
         grid.addChild(btn8, new GridElementParam(3, 3, 1, 1));
         
         return grid;
+    });
+    
+    public static WidgetTestFrame flexTest1 = new WidgetTestFrame(() -> {
+        var rootFlex = new FlexLayout(new FlexParam.Builder()
+                .direction(FlexParam.Direction.ROW)
+                .justify(FlexParam.Align.START)
+                .align(FlexParam.Align.CENTER)
+                .overflow(false)
+                .build()) {
+            @Override
+            protected boolean onMouseScrolled(double x, double y, double scrollX, double scrollY) {
+                this.offsetX += (int)(scrollY * 20);
+                this.markDirty();
+                return true;
+            }
+        };
+        
+        var leftPanel = new FlexLayout(new FlexParam.Builder()
+                .direction(FlexParam.Direction.COL)
+                .justify(FlexParam.Align.START)
+                .align(FlexParam.Align.CENTER)
+                .overflow(false)
+                .build()) {
+            @Override
+            protected boolean onMouseScrolled(double x, double y, double scrollX, double scrollY) {
+                this.offsetY += (int)(scrollY * 20);
+                this.markDirty();
+                return true;
+            }
+        };
+        leftPanel.setMargin(5, 5, 5, 5);
+        
+        for (int i = 0; i < 40; i++) {
+            int finalI = i;
+            var btn = new Button("Left " + i, () -> System.out.println("Left button clicked" + finalI));
+            btn.setMargin(2, 2, 2, 2);
+            leftPanel.addChild(btn, FlexElementParam.of(i, "100%", "50px"));
+        }
+        
+        var centerPanel = new FlexLayout(new FlexParam.Builder()
+                .direction(FlexParam.Direction.COL)
+                .justify(FlexParam.Align.SPACE_AROUND)
+                .align(FlexParam.Align.CENTER)
+                .overflow(true)
+                .build());
+        centerPanel.setMargin(5, 5, 5, 5);
+        
+        var btn1 = new Button("Center Top", () -> System.out.println("Center Top"));
+        btn1.setMargin(2, 2, 2, 2);
+        centerPanel.addChild(btn1, FlexElementParam.of(0, "80%", "1"));
+        
+        var btn2 = new Button("Center Mid", () -> System.out.println("Center Mid"));
+        btn2.setMargin(2, 2, 2, 2);
+        centerPanel.addChild(btn2, FlexElementParam.of(1, "80%", "2"));
+        
+        var btn3 = new Button("Center Bot", () -> System.out.println("Center Bot"));
+        btn3.setMargin(2, 2, 2, 2);
+        centerPanel.addChild(btn3, FlexElementParam.of(2, "80%", "1"));
+        
+        var rightPanel = new FlexLayout(new FlexParam.Builder()
+                .direction(FlexParam.Direction.COL_REVERSE)
+                .justify(FlexParam.Align.END)
+                .align(FlexParam.Align.END)
+                .overflow(true)
+                .build());
+        rightPanel.setMargin(5, 5, 5, 5);
+        
+        var innerRow = new FlexLayout(new FlexParam.Builder()
+                .direction(FlexParam.Direction.ROW)
+                .justify(FlexParam.Align.SPACE_BETWEEN)
+                .align(FlexParam.Align.CENTER)
+                .overflow(true)
+                .build());
+        innerRow.setMargin(2, 2, 2, 2);
+        
+        var innerBtn1 = new Button("R1", () -> System.out.println("R1"));
+        innerBtn1.setMargin(2, 2, 2, 2);
+        innerRow.addChild(innerBtn1, FlexElementParam.of(0, "30%", "100%"));
+        
+        var innerBtn2 = new Button("R2", () -> System.out.println("R2"));
+        innerBtn2.setMargin(2, 2, 2, 2);
+        innerRow.addChild(innerBtn2, FlexElementParam.of(1, "30%", "100%"));
+        
+        var innerBtn3 = new Button("R3", () -> System.out.println("R3"));
+        innerBtn3.setMargin(2, 2, 2, 2);
+        innerRow.addChild(innerBtn3, FlexElementParam.of(2, "30%", "100%"));
+        
+        rightPanel.addChild(innerRow, FlexElementParam.of(0, "100%", "80px"));
+        
+        var rightBtn = new Button("Right Bottom", () -> System.out.println("Right Bottom"));
+        rightBtn.setMargin(2, 2, 2, 2);
+        rightPanel.addChild(rightBtn, FlexElementParam.of(1, "90%", "60px"));
+        
+        rootFlex.addChild(leftPanel, FlexElementParam.of(0, "150px", "100%"));
+        rootFlex.addChild(centerPanel, FlexElementParam.of(1, "1", "100%"));
+        rootFlex.addChild(rightPanel, FlexElementParam.of(2, "200px", "100%"));
+        
+        return rootFlex;
     });
 }

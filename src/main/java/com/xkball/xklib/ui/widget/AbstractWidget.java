@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.XKLibWorkaround;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -299,7 +300,21 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        if(XKLibWorkaround.gui.isDebug()){
+            this.renderDebug(graphics, mouseX, mouseY);
+        }
+    }
     
+    @Override
+    public void renderDebug(IGUIGraphics graphics, int mouseX, int mouseY) {
+        if (this.hovered) {
+            int marginColor = 0x80FFA500;
+            int paddingColor = 0x8000FF00;
+            int contentColor = 0x800000FF;
+            
+            graphics.renderOutline(this.x, this.y, this.width, this.height, paddingColor);
+            graphics.renderOutline(this.contentX, this.contentY, this.contentWidth, this.contentHeight, contentColor);
+        }
     }
     
     @Override
@@ -471,5 +486,16 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     public void setMarginBottomPercent(float percent) {
         this.marginBottomPercent = true;
         this.marginBottom = percent;
+    }
+    
+    public void renderInScissor(IGUIGraphics graphics, Runnable renderer){
+        var flag = !this.overflow();
+        if(flag){
+            graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
+        }
+        renderer.run();
+        if(flag){
+            graphics.disableScissor();
+        }
     }
 }

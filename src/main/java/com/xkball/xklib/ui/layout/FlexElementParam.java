@@ -2,7 +2,29 @@ package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.api.gui.widget.ILayoutParma;
 
-public record FlexElementParam(int order, SizeParam width, SizeParam height) implements ILayoutParma {
+public class FlexElementParam implements ILayoutParma {
+    
+    public int order;
+    public SizeParam width;
+    public SizeParam height;
+    
+    public FlexElementParam(int order, SizeParam width, SizeParam height) {
+        this.order = order;
+        this.width = width;
+        this.height = height;
+    }
+    
+    public int order() {
+        return this.order;
+    }
+    
+    public SizeParam width() {
+        return this.width;
+    }
+    
+    public SizeParam height() {
+        return this.height;
+    }
 
     public static FlexElementParam of(int order, SizeParam width, SizeParam height){
         return new FlexElementParam(order, width, height);
@@ -15,5 +37,4 @@ public record FlexElementParam(int order, SizeParam width, SizeParam height) imp
     public static FlexElementParam of(SizeParam width, SizeParam height){
         return new FlexElementParam(0, width, height);
     }
-    
 }

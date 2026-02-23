@@ -97,37 +97,23 @@ public class GridLayout extends AbstractContainerWidget<GridLayout, GridElementP
         
         for (int i = 0; i < count; i++) {
             SizeParam param = params.get(i);
-            switch (param) {
-                case SizeParam.Pixel pixel -> {
-                    sizes[i] = pixel.value();
-                    usedSize += pixel.value();
-                }
-                case SizeParam.Percent percent -> {
-                    int size = (int)(percent.value() / 100.0f * totalSize);
-                    sizes[i] = size;
-                    usedSize += size;
-                }
-                case SizeParam.Weight weight -> {
-                    totalWeight += weight.value();
-                    sizes[i] = -weight.value();
-                }
+            if (param instanceof SizeParam.Weight(int value)) {
+                totalWeight += value;
+                sizes[i] = -value;
+            } else {
+                int size = param.calculateSize(totalSize, 0);
+                sizes[i] = size;
+                usedSize += size;
             }
         }
         
         int remainingSize = Math.max(0, totalSize - usedSize);
+        int baseSize = totalWeight > 0 ? remainingSize / totalWeight : 0;
         
-        if (totalWeight > 0 && remainingSize > 0) {
-            for (int i = 0; i < count; i++) {
-                if (sizes[i] < 0) {
-                    int weight = -sizes[i];
-                    sizes[i] = (int)((double)weight / totalWeight * remainingSize);
-                }
-            }
-        } else {
-            for (int i = 0; i < count; i++) {
-                if (sizes[i] < 0) {
-                    sizes[i] = 0;
-                }
+        for (int i = 0; i < count; i++) {
+            if (sizes[i] < 0) {
+                int weight = -sizes[i];
+                sizes[i] = weight * baseSize;
             }
         }
         
@@ -164,12 +150,9 @@ public class GridLayout extends AbstractContainerWidget<GridLayout, GridElementP
     }
     
     @Override
-    public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        super.render(graphics, mouseX, mouseY, a);
-        renderDebug(graphics);
-    }
-    
-    public void renderDebug(IGUIGraphics graphics) {
+    public void renderDebug(IGUIGraphics graphics, int mouseX, int mouseY) {
+        super.renderDebug(graphics, mouseX, mouseY);
+        
         if (this.gridParam == null || this.colOffsets == null || this.rowOffsets == null) {
             return;
         }

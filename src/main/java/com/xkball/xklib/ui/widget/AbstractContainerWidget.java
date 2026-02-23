@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.XKLibWorkaround;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -8,14 +9,14 @@ import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutParma;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 
-import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T extends ILayoutParma> extends AbstractWidget {
     
-    protected final Map<AbstractWidget,T> children = new IdentityHashMap<>();
+    protected final Map<AbstractWidget,T> children = new LinkedHashMap<>();
     
     public AbstractContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -46,6 +47,13 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         return this.children.keySet().stream().toList();
     }
     
+    private boolean isPointInBounds(double x, double y) {
+        if (this.overflow()) {
+            return true;
+        }
+        return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
+    }
+    
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         if (!this.enabled || !this.visible) {
@@ -53,9 +61,11 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
             return false;
         }
         
+        boolean inBounds = this.isPointInBounds(mouseX, mouseY);
+        
         boolean handled = false;
         for (var child : this.children.keySet()) {
-            if (!handled && child.visible) {
+            if (!handled && child.visible && inBounds) {
                 if (child.mouseMoved(mouseX, mouseY)) {
                     handled = true;
                     continue;
@@ -97,8 +107,10 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
             return false;
         }
         
+        boolean inBounds = this.isPointInBounds(event.x(), event.y());
+        
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled) {
+            if (child.visible && child.enabled && inBounds) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) event.x(), (int) event.y())) {
                     if (child.mouseClicked(event, doubleClick)) {
@@ -145,8 +157,10 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
             return false;
         }
         
+        boolean inBounds = this.isPointInBounds(event.x(), event.y());
+        
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled) {
+            if (child.visible && child.enabled && inBounds) {
                 if (child.mouseReleased(event)) {
                     return true;
                 }
@@ -162,8 +176,10 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
             return false;
         }
         
+        boolean inBounds = this.isPointInBounds(event.x(), event.y());
+        
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled) {
+            if (child.visible && child.enabled && inBounds) {
                 if (child.mouseDragged(event, dx, dy)) {
                     return true;
                 }
@@ -179,8 +195,10 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
             return false;
         }
         
+        boolean inBounds = this.isPointInBounds(x, y);
+        
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled) {
+            if (child.visible && child.enabled && inBounds) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) x, (int) y)) {
                     if (child.mouseScrolled(x, y, scrollX, scrollY)) {
@@ -246,19 +264,15 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        var flag = !this.overflow();
         var selfRect = this.getRectangle();
-        if(flag){
-            graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        }
-        for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && (!flag || child.getRectangle().intersects(selfRect))) {
-                child.render(graphics, mouseX, mouseY, a);
+        this.renderInScissor(graphics, () -> {
+            for (AbstractWidget child : this.children.keySet()) {
+                if (child.visible && (this.overflow() || child.getRectangle().intersects(selfRect))) {
+                    child.render(graphics, mouseX, mouseY, a);
+                }
             }
-        }
-        if(flag){
-            graphics.disableScissor();
-        }
+        });
+        super.render(graphics, mouseX, mouseY, a);
     }
     
     @Override
@@ -269,3 +283,4 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         }
     }
 }
+

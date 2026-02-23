@@ -48,6 +48,7 @@ public class Button extends AbstractWidget{
         this.style.render(graphics, this, mouseX, mouseY, partialTicks);
         var textHeight = (int) Math.min(this.contentHeight*0.9f, graphics.defaultFont().lineHeight());
         graphics.drawCenteredString(this.getText(), this.contentX + this.contentWidth/2, this.contentY + (this.contentHeight - textHeight)/2 - 2, 0xFF000000, textHeight);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
     
     @Override

@@ -31,6 +31,7 @@ public class GuiSystem {
     private static final long DOUBLE_CLICK_TIME = 500;
     public int screenWidth;
     public int screenHeight;
+    private boolean debug = true;
     
     private final Queue<Runnable> treeUpdateQueue = new ConcurrentLinkedQueue<>();
     
@@ -38,6 +39,14 @@ public class GuiSystem {
     
     public GuiSystem() {
     
+    }
+    
+    public boolean isDebug() {
+        return this.debug;
+    }
+    
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
     
     public void resize(int width, int height){
