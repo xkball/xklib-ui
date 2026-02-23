@@ -1,6 +1,6 @@
 package com.xkball.xklib.api.gui.widget;
 
-import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 
 import java.util.function.Consumer;
@@ -49,6 +49,8 @@ public interface IGuiWidget {
     
     int expectHeight();
     
+    void addDecoration(IDecoration deco);
+    
     /**
      * 在此方法创建子组件
      */
@@ -68,7 +70,7 @@ public interface IGuiWidget {
      * runnable内可以进行对widget树的操作, 被操作的对象应该markDirty来重写计算布局
      */
     default void submitTreeUpdate(Runnable runnable){
-        XKLibWorkaround.gui.submitTreeUpdate(runnable);
+        XKLib.gui.submitTreeUpdate(runnable);
     }
     
     default void submitLayoutUpdate(Supplier<Iterable<IGuiWidget>> layoutUpdate){

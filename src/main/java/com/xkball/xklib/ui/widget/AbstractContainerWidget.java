@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.widget;
 
-import com.xkball.xklib.XKLibWorkaround;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -264,6 +263,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        super.render(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
             for (AbstractWidget child : this.children.keySet()) {
@@ -272,7 +272,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
                 }
             }
         });
-        super.render(graphics, mouseX, mouseY, a);
+        
     }
     
     @Override

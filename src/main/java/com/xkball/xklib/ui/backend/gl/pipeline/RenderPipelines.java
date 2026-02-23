@@ -29,6 +29,7 @@ public class RenderPipelines {
             .vertexShader(ResourceLocation.of("shaders/core/pos_color.vsh"))
             .fragmentShader(ResourceLocation.of("shaders/core/pos_color.fsh"))
             .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_COLOR)
+            .blendFunction(BlendFunction.TRANSLUCENT)
             .depthTest(true)
             .cullFace(false)
             .build();

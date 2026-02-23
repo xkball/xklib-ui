@@ -46,6 +46,10 @@ public interface IGUIGraphics {
     
     Matrix3x2fStack getPose();
     
+    void layerUp();
+    
+    void layerDown();
+    
     default void renderOutline(int x, int y, int width, int height, int color) {
         this.fill(x, y, x + width, y + 1, color);
         this.fill(x, y + height - 1, x + width, y + height, color);

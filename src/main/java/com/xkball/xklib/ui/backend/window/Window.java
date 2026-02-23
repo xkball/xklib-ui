@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.backend.window;
 
-import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.backend.gl.GLStateManager;
 import com.xkball.xklib.ui.backend.gl.buffer.FrameBuffer;
 import org.lwjgl.glfw.GLFW;
@@ -75,7 +75,7 @@ public class Window {
         GLFW.glfwSetWindowFocusCallback(this.handle, this::onFocus);
         GLFW.glfwSetCursorEnterCallback(this.handle, this::onEnter);
         GLFW.glfwSetWindowIconifyCallback(this.handle, this::onIconify);
-        XKLibWorkaround.gui.resize(width,height);
+        XKLib.gui.resize(width,height);
     }
     
     public FrameBuffer getFramebuffer(){
@@ -136,7 +136,7 @@ public class Window {
         }
         GLStateManager.bindFramebuffer(GL45.GL_FRAMEBUFFER, 0);
         GL45.glViewport(0,0,width,height);
-        XKLibWorkaround.gui.resize(width,height);
+        XKLib.gui.resize(width,height);
     }
     
     private void onMove(long window, int x, int y) {

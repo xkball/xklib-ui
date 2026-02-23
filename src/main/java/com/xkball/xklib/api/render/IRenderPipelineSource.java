@@ -1,11 +1,11 @@
 package com.xkball.xklib.api.render;
 
-import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.XKLib;
 
 public interface IRenderPipelineSource {
     
     static IRenderPipelineSource getInstance(){
-        return XKLibWorkaround.renderPipelineSource;
+        return XKLib.renderPipelineSource;
     }
     
     IRenderPipeline getGui();

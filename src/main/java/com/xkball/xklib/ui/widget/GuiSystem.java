@@ -31,7 +31,7 @@ public class GuiSystem {
     private static final long DOUBLE_CLICK_TIME = 500;
     public int screenWidth;
     public int screenHeight;
-    private boolean debug = true;
+    private boolean debug = false;
     
     private final Queue<Runnable> treeUpdateQueue = new ConcurrentLinkedQueue<>();
     
@@ -161,12 +161,37 @@ public class GuiSystem {
             return;
         }
         
+        if (key == GLFW.GLFW_KEY_F3 && action == GLFW.GLFW_PRESS) {
+            this.debug = !this.debug;
+            LOGGER.debug("Debug mode: {}", this.debug);
+            return;
+        }
+        
+        if (key == GLFW.GLFW_KEY_F12 && action == GLFW.GLFW_PRESS) {
+            this.toggleDebugWidget();
+            return;
+        }
+        
         KeyEvent event = new KeyEvent(key, scancode, mods);
         
         if (action == GLFW.GLFW_PRESS || action == GLFW.GLFW_REPEAT) {
             this.dispatchEventReversed(widget -> widget.keyPressed(event));
         } else if (action == GLFW.GLFW_RELEASE) {
             this.dispatchEventReversed(widget -> widget.keyReleased(event));
+        }
+    }
+    
+    private DebugWidget debugWidget = null;
+    
+    private void toggleDebugWidget() {
+        if (this.debugWidget != null) {
+            this.removeScreenLayer(this.debugWidget);
+            this.debugWidget = null;
+            LOGGER.debug("DebugWidget removed");
+        } else {
+            this.debugWidget = new DebugWidget();
+            this.addScreenLayer(this.debugWidget);
+            LOGGER.debug("DebugWidget added");
         }
     }
     
@@ -217,9 +242,12 @@ public class GuiSystem {
         this.processLayoutUpdates();
         
         for (AbstractWidget layer : this.screenLayers) {
+            this.graphics.layerUp();
             if (layer.visible()) {
                 layer.render(this.graphics, mouseX, mouseY, partialTicks);
             }
+            this.graphics.layerUp();
+            this.graphics.layerUp();
         }
         this.graphics.draw();
     }

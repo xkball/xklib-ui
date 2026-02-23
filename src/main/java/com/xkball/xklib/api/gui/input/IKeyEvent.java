@@ -1,6 +1,6 @@
 package com.xkball.xklib.api.gui.input;
 
-public interface IKeyEvent {
+public interface IKeyEvent extends IInputWithModifiers {
 
     int key();
     
@@ -8,4 +8,8 @@ public interface IKeyEvent {
     
     int modifiers();
     
+    @Override
+    default int input(){
+        return this.key();
+    }
 }

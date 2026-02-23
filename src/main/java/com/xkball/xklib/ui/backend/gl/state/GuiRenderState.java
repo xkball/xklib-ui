@@ -37,7 +37,7 @@ public class GuiRenderState {
 //        }
 //    }
     
-    private void up(){
+    public void up(){
         if(this.current.up == null){
             this.current.up = new Layer(current);
             this.layers.add(this.current.up);
@@ -45,7 +45,7 @@ public class GuiRenderState {
         this.current = this.current.up;
     }
     
-    private void down(){
+    public void down(){
         if(this.current.parent != null){
             this.current = this.current.parent;
         }

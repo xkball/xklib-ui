@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.backend.window;
 
-import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.layout.FlexElementParam;
 import com.xkball.xklib.ui.layout.FlexParam;
 import com.xkball.xklib.ui.layout.GridElementParam;
@@ -13,10 +13,13 @@ import com.xkball.xklib.ui.widget.layout.GridLayout;
 
 import java.util.function.Supplier;
 
+/**
+ * 创建后直接调用run即可
+ */
 public class WidgetTestFrame extends WindowAppBase{
     
     private final Supplier<AbstractWidget> widgetSupplier;
-    private final GuiSystem guiSystem = XKLibWorkaround.gui;
+    private final GuiSystem guiSystem = XKLib.gui;
     
     public WidgetTestFrame(Supplier<AbstractWidget> widgetSupplier){
         this.widgetSupplier = widgetSupplier;

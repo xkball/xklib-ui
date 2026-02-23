@@ -7,9 +7,12 @@ import com.xkball.xklib.ui.backend.OpenGLRenderPipelinesSource;
 import com.xkball.xklib.ui.widget.GuiSystem;
 import com.xkball.xklib.utils.TickHelper;
 
-public class XKLibWorkaround {
+import java.util.Locale;
+
+public class XKLib {
     public static final IResourceManager resourceManager = new ClasspathResourceManager();
     public static final TickHelper tickHelper = new TickHelper(20);
     public static final IRenderPipelineSource renderPipelineSource = new OpenGLRenderPipelinesSource();
     public static final GuiSystem gui = new GuiSystem();
+    public static final boolean ON_MAC = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 }

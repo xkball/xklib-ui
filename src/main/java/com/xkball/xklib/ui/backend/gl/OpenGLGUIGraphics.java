@@ -56,6 +56,16 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
+    public void layerUp() {
+        this.guiRenderState.up();
+    }
+    
+    @Override
+    public void layerDown() {
+        this.guiRenderState.down();
+    }
+    
+    @Override
     public void enableScissor(int x0, int y0, int x1, int y1) {
         var rectangle = new ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformAxisAligned(this.pose);
         this.scissorStack.push(rectangle);

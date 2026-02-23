@@ -1,6 +1,6 @@
 package com.xkball.xklib.api.gui.input;
 
-public interface IMouseButtonEvent {
+public interface IMouseButtonEvent extends IInputWithModifiers {
 
     double x();
     
@@ -9,4 +9,9 @@ public interface IMouseButtonEvent {
     int button();
     
     int modifiers();
+    
+    @Override
+    default int input(){
+        return this.button();
+    }
 }

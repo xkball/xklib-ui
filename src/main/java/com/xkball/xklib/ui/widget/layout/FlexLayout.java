@@ -17,6 +17,8 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
     public FlexParam flexParam;
     public int offsetX = 0;
     public int offsetY = 0;
+    public int actualWidth = 0;
+    public int actualHeight = 0;
     
     public FlexLayout(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -40,11 +42,13 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
     }
     
     public void setOffsetX(int offsetX) {
+        if(this.offsetX == offsetX) return;
         this.offsetX = offsetX;
         this.markDirty();
     }
     
     public void setOffsetY(int offsetY) {
+        if(this.offsetY == offsetY) return;
         this.offsetY = offsetY;
         this.markDirty();
     }
@@ -194,6 +198,25 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
                 mainPos -= spacing;
             } else {
                 mainPos += mainSize + spacing;
+            }
+        }
+        
+        if (isRow) {
+            this.actualWidth = totalMainSize;
+            this.actualHeight = crossAxisSize;
+        } else {
+            this.actualWidth = crossAxisSize;
+            this.actualHeight = totalMainSize;
+        }
+        
+        for (var entry : this.children.entrySet()) {
+            AbstractWidget child = entry.getKey();
+            if (child instanceof FlexLayout fl && !fl.overflow()) {
+                if (isRow) {
+                    this.actualHeight = Math.max(this.actualHeight, fl.actualHeight);
+                } else {
+                    this.actualWidth = Math.max(this.actualWidth, fl.actualWidth);
+                }
             }
         }
     }

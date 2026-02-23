@@ -28,9 +28,10 @@ public class GuiRenderer {
         window.getFramebuffer().clearDepthStencil();
         projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F, 1, 10000, true);
         var z = 2f;
+        var layerDepth = 9995/state.layers().size();
         for (var layer : state.layers()) {
             if (layer.elements.isEmpty()) continue;
-            var offset = 1f / layer.elements.size();
+            var offset = layerDepth / layer.elements.size();
             var builderMap = new LinkedHashMap<Draw, BufferBuilder>();
             for (var ele : layer.elements) {
                 var builder = builderMap.computeIfAbsent(Draw.of(ele), rl -> BufferBuilder.start(ele.pipeline().mode(), ele.pipeline().format()));

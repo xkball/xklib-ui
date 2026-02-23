@@ -1,14 +1,16 @@
 package com.xkball.xklib.ui.widget;
 
-import com.xkball.xklib.XKLibWorkaround;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutElement;
 import com.xkball.xklib.api.gui.widget.IRenderable;
+import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.layout.HorizontalAlign;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.VerticalAlign;
@@ -52,6 +54,7 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     public float marginTop;
     public float marginBottom;
     protected boolean overflow = true;
+    public IDecoration decoration;
     
     public AbstractWidget(){
         this.markDirty();
@@ -294,13 +297,27 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     }
     
     @Override
+    public void addDecoration(IDecoration deco) {
+        if(this.decoration == null){
+            this.decoration = new CombinedDecoration();
+            ((CombinedDecoration)this.decoration).addDecoration(deco);
+        }
+        else{
+            ((CombinedDecoration)this.decoration).addDecoration(deco);
+        }
+    }
+    
+    @Override
     public ScreenRectangle getRectangle() {
         return IGuiWidget.super.getRectangle();
     }
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(XKLibWorkaround.gui.isDebug()){
+        if(this.decoration != null){
+            this.decoration.render(this, graphics, mouseX, mouseY, a);
+        }
+        if(XKLib.gui.isDebug()){
             this.renderDebug(graphics, mouseX, mouseY);
         }
     }
