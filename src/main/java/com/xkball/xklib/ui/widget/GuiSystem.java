@@ -4,6 +4,7 @@ import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.ui.backend.input.CharacterEvent;
 import com.xkball.xklib.ui.backend.input.KeyEvent;
 import com.xkball.xklib.ui.backend.input.MouseButtonEvent;
+import com.xkball.xklib.ui.widget.widgets.DebugWidget;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class GuiSystem {
     private double dragStartX;
     private double dragStartY;
     private long lastClickTime = 0;
-    private static final long DOUBLE_CLICK_TIME = 500;
+    private static final long DOUBLE_CLICK_TIME = 200;
     public int screenWidth;
     public int screenHeight;
     private boolean debug = false;

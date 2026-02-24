@@ -1,4 +1,4 @@
-package com.xkball.xklib.ui.widget;
+package com.xkball.xklib.ui.widget.widgets;
 
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;

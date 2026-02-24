@@ -6,7 +6,7 @@ import com.xkball.xklib.ui.layout.FlexParam;
 import com.xkball.xklib.ui.layout.GridElementParam;
 import com.xkball.xklib.ui.layout.GridParam;
 import com.xkball.xklib.ui.widget.AbstractWidget;
-import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.widgets.Button;
 import com.xkball.xklib.ui.widget.GuiSystem;
 import com.xkball.xklib.ui.widget.layout.FlexLayout;
 import com.xkball.xklib.ui.widget.layout.GridLayout;

@@ -217,7 +217,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         }
         
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled && child.isFocused()) {
+            if (child.visible && child.enabled) {
                 if (child.keyPressed(event)) {
                     return true;
                 }
@@ -234,7 +234,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         }
         
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled && child.isFocused()) {
+            if (child.visible && child.enabled) {
                 if (child.keyReleased(event)) {
                     return true;
                 }
@@ -251,10 +251,8 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
         }
         
         for (AbstractWidget child : this.children.keySet()) {
-            if (child.visible && child.enabled && child.isFocused()) {
-                if (child.charTyped(event)) {
-                    return true;
-                }
+            if (child.charTyped(event)) {
+                return true;
             }
         }
         

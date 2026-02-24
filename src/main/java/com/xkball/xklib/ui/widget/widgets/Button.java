@@ -1,10 +1,11 @@
-package com.xkball.xklib.ui.widget;
+package com.xkball.xklib.ui.widget.widgets;
 
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.widget.AbstractWidget;
 
-public class Button extends AbstractWidget{
+public class Button extends AbstractWidget {
     
     public static final int DEFAULT_COLOR = 0xFF7dd3fc;
     public static final int DEFAULT_HOVER_BORDER_COLOR = 0xFF0c4a6e;

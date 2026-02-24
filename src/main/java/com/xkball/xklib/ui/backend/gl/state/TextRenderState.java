@@ -58,7 +58,7 @@ public record TextRenderState(
         FontAtlas atlas = font.getAtlas();
         
         float currentX = startX;
-        startY += font.getFontSize();
+        startY += font.getFontSize() - 2;
         int prevCodepoint = -1;
         
         BreakIterator iterator = BreakIterator.getCharacterInstance();

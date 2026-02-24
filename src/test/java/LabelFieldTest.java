@@ -1,6 +1,6 @@
 import com.xkball.xklib.api.gui.render.IGUIGraphics;
 import com.xkball.xklib.ui.backend.window.WidgetTestFrame;
-import com.xkball.xklib.ui.widget.LabelField;
+import com.xkball.xklib.ui.widget.widgets.LabelField;
 
 public class LabelFieldTest {
     
