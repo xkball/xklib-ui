@@ -35,6 +35,26 @@ public class EditBox extends AbstractWidget {
     protected static final int UNDO_STACK_SIZE = 16;
     protected final Deque<UndoState> undoStack = new ArrayDeque<>(UNDO_STACK_SIZE);
 
+    protected void normalizeIndices() {
+        if (this.text == null) {
+            this.text = "";
+        }
+        int length = this.text.length();
+        if (this.cursorPosition < 0) {
+            this.cursorPosition = 0;
+        } else if (this.cursorPosition > length) {
+            this.cursorPosition = length;
+        }
+        if (this.selectionStart >= 0) {
+            if (this.selectionStart > length) {
+                this.selectionStart = length;
+            }
+        }
+        if (length == 0) {
+            this.selectionStart = -1;
+        }
+    }
+
     public EditBox() {
         super();
     }
@@ -53,6 +73,7 @@ public class EditBox extends AbstractWidget {
         this.selectionStart = -1;
         this.undoStack.clear();
         this.clampScrollOffset();
+        this.normalizeIndices();
         this.markDirty();
         return this;
     }
@@ -129,6 +150,7 @@ public class EditBox extends AbstractWidget {
 
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        this.normalizeIndices();
         int actualBoxHeight = this.getBoxHeight();
         int boxY = this.contentY + (this.contentHeight - actualBoxHeight) / 2;
         
@@ -145,7 +167,13 @@ public class EditBox extends AbstractWidget {
         if (this.hasSelection()) {
             int selStart = Math.min(this.selectionStart, this.cursorPosition);
             int selEnd = Math.max(this.selectionStart, this.cursorPosition);
-            
+            int length = this.text.length();
+            if (selStart < 0) {
+                selStart = 0;
+            }
+            if (selEnd > length) {
+                selEnd = length;
+            }
             int selStartX = textX + this.getTextWidth(this.text.substring(0, selStart));
             int selEndX = textX + this.getTextWidth(this.text.substring(0, selEnd));
             
@@ -157,7 +185,14 @@ public class EditBox extends AbstractWidget {
         }
         
         if (this.focused && this.enabled && this.cursorVisible) {
-            int cursorX = textX + this.getTextWidth(this.text.substring(0, this.cursorPosition));
+            int length = this.text.length();
+            int cursorIndex = this.cursorPosition;
+            if (cursorIndex < 0) {
+                cursorIndex = 0;
+            } else if (cursorIndex > length) {
+                cursorIndex = length;
+            }
+            int cursorX = textX + this.getTextWidth(this.text.substring(0, cursorIndex));
             graphics.fill(cursorX, textY + 2, cursorX + 1, textY + this.lineHeight - 2, this.cursorColor);
         }
         
@@ -250,8 +285,11 @@ public class EditBox extends AbstractWidget {
 
     @Override
     protected boolean onMouseReleased(IMouseButtonEvent event) {
-        this.isDragging = false;
-        return true;
+        if(this.isDragging) {
+            this.isDragging = false;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -349,6 +387,7 @@ public class EditBox extends AbstractWidget {
 
     protected void insertText(String str) {
         this.pushUndoState();
+        this.normalizeIndices();
         
         if (this.hasSelection()) {
             this.deleteSelection();
@@ -358,6 +397,7 @@ public class EditBox extends AbstractWidget {
         String after = this.text.substring(this.cursorPosition);
         this.text = before + str + after;
         this.cursorPosition += str.length();
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -366,13 +406,22 @@ public class EditBox extends AbstractWidget {
             return;
         }
         
+        this.normalizeIndices();
         int start = Math.min(this.selectionStart, this.cursorPosition);
         int end = Math.max(this.selectionStart, this.cursorPosition);
+        int length = this.text.length();
+        if (start < 0) {
+            start = 0;
+        }
+        if (end > length) {
+            end = length;
+        }
         
         this.text = this.text.substring(0, start) + this.text.substring(end);
         this.cursorPosition = start;
         this.selectionStart = -1;
         this.clampScrollOffset();
+        this.normalizeIndices();
     }
 
     protected void deleteBackward(boolean wholeWord) {
@@ -381,11 +430,19 @@ public class EditBox extends AbstractWidget {
             this.deleteSelection();
         } else if (this.cursorPosition > 0) {
             this.pushUndoState();
+            this.normalizeIndices();
             int deletePos = wholeWord ? this.findWordStart(this.cursorPosition) : this.cursorPosition - 1;
+            if (deletePos < 0) {
+                deletePos = 0;
+            }
+            if (deletePos > this.cursorPosition) {
+                deletePos = this.cursorPosition;
+            }
             this.text = this.text.substring(0, deletePos) + this.text.substring(this.cursorPosition);
             this.cursorPosition = deletePos;
             this.clampScrollOffset();
         }
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -395,10 +452,18 @@ public class EditBox extends AbstractWidget {
             this.deleteSelection();
         } else if (this.cursorPosition < this.text.length()) {
             this.pushUndoState();
+            this.normalizeIndices();
             int deletePos = wholeWord ? this.findWordEnd(this.cursorPosition) : this.cursorPosition + 1;
+            if (deletePos < this.cursorPosition) {
+                deletePos = this.cursorPosition;
+            }
+            if (deletePos > this.text.length()) {
+                deletePos = this.text.length();
+            }
             this.text = this.text.substring(0, this.cursorPosition) + this.text.substring(deletePos);
             this.clampScrollOffset();
         }
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -415,6 +480,7 @@ public class EditBox extends AbstractWidget {
             this.cursorPosition--;
         }
         
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -431,6 +497,7 @@ public class EditBox extends AbstractWidget {
             this.cursorPosition++;
         }
         
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -442,6 +509,7 @@ public class EditBox extends AbstractWidget {
         }
         
         this.cursorPosition = 0;
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -453,18 +521,27 @@ public class EditBox extends AbstractWidget {
         }
         
         this.cursorPosition = this.text.length();
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
     protected void selectAll() {
         this.selectionStart = 0;
         this.cursorPosition = this.text.length();
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
     protected void selectWord(int position) {
+        int length = this.text.length();
+        if (position < 0) {
+            position = 0;
+        } else if (position > length) {
+            position = length;
+        }
         this.selectionStart = this.findWordStart(position);
         this.cursorPosition = this.findWordEnd(position);
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -513,6 +590,7 @@ public class EditBox extends AbstractWidget {
         this.cursorPosition = state.cursorPosition;
         this.selectionStart = state.selectionStart;
         this.clampScrollOffset();
+        this.normalizeIndices();
         this.ensureCursorVisible();
     }
 
@@ -528,12 +606,25 @@ public class EditBox extends AbstractWidget {
         }
         int start = Math.min(this.selectionStart, this.cursorPosition);
         int end = Math.max(this.selectionStart, this.cursorPosition);
+        int length = this.text.length();
+        if (start < 0) {
+            start = 0;
+        }
+        if (end > length) {
+            end = length;
+        }
         return this.text.substring(start, end);
     }
 
     protected int findWordStart(int position) {
+        if (this.text == null || this.text.isEmpty()) {
+            return 0;
+        }
         if (position <= 0) {
             return 0;
+        }
+        if (position > this.text.length()) {
+            position = this.text.length();
         }
         
         int pos = position - 1;
@@ -547,8 +638,14 @@ public class EditBox extends AbstractWidget {
     }
 
     protected int findWordEnd(int position) {
+        if (this.text == null || this.text.isEmpty()) {
+            return 0;
+        }
         if (position >= this.text.length()) {
             return this.text.length();
+        }
+        if (position < 0) {
+            position = 0;
         }
         
         int pos = position;
@@ -584,11 +681,22 @@ public class EditBox extends AbstractWidget {
                 return i;
             }
         }
-        return this.text.length();
+        int length = this.text.length();
+        if (length < 0) {
+            return 0;
+        }
+        return length;
     }
 
     protected void ensureCursorVisible() {
-        int cursorX = this.getTextWidth(this.text.substring(0, this.cursorPosition));
+        int index = this.cursorPosition;
+        int length = this.text.length();
+        if (index < 0) {
+            index = 0;
+        } else if (index > length) {
+            index = length;
+        }
+        int cursorX = this.getTextWidth(this.text.substring(0, index));
         int visibleWidth = this.contentWidth - 8;
         
         if (cursorX - this.scrollOffset < 0) {

@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizeParam.Percent, SizeParam.Pixel, SizeParam.Weight {
+import java.util.function.IntSupplier;
+
+public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizeParam.Percent, SizeParam.Pixel, SizeParam.Weight, SizeParam.Dynamic {
     
     Logger LOGGER = LoggerFactory.getLogger(SizeParam.class);
     
@@ -27,6 +29,22 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
         return result;
     }
     
+    static SizeParam dynamic(IntSupplier supplier){
+        return new SizeParam.Dynamic(supplier);
+    }
+    
+    static SizeParam max(String  a, String b){
+        return new SizeParam.Max(parse(a), parse(b));
+    }
+    
+    static SizeParam min(String  a, String b){
+        return new SizeParam.Min(parse(a), parse(b));
+    }
+    
+    static SizeParam clamp(String max, String min, String value){
+        return new SizeParam.Min(new SizeParam.Max(parse(min), parse(value)), parse(max));
+    }
+    
     /**
      * @param fullSize 100%的大小
      * @param baseSize 权重为1时的大小
@@ -40,7 +58,21 @@ public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizePara
     default int getWeight() {
         return 0;
     }
-
+    
+    final class Dynamic implements SizeParam {
+        
+        private final IntSupplier intSupplier;
+        
+        public Dynamic(IntSupplier intSupplier) {
+            this.intSupplier = intSupplier;
+        }
+        
+        @Override
+        public int calculateSize(int fullSize, int baseSize) {
+            return intSupplier.getAsInt();
+        }
+    }
+    
     final class Max implements SizeParam {
         private final SizeParam a;
         private final SizeParam b;

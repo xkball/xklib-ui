@@ -61,6 +61,8 @@ public interface IGuiWidget {
     
     /**
      * 应该计算子组件的大小, 不用调用子组件resize
+     * 自己或者子组件的resize可能导致自己继续被markDirty, 但是总应该在一定帧数后达到稳定, 不应该无限markDirty
+     * 需要格外注意状态变化, 防止无限更新, 由于更新是按帧进行的, 无限更新不会造成递归或者卡死, 但是会严重影响性能
      */
     default void resize(){
     

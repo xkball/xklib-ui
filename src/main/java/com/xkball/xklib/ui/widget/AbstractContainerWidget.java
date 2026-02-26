@@ -27,8 +27,11 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     @SuppressWarnings("unchecked")
     public S addChild(AbstractWidget widget, T layoutParam) {
+        if(!this.children.containsKey(widget)){
+            widget.init();
+        }
+        widget.setParent(this);
         this.children.put(widget, layoutParam);
-        widget.init();
         this.markDirty();
         return (S)this;
     }
@@ -44,6 +47,10 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     
     public List<AbstractWidget> getChildren() {
         return this.children.keySet().stream().toList();
+    }
+    
+    public int getChildrenSize(){
+        return this.children.size();
     }
     
     private boolean isPointInBounds(double x, double y) {
@@ -70,7 +77,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
                     continue;
                 }
             }
-            if (child instanceof AbstractContainerWidget acw) {
+            if (child instanceof AbstractContainerWidget<?,?> acw) {
                 acw.clearHoveredRecursive();
             } else {
                 child.hovered = false;
@@ -92,7 +99,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     public void clearHoveredRecursive() {
         this.hovered = false;
         for (AbstractWidget child : this.children.keySet()) {
-            if (child instanceof AbstractContainerWidget acw) {
+            if (child instanceof AbstractContainerWidget<?,?> acw) {
                 acw.clearHoveredRecursive();
             } else {
                 child.hovered = false;
@@ -130,7 +137,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     private void clearFocusedExcept(AbstractWidget except) {
         for (AbstractWidget child : this.children.keySet()) {
             if (child != except) {
-                if (child instanceof AbstractContainerWidget acw) {
+                if (child instanceof AbstractContainerWidget<?,?> acw) {
                     acw.clearFocusedRecursive();
                 } else {
                     child.focused = false;
@@ -142,7 +149,7 @@ public class AbstractContainerWidget<S extends AbstractContainerWidget<S,T>,T ex
     public void clearFocusedRecursive() {
         this.focused = false;
         for (AbstractWidget child : this.children.keySet()) {
-            if (child instanceof AbstractContainerWidget acw) {
+            if (child instanceof AbstractContainerWidget<?,?> acw) {
                 acw.clearFocusedRecursive();
             } else {
                 child.focused = false;

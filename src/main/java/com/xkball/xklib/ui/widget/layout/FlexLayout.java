@@ -128,22 +128,39 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
                 crossSizes[i] = weight * crossBaseSize;
             }
         }
-        
+
+        int[] mainMargins = new int[entries.size()];
+        int totalMainMargin = 0;
+        for (int i = 0; i < entries.size(); i++) {
+            AbstractWidget child = entries.get(i).first;
+            int ms = mainSizes[i];
+            int cs = crossSizes[i];
+            int mm;
+            if (isRow) {
+                mm = child.marginLeft.calculateSize(ms, 0) + child.marginRight.calculateSize(ms, 0);
+            } else {
+                mm = child.marginTop.calculateSize(ms, 0) + child.marginBottom.calculateSize(ms, 0);
+            }
+            mainMargins[i] = mm;
+            totalMainMargin += mm;
+        }
+        totalMainSize += totalMainMargin;
+
         int spacing = 0;
         int startOffset = 0;
         
         switch (this.flexParam.justify) {
             case START -> {}
-            case CENTER -> startOffset = (mainAxisSize - totalMainSize) / 2;
-            case END -> startOffset = mainAxisSize - totalMainSize;
+            case CENTER -> startOffset = Math.max(0, (mainAxisSize - totalMainSize) / 2);
+            case END -> startOffset = Math.max(0, mainAxisSize - totalMainSize);
             case SPACE_BETWEEN -> {
                 if (entries.size() > 1) {
-                    spacing = (mainAxisSize - totalMainSize) / (entries.size() - 1);
+                    spacing = Math.max(0, (mainAxisSize - totalMainSize) / (entries.size() - 1));
                 }
             }
             case SPACE_AROUND -> {
                 if (!entries.isEmpty()) {
-                    spacing = (mainAxisSize - totalMainSize) / entries.size();
+                    spacing = Math.max(0, (mainAxisSize - totalMainSize) / entries.size());
                     startOffset = spacing / 2;
                 }
             }
@@ -167,43 +184,48 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
             };
             crossPos += isRow ? this.offsetY : this.offsetX;
             
-            if (isReverse) {
-                mainPos -= mainSize;
-            }
-            
+            int mainMargin = mainMargins[index];
             int marginL, marginR, marginT, marginB;
             if (isRow) {
-                marginL = child.marginLeft.calculateSize(mainSize,0);
-                marginR = child.marginRight.calculateSize(mainSize,0);
-                marginT = child.marginTop.calculateSize(crossSize,0);
-                marginB = child.marginBottom.calculateSize(crossSize,0);
-                
+                marginL = child.marginLeft.calculateSize(mainSize, 0);
+                marginR = child.marginRight.calculateSize(mainSize, 0);
+                marginT = child.marginTop.calculateSize(crossSize, 0);
+                marginB = child.marginBottom.calculateSize(crossSize, 0);
+            } else {
+                marginL = child.marginLeft.calculateSize(crossSize, 0);
+                marginR = child.marginRight.calculateSize(crossSize, 0);
+                marginT = child.marginTop.calculateSize(mainSize, 0);
+                marginB = child.marginBottom.calculateSize(mainSize, 0);
+            }
+
+            if (isReverse) {
+                mainPos -= mainSize + mainMargin;
+            }
+
+            if (isRow) {
                 child.setX(mainPos + marginL);
                 child.setY(crossPos + marginT);
-                child.setWidth(mainSize - marginL - marginR);
-                child.setHeight(crossSize - marginT - marginB);
-                child.marginRect = new ScreenRectangle(mainPos, crossPos, mainSize, crossSize);
+                child.setWidth(mainSize);
+                child.setHeight(crossSize);
+                child.marginRect = new ScreenRectangle(mainPos, crossPos, mainSize + marginL + marginR, crossSize + marginT + marginB);
             } else {
-                marginL = child.marginLeft.calculateSize(crossSize,0);
-                marginR = child.marginRight.calculateSize(crossSize,0);
-                marginT = child.marginTop.calculateSize(mainSize,0);
-                marginB = child.marginBottom.calculateSize(mainSize,0);
-                
                 child.setX(crossPos + marginL);
                 child.setY(mainPos + marginT);
-                child.setWidth(crossSize - marginL - marginR);
-                child.setHeight(mainSize - marginT - marginB);
-                child.marginRect = new ScreenRectangle(crossPos, mainPos, crossSize, mainSize);
+                child.setWidth(crossSize);
+                child.setHeight(mainSize);
+                child.marginRect = new ScreenRectangle(crossPos, mainPos, crossSize + marginL + marginR, mainSize + marginT + marginB);
             }
             child.markDirty();
-            
+
             if (isReverse) {
                 mainPos -= spacing;
             } else {
-                mainPos += mainSize + spacing;
+                mainPos += mainSize + mainMargin + spacing;
             }
         }
         
+        var oldActualWidth = this.actualWidth;
+        var oldActualHeight = this.actualHeight;
         if (isRow) {
             this.actualWidth = totalMainSize;
             this.actualHeight = crossAxisSize;
@@ -222,6 +244,13 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
                 }
             }
         }
+        if(this.actualWidth != oldActualWidth || this.actualHeight != oldActualHeight){
+            this.onActualSizeChanged();
+        }
+    }
+    
+    public void onActualSizeChanged(){
+    
     }
     
     @Override
@@ -240,3 +269,6 @@ public class FlexLayout extends AbstractContainerWidget<FlexLayout, FlexElementP
         });
     }
 }
+
+
+

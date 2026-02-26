@@ -9,12 +9,17 @@ import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutElement;
+import com.xkball.xklib.api.gui.widget.ILayoutParma;
 import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.layout.HorizontalAlign;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.layout.VerticalAlign;
+import org.jspecify.annotations.Nullable;
+
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener, ILayoutElement {
     
@@ -49,6 +54,7 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
     protected boolean overflow = true;
     public IDecoration decoration;
     public ScreenRectangle marginRect = null;
+    protected AbstractWidget parent = null;
     
     public AbstractWidget(){
         this.markDirty();
@@ -446,6 +452,28 @@ public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListene
         this.marginBottom = margin;
     }
     
+    public AbstractWidget getParent(){
+        return this.parent;
+    }
+    
+    public void setParent(AbstractWidget widget){
+        this.parent = widget;
+    }
+    
+    @Nullable
+    public ILayoutParma tryGetLayoutParma(){
+        if(this.parent instanceof AbstractContainerWidget<?,?> acw){
+            return acw.getLayoutParam(this);
+        }
+        return null;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void tryUpdateSelfLayout(UnaryOperator<ILayoutParma> parma){
+        if(this.parent instanceof AbstractContainerWidget acw){
+            acw.addChild(this,parma.apply(acw.getLayoutParam(this)));
+        }
+    }
     public void renderInScissor(IGUIGraphics graphics, Runnable renderer){
         var flag = !this.overflow();
         if(flag){

@@ -62,16 +62,18 @@ public class Label extends AbstractWidget {
     
     @Override
     public void resize() {
-        this.contentX = this.x;
-        this.contentY = this.y;
-        this.contentWidth = this.lineHeight;
-        this.contentHeight = this.lineHeight;
+        this.setFixHeight(this.lineHeight);
+        super.resize();
+//        this.contentX = this.x;
+//        this.contentY = this.y;
+//        this.contentWidth = this.lineHeight;
+//        this.contentHeight = this.lineHeight;
     }
     
     @Override
     public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if (this.text != null && !this.text.isEmpty()) {
-            graphics.drawString(this.text, this.x, this.y, this.textColor, this.lineHeight);
+            graphics.drawString(this.text, this.contentX, this.contentY, this.textColor, this.lineHeight);
         }
         super.render(graphics, mouseX, mouseY, a);
     }

@@ -117,6 +117,15 @@ public class Button extends AbstractWidget {
                 }
                 graphics.fill(x, y, x + w, y + h, DEFAULT_COLOR);
             }
+        },
+        TRANSPARENT{
+            @Override
+            public void render(IGUIGraphics graphics, Button button, int mouseX, int mouseY, float a) {
+                if (button.isHovered()) {
+                    graphics.fill(button.contentX,button.contentY,button.contentX + button.contentWidth,button.contentY + button.contentHeight,0XCCF0F0F0);
+                }
+                
+            }
         }
     }
 }

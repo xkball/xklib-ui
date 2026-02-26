@@ -9,6 +9,10 @@ public class GridElementParam implements ILayoutParma {
     public int rowspan;
     public int colspan;
     
+    /**
+     * @param row 从0开始
+     * @param col 从0开始
+     */
     public GridElementParam(int row, int col, int rowspan, int colspan) {
         this.row = row;
         this.col = col;

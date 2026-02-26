@@ -10,6 +10,7 @@ import com.xkball.xklib.ui.layout.GridParam;
 import com.xkball.xklib.ui.widget.AbstractWidget;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("UnusedReturnValue")
 public class ScrollableFlexLayout extends GridLayout {
     
     public boolean xScrollable = false;
@@ -20,8 +21,8 @@ public class ScrollableFlexLayout extends GridLayout {
     public int yScrollBarSize = 10;
     public FlexLayout inner;
     
-    private ScrollBar xScrollBar;
-    private ScrollBar yScrollBar;
+    private final ScrollBar xScrollBar;
+    private final ScrollBar yScrollBar;
     private boolean lastXBarVisible = false;
     private boolean lastYBarVisible = false;
     
@@ -32,13 +33,24 @@ public class ScrollableFlexLayout extends GridLayout {
     public ScrollableFlexLayout(FlexParam param) {
         this.inner = new FlexLayout(param){
             @Override
-            public void markDirty() {
-                super.markDirty();
+            public void onActualSizeChanged() {
                 ScrollableFlexLayout.this.markDirty();
             }
         };
         this.xScrollBar = new ScrollBar(true);
         this.yScrollBar = new ScrollBar(false);
+    }
+    
+    public ScrollableFlexLayout setXScrollable(){
+        this.xScrollable = true;
+        this.xScrollBarVisible = true;
+        return this;
+    }
+    
+    public ScrollableFlexLayout setYScrollable(){
+        this.yScrollable = true;
+        this.yScrollBarVisible = true;
+        return this;
     }
     
     public ScrollableFlexLayout setFlexParam(FlexParam param) {
@@ -101,6 +113,9 @@ public class ScrollableFlexLayout extends GridLayout {
     public void resize() {
         super.resize();
         if(this.inner.actualWidth == 0 || this.inner.actualHeight == 0){
+            if(this.inner.getChildrenSize() == 0){
+                return;
+            }
             this.inner.markDirty();
             this.submitTreeUpdate(this::rebuildLayout);
             return;
@@ -192,6 +207,14 @@ public class ScrollableFlexLayout extends GridLayout {
         }
         
         return false;
+    }
+    
+    public int getActualWidth(){
+        return this.inner.actualWidth;
+    }
+    
+    public int getActualHeight(){
+        return this.inner.actualHeight;
     }
     
     private class ScrollBar extends AbstractWidget {

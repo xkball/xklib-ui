@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -33,6 +34,7 @@ public class GuiSystem {
     public int screenWidth;
     public int screenHeight;
     private boolean debug = false;
+    private int resizingFrameCount = 0;
     
     private final Queue<Runnable> treeUpdateQueue = new ConcurrentLinkedQueue<>();
     
@@ -261,6 +263,7 @@ public class GuiSystem {
     }
     
     private void processLayoutUpdates() {
+        AtomicBoolean flag = new AtomicBoolean(false);
         for(var layer : this.screenLayers){
             layer.setPosition(0,0);
             layer.setSize(this.screenWidth,this.screenHeight);
@@ -268,8 +271,21 @@ public class GuiSystem {
                 if (w.isDirty()){
                     w.markDirty(false);
                     w.resize();
+                    flag.set(true);
                 }
             });
+        }
+        if(flag.get()){
+            this.resizingFrameCount+=1;
+            if(this.resizingFrameCount % 512 == 0){
+                LOGGER.warn("Resizing stuck for {} frames", this.resizingFrameCount);
+            }
+        }
+        else{
+            if(this.resizingFrameCount > 1){
+                LOGGER.debug("Resizing done after {} frames", this.resizingFrameCount);
+            }
+            this.resizingFrameCount = 0;
         }
     }
     
