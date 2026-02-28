@@ -1,0 +1,13 @@
+{
+  "itemGroup.xklibmc": "Example Mod Tab",
+  "block.xklibmc.example_block": "Example Block",
+  "item.xklibmc.example_item": "Example Item",
+
+  "xklibmc.configuration.title": "XKLibMC Configs",
+  "xklibmc.configuration.section.xklibmc.common.toml": "XKLibMC Configs",
+  "xklibmc.configuration.section.xklibmc.common.toml.title": "XKLibMC Configs",
+  "xklibmc.configuration.items": "Item List",
+  "xklibmc.configuration.logDirtBlock": "Log Dirt Block",
+  "xklibmc.configuration.magicNumberIntroduction": "Magic Number Text",
+  "xklibmc.configuration.magicNumber": "Magic Number"
+}
