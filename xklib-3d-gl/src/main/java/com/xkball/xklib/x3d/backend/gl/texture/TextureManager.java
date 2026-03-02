@@ -1,6 +1,7 @@
 package com.xkball.xklib.x3d.backend.gl.texture;
 
 import com.google.auto.service.AutoService;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.x3d.api.render.ITexture;
 import com.xkball.xklib.x3d.api.render.ITextureAtlasSprite;
 import com.xkball.xklib.x3d.api.resource.IResource;
@@ -22,6 +23,10 @@ public class TextureManager implements ITextureManager {
     private final Map<ResourceLocation, AbstractTexture> byPath = new HashMap<>();
     private final Map<ResourceLocation, TextureAtlas> atlasMap = new HashMap<>();
     private final IResourceManager resourceManager;
+    
+    public TextureManager(){
+        this(XKLib.RENDER_CONTEXT.get().getResourceManager());
+    }
     
     public TextureManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;

@@ -3,11 +3,12 @@ package com.xkball.xklib.x3d.backend.gl.pipeline;
 import com.xkball.xklib.x3d.api.render.IRenderPipeline;
 import com.xkball.xklib.x3d.api.render.IShaderProgram;
 import com.xkball.xklib.x3d.api.render.ITexture;
+import com.xkball.xklib.x3d.api.render.IGpuBuffer;
 import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.x3d.backend.gl.GLStateManager;
-import com.xkball.xklib.x3d.backend.gl.buffer.IBOBuffer;
-import com.xkball.xklib.x3d.backend.gl.buffer.VAOBuffer;
-import com.xkball.xklib.x3d.backend.gl.buffer.VBOBuffer;
+import com.xkball.xklib.x3d.backend.gl.buffer.GLGpuBuffer;
+import com.xkball.xklib.x3d.backend.gl.buffer.SequentialIBOCache;
+import com.xkball.xklib.x3d.backend.gl.buffer.VertexFormatBinding;
 import com.xkball.xklib.x3d.backend.gl.shader.ShaderProgram;
 import com.xkball.xklib.x3d.backend.gl.shader.Uniform;
 import com.xkball.xklib.x3d.backend.vertex.BufferBuilder;
@@ -21,8 +22,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL13C;
 
 public class RenderPipeline implements IRenderPipeline {
     public final ResourceLocation location;
@@ -62,32 +63,29 @@ public class RenderPipeline implements IRenderPipeline {
         init = true;
     }
     
-    public void draw(VBOBuffer vbo){
-        vbo.bind();
+    public void draw(IGpuBuffer vbo) {
+        GLGpuBuffer glVbo = (GLGpuBuffer) vbo;
         this.apply();
-        var count = vbo.getSize()/this.format.getVertexSize();
-        var iboHolder = IBOBuffer.getSequentialBuffer(this.mode);
-        count = (int) (count * ((float)iboHolder.indexStride/(float) iboHolder.vertexStride));
-        var ibo = iboHolder.getBuffer(count);
-        ibo.bind();
-        GL45.glDrawElements(this.mode.toGl(), count, iboHolder.type().toGl(), 0);
-        IBOBuffer.unbind();
-        VBOBuffer.unbind();
-        VAOBuffer.unbind();
+        int vertexCount = (int) (vbo.size() / this.format.getVertexSize());
+        SequentialIBOCache iboCache = SequentialIBOCache.getFor(this.mode);
+        int indexCount = (int) (vertexCount * ((float) iboCache.indexStride / (float) iboCache.vertexStride));
+        GLGpuBuffer glIbo = (GLGpuBuffer) iboCache.getBuffer(indexCount);
+        VertexFormatBinding binding = VertexFormatBinding.getFor(this.format);
+        binding.bind(glVbo, glIbo);
+        GL45.glDrawElements(this.mode.toGl(), indexCount, iboCache.type().toGl(), 0);
+        GLStateManager.bindVertexArray(0);
     }
-    
+
     @Override
-    public void draw(BufferBuilder builder){
-        //FIXME
-//        this.format.uploadImmediateVertexBuffer(builder.build());
-        builder.free();
-        this.draw();
+    public void draw(BufferBuilder builder) {
+        IGpuBuffer gpuBuffer = builder.buildAndUpload();
+        try {
+            this.draw(gpuBuffer);
+        } finally {
+            ((GLGpuBuffer) gpuBuffer).close();
+        }
     }
-    
-    public void draw(){
-        //FIXME
-//        this.draw(this.format.getImmediateDrawVertexBuffer());
-    }
+
     
     public void apply() {
         init();
@@ -118,8 +116,8 @@ public class RenderPipeline implements IRenderPipeline {
         for (int i = 0; i < samplers.size(); i++) {
             var sampler = samplers.get(i);
             ITexture texture = sampler.getSecond().get();
-            GLStateManager.activeTexture(GL_TEXTURE0 + i);
-            GLStateManager.bindTexture(GL_TEXTURE_2D, texture.getId());
+            GLStateManager.activeTexture(GL13C.GL_TEXTURE0 + i);
+            GLStateManager.bindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
             shader.getUniform(sampler.getFirst()).set(i);
         }
         
@@ -131,8 +129,6 @@ public class RenderPipeline implements IRenderPipeline {
         }
         
         shader.uploadUniforms();
-        //FIXME
-//        format.getFormatVertexArrayBuffer().bind();
     }
     
     @Override

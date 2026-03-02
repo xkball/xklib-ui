@@ -1,6 +1,8 @@
 package com.xkball.xklib.x3d.backend.vertex;
 
 import com.xkball.xklib.x3d.api.render.IGpuBuffer;
+import com.xkball.xklib.x3d.api.render.IBufferSource;
+import com.xkball.xklib.x3d.backend.buffer.GpuBufferSlice;
 import org.joml.Matrix3x2fc;
 import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
@@ -200,9 +202,17 @@ public class BufferBuilder {
     
     public IGpuBuffer buildAndUpload(){
         ByteBuffer buffer = build();
-        //todo 实现方法
+        IBufferSource bufferSource = IBufferSource.getInstance();
+        
+        IGpuBuffer gpuBuffer = bufferSource.createBuffer(
+            null, 
+            com.xkball.xklib.x3d.api.render.IGpuBuffer.USAGE_VERTEX |
+            com.xkball.xklib.x3d.api.render.IGpuBuffer.USAGE_HINT_CLIENT_STORAGE,
+            buffer
+        );
+        
         this.free();
-        return null;
+        return gpuBuffer;
     }
     
     private void ensureCapacity(int additional) {

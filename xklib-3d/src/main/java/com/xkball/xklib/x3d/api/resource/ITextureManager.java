@@ -5,14 +5,9 @@ import com.xkball.xklib.utils.Lazy;
 import com.xkball.xklib.x3d.api.render.ITexture;
 import com.xkball.xklib.x3d.api.render.ITextureAtlasSprite;
 
-import java.util.ServiceLoader;
-
 public interface ITextureManager {
     
-    Lazy<ITextureManager> INSTANCE = Lazy.of(() -> {
-        var loader = ServiceLoader.load(ITextureManager.class);
-        return loader.findFirst().orElseThrow();
-    });
+    Lazy<ITextureManager> INSTANCE = Lazy.ofSPI(ITextureManager.class);
     
     static ITextureManager getInstance(){
         return INSTANCE.get();

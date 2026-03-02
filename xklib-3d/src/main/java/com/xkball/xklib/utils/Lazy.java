@@ -1,5 +1,6 @@
 package com.xkball.xklib.utils;
 
+import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 public class Lazy<T> {
@@ -9,6 +10,13 @@ public class Lazy<T> {
     
     public static <T> Lazy<T> of(Supplier<T> supplier){
         return new Lazy<>(supplier);
+    }
+    
+    public static <T> Lazy<T> ofSPI(Class<T> clazz){
+        return of(() -> {
+            var loader = ServiceLoader.load(clazz);
+            return loader.findFirst().orElseThrow();
+        });
     }
     
     public Lazy(Supplier<T> supplier) {

@@ -1,6 +1,7 @@
 package com.xkball.xklib.x3d.backend.gl.window;
 
 import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.x3d.api.render.IBufferSource;
 import com.xkball.xklib.x3d.api.render.IRenderContext;
 import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
 import com.xkball.xklib.x3d.api.render.IWindow;
@@ -19,6 +20,11 @@ public class OpenGLRenderContext implements IRenderContext {
     
     public OpenGLRenderContext(OpenGLWindow window) {
         this.window = window;
+    }
+    
+    @Override
+    public IBufferSource getBufferSource() {
+        return IBufferSource.getInstance();
     }
     
     @Override

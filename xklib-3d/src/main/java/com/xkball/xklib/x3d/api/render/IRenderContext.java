@@ -6,6 +6,8 @@ import com.xkball.xklib.x3d.api.resource.ITextureManager;
 
 public interface IRenderContext {
     
+    IBufferSource getBufferSource();
+    
     IResourceManager getResourceManager();
     
     ITextureManager getTextureManager();
