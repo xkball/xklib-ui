@@ -1,7 +1,7 @@
 package com.xkball.xklib;
 
-import com.xkball.xklib.api.render.IRenderPipelineSource;
-import com.xkball.xklib.api.resource.IResourceManager;
+import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
+import com.xkball.xklib.x3d.api.resource.IResourceManager;
 import com.xkball.xklib.resource.ClasspathResourceManager;
 import com.xkball.xklib.ui.backend.OpenGLRenderPipelinesSource;
 import com.xkball.xklib.ui.widget.GuiSystem;

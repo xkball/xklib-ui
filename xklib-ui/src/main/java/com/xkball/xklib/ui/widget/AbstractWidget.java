@@ -4,7 +4,7 @@ import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
@@ -18,7 +18,6 @@ import com.xkball.xklib.ui.layout.SizeParam;
 import com.xkball.xklib.ui.layout.VerticalAlign;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public class AbstractWidget implements IGuiWidget, IRenderable, IGuiEventListener, ILayoutElement {

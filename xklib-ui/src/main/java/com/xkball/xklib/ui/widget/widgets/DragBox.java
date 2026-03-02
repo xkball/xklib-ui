@@ -1,7 +1,7 @@
 package com.xkball.xklib.ui.widget.widgets;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.AbstractWidget;
 
 import java.util.function.Consumer;

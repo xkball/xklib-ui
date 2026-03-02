@@ -1,8 +1,8 @@
 package com.xkball.xklib.ui.widget.widgets;
 
 import com.xkball.xklib.XKLib;
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
-import com.xkball.xklib.api.render.IFont;
+import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IFont;
 import com.xkball.xklib.ui.layout.FlexElementParam;
 import com.xkball.xklib.ui.layout.FlexParam;
 import com.xkball.xklib.ui.layout.SizeParam;

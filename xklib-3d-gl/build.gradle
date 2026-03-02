@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'idea'
+}
+
+group = 'com.xkball.xklib.x3d.backend.gl'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+dependencies {
+    api(project(":xklib-3d"))
+    implementation "org.lwjgl:lwjgl-opengl"
+}
+
+test {
+    useJUnitPlatform()
+}

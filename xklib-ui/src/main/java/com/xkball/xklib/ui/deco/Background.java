@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.deco;
 
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.widget.AbstractWidget;

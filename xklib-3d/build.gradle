@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'idea'
+}
+
+group = 'com.xkball.xklib.x3d'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+dependencies {
+
+    api platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    api "org.joml:joml:1.10.7"
+    api "org.joml:joml-primitives:1.10.0"
+    api "it.unimi.dsi:fastutil:8.5.18"
+    api "com.google.guava:guava:33.5.0-jre"
+    api "com.ibm.icu:icu4j:77.1"
+    api "org.slf4j:slf4j-api:2.0.17"
+
+    //need jij
+    api "net.lenni0451:LambdaEvents:2.4.2"
+    api "com.google.auto.service:auto-service:1.1.1"
+
+    api "org.lwjgl:lwjgl"
+    api "org.lwjgl:lwjgl-glfw"
+    api "org.lwjgl:lwjgl-stb"
+
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+
+
+
+    runtimeOnly "org.apache.logging.log4j:log4j-api:2.25.2"
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.25.2'
+    runtimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2"
+
+    runtimeOnly project(":xklib-3d-gl")
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

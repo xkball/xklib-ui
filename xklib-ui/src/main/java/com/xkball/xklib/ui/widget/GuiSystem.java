@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.backend.input.CharacterEvent;
 import com.xkball.xklib.ui.backend.input.KeyEvent;
 import com.xkball.xklib.ui.backend.input.MouseButtonEvent;

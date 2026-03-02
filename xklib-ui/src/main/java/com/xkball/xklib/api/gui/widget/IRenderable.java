@@ -1,6 +1,6 @@
 package com.xkball.xklib.api.gui.widget;
 
-import com.xkball.xklib.api.gui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 
 public interface IRenderable {
     /**
