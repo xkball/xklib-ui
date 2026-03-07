@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.system;
 
-import com.google.auto.service.AutoService;
 import com.xkball.xklib.ap.annotation.RegisterEvent;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
@@ -9,7 +8,7 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.input.CharacterEvent;
 import com.xkball.xklib.ui.input.KeyEvent;
 import com.xkball.xklib.ui.input.MouseButtonEvent;
-import com.xkball.xklib.ui.widget.ContainerWidget;
+import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.utils.Pair;
 import com.xkball.xklib.x3d.backend.window.WindowEvent;
@@ -21,7 +20,6 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;

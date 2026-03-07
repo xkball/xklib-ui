@@ -1,4 +1,4 @@
-package com.xkball.xklib.ui.widget;
+package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
@@ -9,6 +9,7 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
 import dev.vfyjxf.taffy.style.Overflow;
 import dev.vfyjxf.taffy.style.TaffyStyle;
@@ -37,7 +38,7 @@ public class ContainerWidget extends Widget {
         super();
     }
     
-    private void untilSetTree(Runnable runnable) {
+    protected void untilSetTree(Runnable runnable) {
         if(this.tree == null) {
             untilSetTree.add(runnable);
         }
@@ -48,6 +49,7 @@ public class ContainerWidget extends Widget {
     
     public ContainerWidget addChild(Widget widget, TaffyStyle style){
         untilSetTree(() -> {
+            if(this.children.contains(widget)) return;
             widget.setTree(this.tree);
             var node = this.tree.newLeaf(style);
             this.tree.addChild(this.nodeId, node);

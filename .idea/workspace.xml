@@ -5,26 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/.idea/SweepConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/layout/ITextSplitter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/SimpleTextSplitter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ScalableContainer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/SimpleTextSplitterTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ComboBoxAndDragBoxTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ScalableContainerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/DefaultStyles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/TextDisplay.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/SectionContainer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/container/SectionContainerTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/FocusNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/FocusNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/SizeParam.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/SizeParam.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/system/GuiSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/system/GuiSystem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ComboBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ComboBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ContainerWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ContainerWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/DragBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/DragBox.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/SplitContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/SplitContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ContainerWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ContainerWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/ScalableContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ScalableContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/SplitContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/SplitContainer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/FlexLayoutTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/FlexLayoutTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/GridLayoutTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/GridLayoutTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/ScrollPanelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/ScrollPanelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/SimpleTextSplitterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/SimpleTextSplitterTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/SplitContainerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/layout/SplitContainerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ComboBoxAndDragBoxTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ComboBoxAndDragBoxTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ScalableContainerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/ScalableContainerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +42,7 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="77229" />
+    <option name="totalTimeSeconds" value="82803" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -167,13 +166,14 @@
     "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.SplitContainerTest.main()].executor": "Debug",
     "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ComboBoxAndDragBoxTest.main()].executor": "Debug",
     "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ScalableContainerTest.main()].executor": "Debug",
+    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.SectionContainerTest.main()].executor": "Debug",
     "Gradle.xklib:xklib-ui [build].executor": "Debug",
     "Gradle.构建 xklib.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "dev.sweep.assistant.data.RecentlyUsedFiles": "xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\ContainerWidget.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\SplitContainer.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\ComboBoxAndDragBoxTest.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\layout\\FocusNode.java;xklib-3d-gl\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\gl\\GLStateManager.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\layout\\SimpleTextSplitter.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\layout\\SimpleTextSplitterTest.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\system\\GuiSystem.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\api\\gui\\layout\\ITextSplitter.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\ScalableContainer.java",
+    "dev.sweep.assistant.data.RecentlyUsedFiles": "xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\container\\SectionContainerTest.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\SectionContainer.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\ContainerWidget.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\layout\\DefaultStyles.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\api\\gui\\widget\\IGuiWidget.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\layout\\FlexLayoutTest.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\layout\\ScrollPanelTest.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\system\\GuiSystem.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\Label.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\layout\\SplitContainerTest.java",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "E:/code/java/others/xklib/xklib-ap",
@@ -207,14 +207,17 @@
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="com.xkball.xklib.ui.layout" />
+    </key>
   </component>
-  <component name="RunManager" selected="应用程序.SimpleTextSplitterTest">
+  <component name="RunManager" selected="应用程序.SectionContainerTest">
     <configuration name="ComboBoxAndDragBoxTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.ComboBoxAndDragBoxTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -227,7 +230,7 @@
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -235,12 +238,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ScrollPanelTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.layout.ScrollPanelTest" />
+    <configuration name="SectionContainerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.container.SectionContainerTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.layout.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -253,7 +256,7 @@
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.layout.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -266,7 +269,7 @@
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.layout.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -316,11 +319,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="应用程序.SectionContainerTest" />
         <item itemvalue="应用程序.SimpleTextSplitterTest" />
         <item itemvalue="应用程序.ScalableContainerTest" />
         <item itemvalue="应用程序.ComboBoxAndDragBoxTest" />
         <item itemvalue="应用程序.SplitContainerTest" />
-        <item itemvalue="应用程序.ScrollPanelTest" />
       </list>
     </recent_temporary>
   </component>
@@ -344,7 +347,7 @@
       <workItem from="1772472187349" duration="10284000" />
       <workItem from="1772588544945" duration="27584000" />
       <workItem from="1772817900201" duration="22897000" />
-      <workItem from="1772877135946" duration="22411000" />
+      <workItem from="1772877135946" duration="29981000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -386,7 +389,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772886262787</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1772901458789</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1772901458789</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -411,7 +422,6 @@
     <watches-manager>
       <configuration name="GradleRunConfiguration">
         <watch expression="this" />
-        <watch expression="((ArrayList)((SplitContainer)((Pair)((Object[])((ArrayList)GuiSystem.INSTANCE.get().screenLayers).elementData)[0]).first).children).elementData" custom="java.lang.Object[],com.xkball.xklib.utils.Pair,java.util.ArrayList,com.xkball.xklib.ui.widget.SplitContainer" />
       </configuration>
     </watches-manager>
   </component>

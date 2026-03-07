@@ -22,14 +22,14 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     protected float y;
     protected float width;
     protected float height;
-    protected boolean enabled = true;
-    protected boolean visible = true;
-    protected boolean hovered = false;
+    public boolean enabled = true;
+    public boolean visible = true;
+    public boolean hovered = false;
     protected boolean overflow = true;
     
-    protected TaffyTree tree = null;
-    protected TaffyStyle style = new TaffyStyle();
-    protected NodeId nodeId = null;
+    public TaffyTree tree = null;
+    public TaffyStyle style = new TaffyStyle();
+    public NodeId nodeId = null;
     protected IDecoration decoration;
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;

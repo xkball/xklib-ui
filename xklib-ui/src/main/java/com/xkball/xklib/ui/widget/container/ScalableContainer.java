@@ -1,10 +1,11 @@
-package com.xkball.xklib.ui.widget;
+package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.input.MouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AvailableSpace;
 import dev.vfyjxf.taffy.style.TaffyStyle;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ScalableContainer extends ContainerWidget{
+public class ScalableContainer extends ContainerWidget {
     
     public static final Logger LOGGER = LoggerFactory.getLogger(ScalableContainer.class);
     

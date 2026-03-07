@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public interface IGuiWidget {
@@ -168,6 +169,10 @@ public interface IGuiWidget {
         var style = this.getStyle();
         styleUpdate.accept(style);
         this.setStyle(style);
+    }
+    
+    default void applyStyle(UnaryOperator<TaffyStyle> styleUpdate){
+        this.setStyle(styleUpdate.apply(this.getStyle()));
     }
     
     default Layout getLayout(){
