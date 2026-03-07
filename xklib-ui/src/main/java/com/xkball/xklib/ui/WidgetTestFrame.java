@@ -1,28 +1,28 @@
 package com.xkball.xklib.ui;
 
-import com.xkball.xklib.XKLib;
-import com.xkball.xklib.ui.widget.AbstractWidget;
-import com.xkball.xklib.ui.widget.GuiSystem;
+import com.xkball.xklib.ui.widget.Widget;
+import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.x3d.backend.window.WindowAppBase;
 
 
 import java.util.function.Supplier;
 
 /**
- * 创建后直接调用run即可
+ * 使用try with resource创建后直接调用run即可
  */
 public class WidgetTestFrame extends WindowAppBase {
     
-    private final Supplier<AbstractWidget> widgetSupplier;
-    private final GuiSystem guiSystem = XKLib.gui;
+    private final Supplier<Widget> widgetSupplier;
+    private GuiSystem guiSystem ;
     
-    public WidgetTestFrame(Supplier<AbstractWidget> widgetSupplier){
+    public WidgetTestFrame(Supplier<Widget> widgetSupplier){
         this.widgetSupplier = widgetSupplier;
     }
     
     @Override
     public void init() {
         super.init();
+        this.guiSystem = GuiSystem.INSTANCE.get();
         guiSystem.addScreenLayer(widgetSupplier.get());
     }
     

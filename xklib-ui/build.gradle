@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'idea'
 }
 
@@ -13,11 +14,16 @@ repositories {
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 dependencies {
-
-    implementation project(":xklib-3d")
+    api "dev.vfyjxf:taffy:1.1.3"
+    api project(":xklib-3d")
     runtimeOnly project(":xklib-3d-gl")
-    testImplementation platform('org.junit:junit-bom:5.10.0')
+
+    annotationProcessor project(":xklib-ap")
+    annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {

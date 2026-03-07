@@ -27,15 +27,12 @@ public class WindowAppBase implements Runnable, AutoCloseable {
     public void run() {
         var windowFactoryLoader = ServiceLoader.load(IWindowFactory.class);
         this.window = windowFactoryLoader.findFirst().orElseThrow().createNewWindow();
-        var context = this.window.init();
-        XKLib.RENDER_CONTEXT.set(context);
+        this.window.init();
         this.init();
         while (!window.shouldClose()) {
             this.render();
             window.swapBuffer();
         }
-        
     }
-    
     
 }

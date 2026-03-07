@@ -26,7 +26,10 @@ dependencies {
 
     //need jij
     api "net.lenni0451:LambdaEvents:2.4.2"
+
+    api project(":xklib-ap")
     api "com.google.auto.service:auto-service:1.1.1"
+    annotationProcessor project(":xklib-ap")
     annotationProcessor "com.google.auto.service:auto-service:1.1.1"
 
     api "org.lwjgl:lwjgl"
@@ -37,8 +40,6 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-
-
 
     runtimeOnly "org.apache.logging.log4j:log4j-api:2.25.2"
     runtimeOnly 'org.apache.logging.log4j:log4j-core:2.25.2'

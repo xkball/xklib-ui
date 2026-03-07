@@ -42,14 +42,8 @@ public interface IGuiEventListener {
         return false;
     }
 
-    boolean isFocusable();
-    
-    void setFocused(final boolean focused);
-
-    boolean isFocused();
-
-    default boolean shouldTakeFocusAfterInteraction() {
-        return true;
+    default boolean isFocusable() {
+        return false;
     }
 
     default ScreenRectangle getRectangle() {

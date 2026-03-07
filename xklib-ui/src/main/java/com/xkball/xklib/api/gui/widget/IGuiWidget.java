@@ -1,27 +1,34 @@
 package com.xkball.xklib.api.gui.widget;
 
-import com.xkball.xklib.XKLib;
+import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.system.GuiSystem;
+import dev.vfyjxf.taffy.style.TaffyStyle;
+import dev.vfyjxf.taffy.tree.NodeId;
+import dev.vfyjxf.taffy.tree.TaffyTree;
+import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public interface IGuiWidget {
-    void setX(int x);
+    void setX(float x);
 
-    void setY(int y);
+    void setY(float y);
 
-    int getX();
+    float getX();
 
-    int getY();
+    float getY();
     
-    void setWidth(int width);
+    void setWidth(float width);
     
-    void setHeight(int height);
+    void setHeight(float height);
 
-    int getWidth();
+    float getWidth();
 
-    int getHeight();
+    float getHeight();
     
     void setEnabled(boolean enabled);
     
@@ -31,40 +38,66 @@ public interface IGuiWidget {
     
     boolean visible();
     
+    /*
+    仅供GuiSystem更新, 不应该使用
+     */
+    void setHovered(boolean hovered);
+    
     boolean isHovered();
     
-    default void markDirty(){
-        this.markDirty(true);
-    }
+    FocusNode getFocusNode();
     
-    void markDirty(boolean dirty);
+    /*
+    仅供GuiSystem更新, 不应该使用
+    */
+    void setNodeId(NodeId nodeId);
+    
+    NodeId getNodeId();
+    
+    boolean isFocused();
+    
+    boolean isPrimaryFocused();
+    
+    void markDirty();
     
     boolean isDirty();
     
+    /*
+    只控制是否裁剪渲染, 不会影响布局是否溢出
+     */
     void setOverflow(boolean overflow);
     
     boolean overflow();
     
-    int expectWidth();
+    void setStyle(TaffyStyle style);
     
-    int expectHeight();
+    TaffyStyle getStyle();
+    
+    /*
+    仅供GuiSystem更新, 不应该使用
+    */
+    void setTree(TaffyTree tree);
+    
+
+    TaffyTree getTree();
     
     void addDecoration(IDecoration deco);
     
-    /**
-     * 在此方法创建子组件
-     */
-    default void init(){
+    @Nullable
+    IGuiWidget getParent();
+    
+    default List<? extends IGuiWidget> getChildren(){
+        return List.of();
+    }
+    
+    default void resize(float offsetX, float offsetY){
     
     }
     
-    
     /**
-     * 应该计算子组件的大小, 不用调用子组件resize
-     * 自己或者子组件的resize可能导致自己继续被markDirty, 但是总应该在一定帧数后达到稳定, 不应该无限markDirty
-     * 需要格外注意状态变化, 防止无限更新, 由于更新是按帧进行的, 无限更新不会造成递归或者卡死, 但是会严重影响性能
+     * 在此方法创建子组件,和创建样式, 应该在设置Tree和ID后调用
      */
-    default void resize(){
+    default void init(){
     
     }
     
@@ -72,7 +105,7 @@ public interface IGuiWidget {
      * runnable内可以进行对widget树的操作, 被操作的对象应该markDirty来重写计算布局
      */
     default void submitTreeUpdate(Runnable runnable){
-        XKLib.gui.submitTreeUpdate(runnable);
+        GuiSystem.INSTANCE.get().submitTreeUpdate(runnable);
     }
     
     default void submitLayoutUpdate(Supplier<Iterable<IGuiWidget>> layoutUpdate){
@@ -87,15 +120,15 @@ public interface IGuiWidget {
     }
     
     default ScreenRectangle getRectangle() {
-        return new ScreenRectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        return new ScreenRectangle((int) this.getX(), (int) this.getY(), (int) this.getWidth(), (int) this.getHeight());
     }
 
-    default void setPosition(int x, int y) {
+    default void setPosition(float x, float y) {
         this.setX(x);
         this.setY(y);
     }
     
-    default void setSize(int width, int height) {
+    default void setSize(float width, float height) {
         this.setWidth(width);
         this.setHeight(height);
     }
@@ -109,5 +142,26 @@ public interface IGuiWidget {
 
     default void visitWidgets(final Consumer<IGuiWidget> widgetVisitor){
         widgetVisitor.accept(this);
+    }
+    
+    default float getMaxX(){
+        return this.getX() + this.getWidth();
+    }
+    
+    default float getMaxY(){
+        return this.getY() + this.getHeight();
+    }
+    
+    default void asTreeRoot(){
+        var tree = new TaffyTree();
+        var id = tree.newLeaf(this.getStyle());
+        this.setTree(tree);
+        this.setNodeId(id);
+    }
+    
+    default void setStyle(Consumer<TaffyStyle> styleUpdate){
+        var style = this.getStyle();
+        styleUpdate.accept(style);
+        this.setStyle(style);
     }
 }

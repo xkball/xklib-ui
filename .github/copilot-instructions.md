@@ -11,3 +11,5 @@
 6.从不 import static 或者在 import 使用 * 通配符
 
 7.为widget写测试时, 创建一个新类和主方法,使用WidgetTestFrame, 不需要添加test注解 
+
+8.不要在方法上throws任何unchecked的异常, 如果没有好的处理手段则catch, logger记录并throw

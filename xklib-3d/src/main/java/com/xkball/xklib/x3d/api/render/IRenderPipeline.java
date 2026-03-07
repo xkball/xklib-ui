@@ -22,6 +22,9 @@ public interface IRenderPipeline {
     IShaderProgram shader();
     
     @NoImplInMinecraft
+    void draw(IGpuBuffer vbo);
+    
+    @NoImplInMinecraft
     void draw(BufferBuilder builder);
     
     @NullInMinecraft

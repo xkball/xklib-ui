@@ -77,9 +77,10 @@ public class OpenGLWindow extends Window {
         GLFW.glfwSetWindowFocusCallback(this.handle, this::onFocus);
         GLFW.glfwSetCursorEnterCallback(this.handle, this::onEnter);
         GLFW.glfwSetWindowIconifyCallback(this.handle, this::onIconify);
-        XKLib.EVENT_BUS.call(new WindowEvent.Init(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
-        
-        return new OpenGLRenderContext(this);
+        var context = new OpenGLRenderContext(this);
+        XKLib.RENDER_CONTEXT.set(context);
+        XKLib.EVENT_BUS.call(new WindowEvent.Init(this));
+        return context;
     }
     
     public FrameBuffer getFramebuffer(){
@@ -125,7 +126,7 @@ public class OpenGLWindow extends Window {
         }
         GLStateManager.bindFramebuffer(GL45.GL_FRAMEBUFFER, 0);
         GL45.glViewport(0,0,width,height);
-        XKLib.EVENT_BUS.call(new WindowEvent.Resize(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
+        XKLib.EVENT_BUS.call(new WindowEvent.Resize(this));
     }
     
     @Override

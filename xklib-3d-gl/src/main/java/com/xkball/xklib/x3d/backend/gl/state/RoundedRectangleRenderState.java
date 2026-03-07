@@ -12,13 +12,13 @@ public record RoundedRectangleRenderState(
     IRenderPipeline pipeline,
     TextureSetup textureSetup,
     Matrix3x2fc pose,
-    int x0,
-    int y0,
-    int x1,
-    int y1,
+    float x0,
+    float y0,
+    float x1,
+    float y1,
     int col1,
     int col2,
-    int radius,
+    float radius,
     @Nullable ScreenRectangle scissorArea,
     @Nullable ScreenRectangle bounds
 ) implements IGuiElementRenderState {
@@ -26,13 +26,13 @@ public record RoundedRectangleRenderState(
         IRenderPipeline pipeline,
         TextureSetup textureSetup,
         Matrix3x2fc pose,
-        int x0,
-        int y0,
-        int x1,
-        int y1,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
         int col1,
         int col2,
-        int radius,
+        float radius,
         @Nullable ScreenRectangle scissorArea
     ) {
         this(pipeline, textureSetup, pose, x0, y0, x1, y1, col1, col2,
@@ -40,10 +40,10 @@ public record RoundedRectangleRenderState(
              scissorArea, getBounds(x0, y0, x1, y1, pose, scissorArea));
     }
     
-    private static int clampRadius(int radius, int x0, int y0, int x1, int y1) {
-        int width = Math.abs(x1 - x0);
-        int height = Math.abs(y1 - y0);
-        int maxRadius = Math.min(width, height) / 2;
+    private static float clampRadius(float radius, float x0, float y0, float x1, float y1) {
+        float width = Math.abs(x1 - x0);
+        float height = Math.abs(y1 - y0);
+        float maxRadius = Math.min(width, height) / 2;
         return Math.min(radius, maxRadius);
     }
 
@@ -66,8 +66,8 @@ public record RoundedRectangleRenderState(
                 .setUnsafe(VertexFormatElement.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr, r));
     }
 
-    private static @Nullable ScreenRectangle getBounds(int x0, int y0, int x1, int y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
-        ScreenRectangle bounds = new ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformMaxBounds(pose);
+    private static @Nullable ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
+        ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
         return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
     }
 }

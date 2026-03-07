@@ -63,6 +63,7 @@ public class RenderPipeline implements IRenderPipeline {
         init = true;
     }
     
+    @Override
     public void draw(IGpuBuffer vbo) {
         GLGpuBuffer glVbo = (GLGpuBuffer) vbo;
         this.apply();

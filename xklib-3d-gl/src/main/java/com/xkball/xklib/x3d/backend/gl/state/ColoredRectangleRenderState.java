@@ -10,10 +10,10 @@ public record ColoredRectangleRenderState(
     IRenderPipeline pipeline,
     TextureSetup textureSetup,
     Matrix3x2fc pose,
-    int x0,
-    int y0,
-    int x1,
-    int y1,
+    float x0,
+    float y0,
+    float x1,
+    float y1,
     int col1,
     int col2,
     @Nullable ScreenRectangle scissorArea,
@@ -23,10 +23,10 @@ public record ColoredRectangleRenderState(
         IRenderPipeline pipeline,
         TextureSetup textureSetup,
         Matrix3x2fc pose,
-        int x0,
-        int y0,
-        int x1,
-        int y1,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
         int col1,
         int col2,
         @Nullable ScreenRectangle scissorArea
@@ -42,8 +42,8 @@ public record ColoredRectangleRenderState(
         vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), zOffset).setColor(this.col1());
     }
 
-    private static @Nullable ScreenRectangle getBounds(int x0, int y0, int x1, int y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
-        ScreenRectangle bounds = new ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformMaxBounds(pose);
+    private static @Nullable ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
+        ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
         return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
     }
 }

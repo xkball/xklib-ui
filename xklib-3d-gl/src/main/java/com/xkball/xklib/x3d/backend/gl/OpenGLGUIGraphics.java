@@ -72,8 +72,8 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
-    public void enableScissor(int x0, int y0, int x1, int y1) {
-        var rectangle = new ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformAxisAligned(this.pose);
+    public void enableScissor(float x0, float y0, float x1, float y1) {
+        var rectangle = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformAxisAligned(this.pose);
         this.scissorStack.push(rectangle);
     }
     
@@ -83,7 +83,7 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
-    public void submitColoredRectangle(IRenderPipeline pipeline, int x0, int y0, int x1, int y1, int colorFrom, int colorTo) {
+    public void submitColoredRectangle(IRenderPipeline pipeline, float x0, float y0, float x1, float y1, int colorFrom, int colorTo) {
         this.guiRenderState
                 .submitGuiElement(
                         new ColoredRectangleRenderState(
@@ -93,7 +93,7 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
-    public void submitColoredRoundedRectangle(int minX, int minY, int maxX, int maxY, int colorFrom, int colorTo, int radius) {
+    public void submitColoredRoundedRectangle(float minX, float minY, float maxX, float maxY, int colorFrom, int colorTo, float radius) {
         this.guiRenderState
                 .submitGuiElement(
                         new RoundedRectangleRenderState(
@@ -103,7 +103,7 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
-    public void drawString(IFont font, IComponent text, int x, int y, int color, boolean drawShadow) {
+    public void drawString(IFont font, IComponent text, float x, float y, int color, boolean drawShadow) {
         if (!(font instanceof Font glFont)) {
             return;
         }
@@ -128,7 +128,7 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
-    public void submitBlit(IRenderPipeline pipeline, ITexture textureView, int x0, int y0, int x1, int y1, float u0, float u1, float v0, float v1, int color) {
+    public void submitBlit(IRenderPipeline pipeline, ITexture textureView, float x0, float y0, float x1, float y1, float u0, float u1, float v0, float v1, int color) {
         this.guiRenderState
                 .submitGuiElement(
                         new BlitRenderState(

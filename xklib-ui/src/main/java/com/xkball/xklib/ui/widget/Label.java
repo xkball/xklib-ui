@@ -1,0 +1,95 @@
+package com.xkball.xklib.ui.widget;
+
+import com.xkball.xklib.ui.layout.TextScale;
+import com.xkball.xklib.ui.render.IGUIGraphics;
+import dev.vfyjxf.taffy.style.TextAlign;
+
+@SuppressWarnings("unused")
+public class Label extends Widget {
+    
+    
+    private TextAlign align = TextAlign.LEFT;
+    private String text = "";
+    private int color = 0xFF000000;
+    private TextScale textScale = TextScale.FIXED;
+    
+    public Label(){}
+    
+    public Label(String text, TextAlign align, int color){
+        this.text = text;
+        this.align = align;
+        this.color = color;
+    }
+    
+    public Label(String text, TextAlign align){
+        this.text = text;
+        this.align = align;
+    }
+    
+    public Label(String text, int color){
+        this.text = text;
+        this.color = color;
+    }
+    
+    public Label(String text) {
+        this.text = text;
+    }
+    
+    @Override
+    public void init() {
+        super.init();
+        
+    }
+    
+    @Override
+    public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        super.doRender(graphics, mouseX, mouseY, a);
+        var lineHeight = textScale.getTextHeight(graphics.defaultFont(),text, this.width - 4,this.height * 0.9f);
+        var textY = this.y + (this.height - lineHeight)/2 - 2;
+        switch (align){
+            case LEFT:
+                graphics.drawString(this.text, this.x + 2, textY, this.color, lineHeight);
+                break;
+            case CENTER:
+                graphics.drawCenteredString(this.text, this.x + this.width/2f, textY, this.color, lineHeight);
+                break;
+            case RIGHT:
+                var length = graphics.defaultFont().width(this.text);
+                graphics.drawString(this.text, this.x + this.width - length - 2, textY, this.color, lineHeight);
+                break;
+        }
+        
+    }
+    
+    public String getText() {
+        return text;
+    }
+    
+    public void setText(String text) {
+        this.text = text;
+    }
+    
+    public int getColor() {
+        return color;
+    }
+    
+    public void setColor(int color) {
+        this.color = color;
+    }
+    
+    public TextAlign getAlign() {
+        return align;
+    }
+    
+    public void setAlign(TextAlign align) {
+        this.align = align;
+    }
+    
+    public TextScale getTextScale() {
+        return textScale;
+    }
+    
+    public void setTextScale(TextScale textScale) {
+        this.textScale = textScale;
+    }
+}

@@ -1,7 +1,7 @@
 package com.xkball.xklib.ui.layout;
 
-import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
+import com.xkball.xklib.ui.system.GuiSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class LayoutVariable<T> implements ILayoutVariable<T> {
     
     @Override
     public void triggerCallbacks() {
-        XKLib.gui.submitTreeUpdate(() -> callbacks.forEach(c -> c.accept(value)));
+        GuiSystem.INSTANCE.get().submitTreeUpdate(() -> callbacks.forEach(c -> c.accept(value)));
     }
     
     @Override

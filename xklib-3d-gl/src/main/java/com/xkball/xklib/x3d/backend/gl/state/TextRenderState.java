@@ -16,8 +16,8 @@ public record TextRenderState(
     Matrix3x2fc pose,
     Font font,
     String text,
-    int x,
-    int y,
+    float x,
+    float y,
     int color,
     boolean drawShadow,
     @Nullable ScreenRectangle scissorArea,
@@ -30,8 +30,8 @@ public record TextRenderState(
         Matrix3x2fc pose,
         Font font,
         String text,
-        int x,
-        int y,
+        float x,
+        float y,
         int color,
         boolean drawShadow,
         @Nullable ScreenRectangle scissorArea
@@ -108,13 +108,13 @@ public record TextRenderState(
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
     
-    private static @Nullable ScreenRectangle getBounds(Font font, String text, int x, int y, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
+    private static @Nullable ScreenRectangle getBounds(Font font, String text, float x, float y, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
         if (text == null || text.isEmpty()) {
             return null;
         }
         int width = font.width(text);
         int height = font.getFontSize();
-        ScreenRectangle bounds = new ScreenRectangle(x, y, width, height).transformMaxBounds(pose);
+        ScreenRectangle bounds = new ScreenRectangle((int) x, (int) y, width, height).transformMaxBounds(pose);
         return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
     }
 }
