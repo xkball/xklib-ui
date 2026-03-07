@@ -76,11 +76,14 @@ public class SplitContainer extends ContainerWidget {
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
         var firstStyle = new TaffyStyle();
+        firstStyle.size = TaffySize.of(this.vertical ? TaffyDimension.percent(1) : TaffyDimension.auto(),
+                this.vertical ? TaffyDimension.auto() : TaffyDimension.percent(1));
         this.addChild(firstPanel, firstStyle);
         var barWidget = new SplitBar();
-        var barStyle = new TaffyStyle();
-        this.addChild(barWidget, barStyle);
+        this.addChild(barWidget);
         var secondStyle = new TaffyStyle();
+        secondStyle.size = TaffySize.of(this.vertical ? TaffyDimension.percent(1) : TaffyDimension.auto(),
+                this.vertical ? TaffyDimension.auto() : TaffyDimension.percent(1));
         this.addChild(secondPanel, secondStyle);
     }
 
@@ -165,6 +168,11 @@ public class SplitContainer extends ContainerWidget {
             super.doRender(graphics, mouseX, mouseY, a);
             int color = (this.hovered || barDragging) ? BAR_HOVER_COLOR : BAR_COLOR;
             graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, color);
+        }
+        
+        @Override
+        public void onFocusChanged(boolean focused) {
+            if(!focused) barDragging = false;
         }
     }
 }

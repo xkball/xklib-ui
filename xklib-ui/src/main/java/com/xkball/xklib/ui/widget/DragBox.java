@@ -119,6 +119,7 @@ public class DragBox extends Widget{
     
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        super.doRender(graphics, mouseX, mouseY, a);
         graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, TRACK_COLOR);
         graphics.renderOutline(this.x, this.y, this.width, this.height, BORDER_COLOR);
         
@@ -128,6 +129,6 @@ public class DragBox extends Widget{
         graphics.fill(tx, this.y, tx + THUMB_WIDTH, this.y + this.height, thumbColor);
         graphics.renderOutline(tx, this.y, THUMB_WIDTH, this.height, BORDER_COLOR);
         
-        super.render(graphics, mouseX, mouseY, a);
+        
     }
 }

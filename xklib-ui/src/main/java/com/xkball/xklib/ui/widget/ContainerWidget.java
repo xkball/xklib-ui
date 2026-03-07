@@ -75,6 +75,15 @@ public class ContainerWidget extends Widget {
         this.markDirty();
     }
     
+    public void clearChildren() {
+        for(var widget : this.children) {
+            this.tree.removeChild(this.nodeId,widget.nodeId);
+            this.focusNode.removeChild(widget.getFocusNode());
+            widget.setParent(null);
+        }
+        this.children.clear();
+    }
+    
     @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
@@ -331,8 +340,14 @@ public class ContainerWidget extends Widget {
         if(this.scrollBarX.getRectangle().containsPoint((int) event.x(), (int) event.y())){
             flag |= scrollBarX.mouseClicked(event, doubleClick);
         }
+        else{
+            scrollBarX.dragging = false;
+        }
         if(this.scrollBarY.getRectangle().containsPoint((int) event.x(), (int) event.y())){
             flag |= scrollBarY.mouseClicked(event, doubleClick);
+        }
+        else {
+            scrollBarY.dragging = false;
         }
         return flag;
     }
@@ -347,6 +362,14 @@ public class ContainerWidget extends Widget {
             flag |= scrollBarY.mouseReleased(event);
         }
         return flag;
+    }
+    
+    @Override
+    public void onFocusChanged(boolean focused) {
+        if(!focused){
+            this.scrollBarX.dragging = false;
+            this.scrollBarY.dragging = false;
+        }
     }
     
     @Override

@@ -176,18 +176,15 @@ public class SplitContainerTest {
             var leftStyle = new TaffyStyle();
             leftStyle.size = TaffySize.all(TaffyDimension.percent(1f));
             outer.setFirst(left, leftStyle);
-
             var innerSplit = new SplitContainer(true);
             
 
             var innerTop = colorPanel(0xFF2E1A1A);
             var innerTopStyle = new TaffyStyle();
-            
             innerSplit.setFirst(innerTop, innerTopStyle);
 
             var innerBottom = colorPanel(0xFF1A1A2E);
             var innerBottomStyle = new TaffyStyle();
-            
             innerSplit.setSecond(innerBottom, innerBottomStyle);
 
             outer.setSecond(innerSplit);

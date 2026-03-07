@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.IntSupplier;
 
+@Deprecated
 public sealed interface SizeParam permits SizeParam.Max, SizeParam.Min, SizeParam.Percent, SizeParam.Pixel, SizeParam.Weight, SizeParam.Dynamic {
     
     Logger LOGGER = LoggerFactory.getLogger(SizeParam.class);

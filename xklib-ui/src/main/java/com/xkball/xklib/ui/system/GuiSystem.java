@@ -253,7 +253,7 @@ public class GuiSystem {
         this.render((int) this.lastMouseX, (int) this.lastMouseY, 0);
     }
     
-    private Queue<Float> mss = new ArrayDeque<>();
+    private float renderTime;
     
     public void render(int mouseX, int mouseY, float partialTicks) {
         if (this.graphics == null) {
@@ -262,10 +262,8 @@ public class GuiSystem {
         var time = System.nanoTime();
         this.processTreeUpdates();
         this.processLayoutUpdates();
-        time = System.nanoTime() - time;
-        mss.add(time/1000000f);
-        while (mss.size() > 10) mss.remove();
-        var avg = mss.stream().mapToDouble(Float::doubleValue).average().getAsDouble();
+        var layoutTime = (System.nanoTime() - time) / 1000000f;
+        time = System.nanoTime();
         for (var pair : this.screenLayers) {
             var layer = pair.getFirst();
             var visible = layer.visible();
@@ -276,11 +274,12 @@ public class GuiSystem {
                 this.graphics.layerUp();
                 layer.renderAbove(this.graphics, mouseX, mouseY, partialTicks);
                 this.graphics.layerUp();
-                graphics.drawString(String.format("%.2f",avg),0,screenHeight-36,0xff000000);
+                graphics.drawString(String.format("%.2f", layoutTime),0,screenHeight-36,0xff000000);
+                graphics.drawString(String.format("%.2f",renderTime),0,screenHeight-36*2,0xff000000);
             }
         }
         this.graphics.draw();
-        
+        renderTime = (System.nanoTime() - time) / 1000000f;
     }
     
     private void processTreeUpdates() {
@@ -309,8 +308,23 @@ public class GuiSystem {
         this.focusManager.root.addChild(layer.getFocusNode());
     }
     
-    public void insertLayerAfter(Widget layer, IGuiWidget before){
-    
+    public void insertLayerAfter(Widget layer, IGuiWidget after) {
+        if (layer.getTree() == null) layer.asTreeRoot();
+        layer.init();
+        layer.markDirty();
+        int idx = -1;
+        for (int i = 0; i < this.screenLayers.size(); i++) {
+            if (this.screenLayers.get(i).getFirst().equals(after)) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx >= 0) {
+            this.screenLayers.add(idx + 1, Pair.of(layer, layer.getTree()));
+        } else {
+            this.screenLayers.add(Pair.of(layer, layer.getTree()));
+        }
+        this.focusManager.root.addChild(layer.getFocusNode());
     }
     
     public void removeScreenLayer(Widget layer) {

@@ -42,7 +42,9 @@ public class FocusNode {
     }
     
     public void setFocused(boolean focused) {
+        var changed = this.focused != focused;
         this.focused = focused;
+        if(changed && this.widget != null) widget.onFocusChanged(focused);
     }
     
     public void setPrimaryFocused(boolean primaryFocused) {

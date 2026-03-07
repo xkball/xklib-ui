@@ -44,6 +44,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
         this.width = width;
         this.height = height;
         this.focusNode = new FocusNode(null);
+        this.focusNode.widget = this;
         this.focusNode.setCanTakePrimaryFocus(this.isFocusable());
     }
     
@@ -332,6 +333,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     
     @Override
     public final void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+        if(!this.visible) return;
         if (this.overflow()){
             this.doRender(graphics, mouseX, mouseY, a);
         }

@@ -123,6 +123,10 @@ public interface IGuiWidget {
     default ScreenRectangle getRectangle() {
         return new ScreenRectangle((int) this.getX(), (int) this.getY(), (int) this.getWidth(), (int) this.getHeight());
     }
+    
+    default void onFocusChanged(boolean focused) {
+    
+    }
 
     default void setPosition(float x, float y) {
         this.setX(x);
