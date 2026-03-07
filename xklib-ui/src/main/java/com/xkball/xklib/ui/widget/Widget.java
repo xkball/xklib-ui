@@ -126,9 +126,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.enabled && this.visible &&
-               mouseX >= this.x && mouseX < this.x + this.width &&
-               mouseY >= this.y && mouseY < this.y + this.height;
+        return this.enabled && this.visible && getRectangle().containsPoint((int) mouseX, (int) mouseY);
     }
     
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
@@ -325,7 +323,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     
     @Override
     public void resize(float offsetX, float offsetY) {
-        var layout = this.tree.getLayout(this.nodeId);
+        var layout = this.getLayout();
         if (layout != null) {
             this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
             this.setSize(layout.contentBoxWidth(), layout.contentBoxHeight());

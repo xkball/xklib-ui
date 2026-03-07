@@ -4,6 +4,7 @@ import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.system.GuiSystem;
 import dev.vfyjxf.taffy.style.TaffyStyle;
+import dev.vfyjxf.taffy.tree.Layout;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
 import org.jspecify.annotations.Nullable;
@@ -164,4 +165,14 @@ public interface IGuiWidget {
         styleUpdate.accept(style);
         this.setStyle(style);
     }
+    
+    default Layout getLayout(){
+        return this.getTree().getLayout(this.getNodeId());
+    }
+    
+    default IGuiWidget getRoot(){
+        if(this.getParent() != null) return this.getParent().getRoot();
+        else return this;
+    }
+    
 }

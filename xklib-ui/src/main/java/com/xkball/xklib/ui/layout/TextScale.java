@@ -6,7 +6,7 @@ public enum TextScale {
     FIXED{
         @Override
         public float getTextHeight(IFont font, String text, float spaceWidth, float spaceHeight) {
-            return Math.min(font.lineHeight(),spaceHeight);
+            return Math.min(font.lineHeight(), FIT_TO_MAX.getTextHeight(font, text, spaceWidth, spaceHeight));
         }
     },
     FIT_TO_MAX{

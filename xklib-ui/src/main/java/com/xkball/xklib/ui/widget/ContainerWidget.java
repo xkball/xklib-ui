@@ -3,11 +3,15 @@ package com.xkball.xklib.ui.widget;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.api.gui.widget.IGuiEventListener;
+import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.system.GuiSystem;
+import dev.vfyjxf.taffy.geometry.TaffyPoint;
+import dev.vfyjxf.taffy.style.Overflow;
 import dev.vfyjxf.taffy.style.TaffyStyle;
-import dev.vfyjxf.taffy.tree.TaffyTree;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,6 +23,11 @@ public class ContainerWidget extends Widget {
     
     protected final List<Widget> children = new ArrayList<>();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
+    protected float xScrollOffset = 0;
+    protected float yScrollOffset = 0;
+    protected ScrollBar scrollBarX = new ScrollBar(false);
+    protected ScrollBar scrollBarY = new ScrollBar(true);
+    
     
     public ContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -79,6 +88,40 @@ public class ContainerWidget extends Widget {
         return this.children;
     }
     
+    public void setXScroll(boolean xScroll) {
+        this.setStyle(s -> {
+            if(xScroll) {
+                s.overflow = new TaffyPoint<>(Overflow.SCROLL,s.overflow.y);
+                s.scrollbarWidth = 8;
+            }
+            else{
+                s.overflow = new TaffyPoint<>(Overflow.VISIBLE,s.overflow.y);
+                this.xScrollOffset = 0;
+            }
+        });
+    }
+    
+    public void setYScroll(boolean yScroll) {
+        this.setStyle(s -> {
+            if(yScroll) {
+                s.overflow = new TaffyPoint<>(s.overflow.x,Overflow.SCROLL);
+                s.scrollbarWidth = 8;
+            }
+            else{
+                s.overflow = new TaffyPoint<>(s.overflow.x,Overflow.VISIBLE);
+                this.yScrollOffset = 0;
+            }
+        });
+    }
+    
+    public boolean scrollX(){
+        return this.style.overflow.x == Overflow.SCROLL;
+    }
+    
+    public boolean scrollY(){
+        return this.style.overflow.y == Overflow.SCROLL;
+    }
+    
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         if (!this.enabled || !this.visible) {
@@ -129,7 +172,7 @@ public class ContainerWidget extends Widget {
             return false;
         }
         if (!this.isMouseOver(x, y)) return false;
-        
+
         for (Widget child : this.children) {
             if (child.visible && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
@@ -140,10 +183,10 @@ public class ContainerWidget extends Widget {
                 }
             }
         }
-        
+
         return super.mouseClicked(event, doubleClick);
     }
-    
+
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
         if (!this.enabled || !this.visible) {
@@ -158,10 +201,10 @@ public class ContainerWidget extends Widget {
                 }
             }
         }
-        
+
         return super.mouseReleased(event);
     }
-    
+
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
         if (!this.enabled || !this.visible) {
@@ -176,7 +219,7 @@ public class ContainerWidget extends Widget {
                 }
             }
         }
-        
+
         return super.mouseDragged(event, dx, dy);
     }
     
@@ -251,13 +294,93 @@ public class ContainerWidget extends Widget {
     }
     
     @Override
+    protected boolean onMouseScrolled(double x, double y, double scrollX, double scrollY) {
+        var layout = this.getLayout();
+        var doScrollX = this.scrollX() && layout.scrollWidth() > 0;
+        var doScrollY = this.scrollY() && layout.scrollHeight() > 0;
+        var isShiftDown = GuiSystem.INSTANCE.get().isShiftDown();
+        if(!doScrollX && !doScrollY) return false;
+        else if(doScrollX && !doScrollY){
+            this.xScrollOffset = Math.clamp(this.xScrollOffset + (float) (scrollY + scrollX)  * -20f, 0, layout.scrollWidth());
+        }
+        else if(!doScrollX){
+            this.yScrollOffset = Math.clamp(this.yScrollOffset + (float) (scrollY)  * -20f, 0, layout.scrollHeight());
+        }
+        else {
+            if(isShiftDown){
+                this.xScrollOffset = Math.clamp(this.xScrollOffset + (float) (scrollY + scrollX)  * -20f, 0, layout.scrollWidth());
+            }
+            else{
+                this.yScrollOffset = Math.clamp(this.yScrollOffset + (float) (scrollY)  * -20f, 0, layout.scrollHeight());
+            }
+        }
+        return true;
+    }
+    
+    @Override
+    protected boolean onMouseDragged(IMouseButtonEvent event, double dx, double dy) {
+        var flag = false;
+        flag |= scrollBarX.mouseDragged(event, dx, dy);
+        flag |= scrollBarY.mouseDragged(event, dx, dy);
+        return flag;
+    }
+    
+    @Override
+    protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+        var flag = false;
+        if(this.scrollBarX.getRectangle().containsPoint((int) event.x(), (int) event.y())){
+            flag |= scrollBarX.mouseClicked(event, doubleClick);
+        }
+        if(this.scrollBarY.getRectangle().containsPoint((int) event.x(), (int) event.y())){
+            flag |= scrollBarY.mouseClicked(event, doubleClick);
+        }
+        return flag;
+    }
+    
+    @Override
+    protected boolean onMouseReleased(IMouseButtonEvent event) {
+        var flag = false;
+        if(this.scrollBarX.getRectangle().containsPoint((int) event.x(), (int) event.y())){
+            flag |= scrollBarX.mouseReleased(event);
+        }
+        if(this.scrollBarY.getRectangle().containsPoint((int) event.x(), (int) event.y())){
+            flag |= scrollBarY.mouseReleased(event);
+        }
+        return flag;
+    }
+    
+    @Override
     public void resize(float offsetX, float offsetY) {
-        var layout = this.tree.getLayout(this.nodeId);
+        var layout = this.getLayout();
         if (layout != null) {
             this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
             this.setSize(layout.contentBoxWidth(), layout.contentBoxHeight());
             for (Widget child : this.children) {
-                child.resize(offsetX + this.x, offsetY + this.y);
+                child.resize(this.x - this.xScrollOffset, this.y - this.yScrollOffset);
+            }
+            if(this.scrollX() && layout.scrollWidth() > 0){
+                this.scrollBarX.x = this.getX();
+                this.scrollBarX.y = this.getMaxY() - layout.scrollbarSize().height;
+                this.scrollBarX.width = this.width;
+                this.scrollBarX.height = layout.scrollbarSize().height;
+                this.scrollBarX.maxScroll = layout.scrollWidth();
+                this.scrollBarX.scroll = this.xScrollOffset;
+            }
+            else{
+                this.scrollBarX.clear();
+                this.xScrollOffset = 0;
+            }
+            if(this.scrollY() && layout.scrollHeight() > 0){
+                this.scrollBarY.x = this.getMaxX() - layout.scrollbarSize().width;
+                this.scrollBarY.y = this.getY();
+                this.scrollBarY.width = layout.scrollbarSize().width;
+                this.scrollBarY.height = this.height;
+                this.scrollBarY.maxScroll = layout.scrollHeight();
+                this.scrollBarY.scroll = this.yScrollOffset;
+            }
+            else {
+                this.scrollBarY.clear();
+                this.yScrollOffset = 0;
             }
         }
     }
@@ -273,7 +396,8 @@ public class ContainerWidget extends Widget {
                 }
             }
         });
-        
+        this.scrollBarX.render(graphics, mouseX, mouseY, a);
+        this.scrollBarY.render(graphics, mouseX, mouseY, a);
     }
     
     @Override
@@ -307,6 +431,159 @@ public class ContainerWidget extends Widget {
         widgetVisitor.accept(this);
         for (Widget child : this.children) {
             child.visitWidgets(widgetVisitor);
+        }
+    }
+    
+    public class ScrollBar implements IGuiEventListener, IRenderable {
+
+        private static final int TRACK_COLOR = 0xFF2D2D2D;
+        private static final int THUMB_COLOR = 0xFF888888;
+        private static final int THUMB_HOVER_COLOR = 0xFFAAAAAA;
+
+        float x;
+        float y;
+        float width;
+        float height;
+        boolean vertical;
+        float maxScroll;
+        float scroll;
+        boolean dragging = false;
+        float dragStartMouse;
+        float dragStartScroll;
+
+        public ScrollBar(boolean vertical) {
+            this.vertical = vertical;
+        }
+        
+        public void clear(){
+            this.x = 0;
+            this.y = 0;
+            this.width = 0;
+            this.height = 0;
+            this.scroll = 0;
+            this.dragging = false;
+            this.maxScroll = 0;
+        }
+
+        private float thumbSize() {
+            if (vertical) {
+                float ratio = maxScroll > 0 ? height / (height + maxScroll) : 1f;
+                return Math.max(20f, height * ratio);
+            } else {
+                float ratio = maxScroll > 0 ? width / (width + maxScroll) : 1f;
+                return Math.max(20f, width * ratio);
+            }
+        }
+
+        private float thumbOffset() {
+            float trackLen;
+            if (vertical) {
+                trackLen = height - thumbSize();
+            } else {
+                trackLen = width - thumbSize();
+            }
+            return trackLen > 0 ? (scroll / maxScroll) * trackLen : 0f;
+        }
+
+        private boolean isMouseOverThumb(double mouseX, double mouseY) {
+            float offset = thumbOffset();
+            float ts = thumbSize();
+            if (vertical) {
+                float ty = y + offset;
+                return mouseX >= x && mouseX < x + width && mouseY >= ty && mouseY < ty + ts;
+            } else {
+                float tx = x + offset;
+                return mouseX >= tx && mouseX < tx + ts && mouseY >= y && mouseY < y + height;
+            }
+        }
+
+        @Override
+        public ScreenRectangle getRectangle() {
+            return new ScreenRectangle((int) x, (int) y, (int) width, (int) height);
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        }
+
+        @Override
+        public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+            if (width == 0 || height == 0) return false;
+            if (!isMouseOver(event.x(), event.y())) return false;
+            if (isMouseOverThumb(event.x(), event.y())) {
+                dragging = true;
+                dragStartMouse = vertical ? (float) event.y() : (float) event.x();
+                dragStartScroll = scroll;
+                return true;
+            }
+            float offset = thumbOffset();
+            float ts = thumbSize();
+            if (vertical) {
+                float ty = y + offset;
+                if (event.y() < ty) {
+                    scroll = Math.max(0, scroll - height);
+                } else if (event.y() >= ty + ts) {
+                    scroll = Math.min(maxScroll, scroll + height);
+                }
+            } else {
+                float tx = x + offset;
+                if (event.x() < tx) {
+                    scroll = Math.max(0, scroll - width);
+                } else if (event.x() >= tx + ts) {
+                    scroll = Math.min(maxScroll, scroll + width);
+                }
+            }
+            syncScrollToContainer();
+            return true;
+        }
+
+        @Override
+        public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
+            if (!dragging) return false;
+            float ts = thumbSize();
+            if (vertical) {
+                float trackLen = height - ts;
+                if (trackLen <= 0) return true;
+                float delta = (float) event.y() - dragStartMouse;
+                scroll = Math.clamp(dragStartScroll + delta * maxScroll / trackLen, 0, maxScroll);
+            } else {
+                float trackLen = width - ts;
+                if (trackLen <= 0) return true;
+                float delta = (float) event.x() - dragStartMouse;
+                scroll = Math.clamp(dragStartScroll + delta * maxScroll / trackLen, 0, maxScroll);
+            }
+            syncScrollToContainer();
+            return true;
+        }
+
+        @Override
+        public boolean mouseReleased(IMouseButtonEvent event) {
+            dragging = false;
+            return false;
+        }
+
+        private void syncScrollToContainer() {
+            if (vertical) {
+                ContainerWidget.this.yScrollOffset = scroll;
+            } else {
+                ContainerWidget.this.xScrollOffset = scroll;
+            }
+        }
+
+        @Override
+        public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+            if (width == 0 || height == 0) return;
+            graphics.fill(x, y, x + width, y + height, TRACK_COLOR);
+            float offset = thumbOffset();
+            float ts = thumbSize();
+            boolean hover = isMouseOverThumb(mouseX, mouseY) || dragging;
+            int thumbColor = hover ? THUMB_HOVER_COLOR : THUMB_COLOR;
+            if (vertical) {
+                graphics.fill(x, y + offset, x + width, y + offset + ts, thumbColor);
+            } else {
+                graphics.fill(x + offset, y, x + offset + ts, y + height, thumbColor);
+            }
         }
     }
 }

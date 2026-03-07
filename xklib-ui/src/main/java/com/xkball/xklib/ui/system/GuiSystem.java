@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.system;
 import com.google.auto.service.AutoService;
 import com.xkball.xklib.ap.annotation.RegisterEvent;
 import com.xkball.xklib.XKLib;
+import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.input.CharacterEvent;
@@ -20,6 +21,7 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -110,6 +112,21 @@ public class GuiSystem {
         return this.focusManager;
     }
     
+    public boolean isShiftDown(){
+        return GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS
+                || GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
+    }
+    
+    public boolean isCtrlDown(){
+        return GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
+                || GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS;
+    }
+    
+    public boolean isAltDown(){
+        return GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS
+                || GLFW.glfwGetKey(this.windowHandle, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS;
+    }
+    
     private void onCursorPos(long window, double x, double y) {
         if (window != this.windowHandle) {
             return;
@@ -192,6 +209,7 @@ public class GuiSystem {
         
         if (key == GLFW.GLFW_KEY_F12 && action == GLFW.GLFW_PRESS) {
             //TODO: toggle debug widget
+            this.printLayout();
             return;
         }
         
@@ -235,15 +253,19 @@ public class GuiSystem {
         this.render((int) this.lastMouseX, (int) this.lastMouseY, 0);
     }
     
+    private Queue<Float> mss = new ArrayDeque<>();
+    
     public void render(int mouseX, int mouseY, float partialTicks) {
         if (this.graphics == null) {
             return;
         }
-        
+        var time = System.nanoTime();
         this.processTreeUpdates();
-        
         this.processLayoutUpdates();
-        
+        time = System.nanoTime() - time;
+        mss.add(time/1000000f);
+        while (mss.size() > 10) mss.remove();
+        var avg = mss.stream().mapToDouble(Float::doubleValue).average().getAsDouble();
         for (var pair : this.screenLayers) {
             var layer = pair.getFirst();
             var visible = layer.visible();
@@ -254,9 +276,11 @@ public class GuiSystem {
                 this.graphics.layerUp();
                 layer.renderAbove(this.graphics, mouseX, mouseY, partialTicks);
                 this.graphics.layerUp();
+                graphics.drawString(String.format("%.2f",avg),0,screenHeight-36,0xff000000);
             }
         }
         this.graphics.draw();
+        
     }
     
     private void processTreeUpdates() {
@@ -285,8 +309,43 @@ public class GuiSystem {
         this.focusManager.root.addChild(layer.getFocusNode());
     }
     
+    public void insertLayerAfter(Widget layer, IGuiWidget before){
+    
+    }
+    
     public void removeScreenLayer(Widget layer) {
         this.screenLayers.removeIf(p -> p.getFirst().equals(layer));
         this.focusManager.root.removeChild(layer.getFocusNode());
+    }
+    
+    public void printLayout(){
+        for (int i = 0; i < screenLayers.size(); i++) {
+            var layer = screenLayers.get(i).getFirst();
+            LOGGER.info("=== Layer {} [{}] ===", i, layer.getClass().getSimpleName());
+            printWidgetTree(layer, 0);
+        }
+    }
+
+    private void printWidgetTree(Widget widget, int depth) {
+        var indent = "  ".repeat(depth);
+        var style = widget.getStyle();
+        var layout = widget.getLayout();
+        var styleStr = "display=" + style.display
+                + " size=" + style.size;
+        String layoutStr;
+        if (layout != null) {
+            layoutStr = "x=" + layout.contentBoxX()
+                    + " y=" + layout.contentBoxY()
+                    + " w=" + layout.contentBoxWidth()
+                    + " h=" + layout.contentBoxHeight();
+        } else {
+            layoutStr = "null";
+        }
+        LOGGER.info("{}[{}] style=[{}] layout=[{}]", indent, widget.getClass().getSimpleName(), styleStr, layoutStr);
+        for (var child : widget.getChildren()) {
+            if (child instanceof Widget w) {
+                printWidgetTree(w, depth + 1);
+            }
+        }
     }
 }

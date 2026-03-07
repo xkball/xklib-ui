@@ -7,38 +7,37 @@ import dev.vfyjxf.taffy.style.TextAlign;
 @SuppressWarnings("unused")
 public class Label extends Widget {
     
-    
     private TextAlign align = TextAlign.LEFT;
     private String text = "";
     private int color = 0xFF000000;
     private TextScale textScale = TextScale.FIXED;
-    
+
     public Label(){}
-    
+
     public Label(String text, TextAlign align, int color){
         this.text = text;
         this.align = align;
         this.color = color;
     }
-    
+
     public Label(String text, TextAlign align){
         this.text = text;
         this.align = align;
     }
-    
+
     public Label(String text, int color){
         this.text = text;
         this.color = color;
     }
-    
+
     public Label(String text) {
         this.text = text;
     }
-    
+
     @Override
     public void init() {
         super.init();
-        
+
     }
     
     @Override
@@ -64,7 +63,7 @@ public class Label extends Widget {
     public String getText() {
         return text;
     }
-    
+
     public void setText(String text) {
         this.text = text;
     }
