@@ -5,42 +5,45 @@ import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.*;
 
 public class GLStateManager {
     
-    private static int boundFBO = 0;
-    private static int boundVAO = 0;
-    private static int boundVBO = 0;
-    private static int boundIBO = 0;
-    private static int boundShaderProgram = 0;
+    public static final ThreadLocal<GLStateManager> INSTANCE = ThreadLocal.withInitial(GLStateManager::new);
     
-    private static final Int2IntMap boundTextures = new Int2IntLinkedOpenHashMap();
-    private static int activeTextureUnit = GL_TEXTURE0;
+    private int boundFBO = 0;
+    private int boundVAO = 0;
+    private int boundVBO = 0;
+    private int boundIBO = 0;
+    private int boundShaderProgram = 0;
     
-    private static boolean blendEnabled = false;
-    private static int blendSrcRGB = GL_ONE;
-    private static int blendDstRGB = GL_ZERO;
-    private static int blendSrcAlpha = GL_ONE;
-    private static int blendDstAlpha = GL_ZERO;
+    private final Int2IntMap boundTextures = new Int2IntLinkedOpenHashMap();
+    private int activeTextureUnit = GL_TEXTURE0;
     
-    private static boolean depthTestEnabled = false;
-    private static int depthFunc = GL_LESS;
-    private static boolean depthMask = true;
+    private boolean blendEnabled = false;
+    private int blendSrcRGB = GL_ONE;
+    private int blendDstRGB = GL_ZERO;
+    private int blendSrcAlpha = GL_ONE;
+    private int blendDstAlpha = GL_ZERO;
     
-    private static boolean cullFaceEnabled = false;
-    private static int cullFaceMode = GL_BACK;
+    private boolean depthTestEnabled = false;
+    private int depthFunc = GL_LESS;
+    private boolean depthMask = true;
     
-    private static boolean scissorEnabled = false;
-    private static int scissorX = 0;
-    private static int scissorY = 0;
-    private static int scissorWidth = 0;
-    private static int scissorHeight = 0;
+    private boolean cullFaceEnabled = false;
+    private int cullFaceMode = GL_BACK;
     
-    public static void bindFramebuffer(int target, int fbo) {
+    private boolean scissorEnabled = false;
+    private int scissorX = 0;
+    private int scissorY = 0;
+    private int scissorWidth = 0;
+    private int scissorHeight = 0;
+    
+    public void bindFramebuffer(int target, int fbo) {
         if (target == GL_FRAMEBUFFER && boundFBO == fbo) {
             return;
         }
@@ -48,7 +51,7 @@ public class GLStateManager {
         glBindFramebuffer(target, fbo);
     }
     
-    public static void bindVertexArray(int vao) {
+    public void bindVertexArray(int vao) {
         if (boundVAO == vao) {
             return;
         }
@@ -56,7 +59,7 @@ public class GLStateManager {
         glBindVertexArray(vao);
     }
     
-    public static void bindBuffer(int target, int buffer) {
+    public void bindBuffer(int target, int buffer) {
         if (target == GL_ARRAY_BUFFER) {
             if (boundVBO == buffer) {
                 return;
@@ -71,7 +74,7 @@ public class GLStateManager {
         glBindBuffer(target, buffer);
     }
     
-    public static void useProgram(int program) {
+    public void useProgram(int program) {
         if (boundShaderProgram == program) {
             return;
         }
@@ -79,7 +82,7 @@ public class GLStateManager {
         glUseProgram(program);
     }
     
-    public static void activeTexture(int textureUnit) {
+    public void activeTexture(int textureUnit) {
         if (activeTextureUnit == textureUnit) {
             return;
         }
@@ -87,7 +90,7 @@ public class GLStateManager {
         glActiveTexture(textureUnit);
     }
     
-    public static void bindTexture(int target, int texture) {
+    public void bindTexture(int target, int texture) {
         Integer current = boundTextures.get(activeTextureUnit);
         if (current != null && current == texture) {
             return;
@@ -96,7 +99,7 @@ public class GLStateManager {
         glBindTexture(target, texture);
     }
     
-    public static void enableBlend() {
+    public void enableBlend() {
         if (blendEnabled) {
             return;
         }
@@ -104,7 +107,7 @@ public class GLStateManager {
         glEnable(GL_BLEND);
     }
     
-    public static void disableBlend() {
+    public void disableBlend() {
         if (!blendEnabled) {
             return;
         }
@@ -112,9 +115,9 @@ public class GLStateManager {
         glDisable(GL_BLEND);
     }
     
-    public static void blendFunc(int srcFactor, int dstFactor) {
+    public void blendFunc(int srcFactor, int dstFactor) {
         if (blendSrcRGB == srcFactor && blendDstRGB == dstFactor &&
-            blendSrcAlpha == srcFactor && blendDstAlpha == dstFactor) {
+                blendSrcAlpha == srcFactor && blendDstAlpha == dstFactor) {
             return;
         }
         blendSrcRGB = srcFactor;
@@ -124,9 +127,9 @@ public class GLStateManager {
         glBlendFunc(srcFactor, dstFactor);
     }
     
-    public static void blendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
+    public void blendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {
         if (blendSrcRGB == srcRGB && blendDstRGB == dstRGB &&
-            blendSrcAlpha == srcAlpha && blendDstAlpha == dstAlpha) {
+                blendSrcAlpha == srcAlpha && blendDstAlpha == dstAlpha) {
             return;
         }
         blendSrcRGB = srcRGB;
@@ -136,16 +139,16 @@ public class GLStateManager {
         glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
     
-    public static void setBlendFunction(BlendFunction blendFunction) {
+    public void setBlendFunction(BlendFunction blendFunction) {
         blendFuncSeparate(
-            BlendFunction.toGl(blendFunction.sourceColor()),
-            BlendFunction.toGl(blendFunction.destColor()),
-            BlendFunction.toGl(blendFunction.sourceAlpha()),
-            BlendFunction.toGl(blendFunction.destAlpha())
+                BlendFunction.toGl(blendFunction.sourceColor()),
+                BlendFunction.toGl(blendFunction.destColor()),
+                BlendFunction.toGl(blendFunction.sourceAlpha()),
+                BlendFunction.toGl(blendFunction.destAlpha())
         );
     }
     
-    public static void enableDepthTest() {
+    public void enableDepthTest() {
         if (depthTestEnabled) {
             return;
         }
@@ -153,7 +156,7 @@ public class GLStateManager {
         glEnable(GL_DEPTH_TEST);
     }
     
-    public static void disableDepthTest() {
+    public void disableDepthTest() {
         if (!depthTestEnabled) {
             return;
         }
@@ -161,7 +164,7 @@ public class GLStateManager {
         glDisable(GL_DEPTH_TEST);
     }
     
-    public static void depthFunc(int func) {
+    public void depthFunc(int func) {
         if (depthFunc == func) {
             return;
         }
@@ -169,7 +172,7 @@ public class GLStateManager {
         glDepthFunc(func);
     }
     
-    public static void depthMask(boolean flag) {
+    public void depthMask(boolean flag) {
         if (depthMask == flag) {
             return;
         }
@@ -177,7 +180,7 @@ public class GLStateManager {
         glDepthMask(flag);
     }
     
-    public static void enableCullFace() {
+    public void enableCullFace() {
         if (cullFaceEnabled) {
             return;
         }
@@ -185,7 +188,7 @@ public class GLStateManager {
         glEnable(GL_CULL_FACE);
     }
     
-    public static void disableCullFace() {
+    public void disableCullFace() {
         if (!cullFaceEnabled) {
             return;
         }
@@ -193,7 +196,7 @@ public class GLStateManager {
         glDisable(GL_CULL_FACE);
     }
     
-    public static void cullFace(int mode) {
+    public void cullFace(int mode) {
         if (cullFaceMode == mode) {
             return;
         }
@@ -201,7 +204,7 @@ public class GLStateManager {
         glCullFace(mode);
     }
     
-    public static void enableScissor() {
+    public void enableScissor() {
         if (scissorEnabled) {
             return;
         }
@@ -209,7 +212,7 @@ public class GLStateManager {
         glEnable(GL_SCISSOR_TEST);
     }
     
-    public static void disableScissor() {
+    public void disableScissor() {
         if (!scissorEnabled) {
             return;
         }
@@ -217,7 +220,7 @@ public class GLStateManager {
         glDisable(GL_SCISSOR_TEST);
     }
     
-    public static void scissor(int x, int y, int width, int height) {
+    public void scissor(int x, int y, int width, int height) {
         if (scissorX == x && scissorY == y && scissorWidth == width && scissorHeight == height) {
             return;
         }
@@ -228,7 +231,7 @@ public class GLStateManager {
         glScissor(x, y, width, height);
     }
     
-    public static void reset() {
+    public void reset() {
         boundFBO = 0;
         boundVAO = 0;
         boundVBO = 0;
@@ -253,39 +256,39 @@ public class GLStateManager {
         scissorHeight = 0;
     }
     
-    public static int getBoundFramebuffer() {
+    public int getBoundFramebuffer() {
         return boundFBO;
     }
     
-    public static int getBoundVertexArray() {
+    public int getBoundVertexArray() {
         return boundVAO;
     }
     
-    public static int getBoundArrayBuffer() {
+    public int getBoundArrayBuffer() {
         return boundVBO;
     }
     
-    public static int getBoundElementArrayBuffer() {
+    public int getBoundElementArrayBuffer() {
         return boundIBO;
     }
     
-    public static int getBoundProgram() {
+    public int getBoundProgram() {
         return boundShaderProgram;
     }
     
-    public static boolean isBlendEnabled() {
+    public boolean isBlendEnabled() {
         return blendEnabled;
     }
     
-    public static boolean isDepthTestEnabled() {
+    public boolean isDepthTestEnabled() {
         return depthTestEnabled;
     }
     
-    public static boolean isCullFaceEnabled() {
+    public boolean isCullFaceEnabled() {
         return cullFaceEnabled;
     }
     
-    public static boolean isScissorEnabled() {
+    public boolean isScissorEnabled() {
         return scissorEnabled;
     }
 }

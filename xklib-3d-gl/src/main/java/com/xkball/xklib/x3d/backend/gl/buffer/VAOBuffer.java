@@ -24,11 +24,11 @@ public class VAOBuffer implements AutoCloseable {
         if (destroyed) {
             throw new IllegalStateException("VAO has been destroyed");
         }
-        GLStateManager.bindVertexArray(id);
+        GLStateManager.INSTANCE.get().bindVertexArray(id);
     }
     
     public static void unbind() {
-        GLStateManager.bindVertexArray(0);
+        GLStateManager.INSTANCE.get().bindVertexArray(0);
     }
     
     public void setupVertexAttributes(VertexFormat format) {

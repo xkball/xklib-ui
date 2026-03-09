@@ -23,6 +23,7 @@ public class GuiRenderer {
         projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F, 1, 10000, true);
         var z = 2f;
         var layerDepth = 9995/state.layers().size();
+        boolean lastScissorEnabled = false;
         for (var layer : state.layers()) {
             if (layer.elements.isEmpty()) continue;
             var offset = layerDepth / layer.elements.size();
@@ -39,16 +40,16 @@ public class GuiRenderer {
                 draw.textureSetup().apply(pipeline);
                 if(draw.scissorArea != null){
                     var scissor = draw.scissorArea;
-                    GLStateManager.scissor(scissor.left(), window.getHeight() - scissor.top() - scissor.height(), scissor.width(), scissor.height());
-                    GLStateManager.enableScissor();
+                    GLStateManager.INSTANCE.get().scissor(scissor.left(), window.getHeight() - scissor.top() - scissor.height(), scissor.width(), scissor.height());
+                    if(!lastScissorEnabled) GLStateManager.INSTANCE.get().enableScissor();
                 }
+                else if(lastScissorEnabled) GLStateManager.INSTANCE.get().disableScissor();
                 pipeline.draw(entry.getValue());
-                if(draw.scissorArea != null) {
-                    GLStateManager.disableScissor();
-                }
+                lastScissorEnabled = draw.scissorArea != null;
             }
             window.getFramebuffer().clearDepthStencil();
         }
+        GLStateManager.INSTANCE.get().disableScissor();
         this.state.clear();
         window.getFramebuffer().clearDepthStencil();
     }

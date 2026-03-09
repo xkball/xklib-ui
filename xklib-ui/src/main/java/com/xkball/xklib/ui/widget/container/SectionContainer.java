@@ -4,9 +4,6 @@ import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignContent;
-import dev.vfyjxf.taffy.style.AlignItems;
-import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TextAlign;
@@ -25,7 +22,9 @@ public class SectionContainer extends ContainerWidget {
     public SectionContainer(String title, Widget content) {
         super();
         this.header = new Label(title, TextAlign.LEFT, 0xFFE2E8F0);
+        this.header.setName("header");
         this.content = content;
+        this.addChild(header);
     }
     
     private static Widget createDefaultContent() {
@@ -37,18 +36,8 @@ public class SectionContainer extends ContainerWidget {
     @Override
     public void init() {
         super.init();
-        
         this.applyStyle(DefaultStyles::flexCenteredColum);
-        
-        this.header.setStyle(s -> {
-            s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(32));
-        });
-        
-        if (content != null) {
-            contentOriginalDisplay = content.getStyle().display;
-            reapplyContent();
-        }
-        
+        this.header.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(32)));
     }
     
     @Override
@@ -88,18 +77,9 @@ public class SectionContainer extends ContainerWidget {
             if (!expanded) {
                 content.setStyle(s -> s.display = TaffyDisplay.NONE);
             }
-            this.reapplyContent();
+            this.addChild(content);
         }
         return this;
-    }
-    
-    public void reapplyContent(){
-        this.untilSetTree(() -> {
-            this.clearChildren();
-            this.addChild(this.header);
-            this.addChild(this.content);
-        });
-
     }
     
     public Widget getContent() {

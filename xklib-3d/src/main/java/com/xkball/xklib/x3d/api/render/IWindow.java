@@ -29,5 +29,7 @@ public interface IWindow extends AutoCloseable{
     int getWidth();
     
     int getHeight();
+    
+    void setVsync(boolean enabled);
 
 }

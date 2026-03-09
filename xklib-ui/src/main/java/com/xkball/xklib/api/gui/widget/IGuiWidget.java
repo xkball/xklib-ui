@@ -2,7 +2,10 @@ package com.xkball.xklib.api.gui.widget;
 
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.layout.TaffySizeParser;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.utils.XKLibUtils;
+import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.Layout;
 import dev.vfyjxf.taffy.tree.NodeId;
@@ -14,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "UnusedReturnValue"})
 public interface IGuiWidget {
     void setX(float x);
 
@@ -38,7 +41,15 @@ public interface IGuiWidget {
 
     void setVisible(boolean visible);
     
+    
+    
     boolean visible();
+    
+    void setName(String name);
+    
+    default String getName(){
+        return XKLibUtils.objName(this);
+    }
     
     /*
     仅供GuiSystem更新, 不应该使用
@@ -74,6 +85,7 @@ public interface IGuiWidget {
     void setStyle(TaffyStyle style);
     
     TaffyStyle getStyle();
+    
     
     /*
     仅供GuiSystem更新, 不应该使用
@@ -128,12 +140,18 @@ public interface IGuiWidget {
     default void onFocusChanged(boolean focused) {
     
     }
-
+    
+    /**
+     * 除了在绝对布局Container下或者resize里传递布局结果, 不要使用此方法改变组件位置和大小, 会被布局的结果覆盖
+     */
     default void setPosition(float x, float y) {
         this.setX(x);
         this.setY(y);
     }
     
+    /**
+     * 除了在绝对布局Container下或者resize里传递布局结果, 不要使用此方法改变组件位置和大小, 会被布局的结果覆盖
+     */
     default void setSize(float width, float height) {
         this.setWidth(width);
         this.setHeight(height);
@@ -165,14 +183,16 @@ public interface IGuiWidget {
         this.setNodeId(id);
     }
     
-    default void setStyle(Consumer<TaffyStyle> styleUpdate){
+    default IGuiWidget setStyle(Consumer<TaffyStyle> styleUpdate){
         var style = this.getStyle();
         styleUpdate.accept(style);
         this.setStyle(style);
+        return this;
     }
     
-    default void applyStyle(UnaryOperator<TaffyStyle> styleUpdate){
+    default IGuiWidget applyStyle(UnaryOperator<TaffyStyle> styleUpdate){
         this.setStyle(styleUpdate.apply(this.getStyle()));
+        return this;
     }
     
     default Layout getLayout(){
@@ -182,6 +202,13 @@ public interface IGuiWidget {
     default IGuiWidget getRoot(){
         if(this.getParent() != null) return this.getParent().getRoot();
         else return this;
+    }
+    
+    default IGuiWidget setSize(String width, String height){
+        this.setStyle(s ->
+                s.size = TaffySize.of(TaffySizeParser.of(width).toDimension(), TaffySizeParser.of(height).toDimension())
+        );
+        return this;
     }
     
 }

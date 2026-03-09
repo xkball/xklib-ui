@@ -19,6 +19,7 @@ public class SectionContainerTest {
         try (var frame = new WidgetTestFrame(() -> {
             var root = new ContainerWidget();
             root.asTreeRoot();
+            root.setName("root");
             root.addDecoration(new Background(0xFF0F172A));
             root.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
@@ -29,24 +30,26 @@ public class SectionContainerTest {
             root.setYScroll(true);
 
             var section1 = new SectionContainer("第一个分组");
+            section1.setName("section1");
             section1.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content()));
             section1.getHeader().addDecoration(new Background(0xFF1E293B));
             var label1 = new Label("这是第一个分组的内容", TextAlign.CENTER, 0xFFE2E8F0);
             label1.addDecoration(new Background(0xFF334155));
+            label1.setName("label1");
             label1.style.size = TaffySize.of(TaffyDimension.percent(1),TaffyDimension.length(200));
             section1.setContent(label1);
             root.addChild(section1);
 
             var section2 = new SectionContainer("第二个分组 - 默认展开");
+            section2.setName("section2");
             section2.getHeader().addDecoration(new Background(0xFF1E293B));
             section2.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.auto()));
             var content2 = new ContainerWidget();
             content2.addDecoration(new Background(0xFF475569));
+            content2.setName("content2");
+            content2.applyStyle(DefaultStyles::flexCenteredColum);
             content2.setStyle(s -> {
-                s.flexDirection = FlexDirection.COLUMN;
-                s.justifyContent = AlignContent.CENTER;
-                s.alignItems = AlignItems.START;
-                s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(150));
+                s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.auto());
             });
             for (int i = 1; i <= 3; i++) {
                 int idx = i;
@@ -59,12 +62,14 @@ public class SectionContainerTest {
             }
             section2.setContent(content2);
             root.addChild(section2);
-
+//            root.addChild(content2);
             var section3 = new SectionContainer("第三个分组 - 初始折叠");
+            section3.setName("section3");
             section3.getHeader().addDecoration(new Background(0xFF1E293B));
             section3.setExpanded(false);
             section3.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.auto()));
             var content3 = new ContainerWidget();
+            content3.setName("content3");
             content3.addDecoration(new Background(0xFF64748B));
             content3.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(180)));
             section3.setContent(content3);

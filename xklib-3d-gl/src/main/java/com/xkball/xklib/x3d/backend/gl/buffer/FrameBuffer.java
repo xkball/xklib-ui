@@ -84,7 +84,7 @@ public class FrameBuffer {
     }
     
     public void bind(){
-        GLStateManager.bindFramebuffer(GL45.GL_FRAMEBUFFER, fbo);
+        GLStateManager.INSTANCE.get().bindFramebuffer(GL45.GL_FRAMEBUFFER, fbo);
     }
 
     public void destroy() {

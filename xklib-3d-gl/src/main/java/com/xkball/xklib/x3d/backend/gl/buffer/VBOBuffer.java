@@ -28,11 +28,11 @@ public class VBOBuffer implements AutoCloseable {
         if (destroyed) {
             throw new IllegalStateException("VBO has been destroyed");
         }
-        GLStateManager.bindBuffer(GL_ARRAY_BUFFER, id);
+        GLStateManager.INSTANCE.get().bindBuffer(GL_ARRAY_BUFFER, id);
     }
     
     public static void unbind() {
-        GLStateManager.bindBuffer(GL_ARRAY_BUFFER, 0);
+        GLStateManager.INSTANCE.get().bindBuffer(GL_ARRAY_BUFFER, 0);
     }
     
     public void upload(ByteBuffer data) {

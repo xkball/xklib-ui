@@ -74,7 +74,7 @@ public class RenderPipeline implements IRenderPipeline {
         VertexFormatBinding binding = VertexFormatBinding.getFor(this.format);
         binding.bind(glVbo, glIbo);
         GL45.glDrawElements(this.mode.toGl(), indexCount, iboCache.type().toGl(), 0);
-        GLStateManager.bindVertexArray(0);
+        GLStateManager.INSTANCE.get().bindVertexArray(0);
     }
 
     @Override
@@ -91,34 +91,34 @@ public class RenderPipeline implements IRenderPipeline {
     public void apply() {
         init();
         
-        GLStateManager.useProgram(shader.getProgramId());
+        GLStateManager.INSTANCE.get().useProgram(shader.getProgramId());
         
         if (depthTest) {
-            GLStateManager.enableDepthTest();
+            GLStateManager.INSTANCE.get().enableDepthTest();
         } else {
-            GLStateManager.disableDepthTest();
+            GLStateManager.INSTANCE.get().disableDepthTest();
         }
         
-        GLStateManager.depthMask(depthMask);
+        GLStateManager.INSTANCE.get().depthMask(depthMask);
         
         if (cullFace) {
-            GLStateManager.enableCullFace();
+            GLStateManager.INSTANCE.get().enableCullFace();
         } else {
-            GLStateManager.disableCullFace();
+            GLStateManager.INSTANCE.get().disableCullFace();
         }
         
         if (blendFunction.isPresent()) {
-            GLStateManager.enableBlend();
-            GLStateManager.setBlendFunction(blendFunction.get());
+            GLStateManager.INSTANCE.get().enableBlend();
+            GLStateManager.INSTANCE.get().setBlendFunction(blendFunction.get());
         } else {
-            GLStateManager.disableBlend();
+            GLStateManager.INSTANCE.get().disableBlend();
         }
         
         for (int i = 0; i < samplers.size(); i++) {
             var sampler = samplers.get(i);
             ITexture texture = sampler.getSecond().get();
-            GLStateManager.activeTexture(GL13C.GL_TEXTURE0 + i);
-            GLStateManager.bindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
+            GLStateManager.INSTANCE.get().activeTexture(GL13C.GL_TEXTURE0 + i);
+            GLStateManager.INSTANCE.get().bindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
             shader.getUniform(sampler.getFirst()).set(i);
         }
         
@@ -247,6 +247,10 @@ public class RenderPipeline implements IRenderPipeline {
         public Builder noBlend() {
             this.blendFunction = Optional.empty();
             return this;
+        }
+        
+        public ThreadLocal<RenderPipeline> buildThreadLocal(){
+            return ThreadLocal.withInitial(this::build);
         }
         
         public RenderPipeline build() {

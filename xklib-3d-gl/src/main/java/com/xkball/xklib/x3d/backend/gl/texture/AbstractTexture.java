@@ -29,7 +29,7 @@ public abstract class AbstractTexture implements ITexture {
         if (destroyed) {
             throw new IllegalStateException("Texture already destroyed");
         }
-        GLStateManager.bindTexture(GL_TEXTURE_2D, id);
+        GLStateManager.INSTANCE.get().bindTexture(GL_TEXTURE_2D, id);
     }
     
     public void unbind() {

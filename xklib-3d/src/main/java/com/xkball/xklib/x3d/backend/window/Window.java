@@ -86,6 +86,7 @@ public abstract class Window implements IWindow {
         return y;
     }
     
+    @Override
     public void setVsync(boolean enabled) {
         GLFW.glfwSwapInterval(enabled ? 1 : 0);
     }

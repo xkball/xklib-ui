@@ -13,6 +13,8 @@ import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
 import dev.vfyjxf.taffy.style.Overflow;
 import dev.vfyjxf.taffy.style.TaffyStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 public class ContainerWidget extends Widget {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
     
     protected final List<Widget> children = new ArrayList<>();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
@@ -50,11 +54,12 @@ public class ContainerWidget extends Widget {
     public ContainerWidget addChild(Widget widget, TaffyStyle style){
         untilSetTree(() -> {
             if(this.children.contains(widget)) return;
+            widget.setParent(this);
             widget.setTree(this.tree);
             var node = this.tree.newLeaf(style);
             this.tree.addChild(this.nodeId, node);
+            LOGGER.debug("{} added child: {}", this.getName(), widget.getName());
             widget.setNodeId(node);
-            widget.setParent(this);
             widget.init();
             widget.setStyle(style);
             this.children.add(widget);
@@ -68,8 +73,12 @@ public class ContainerWidget extends Widget {
         return this.addChild(widget, widget.getStyle());
     }
     
+    /**
+     * 被删除的组件不应该再被复用, 内部树结构已经被破坏
+     */
     public void removeChild(Widget widget) {
         if(!this.children.contains(widget)) return;
+        LOGGER.debug("{} removed child: {}", this.getName(), widget.getName());
         this.tree.removeChild(this.nodeId,widget.nodeId);
         this.children.remove(widget);
         this.focusNode.removeChild(widget.getFocusNode());
@@ -97,6 +106,14 @@ public class ContainerWidget extends Widget {
     @Override
     public List<Widget> getChildren() {
         return this.children;
+    }
+    
+    public void setXScroll(){
+        this.setXScroll(true);
+    }
+    
+    public void setYScroll(){
+        this.setYScroll(true);
     }
     
     public void setXScroll(boolean xScroll) {

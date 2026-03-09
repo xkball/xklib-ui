@@ -40,4 +40,9 @@ public class DefaultStyles {
         style.alignItems = AlignItems.CENTER;
         return style;
     }
+    
+    public static TaffyStyle noShink(TaffyStyle style){
+        style.flexShrink = 0;
+        return style;
+    }
 }

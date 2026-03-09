@@ -258,8 +258,10 @@ public class GuiSystem {
             return;
         }
         var time = System.nanoTime();
-        this.processTreeUpdates();
-        this.processLayoutUpdates();
+        synchronized (this){
+            this.processTreeUpdates();
+            this.processLayoutUpdates();
+        }
         var layoutTime = (System.nanoTime() - time) / 1000000f;
         time = System.nanoTime();
         for (var pair : this.screenLayers) {
@@ -272,10 +274,10 @@ public class GuiSystem {
                 this.graphics.layerUp();
                 layer.renderAbove(this.graphics, mouseX, mouseY, partialTicks);
                 this.graphics.layerUp();
-                graphics.drawString(String.format("%.2f", layoutTime),0,screenHeight-36,0xff000000);
-                graphics.drawString(String.format("%.2f",renderTime),0,screenHeight-36*2,0xff000000);
             }
         }
+        graphics.drawString(String.format("%.2f", layoutTime),0,screenHeight-36,0xff000000);
+        graphics.drawString(String.format("%.2f",renderTime),0,screenHeight-36*2,0xff000000);
         this.graphics.draw();
         renderTime = (System.nanoTime() - time) / 1000000f;
     }

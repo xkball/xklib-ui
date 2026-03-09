@@ -14,6 +14,7 @@ import com.xkball.xklib.x3d.backend.gl.pipeline.RenderPipelines;
 import com.xkball.xklib.x3d.backend.gl.state.BlitRenderState;
 import com.xkball.xklib.x3d.backend.gl.state.ColoredRectangleRenderState;
 import com.xkball.xklib.x3d.backend.gl.state.GuiRenderState;
+import com.xkball.xklib.x3d.backend.gl.state.LineRenderState;
 import com.xkball.xklib.x3d.backend.gl.state.RoundedRectangleRenderState;
 import com.xkball.xklib.x3d.backend.gl.state.TextRenderState;
 import com.xkball.xklib.x3d.backend.gl.state.TextureSetup;
@@ -103,6 +104,16 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
     }
     
     @Override
+    public void renderLine(float x0, float y0, float x1, float y1, int colorFrom, int colorTo) {
+        this.guiRenderState
+                .submitGuiElement(
+                        new LineRenderState(
+                                new Matrix3x2f(this.pose), x0, y0, x1, y1, colorFrom, colorTo, this.scissorStack.peek()
+                        )
+                );
+    }
+    
+    @Override
     public void drawString(IFont font, IComponent text, float x, float y, int color, boolean drawShadow) {
         if (!(font instanceof Font glFont)) {
             return;
@@ -114,7 +125,7 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
         this.guiRenderState
                 .submitGuiElement(
                         new TextRenderState(
-                                RenderPipelines.FONT,
+                                RenderPipelines.FONT.get(),
                                 TextureSetup.singleTexture(glFont.getAtlas()),
                                 new Matrix3x2f(this.pose),
                                 glFont,

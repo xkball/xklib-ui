@@ -6,13 +6,15 @@ import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.CalcExpression;
 import dev.vfyjxf.taffy.style.LengthPercentage;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
-import dev.vfyjxf.taffy.style.TrackSizingFunction;
 
 import java.util.List;
+
+import static dev.vfyjxf.taffy.style.TrackSizingFunction.*;
 
 public class SplitContainer extends ContainerWidget {
 
@@ -47,6 +49,7 @@ public class SplitContainer extends ContainerWidget {
         s.alignItems = AlignItems.STRETCH;
         s.justifyContent = AlignContent.STRETCH;
         rebuildGridTemplate(s);
+        this.markDirty();
     }
     
     @Override
@@ -58,38 +61,34 @@ public class SplitContainer extends ContainerWidget {
     private void rebuildGridTemplate(TaffyStyle s) {
         if (!vertical) {
             s.gridTemplateColumns = List.of(
-                    TrackSizingFunction.fr(splitRatio),
-                    TrackSizingFunction.fixed(LengthPercentage.length(BAR_SIZE)),
-                    TrackSizingFunction.fr(1f - splitRatio)
+                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(splitRatio,2)))),
+                    fixed(LengthPercentage.length(BAR_SIZE)),
+                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(1-splitRatio,2))))
             );
-            s.gridTemplateRows = List.of(TrackSizingFunction.fr(1f));
+            s.gridTemplateRows = List.of(percent(1f));
         } else {
             s.gridTemplateRows = List.of(
-                    TrackSizingFunction.fr(splitRatio),
-                    TrackSizingFunction.fixed(LengthPercentage.length(BAR_SIZE)),
-                    TrackSizingFunction.fr(1f - splitRatio)
+                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(splitRatio,2)))),
+                    fixed(LengthPercentage.length(BAR_SIZE)),
+                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(1-splitRatio,2))))
             );
-            s.gridTemplateColumns = List.of(TrackSizingFunction.fr(1f));
+            s.gridTemplateColumns = List.of(percent(1f));
         }
     }
 
     @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
-        var firstStyle = new TaffyStyle();
-        firstStyle.size = TaffySize.of(this.vertical ? TaffyDimension.percent(1) : TaffyDimension.auto(),
-                this.vertical ? TaffyDimension.auto() : TaffyDimension.percent(1));
-        this.addChild(firstPanel, firstStyle);
+        firstPanel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
+        this.addChild(firstPanel);
         var barWidget = new SplitBar();
         this.addChild(barWidget);
-        var secondStyle = new TaffyStyle();
-        secondStyle.size = TaffySize.of(this.vertical ? TaffyDimension.percent(1) : TaffyDimension.auto(),
-                this.vertical ? TaffyDimension.auto() : TaffyDimension.percent(1));
-        this.addChild(secondPanel, secondStyle);
+        secondPanel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
+        this.addChild(secondPanel);
     }
 
     public void setFirst(Widget widget, TaffyStyle style) {
-        style.size =TaffySize.all(TaffyDimension.percent(1f));
+        style.size = TaffySize.all(TaffyDimension.percent(1f));
         firstPanel.addChild(widget, style);
     }
 
@@ -98,7 +97,7 @@ public class SplitContainer extends ContainerWidget {
     }
 
     public void setSecond(Widget widget, TaffyStyle style) {
-        style.size =TaffySize.all(TaffyDimension.percent(1f));
+        style.size = TaffySize.all(TaffyDimension.percent(1f));
         secondPanel.addChild(widget, style);
     }
 

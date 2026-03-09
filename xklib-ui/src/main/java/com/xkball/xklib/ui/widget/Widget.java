@@ -12,6 +12,7 @@ import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.utils.XKLibUtils;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
@@ -25,6 +26,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     public boolean enabled = true;
     public boolean visible = true;
     public boolean hovered = false;
+    public String name = XKLibUtils.objName(this);
     protected boolean overflow = true;
     
     public TaffyTree tree = null;
@@ -219,6 +221,16 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     }
     
     @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String getName() {
+        return this.name;
+    }
+    
+    @Override
     public void setHovered(boolean hovered) {
         this.hovered = hovered;
     }
@@ -258,11 +270,13 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     
     @Override
     public void markDirty() {
+        if(this.tree == null) return;
         this.tree.markDirty(nodeId);
     }
     
     @Override
     public boolean isDirty() {
+        if(this.tree == null) return false;
         return this.tree.isDirty(nodeId);
     }
     

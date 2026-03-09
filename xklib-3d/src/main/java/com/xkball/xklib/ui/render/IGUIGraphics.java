@@ -30,6 +30,11 @@ public interface IGUIGraphics {
                                 float maxX, float maxY,
                                 int colorFrom, int colorTo, float radius);
     
+    void renderLine(
+            float x0, float y0,
+            float x1, float y1,
+            int colorFrom, int colorTo);
+    
     void drawString(IFont font, IComponent text, float x, float y, int color, boolean drawShadow);
     
     void submitBlit(
@@ -47,6 +52,10 @@ public interface IGUIGraphics {
     void layerUp();
     
     void layerDown();
+    
+    default void renderLine(float x0, float y0, float x1, float y1, int color){
+        this.renderLine(x0, y0, x1, y1, color, color);
+    }
     
     default void renderOutline(float x, float y, float width, float height, int color) {
         this.fill(x, y, x + width, y + 1, color);

@@ -2,7 +2,6 @@ package com.xkball.xklib.x3d.backend.vertex;
 
 import com.xkball.xklib.x3d.api.render.IGpuBuffer;
 import com.xkball.xklib.x3d.api.render.IBufferSource;
-import com.xkball.xklib.x3d.backend.buffer.GpuBufferSlice;
 import org.joml.Matrix3x2fc;
 import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;

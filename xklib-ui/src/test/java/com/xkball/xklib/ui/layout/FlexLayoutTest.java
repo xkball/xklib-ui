@@ -42,7 +42,7 @@ public class FlexLayoutTest {
         return widget;
     }
 
-    public static void rowStartTest() throws Exception {
+    public static void rowStartTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -53,10 +53,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void rowCenterTest() throws Exception {
+    public static void rowCenterTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -68,10 +70,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void rowSpaceBetweenTest() throws Exception {
+    public static void rowSpaceBetweenTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -82,10 +86,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void rowSpaceAroundTest() throws Exception {
+    public static void rowSpaceAroundTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -96,10 +102,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void colStartTest() throws Exception {
+    public static void colStartTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -110,10 +118,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void colEndTest() throws Exception {
+    public static void colEndTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -124,10 +134,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void flexGrowTest() throws Exception {
+    public static void flexGrowTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -161,10 +173,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void flexWithLabelAndButtonTest() throws Exception {
+    public static void flexWithLabelAndButtonTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF2D3748);
             root.asTreeRoot();
@@ -189,10 +203,12 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void rowReverseTest() throws Exception {
+    public static void rowReverseTest() {
         try (var frame = new WidgetTestFrame(() -> {
             var root = bgContainer(0xFF1A1A2E);
             root.asTreeRoot();
@@ -217,11 +233,15 @@ public class FlexLayoutTest {
             return root;
         })) {
             frame.run();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     public static void main(String[] args) throws Exception {
-        flexWithLabelAndButtonTest();
+        new Thread(FlexLayoutTest::rowCenterTest).start();
+        new Thread(FlexLayoutTest::rowReverseTest).start();
+        new Thread(FlexLayoutTest::flexWithLabelAndButtonTest).run();
     }
 }
 

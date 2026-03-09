@@ -16,7 +16,7 @@ public class FontRenderer {
     private final Matrix4f projectionMatrix;
     
     public FontRenderer() {
-        this.pipeline = RenderPipelines.FONT;
+        this.pipeline = RenderPipelines.FONT.get();
         this.projectionMatrix = new Matrix4f();
     }
     

@@ -12,17 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SequentialIBOCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SequentialIBOCache.class);
 
-    private static final ConcurrentHashMap<VertexFormat.Mode, SequentialIBOCache> CACHE = new ConcurrentHashMap<>();
-
-    static {
-        CACHE.put(VertexFormat.Mode.TRIANGLES, new SequentialIBOCache(1, 1, IntConsumer::accept));
-        CACHE.put(VertexFormat.Mode.QUADS, new SequentialIBOCache(4, 6, (consumer, accepted) -> {
+    private static final ThreadLocal<Map<VertexFormat.Mode, SequentialIBOCache>> CACHE = ThreadLocal.withInitial(() -> {
+        var result = new HashMap<VertexFormat.Mode, SequentialIBOCache>();
+        result.put(VertexFormat.Mode.TRIANGLES, new SequentialIBOCache(1, 1, IntConsumer::accept));
+        result.put(VertexFormat.Mode.QUADS, new SequentialIBOCache(4, 6, (consumer, accepted) -> {
             consumer.accept(accepted);
             consumer.accept(accepted + 1);
             consumer.accept(accepted + 2);
@@ -30,7 +31,8 @@ public class SequentialIBOCache {
             consumer.accept(accepted + 3);
             consumer.accept(accepted);
         }));
-    }
+        return result;
+    });
 
     public final int vertexStride;
     public final int indexStride;
@@ -46,11 +48,7 @@ public class SequentialIBOCache {
     }
 
     public static SequentialIBOCache getFor(VertexFormat.Mode mode) {
-        var cache = CACHE.get(mode);
-        if (cache == null) {
-            cache = CACHE.computeIfAbsent(mode, _ -> new SequentialIBOCache(1, 1, IntConsumer::accept));
-        }
-        return cache;
+        return CACHE.get().get(mode);
     }
 
     public boolean hasStorage(int index) {

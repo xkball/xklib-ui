@@ -8,7 +8,7 @@ import java.util.concurrent.locks.LockSupport;
 public final class TickHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TickHelper.class);
-    private static final long MAX_PARK_NANOS = 1_000_000L;
+    private static final long MAX_PARK_NANOS = 100_000L;
 
     private long nanosPerTick;
     private long lastTickNanos;
@@ -24,14 +24,13 @@ public final class TickHelper {
         }
         this.nanosPerTick = (long) (1_000_000_000L / tps);
     }
+    
+    public void startTick() {
+        this.lastTickNanos = System.nanoTime();
+    }
 
-    public void tick() {
+    public void endTick() {
         long now = System.nanoTime();
-        if (lastTickNanos == 0L) {
-            lastTickNanos = now;
-            return;
-        }
-
         long elapsedNanos = now - lastTickNanos;
         if (elapsedNanos < nanosPerTick) {
             long remaining = nanosPerTick - elapsedNanos;
@@ -45,7 +44,5 @@ public final class TickHelper {
             long ticksBehind = Math.max(1L, (lateNanos / nanosPerTick) + 1L);
             LOGGER.warn("Tick behind by {} ticks ({} ms)", ticksBehind, lateNanos / 1_000_000L);
         }
-
-        lastTickNanos = System.nanoTime();
     }
 }

@@ -6,11 +6,12 @@ import com.xkball.xklib.x3d.backend.vertex.VertexFormatElement;
 import org.lwjgl.opengl.ARBDirectStateAccess;
 import org.lwjgl.opengl.GL11C;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VertexFormatBinding {
 
-    private static final ConcurrentHashMap<VertexFormat, VertexFormatBinding> CACHE = new ConcurrentHashMap<>();
+    private static final ThreadLocal<Map<VertexFormat, VertexFormatBinding>> CACHE = ThreadLocal.withInitial(HashMap::new);
 
     private final int vao;
     private final VertexFormat format;
@@ -32,18 +33,18 @@ public class VertexFormatBinding {
     }
 
     public static VertexFormatBinding getFor(VertexFormat format) {
-        return CACHE.computeIfAbsent(format, VertexFormatBinding::new);
+        return CACHE.get().computeIfAbsent(format, VertexFormatBinding::new);
     }
 
     public void bind(GLGpuBuffer vbo, GLGpuBuffer ibo) {
         ARBDirectStateAccess.glVertexArrayVertexBuffer(vao, 0, vbo.handle(), 0, format.getVertexSize());
         ARBDirectStateAccess.glVertexArrayElementBuffer(vao, ibo.handle());
-        GLStateManager.bindVertexArray(vao);
+        GLStateManager.INSTANCE.get().bindVertexArray(vao);
     }
 
     public void bind(GLGpuBuffer vbo) {
         ARBDirectStateAccess.glVertexArrayVertexBuffer(vao, 0, vbo.handle(), 0, format.getVertexSize());
-        GLStateManager.bindVertexArray(vao);
+        GLStateManager.INSTANCE.get().bindVertexArray(vao);
     }
 
     public int getVao() {
