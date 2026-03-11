@@ -3,12 +3,9 @@ package com.xkball.xklib.ui.widget;
 import com.xkball.xklib.ui.WidgetTestFrame;
 import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.DefaultStyles;
-import com.xkball.xklib.ui.layout.TaffySizeParser;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
 import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignContent;
-import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TextAlign;
@@ -62,13 +59,13 @@ public class TextEditTest {
         scrollContainer.setStyle(s -> s.minSize = TaffySize.of(TaffyDimension.ZERO,TaffyDimension.ZERO));
         if (multiLine) {
             if (wrapLine) {
-                scrollContainer.setYScroll();
+                scrollContainer.setYScrollEnable();
             } else {
-                scrollContainer.setXScroll();
-                scrollContainer.setYScroll();
+                scrollContainer.setXScrollEnable();
+                scrollContainer.setYScrollEnable();
             }
         } else {
-            scrollContainer.setXScroll();
+            scrollContainer.setXScrollEnable();
         }
         
         var textEdit = new TextEdit(multiLine ? INITIAL_TEXT : "单行文本编辑器");

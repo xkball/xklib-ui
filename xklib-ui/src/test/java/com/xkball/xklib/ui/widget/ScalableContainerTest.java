@@ -49,7 +49,7 @@ public class ScalableContainerTest {
             root.addChild(scalableContainer, scStyle);
 
             var content = createComplexContent();
-            scalableContainer.setChild(content);
+            scalableContainer.addChild(content);
 
             return root;
         })) {

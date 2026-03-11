@@ -3,7 +3,6 @@ package com.xkball.xklib.ui.widget.container;
 import com.xkball.xklib.ui.WidgetTestFrame;
 import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.DefaultStyles;
-import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -27,7 +26,7 @@ public class SectionContainerTest {
                 s.alignItems = AlignItems.CENTER;
                 s.size = TaffySize.all(TaffyDimension.percent(1f));
             });
-            root.setYScroll(true);
+            root.setYScrollEnable(true);
 
             var section1 = new SectionContainer("第一个分组");
             section1.setName("section1");

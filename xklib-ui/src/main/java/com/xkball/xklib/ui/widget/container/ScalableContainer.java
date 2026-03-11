@@ -1,26 +1,18 @@
 package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
-import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.input.MouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
-import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AvailableSpace;
-import dev.vfyjxf.taffy.style.TaffyStyle;
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-public class ScalableContainer extends ContainerWidget {
+public class ScalableContainer extends AbsoluteContainer {
     
     public static final Logger LOGGER = LoggerFactory.getLogger(ScalableContainer.class);
     
-    protected Widget child;
     protected float scale = 1;
     protected float minScale = 0.05f;
     protected float maxScale = 5f;
@@ -28,24 +20,8 @@ public class ScalableContainer extends ContainerWidget {
     protected float yOffset = 0;
     protected boolean draggingPanel = false;
     
-    public ScalableContainer setChild(Widget widget){
-        this.child = widget;
-        widget.asTreeRoot();
-        widget.setParent(this);
-        widget.init();
-        this.focusNode.addChild(widget.getFocusNode());
-        return this;
-    }
-    
-    @Override
-    public ContainerWidget addChild(Widget widget, TaffyStyle style) {
-        widget.setStyle(style);
-        return this.setChild(widget);
-    }
-    
-    @Override
-    public List<Widget> getChildren() {
-        return List.of(child);
+    public ScalableContainer() {
+        this.clampWidget = false;
     }
     
     public ScalableContainer setScale(float value) {
@@ -77,49 +53,59 @@ public class ScalableContainer extends ContainerWidget {
     }
     
     @Override
-    public void resize(float offsetX, float offsetY) {
-        super.resize(offsetX, offsetY);
-        var availableW = this.width * this.scale;
-        var availableH = this.height * this.scale;
-        this.child.tree.computeLayout(this.child.nodeId, TaffySize.of(AvailableSpace.definite(availableW), AvailableSpace.definite(availableH)));
-        this.child.resize(offsetX, offsetY);
-    }
-    
-    @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        super.doRender(graphics, mouseX, mouseY, a);
+        if(this.decoration != null){
+            this.decoration.render(this, graphics, mouseX, mouseY, a);
+        }
+        var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        graphics.getPose().pushMatrix();
-        graphics.getPose().translate(this.x + this.xOffset, this.y + this.yOffset);
-        graphics.getPose().scale(this.scale, this.scale);
-        child.render(graphics, mouseX, mouseY, a);
-        graphics.getPose().popMatrix();
+        var mat = graphics.getPose().pushMatrix();
+        mat.translate(this.x + this.xOffset, this.y + this.yOffset);
+        mat.scale(this.scale, this.scale);
+        for (Widget child : this.children.reversed()) {
+            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+                child.render(graphics, mouseX, mouseY, a);
+            }
+        }
+        mat.popMatrix();
         graphics.disableScissor();
+        this.scrollBarX.render(graphics, mouseX, mouseY, a);
+        this.scrollBarY.render(graphics, mouseX, mouseY, a);
     }
     
     @Override
     public void renderBelow(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if (!this.visible) return;
-        super.renderBelow(graphics, mouseX, mouseY, a);
+//        super.renderBelow(graphics, mouseX, mouseY, a);
+        var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        graphics.getPose().pushMatrix();
-        graphics.getPose().translate(this.x + this.xOffset, this.y + this.yOffset);
-        graphics.getPose().scale(this.scale, this.scale);
-        child.renderBelow(graphics, mouseX, mouseY, a);
-        graphics.getPose().popMatrix();
+        var mat = graphics.getPose().pushMatrix();
+        mat.translate(this.x + this.xOffset, this.y + this.yOffset);
+        mat.scale(this.scale, this.scale);
+        for (Widget child : this.children.reversed()) {
+            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+                child.renderBelow(graphics, mouseX, mouseY, a);
+            }
+        }
+        mat.popMatrix();
         graphics.disableScissor();
     }
     
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if (!this.visible) return;
-        super.renderAbove(graphics, mouseX, mouseY, a);
+//        super.renderAbove(graphics, mouseX, mouseY, a);
+        var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-        graphics.getPose().pushMatrix();
-        graphics.getPose().translate(this.x + this.xOffset, this.y + this.yOffset);
-        graphics.getPose().scale(this.scale, this.scale);
-        child.renderAbove(graphics, mouseX, mouseY, a);
-        graphics.getPose().popMatrix();
+        var mat = graphics.getPose().pushMatrix();
+        mat.translate(this.x + this.xOffset, this.y + this.yOffset);
+        mat.scale(this.scale, this.scale);
+        for (Widget child : this.children.reversed()) {
+            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+                child.renderAbove(graphics, mouseX, mouseY, a);
+            }
+        }
+        mat.popMatrix();
         graphics.disableScissor();
     }
     
@@ -147,13 +133,26 @@ public class ScalableContainer extends ContainerWidget {
     
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
-        if (!this.enabled || !this.visible || this.child == null) {
+        if (!this.enabled || !this.visible) {
             this.hovered = false;
             return false;
         }
         double cx = this.toChildX(mouseX);
         double cy = this.toChildY(mouseY);
-        boolean handled = this.child.mouseMoved(cx, cy);
+        boolean handled = false;
+        for (var child : this.children) {
+            if (!handled && child.visible) {
+                if (child.mouseMoved(cx, cy)) {
+                    handled = true;
+                    continue;
+                }
+            }
+            if (child instanceof ContainerWidget acw) {
+                acw.clearHoveredRecursive();
+            } else {
+                child.hovered = false;
+            }
+        }
         if(!handled){
             this.hovered = this.isMouseOver(mouseX, mouseY);
             if(this.hovered) return true;
@@ -164,7 +163,7 @@ public class ScalableContainer extends ContainerWidget {
     
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible || this.child == null) {
+        if (!this.enabled || !this.visible) {
             return false;
         }
         double mx = event.x();
@@ -172,9 +171,21 @@ public class ScalableContainer extends ContainerWidget {
         if (!this.isMouseOver(mx, my)) {
             return false;
         }
+        Widget clickedChild = null;
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(mx), this.toChildY(my), event.button(), event.modifiers());
-        if (this.child.mouseClicked(mapped, doubleClick)) {
-            this.draggingPanel = false;
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.mouseClicked(mapped, doubleClick)) {
+                    this.draggingPanel = false;
+                    clickedChild = child;
+                    break;
+                }
+                
+            }
+        }
+        if (clickedChild != null && autoReorder && this.children.size() > 1) {
+            this.children.remove(clickedChild);
+            this.children.addFirst(clickedChild);
             return true;
         }
         if (event.button() == 0) {
@@ -186,7 +197,7 @@ public class ScalableContainer extends ContainerWidget {
     
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
-        if (!this.enabled || !this.visible || this.child == null) {
+        if (!this.enabled || !this.visible) {
             return false;
         }
         if (this.draggingPanel && event.button() == 0) {
@@ -199,23 +210,31 @@ public class ScalableContainer extends ContainerWidget {
             return false;
         }
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(mx), this.toChildY(my), event.button(), event.modifiers());
-        if (this.child.mouseReleased(mapped)) {
-            return true;
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.mouseReleased(mapped)) {
+                    return true;
+                }
+            }
         }
         return super.mouseReleased(event);
     }
     
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible || this.child == null) {
+        if (!this.enabled || !this.visible) {
             return false;
         }
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(event.x()), this.toChildY(event.y()), event.button(), event.modifiers());
         double cdx = dx / this.scale;
         double cdy = dy / this.scale;
-        if (this.child.mouseDragged(mapped, cdx, cdy)) {
-            this.draggingPanel = false;
-            return true;
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.mouseDragged(mapped, cdx, cdy)) {
+                    this.draggingPanel = false;
+                    return true;
+                }
+            }
         }
         if (this.draggingPanel && event.button() == 0) {
             this.xOffset += (float) dx;
@@ -228,7 +247,7 @@ public class ScalableContainer extends ContainerWidget {
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        if (!this.enabled || !this.visible || this.child == null) {
+        if (!this.enabled || !this.visible) {
             return false;
         }
         if (!this.isMouseOver(x, y)) {
@@ -264,18 +283,15 @@ public class ScalableContainer extends ContainerWidget {
         }
         double cx = this.toChildX(x);
         double cy = this.toChildY(y);
-        if (this.child.mouseScrolled(cx, cy, scrollX, scrollY)) {
-            return true;
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.mouseScrolled(cx, cy, scrollX, scrollY)) {
+                    return true;
+                }
+                
+            }
         }
         return super.mouseScrolled(x, y, scrollX, scrollY);
-    }
-    
-    @Override
-    public void visitWidgets(Consumer<IGuiWidget> widgetVisitor) {
-        widgetVisitor.accept(this);
-        if (this.child != null) {
-            this.child.visitWidgets(widgetVisitor);
-        }
     }
     
 }

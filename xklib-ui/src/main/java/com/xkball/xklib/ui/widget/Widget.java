@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.widget;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.api.gui.widget.IAbsoluteLayoutElement;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -13,16 +14,19 @@ import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.utils.XKLibUtils;
+import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
 
-public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
+public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbsoluteLayoutElement {
     
     protected float x;
     protected float y;
     protected float width;
     protected float height;
+    public float absoluteX;
+    public float absoluteY;
     public boolean enabled = true;
     public boolean visible = true;
     public boolean hovered = false;
@@ -35,6 +39,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     protected IDecoration decoration;
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;
+    private GuiSystem guiSystem;
     
     public Widget(){
         this(0, 0, 0, 0);
@@ -338,6 +343,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
     
     @Override
     public void resize(float offsetX, float offsetY) {
+        this.setVisible(this.style.display != TaffyDisplay.NONE);
         var layout = this.getLayout();
         if (layout != null) {
             this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
@@ -394,9 +400,54 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener {
         this.parent = widget;
     }
     
+    @Override
+    public GuiSystem getGuiSystem() {
+        if(GuiSystem.INSTANCE.get() != null) return GuiSystem.INSTANCE.get();
+        if(this.parent == null) return this.guiSystem;
+        return getRoot().getGuiSystem();
+    }
+    
+    public void setGuiSystem(GuiSystem system){
+        this.guiSystem = system;
+    }
+    
     public void renderInScissor(IGUIGraphics graphics, Runnable renderer){
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
         renderer.run();
         graphics.disableScissor();
+    }
+    
+    @Override
+    public float getAbsoluteX() {
+        return this.absoluteX;
+    }
+    
+    @Override
+    public float getAbsoluteY() {
+        return this.absoluteY;
+    }
+    
+    @Override
+    public void setAbsoluteX(float absoluteX) {
+        this.absoluteX = absoluteX;
+    }
+    
+    @Override
+    public void setAbsoluteY(float absoluteY) {
+        this.absoluteY = absoluteY;
+    }
+    
+    @Override
+    public void setAbsoluteSize(float x, float y) {
+        this.absoluteX = x;
+        this.absoluteY = y;
+    }
+    
+    @Override
+    public void setAbsoluteLayout(float x, float y, float width, float height) {
+        this.absoluteX = x;
+        this.absoluteY = y;
+        this.width = width;
+        this.height = height;
     }
 }

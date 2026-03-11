@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ContainerWidget extends Widget {
     
@@ -58,7 +59,7 @@ public class ContainerWidget extends Widget {
             widget.setTree(this.tree);
             var node = this.tree.newLeaf(style);
             this.tree.addChild(this.nodeId, node);
-            LOGGER.debug("{} added child: {}", this.getName(), widget.getName());
+//            LOGGER.debug("{} added child: {}", this.getName(), widget.getName());
             widget.setNodeId(node);
             widget.init();
             widget.setStyle(style);
@@ -67,6 +68,14 @@ public class ContainerWidget extends Widget {
             this.markDirty();
         });
         return this;
+    }
+    
+    public ContainerWidget addChild(Supplier<Widget> widget, TaffyStyle style){
+        return this.addChild(widget.get(), style);
+    }
+    
+    public ContainerWidget addChild(Supplier<Widget> widgetSupplier){
+        return this.addChild(widgetSupplier.get());
     }
     
     public ContainerWidget addChild(Widget widget) {
@@ -108,15 +117,15 @@ public class ContainerWidget extends Widget {
         return this.children;
     }
     
-    public void setXScroll(){
-        this.setXScroll(true);
+    public void setXScrollEnable(){
+        this.setXScrollEnable(true);
     }
     
-    public void setYScroll(){
-        this.setYScroll(true);
+    public void setYScrollEnable(){
+        this.setYScrollEnable(true);
     }
     
-    public void setXScroll(boolean xScroll) {
+    public void setXScrollEnable(boolean xScroll) {
         this.setStyle(s -> {
             if(xScroll) {
                 s.overflow = new TaffyPoint<>(Overflow.SCROLL,s.overflow.y);
@@ -129,7 +138,7 @@ public class ContainerWidget extends Widget {
         });
     }
     
-    public void setYScroll(boolean yScroll) {
+    public void setYScrollEnable(boolean yScroll) {
         this.setStyle(s -> {
             if(yScroll) {
                 s.overflow = new TaffyPoint<>(s.overflow.x,Overflow.SCROLL);
@@ -321,6 +330,30 @@ public class ContainerWidget extends Widget {
         return super.charTyped(event);
     }
     
+    public void scrollToX(float x){
+        var layout = this.getLayout();
+        this.xScrollOffset = Math.clamp(x, 0, layout.scrollWidth());
+    }
+    
+    public void scrollToY(float y){
+        var layout = this.getLayout();
+        this.yScrollOffset = Math.clamp(y, 0, layout.scrollHeight());
+    }
+    
+    public void scrollToBottom(){
+        var layout = this.getLayout();
+        if(layout == null) return;
+        this.yScrollOffset = layout.scrollHeight();
+    }
+    
+    public void autoScrollToBottom(){
+        var layout = this.getLayout();
+        if(layout == null) return;
+        if (this.yScrollOffset + 50 > layout.scrollHeight()){
+            this.scrollToBottom();
+        }
+    }
+    
     @Override
     protected boolean onMouseScrolled(double x, double y, double scrollX, double scrollY) {
         var layout = this.getLayout();
@@ -400,30 +433,35 @@ public class ContainerWidget extends Widget {
             for (Widget child : this.children) {
                 child.resize(this.x - this.xScrollOffset, this.y - this.yScrollOffset);
             }
-            if(this.scrollX() && layout.scrollWidth() > 0){
-                this.scrollBarX.x = this.getX();
-                this.scrollBarX.y = this.getMaxY() - layout.scrollbarSize().height;
-                this.scrollBarX.width = this.width;
-                this.scrollBarX.height = layout.scrollbarSize().height;
-                this.scrollBarX.maxScroll = layout.scrollWidth();
-                this.scrollBarX.scroll = this.xScrollOffset;
-            }
-            else{
-                this.scrollBarX.clear();
-                this.xScrollOffset = 0;
-            }
-            if(this.scrollY() && layout.scrollHeight() > 0){
-                this.scrollBarY.x = this.getMaxX() - layout.scrollbarSize().width;
-                this.scrollBarY.y = this.getY();
-                this.scrollBarY.width = layout.scrollbarSize().width;
-                this.scrollBarY.height = this.height;
-                this.scrollBarY.maxScroll = layout.scrollHeight();
-                this.scrollBarY.scroll = this.yScrollOffset;
-            }
-            else {
-                this.scrollBarY.clear();
-                this.yScrollOffset = 0;
-            }
+            this.resizeScrollBar();
+        }
+    }
+    
+    public void resizeScrollBar(){
+        var layout = this.getLayout();
+        if(this.scrollX() && layout.scrollWidth() > 0){
+            this.scrollBarX.x = this.getX();
+            this.scrollBarX.y = this.getMaxY() - layout.scrollbarSize().height;
+            this.scrollBarX.width = this.width;
+            this.scrollBarX.height = layout.scrollbarSize().height;
+            this.scrollBarX.maxScroll = layout.scrollWidth();
+            this.scrollBarX.scroll = this.xScrollOffset;
+        }
+        else{
+            this.scrollBarX.clear();
+            this.xScrollOffset = 0;
+        }
+        if(this.scrollY() && layout.scrollHeight() > 0){
+            this.scrollBarY.x = this.getMaxX() - layout.scrollbarSize().width;
+            this.scrollBarY.y = this.getY();
+            this.scrollBarY.width = layout.scrollbarSize().width;
+            this.scrollBarY.height = this.height;
+            this.scrollBarY.maxScroll = layout.scrollHeight();
+            this.scrollBarY.scroll = this.yScrollOffset;
+        }
+        else {
+            this.scrollBarY.clear();
+            this.yScrollOffset = 0;
         }
     }
     
@@ -432,8 +470,8 @@ public class ContainerWidget extends Widget {
         super.doRender(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
-            for (Widget child : this.children) {
-                if (child.visible && (this.overflow() || child.getRectangle().intersects(selfRect))) {
+            for (Widget child : this.children.reversed()) {
+                if (child.visible && child.getRectangle().intersects(selfRect)) {
                     child.render(graphics, mouseX, mouseY, a);
                 }
             }
@@ -447,8 +485,8 @@ public class ContainerWidget extends Widget {
         super.renderBelow(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
-            for (Widget child : this.children) {
-                if (child.visible && (this.overflow() || child.getRectangle().intersects(selfRect))) {
+            for (Widget child : this.children.reversed()) {
+                if (child.visible && child.getRectangle().intersects(selfRect)) {
                     child.renderBelow(graphics, mouseX, mouseY, a);
                 }
             }
@@ -460,8 +498,8 @@ public class ContainerWidget extends Widget {
         super.renderAbove(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
-            for (Widget child : this.children) {
-                if (child.visible && (this.overflow() || child.getRectangle().intersects(selfRect))) {
+            for (Widget child : this.children.reversed()) {
+                if (child.visible && child.getRectangle().intersects(selfRect)) {
                     child.renderAbove(graphics, mouseX, mouseY, a);
                 }
             }

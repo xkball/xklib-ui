@@ -4,10 +4,12 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="[%d{HH:mm:ss}][%level][%t][%c{1.}]%msg%n"/>
     </Console>
+    <LogCollectorAppender name="LogCollector"/>
   </Appenders>
   <Loggers>
     <Root level="trace">
       <AppenderRef ref="Console"/>
+      <AppenderRef ref="LogCollector"/>
     </Root>
   </Loggers>
 </Configuration>

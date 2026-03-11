@@ -12,6 +12,13 @@ public class IntLayoutVariable implements ILayoutVariable<Integer> {
     private int value;
     private final List<Consumer<Integer>> callbacks = new ArrayList<>();
     
+    public IntLayoutVariable(){
+    }
+    
+    public IntLayoutVariable(final int value) {
+        this.value = value;
+    }
+    
     public void setAsInt(int value){
         synchronized (this){
             if(this.value == value) return;

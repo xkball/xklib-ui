@@ -41,8 +41,10 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
 
-    runtimeOnly "org.apache.logging.log4j:log4j-api:2.25.2"
-    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.25.2'
+    api "org.apache.logging.log4j:log4j-api:2.25.2"
+    api 'org.apache.logging.log4j:log4j-core:2.25.2'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.25.2'
+
     runtimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2"
 
     runtimeOnly project(":xklib-3d-gl")

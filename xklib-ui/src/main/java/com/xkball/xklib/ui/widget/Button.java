@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.widget;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.ui.system.GuiSystem;
 
 public class Button extends Widget {
     
@@ -17,6 +18,13 @@ public class Button extends Widget {
     }
     
     public Button() {}
+    
+    public void onTextChanged(){
+        this.submitTreeUpdate(() -> {
+            var font = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont();
+            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(font,text));
+        });
+    }
     
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
@@ -45,6 +53,7 @@ public class Button extends Widget {
     
     public void setText(String text) {
         this.text = text;
+        this.onTextChanged();
     }
     
     public int getColor(){
@@ -61,5 +70,6 @@ public class Button extends Widget {
     
     public void setTextScale(TextScale textScale) {
         this.textScale = textScale;
+        this.onTextChanged();
     }
 }

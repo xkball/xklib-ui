@@ -41,8 +41,6 @@ public interface IGuiWidget {
 
     void setVisible(boolean visible);
     
-    
-    
     boolean visible();
     
     void setName(String name);
@@ -100,6 +98,8 @@ public interface IGuiWidget {
     @Nullable
     IGuiWidget getParent();
     
+    GuiSystem getGuiSystem();
+    
     default List<? extends IGuiWidget> getChildren(){
         return List.of();
     }
@@ -119,7 +119,7 @@ public interface IGuiWidget {
      * runnable内可以进行对widget树的操作, 被操作的对象应该markDirty来重写计算布局
      */
     default void submitTreeUpdate(Runnable runnable){
-        GuiSystem.INSTANCE.get().submitTreeUpdate(runnable);
+        getGuiSystem().submitTreeUpdate(runnable);
     }
     
     default void submitLayoutUpdate(Supplier<Iterable<IGuiWidget>> layoutUpdate){

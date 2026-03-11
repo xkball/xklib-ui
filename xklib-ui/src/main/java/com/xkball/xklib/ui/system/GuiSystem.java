@@ -293,15 +293,14 @@ public class GuiSystem {
         for(var layer : this.screenLayers){
             var widget = layer.getFirst();
             var tree = layer.getSecond();
-//            if(tree.needsVisit(widget.getNodeId())){
-                tree.computeLayout(widget.getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
-                layer.getFirst().resize(0,0);
-//            }
+            tree.computeLayout(widget.getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
+            layer.getFirst().resize(0,0);
         }
     }
     
     public void addScreenLayer(Widget layer) {
         if(layer.getTree() == null) layer.asTreeRoot();
+        layer.setGuiSystem(this);
         layer.init();
         layer.markDirty();
         this.screenLayers.add(Pair.of(layer, layer.getTree()));

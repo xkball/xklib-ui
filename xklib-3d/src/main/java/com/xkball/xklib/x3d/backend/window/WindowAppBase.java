@@ -1,7 +1,6 @@
 package com.xkball.xklib.x3d.backend.window;
 
 import com.xkball.xklib.utils.FPSLimiter;
-import com.xkball.xklib.utils.TickHelper;
 import com.xkball.xklib.x3d.api.render.IWindow;
 import com.xkball.xklib.x3d.api.resource.IWindowFactory;
 

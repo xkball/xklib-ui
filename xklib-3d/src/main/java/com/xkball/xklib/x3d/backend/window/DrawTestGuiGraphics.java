@@ -3,7 +3,6 @@ package com.xkball.xklib.x3d.backend.window;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.resource.ResourceLocation;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public class DrawTestGuiGraphics extends WindowAppBase {
     

@@ -4,7 +4,6 @@ import com.xkball.xklib.XKLib;
 import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.x3d.backend.vertex.VertexFormat;
 import com.xkball.xklib.x3d.backend.vertex.VertexFormats;
-import org.joml.Vector2f;
 
 public class RenderPipelines {
     

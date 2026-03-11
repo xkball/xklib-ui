@@ -29,7 +29,7 @@ public class TextDisplay extends ContainerWidget {
             s.alignItems = AlignItems.STRETCH;
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.calc(CalcExpression.percentMinusLength(1, 30)));
         });
-        this.setYScroll(true);
+        this.setYScrollEnable(true);
     }
     
     @Override
