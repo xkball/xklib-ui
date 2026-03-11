@@ -141,6 +141,12 @@ public interface IGuiWidget {
     
     }
     
+    default void onRemove(){
+        for(var child : this.getChildren()){
+            child.onRemove();
+        }
+    }
+    
     /**
      * 除了在绝对布局Container下或者resize里传递布局结果, 不要使用此方法改变组件位置和大小, 会被布局的结果覆盖
      */

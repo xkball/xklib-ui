@@ -3,11 +3,13 @@ package com.xkball.xklib.ui.system;
 import com.xkball.xklib.ap.annotation.RegisterEvent;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
+import com.xkball.xklib.ui.WidgetTestFrame;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.input.CharacterEvent;
 import com.xkball.xklib.ui.input.KeyEvent;
 import com.xkball.xklib.ui.input.MouseButtonEvent;
+import com.xkball.xklib.ui.screen.DebugScreen;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.utils.Pair;
@@ -27,14 +29,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 @RegisterEvent
-public class GuiSystem {
+public class GuiSystem implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiSystem.class);
     public static final ThreadLocal<GuiSystem> INSTANCE = new ThreadLocal<>();
     
     public final List<Pair<Widget, TaffyTree>> screenLayers = new ArrayList<>();
     
-    private long windowHandle;
+    public long windowHandle;
     private double lastMouseX;
     private double lastMouseY;
     private boolean isDragging = false;
@@ -44,9 +46,11 @@ public class GuiSystem {
     public int screenWidth;
     public int screenHeight;
     private boolean debug = false;
+    private boolean isClosed = false;
     private final Queue<Runnable> treeUpdateQueue = new ConcurrentLinkedQueue<>();
     private IGUIGraphics graphics;
     private final FocusManager focusManager;
+    public WidgetTestFrame debugScreen;
     
     @EventHandler
     public static void onWindowInit(WindowEvent.Init event){
@@ -104,6 +108,7 @@ public class GuiSystem {
         GLFW.glfwSetKeyCallback(windowHandle, this::onKey);
         GLFW.glfwSetCharCallback(windowHandle, this::onChar);
 //        GLFW.glfwSetCharModsCallback(windowHandle, this::onCharMods);
+        GLFW.glfwSetWindowCloseCallback(windowHandle, l -> this.close());
     }
     
     public FocusManager getFocusManager() {
@@ -205,9 +210,26 @@ public class GuiSystem {
             return;
         }
         
-        if (key == GLFW.GLFW_KEY_F12 && action == GLFW.GLFW_PRESS) {
-            //TODO: toggle debug widget
+        if (key == GLFW.GLFW_KEY_F10 && action == GLFW.GLFW_PRESS) {
             this.printLayout();
+        }
+        
+        if (key == GLFW.GLFW_KEY_F12 && action == GLFW.GLFW_PRESS) {
+//            this.printLayout();M
+            if(this.debugScreen == null){
+                debugScreen = new WidgetTestFrame(() -> new DebugScreen(this));
+                var thread = new Thread(() -> debugScreen.run());
+                thread.setName("debug-screen-" + Thread.currentThread().getName());
+                thread.start();
+            }
+            else {
+                try {
+                    debugScreen.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                debugScreen = null;
+            }
             return;
         }
         
@@ -327,8 +349,12 @@ public class GuiSystem {
     }
     
     public void removeScreenLayer(Widget layer) {
-        this.screenLayers.removeIf(p -> p.getFirst().equals(layer));
-        this.focusManager.root.removeChild(layer.getFocusNode());
+        var removed = this.screenLayers.removeIf(p -> p.getFirst().equals(layer));
+        if(removed){
+            layer.onRemove();
+            this.focusManager.root.removeChild(layer.getFocusNode());
+        }
+        
     }
     
     public void printLayout(){
@@ -358,6 +384,26 @@ public class GuiSystem {
         for (var child : widget.getChildren()) {
             if (child instanceof Widget w) {
                 printWidgetTree(w, depth + 1);
+            }
+        }
+    }
+    
+    public boolean isClosed() {
+        return this.isClosed;
+    }
+    
+    @Override
+    public void close() {
+        if(this.isClosed()) return;
+        this.isClosed = true;
+        for (var screenLayer : this.screenLayers) {
+            screenLayer.getFirst().onRemove();
+        }
+        if(this.debugScreen != null && !this.debugScreen.isClosed()){
+            try {
+                this.debugScreen.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }

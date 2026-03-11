@@ -44,16 +44,9 @@ public class SimpleTextSplitterTest {
             root.asTreeRoot();
 
             var leftSplit = new SplitContainer(false);
-            root.setFirst(leftSplit);
+            root.setPanel(0,leftSplit);
 
-            var topLeft = createTextPanel("测试1");
-            leftSplit.setFirst(topLeft);
-
-            var bottomLeft = createTextPanel("测试2");
-            leftSplit.setSecond(bottomLeft);
-
-            var rightPanel = createTextPanel("测试3");
-            root.setSecond(rightPanel);
+          
 
             return root;
         })) {

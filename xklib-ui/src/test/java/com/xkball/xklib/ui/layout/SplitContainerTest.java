@@ -38,12 +38,12 @@ public class SplitContainerTest {
             var left = colorPanel(0xFF1A6B5A);
             var leftStyle = new TaffyStyle();
             leftStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-            root.setFirst(left, leftStyle);
+            root.setPanel(0, left, leftStyle);
 
             var right = colorPanel(0xFF6B3A1A);
             var rightStyle = new TaffyStyle();
             rightStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-            root.setSecond(right, rightStyle);
+            root.setPanel(1, right, rightStyle);
 
             return root;
         })) {
@@ -59,12 +59,12 @@ public class SplitContainerTest {
             var top = colorPanel(0xFF1A3B6B);
             var topStyle = new TaffyStyle();
             topStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-            root.setFirst(top, topStyle);
+            root.setPanel(0, top, topStyle);
 
             var bottom = colorPanel(0xFF6B1A5A);
             var bottomStyle = new TaffyStyle();
             bottomStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-            root.setSecond(bottom, bottomStyle);
+            root.setPanel(1, bottom, bottomStyle);
 
             return root;
         })) {
@@ -93,7 +93,7 @@ public class SplitContainerTest {
                 itemStyle.flexShrink = 0;
                 leftPanel.addChild(item, itemStyle);
             }
-            root.setFirst(leftPanel, leftStyle);
+            root.setPanel(0, leftPanel, leftStyle);
 
             var rightPanel = colorPanel(0xFF2E1A2E);
             var rightStyle = new TaffyStyle();
@@ -110,7 +110,7 @@ public class SplitContainerTest {
                 itemStyle.flexShrink = 0;
                 rightPanel.addChild(item, itemStyle);
             }
-            root.setSecond(rightPanel, rightStyle);
+            root.setPanel(1, rightPanel, rightStyle);
 
             return root;
         })) {
@@ -141,7 +141,7 @@ public class SplitContainerTest {
                 var cellStyle = new TaffyStyle();
                 topPanel.addChild(cell, cellStyle);
             }
-            root.setFirst(topPanel, topStyle);
+            root.setPanel(0, topPanel, topStyle);
 
             var bottomPanel = colorPanel(0xFF2E2E0F);
             var bottomStyle = new TaffyStyle();
@@ -159,7 +159,7 @@ public class SplitContainerTest {
                 var cellStyle = new TaffyStyle();
                 bottomPanel.addChild(cell, cellStyle);
             }
-            root.setSecond(bottomPanel, bottomStyle);
+            root.setPanel(1, bottomPanel, bottomStyle);
 
             return root;
         })) {
@@ -175,19 +175,19 @@ public class SplitContainerTest {
             var left = colorPanel(0xFF1A2E1A);
             var leftStyle = new TaffyStyle();
             leftStyle.size = TaffySize.all(TaffyDimension.percent(1f));
-            outer.setFirst(left, leftStyle);
+            outer.setPanel(0, left, leftStyle);
+
             var innerSplit = new SplitContainer(true);
-            
 
             var innerTop = colorPanel(0xFF2E1A1A);
             var innerTopStyle = new TaffyStyle();
-            innerSplit.setFirst(innerTop, innerTopStyle);
+            innerSplit.setPanel(0, innerTop, innerTopStyle);
 
             var innerBottom = colorPanel(0xFF1A1A2E);
             var innerBottomStyle = new TaffyStyle();
-            innerSplit.setSecond(innerBottom, innerBottomStyle);
+            innerSplit.setPanel(1, innerBottom, innerBottomStyle);
 
-            outer.setSecond(innerSplit);
+            outer.setPanel(1, innerSplit);
 
             return outer;
         })) {
@@ -195,9 +195,103 @@ public class SplitContainerTest {
         }
     }
 
+    public static void multiHorizontalSplitTest() throws Exception {
+        try (var frame = new WidgetTestFrame(() -> {
+            var root = new SplitContainer(false, 4);
+            root.asTreeRoot();
+
+            int[] colors = {0xFF1A6B5A, 0xFF6B3A1A, 0xFF1A3B6B, 0xFF6B1A5A};
+            String[] names = {"面板A", "面板B", "面板C", "面板D"};
+            for (int i = 0; i < 4; i++) {
+                var panel = colorPanel(colors[i]);
+                var l = new Label(names[i]);
+                panel.addChild(l);
+                root.setPanel(i, panel);
+            }
+
+            return root;
+        })) {
+            frame.run();
+        }
+    }
+
+    public static void multiVerticalSplitTest() throws Exception {
+        try (var frame = new WidgetTestFrame(() -> {
+            var root = new SplitContainer(true, 3);
+            root.asTreeRoot();
+
+            int[] colors = {0xFF2D3748, 0xFF744210, 0xFF1A365D};
+            String[] names = {"顶部面板", "中间面板", "底部面板"};
+            for (int i = 0; i < 3; i++) {
+                var panel = colorPanel(colors[i]);
+                var l = new Label(names[i]);
+                panel.addChild(l);
+                root.setPanel(i, panel);
+            }
+
+            return root;
+        })) {
+            frame.run();
+        }
+    }
+
+    public static void multiSplitWithContentTest() throws Exception {
+        try (var frame = new WidgetTestFrame(() -> {
+            var root = new SplitContainer(false, 3);
+            root.asTreeRoot();
+
+            var leftPanel = colorPanel(0xFF1A1A2E);
+            leftPanel.setStyle(s -> {
+                s.display = TaffyDisplay.FLEX;
+                s.flexDirection = FlexDirection.COLUMN;
+                s.gap = TaffySize.all(LengthPercentage.length(4));
+            });
+            for (int i = 0; i < 4; i++) {
+                int idx = i;
+                var btn = new Button("左" + i, () -> System.out.println("左 " + idx));
+                btn.addDecoration(new Background(0xFF2D3748));
+                var btnStyle = new TaffyStyle();
+                btnStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(36));
+                btnStyle.flexShrink = 0;
+                leftPanel.addChild(btn, btnStyle);
+            }
+            root.setPanel(0, leftPanel);
+
+            var midPanel = colorPanel(0xFF2E1A0A);
+            midPanel.setStyle(s -> {
+                s.display = TaffyDisplay.GRID;
+                s.gridTemplateColumns = List.of(TrackSizingFunction.fr(1f), TrackSizingFunction.fr(1f));
+                s.gap = TaffySize.all(LengthPercentage.length(4));
+            });
+            int[] gridColors = {0xFFE94560, 0xFF0F3460, 0xFF533483, 0xFF2EC4B6};
+            for (int i = 0; i < 4; i++) {
+                midPanel.addChild(colorPanel(gridColors[i]));
+            }
+            root.setPanel(1, midPanel);
+
+            var rightPanel = colorPanel(0xFF0A2E1A);
+            rightPanel.setStyle(s -> {
+                s.display = TaffyDisplay.FLEX;
+                s.flexDirection = FlexDirection.COLUMN;
+                s.gap = TaffySize.all(LengthPercentage.length(6));
+            });
+            for (int i = 0; i < 3; i++) {
+                var lbl = label("右侧项目 " + i, 0xFF285430);
+                var lblStyle = new TaffyStyle();
+                lblStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(40));
+                lblStyle.flexShrink = 0;
+                rightPanel.addChild(lbl, lblStyle);
+            }
+            root.setPanel(2, rightPanel);
+
+            return root;
+        })) {
+            frame.run();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        nestedSplitTest();
+        multiVerticalSplitTest();
     }
 }
-
 

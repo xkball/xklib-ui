@@ -52,6 +52,10 @@ public class ContainerWidget extends Widget {
         }
     }
     
+    /**
+     * 会覆盖组件原有的样式, 外部不要调用
+     */
+    @Deprecated
     public ContainerWidget addChild(Widget widget, TaffyStyle style){
         untilSetTree(() -> {
             if(this.children.contains(widget)) return;
@@ -70,6 +74,7 @@ public class ContainerWidget extends Widget {
         return this;
     }
     
+
     public ContainerWidget addChild(Supplier<Widget> widget, TaffyStyle style){
         return this.addChild(widget.get(), style);
     }
@@ -87,9 +92,10 @@ public class ContainerWidget extends Widget {
      */
     public void removeChild(Widget widget) {
         if(!this.children.contains(widget)) return;
-        LOGGER.debug("{} removed child: {}", this.getName(), widget.getName());
+//        LOGGER.debug("{} removed child: {}", this.getName(), widget.getName());
         this.tree.removeChild(this.nodeId,widget.nodeId);
         this.children.remove(widget);
+        widget.onRemove();
         this.focusNode.removeChild(widget.getFocusNode());
         widget.setParent(null);
         this.markDirty();

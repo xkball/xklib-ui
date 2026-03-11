@@ -27,12 +27,7 @@ public class TabContainer extends ContainerWidget {
 
     protected IntLayoutVariable selected = new IntLayoutVariable(0);
     protected final List<TabPage> tabs = new ArrayList<>();
-    protected final ContainerWidget tabBar = new ContainerWidget(){
-        @Override
-        public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-            super.doRender(graphics, mouseX, mouseY, a);
-        }
-    };
+    protected final ContainerWidget tabBar = new ContainerWidget();
     protected final ContainerWidget contentPanel = new ContainerWidget();
 
     public TabContainer() {
@@ -48,7 +43,6 @@ public class TabContainer extends ContainerWidget {
         var btn = new Button(title, () -> selected.set(order));
         btn.setTextScale(TextScale.EXPAND_WIDTH);
         btn.addDecoration(ButtonLooks.transparent());
-        btn.setColor(0xffffffff);
         btn.style.margin = TaffyRect.all(LengthPercentageAuto.length(4));
         tabBar.addChild(btn);
 

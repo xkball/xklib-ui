@@ -20,15 +20,15 @@ public class TextEditTest {
             root.asTreeRoot();
 
 //            var leftPanel = createEditPanel("单行编辑", false, true, true);
-            root.setFirst(new ContainerWidget());
+//            root.setFirst(new ContainerWidget());
            
             var rightSplit = new SplitContainer(false);
 
 //            var topRight = createEditPanel("多行编辑 - 自动换行", true, true, true);
             var textEdit3 = createEditPanel("多行编辑 - 不换行", true, false, true);
-            rightSplit.setFirst(textEdit3);
-            rightSplit.setSecond(new ContainerWidget());
-            root.setSecond(rightSplit);
+//            rightSplit.setFirst(textEdit3);
+//            rightSplit.setSecond(new ContainerWidget());
+//            root.setSecond(rightSplit);
             return root;
         })) {
             frame.run();

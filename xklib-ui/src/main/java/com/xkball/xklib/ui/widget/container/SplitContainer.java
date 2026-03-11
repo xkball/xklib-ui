@@ -12,6 +12,7 @@ import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static dev.vfyjxf.taffy.style.TrackSizingFunction.*;
@@ -23,23 +24,38 @@ public class SplitContainer extends ContainerWidget {
     private static final int BAR_HOVER_COLOR = 0xFF888888;
 
     protected boolean vertical;
-    private final ContainerWidget firstPanel;
-    private final ContainerWidget secondPanel;
-    private float splitRatio = 0.5f;
+    private final int count;
+    private final float[] ratios;
+    private final List<ContainerWidget> panels = new ArrayList<>();
 
-    private boolean barDragging = false;
+    private int draggingBarIndex = -1;
     private float barDragStartMouse = 0f;
     private float barDragStartRatio = 0f;
 
-    public SplitContainer(boolean vertical) {
+    public SplitContainer(boolean vertical, int count) {
+        if (count < 2) throw new IllegalArgumentException("count must >= 2");
         this.vertical = vertical;
-        this.firstPanel = new ContainerWidget();
-        this.secondPanel = new ContainerWidget();
+        this.count = count;
+        this.ratios = new float[count - 1];
+        for (int i = 0; i < ratios.length; i++) {
+            ratios[i] = (i + 1f) / count;
+        }
+        for (int i = 0; i < count; i++) {
+            panels.add(new ContainerWidget());
+        }
         applyContainerStyle();
     }
 
+    public SplitContainer(boolean vertical) {
+        this(vertical, 2);
+    }
+
+    public SplitContainer(int count) {
+        this(false, count);
+    }
+
     public SplitContainer() {
-        this(false);
+        this(false, 2);
     }
 
     private void applyContainerStyle() {
@@ -51,89 +67,102 @@ public class SplitContainer extends ContainerWidget {
         rebuildGridTemplate(s);
         this.markDirty();
     }
-    
+
     @Override
     public void setStyle(TaffyStyle style) {
         super.setStyle(style);
         this.applyContainerStyle();
     }
-    
+
     private void rebuildGridTemplate(TaffyStyle s) {
+        var tracks = new ArrayList<dev.vfyjxf.taffy.style.TrackSizingFunction>();
+        float totalBars = (count - 1) * BAR_SIZE;
+        for (int i = 0; i < count; i++) {
+            float panelPercent = panelPercent(i);
+            tracks.add(minmax(fixed(0), fixed(LengthPercentage.calc(
+                    CalcExpression.percentMinusLength(panelPercent, totalBars * panelPercent)))));
+            if (i < count - 1) {
+                tracks.add(fixed(LengthPercentage.length(BAR_SIZE)));
+            }
+        }
         if (!vertical) {
-            s.gridTemplateColumns = List.of(
-                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(splitRatio,2)))),
-                    fixed(LengthPercentage.length(BAR_SIZE)),
-                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(1-splitRatio,2))))
-            );
+            s.gridTemplateColumns = tracks;
             s.gridTemplateRows = List.of(percent(1f));
         } else {
-            s.gridTemplateRows = List.of(
-                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(splitRatio,2)))),
-                    fixed(LengthPercentage.length(BAR_SIZE)),
-                    minmax(fixed(0), fixed(LengthPercentage.calc(CalcExpression.percentMinusLength(1-splitRatio,2))))
-            );
+            s.gridTemplateRows = tracks;
             s.gridTemplateColumns = List.of(percent(1f));
         }
+    }
+
+    private float panelPercent(int index) {
+        float start = index == 0 ? 0f : ratios[index - 1];
+        float end = index == count - 1 ? 1f : ratios[index];
+        return end - start;
     }
 
     @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
-        firstPanel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
-        this.addChild(firstPanel);
-        var barWidget = new SplitBar();
-        this.addChild(barWidget);
-        secondPanel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
-        this.addChild(secondPanel);
+        for (int i = 0; i < count; i++) {
+            var panel = panels.get(i);
+            panel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
+            this.addChild(panel);
+            if (i < count - 1) {
+                this.addChild(new SplitBar(i));
+            }
+        }
     }
 
-    public void setFirst(Widget widget, TaffyStyle style) {
+    public SplitContainer setPanel(int index, Widget widget, TaffyStyle style) {
         style.size = TaffySize.all(TaffyDimension.percent(1f));
-        firstPanel.addChild(widget, style);
+        panels.get(index).addChild(widget, style);
+        return this;
     }
 
-    public void setFirst(Widget widget) {
-        setFirst(widget, widget.getStyle());
+    public SplitContainer setPanel(int index, Widget widget) {
+        return setPanel(index, widget, widget.getStyle());
     }
 
-    public void setSecond(Widget widget, TaffyStyle style) {
-        style.size = TaffySize.all(TaffyDimension.percent(1f));
-        secondPanel.addChild(widget, style);
+    public ContainerWidget getPanel(int index) {
+        return panels.get(index);
     }
 
-    public void setSecond(Widget widget) {
-        setSecond(widget, widget.getStyle());
+    public int getCount() {
+        return count;
     }
 
-    public ContainerWidget getFirstPanel() {
-        return firstPanel;
+    public float getRatio(int barIndex) {
+        return ratios[barIndex];
     }
 
-    public ContainerWidget getSecondPanel() {
-        return secondPanel;
-    }
-
-    public float getSplitRatio() {
-        return splitRatio;
-    }
-
-    public void setSplitRatio(float ratio) {
-        this.splitRatio = Math.clamp(ratio, 0.05f, 0.95f);
+    public void setRatio(int barIndex, float ratio) {
+        float min = barIndex == 0 ? 0.01f : ratios[barIndex - 1] + 0.01f;
+        float max = barIndex == ratios.length - 1 ? 0.99f : ratios[barIndex + 1] - 0.01f;
+        ratios[barIndex] = Math.clamp(ratio, min, max);
         this.setStyle(this::rebuildGridTemplate);
     }
 
-    private boolean isMouseOverBar(double mouseX, double mouseY) {
-        if (children.size() < 2) return false;
-        var bar = children.get(1);
-        return bar.getRectangle().containsPoint((int) mouseX, (int) mouseY);
+    private int findBarIndex(double mouseX, double mouseY) {
+        int barChildIndex = 1;
+        for (int i = 0; i < count - 1; i++) {
+            if (barChildIndex < children.size()) {
+                var bar = children.get(barChildIndex);
+                if (bar.getRectangle().containsPoint((int) mouseX, (int) mouseY)) {
+                    return i;
+                }
+            }
+            barChildIndex += 2;
+        }
+        return -1;
     }
 
     @Override
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (isMouseOverBar(event.x(), event.y())) {
-            barDragging = true;
+        int barIdx = findBarIndex(event.x(), event.y());
+        if (barIdx >= 0) {
+            draggingBarIndex = barIdx;
             barDragStartMouse = vertical ? (float) event.y() : (float) event.x();
-            barDragStartRatio = splitRatio;
+            barDragStartRatio = ratios[barIdx];
             return true;
         }
         return super.onMouseClicked(event, doubleClick);
@@ -141,15 +170,15 @@ public class SplitContainer extends ContainerWidget {
 
     @Override
     protected boolean onMouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (barDragging) {
+        if (draggingBarIndex >= 0) {
             float totalSize = vertical ? this.height : this.width;
-            if (totalSize <= BAR_SIZE) return true;
-            float usable = totalSize - BAR_SIZE;
+            float totalBars = (count - 1) * BAR_SIZE;
+            float usable = totalSize - totalBars;
             if (usable <= 0) return true;
             float currentMouse = vertical ? (float) event.y() : (float) event.x();
             float delta = currentMouse - barDragStartMouse;
             float newRatio = barDragStartRatio + delta / usable;
-            setSplitRatio(newRatio);
+            setRatio(draggingBarIndex, newRatio);
             return true;
         }
         return super.onMouseDragged(event, dx, dy);
@@ -157,22 +186,28 @@ public class SplitContainer extends ContainerWidget {
 
     @Override
     protected boolean onMouseReleased(IMouseButtonEvent event) {
-        barDragging = false;
+        draggingBarIndex = -1;
         return super.onMouseReleased(event);
     }
 
     public class SplitBar extends Widget {
 
+        private final int barIndex;
+
+        public SplitBar(int barIndex) {
+            this.barIndex = barIndex;
+        }
+
         @Override
         public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
             super.doRender(graphics, mouseX, mouseY, a);
-            int color = (this.hovered || barDragging) ? BAR_HOVER_COLOR : BAR_COLOR;
+            int color = (this.hovered || draggingBarIndex == barIndex) ? BAR_HOVER_COLOR : BAR_COLOR;
             graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, color);
         }
-        
+
         @Override
         public void onFocusChanged(boolean focused) {
-            if(!focused) barDragging = false;
+            if (!focused && draggingBarIndex == barIndex) draggingBarIndex = -1;
         }
     }
 }

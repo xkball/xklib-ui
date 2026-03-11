@@ -9,7 +9,7 @@ import java.util.ServiceLoader;
 public class WindowAppBase implements Runnable, AutoCloseable {
     
     protected IWindow window;
-    
+    protected boolean isClosed = false;
     public void init(){
     
     }
@@ -20,7 +20,12 @@ public class WindowAppBase implements Runnable, AutoCloseable {
     
     @Override
     public void close() throws Exception {
+        this.isClosed = true;
         window.close();
+    }
+    
+    public boolean isClosed(){
+        return isClosed;
     }
     
     @Override
@@ -32,7 +37,7 @@ public class WindowAppBase implements Runnable, AutoCloseable {
         var fpsLimit = new FPSLimiter(240);
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         this.init();
-        while (!window.shouldClose()) {
+        while (!this.isClosed && !window.shouldClose()) {
             this.render();
             window.swapBuffer();
             fpsLimit.tickFrame();

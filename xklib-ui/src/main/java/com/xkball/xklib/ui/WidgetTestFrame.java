@@ -13,10 +13,17 @@ import java.util.function.Supplier;
 public class WidgetTestFrame extends WindowAppBase {
     
     private final Supplier<Widget> widgetSupplier;
+    
     private GuiSystem guiSystem ;
     
     public WidgetTestFrame(Supplier<Widget> widgetSupplier){
         this.widgetSupplier = widgetSupplier;
+    }
+    
+    @Override
+    public void close() throws Exception {
+        this.guiSystem.close();
+        super.close();
     }
     
     @Override
