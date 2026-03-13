@@ -29,12 +29,14 @@ public class AdjacencyList<T,D>{
             this.addNode(child);
         }
         else {
-            childMap.computeIfPresent(parent,(k,v) -> {
+            childMap.computeIfPresent(parent,(ignored,v) -> {
                 v.add(child);
                 return v;
             });
+            childMap.put(child, new ArrayList<>());
             parentMap.put(child, parent);
             dataMap.put(child, null);
+            roots.remove(child);
         }
     }
     
@@ -87,9 +89,10 @@ public class AdjacencyList<T,D>{
     //浅复制
     public AdjacencyList<T,D> copy(){
         var newAdjacencyList = new AdjacencyList<T,D>();
-        newAdjacencyList.childMap.putAll(this.childMap);
+        this.childMap.forEach((k, v) -> newAdjacencyList.childMap.put(k, new ArrayList<>(v)));
         newAdjacencyList.parentMap.putAll(this.parentMap);
         newAdjacencyList.dataMap.putAll(this.dataMap);
+        newAdjacencyList.roots.addAll(this.roots);
         return newAdjacencyList;
     }
 }

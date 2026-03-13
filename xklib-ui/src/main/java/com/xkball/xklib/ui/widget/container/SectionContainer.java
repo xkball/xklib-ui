@@ -22,7 +22,7 @@ public class SectionContainer extends ContainerWidget {
     public SectionContainer(String title, Widget content) {
         super();
         this.header = new Label(title, TextAlign.LEFT, 0xFFE2E8F0);
-        this.header.setName("header");
+        this.header.setCSSId("header");
         this.content = content;
         this.addChild(header);
     }

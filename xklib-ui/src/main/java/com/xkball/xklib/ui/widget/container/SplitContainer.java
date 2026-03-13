@@ -70,8 +70,9 @@ public class SplitContainer extends ContainerWidget {
 
     @Override
     public void setStyle(TaffyStyle style) {
+        rebuildGridTemplate(style);
         super.setStyle(style);
-        this.applyContainerStyle();
+//        this.applyContainerStyle();
     }
 
     private void rebuildGridTemplate(TaffyStyle s) {

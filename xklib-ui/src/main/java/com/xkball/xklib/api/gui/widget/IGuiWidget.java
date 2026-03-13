@@ -4,7 +4,6 @@ import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.TaffySizeParser;
 import com.xkball.xklib.ui.system.GuiSystem;
-import com.xkball.xklib.utils.XKLibUtils;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.Layout;
@@ -14,7 +13,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "UnusedReturnValue"})
@@ -43,11 +41,15 @@ public interface IGuiWidget {
     
     boolean visible();
     
-    void setName(String name);
+    String getCSSType();
     
-    default String getName(){
-        return XKLibUtils.objName(this);
-    }
+    void setCSSClassName(String name);
+    
+    String getCSSClassName();
+    
+    void setCSSId(String name);
+    
+    String getCSSId();
     
     /*
     仅供GuiSystem更新, 不应该使用
@@ -98,7 +100,11 @@ public interface IGuiWidget {
     @Nullable
     IGuiWidget getParent();
     
-    GuiSystem getGuiSystem();
+    /**
+     * 不可在初始化时调用
+     * 为多线程情况准备, 调用成本较高, 如果确认在UI线程请使用GuiSystem.INSTANCE.get()
+     */
+    GuiSystem getGuiSystemAsync();
     
     default List<? extends IGuiWidget> getChildren(){
         return List.of();
@@ -119,12 +125,10 @@ public interface IGuiWidget {
      * runnable内可以进行对widget树的操作, 被操作的对象应该markDirty来重写计算布局
      */
     default void submitTreeUpdate(Runnable runnable){
-        getGuiSystem().submitTreeUpdate(runnable);
+        GuiSystem.INSTANCE.get().submitTreeUpdate(runnable);
     }
     
-    default void submitLayoutUpdate(Supplier<Iterable<IGuiWidget>> layoutUpdate){
-        layoutUpdate.get().forEach(IGuiWidget::markDirty);
-    }
+    void submitTreeUpdateAsync(Runnable runnable);
     
     /**
      *  仅用于提交一些其他任务, 不应在其中进行UI操作, 可以在运算完成后通过其他submit方法来通知UI并在下一帧进行更新

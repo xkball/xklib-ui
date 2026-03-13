@@ -37,7 +37,7 @@ public record RoundedRectangleRenderState(
     ) {
         this(pipeline, textureSetup, pose, x0, y0, x1, y1, col1, col2,
              clampRadius(radius, x0, y0, x1, y1),
-             scissorArea, getBounds(x0, y0, x1, y1, pose, scissorArea));
+             scissorArea, IGuiElementRenderState.getBounds(x0, y0, x1, y1, pose, scissorArea));
     }
     
     private static float clampRadius(float radius, float x0, float y0, float x1, float y1) {
@@ -65,9 +65,5 @@ public record RoundedRectangleRenderState(
                 .setUv(width, 0).setUv2(width,height).setColor(this.col1())
                 .setUnsafe(VertexFormatElement.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr, r));
     }
-
-    private static @Nullable ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
-        ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
-        return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
-    }
+    
 }

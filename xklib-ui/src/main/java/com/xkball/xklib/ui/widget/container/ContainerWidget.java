@@ -16,10 +16,8 @@ import dev.vfyjxf.taffy.style.TaffyStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -28,7 +26,6 @@ public class ContainerWidget extends Widget {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
     
     protected final List<Widget> children = new ArrayList<>();
-    protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
     protected float xScrollOffset = 0;
     protected float yScrollOffset = 0;
     protected ScrollBar scrollBarX = new ScrollBar(false);
@@ -41,15 +38,6 @@ public class ContainerWidget extends Widget {
     
     public ContainerWidget() {
         super();
-    }
-    
-    protected void untilSetTree(Runnable runnable) {
-        if(this.tree == null) {
-            untilSetTree.add(runnable);
-        }
-        else {
-            runnable.run();
-        }
     }
     
     /**
@@ -111,12 +99,17 @@ public class ContainerWidget extends Widget {
     }
     
     @Override
+    public String getCSSType() {
+        return "div";
+    }
+    
+    @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
-        while (!this.untilSetTree.isEmpty()) {
-            this.untilSetTree.poll().run();
-        }
+        
     }
+    
+    
     
     @Override
     public List<Widget> getChildren() {

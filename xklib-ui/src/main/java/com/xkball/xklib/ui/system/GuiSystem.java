@@ -13,6 +13,7 @@ import com.xkball.xklib.ui.screen.DebugScreen;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.utils.Pair;
+import com.xkball.xklib.utils.SimpleProfiler;
 import com.xkball.xklib.x3d.backend.window.WindowEvent;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AvailableSpace;
@@ -282,6 +283,9 @@ public class GuiSystem implements AutoCloseable {
         synchronized (this){
             this.processTreeUpdates();
             this.processLayoutUpdates();
+            if(this.debugScreen != null && this.debugScreen.widget instanceof DebugScreen ds){
+                ds.updatePerformanceData(((SimpleProfiler) profiler).getData());
+            }
         }
         profiler.pushPop("gui render");
         for (var pair : this.screenLayers) {

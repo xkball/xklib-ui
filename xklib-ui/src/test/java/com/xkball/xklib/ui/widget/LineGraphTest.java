@@ -130,7 +130,7 @@ public class LineGraphTest {
         g.axisColor = 0xFF30363D;
         g.numColor = 0xFF8B949E;
         g.gridColor = 0x1AFFFFFF;
-        g.name = name;
+        g.cssId = name;
         return g;
     }
 
@@ -153,7 +153,7 @@ public class LineGraphTest {
             s.size = TaffySize.all(TaffyDimension.percent(1f));
         });
 
-        var title = new Label(graph.name, dev.vfyjxf.taffy.style.TextAlign.LEFT, 0xFF8B949E);
+        var title = new Label(graph.cssId, dev.vfyjxf.taffy.style.TextAlign.LEFT, 0xFF8B949E);
         title.setStyle(s -> {
             s.size = TaffySize.of(TaffyDimension.percent(1f), TaffyDimension.length(14));
             s.flexShrink = 0;

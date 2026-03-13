@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'idea'
+    id 'antlr'
 }
 
 group = 'com.xkball.xklib.ui'
@@ -16,6 +17,9 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 dependencies {
     api "dev.vfyjxf:taffy:1.1.4"
     api project(":xklib-3d")
+    api 'org.antlr:antlr4-runtime:4.13.2'
+    antlr "org.antlr:antlr4:4.13.2"
+
     runtimeOnly project(":xklib-3d-gl")
 
     annotationProcessor project(":xklib-ap")

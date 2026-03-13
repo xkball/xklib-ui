@@ -36,7 +36,7 @@ public class WindowAppBase implements Runnable, AutoCloseable {
         this.window.init();
         window.setVsync(false);
         var fpsLimit = new FPSLimiter(240);
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+//        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         var profiler = XKLib.RENDER_CONTEXT.get().getProfiler();
         this.init();
         while (!this.isClosed && !window.shouldClose()) {

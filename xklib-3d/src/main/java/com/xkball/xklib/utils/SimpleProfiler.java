@@ -39,6 +39,6 @@ public class SimpleProfiler implements IProfiler {
     }
     
     public AdjacencyList<String,Long> getData(){
-        return this.tree;
+        return this.lastTick;
     }
 }

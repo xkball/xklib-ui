@@ -16,8 +16,13 @@ public interface IGuiElementRenderState extends IScreenArea {
     @Nullable
     ScreenRectangle scissorArea();
     
+    /**
+     * 在MC中有用, 在此没用所以返回null节省性能
+     * 这是有必要的, 这里的性能相当灾难
+     */
     static @Nullable ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose, @Nullable ScreenRectangle scissorArea) {
-        ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
-        return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
+//        ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
+//        return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
+        return null;
     }
 }

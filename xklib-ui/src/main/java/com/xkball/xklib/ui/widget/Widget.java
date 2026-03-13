@@ -19,6 +19,9 @@ import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbsoluteLayoutElement {
     
     protected float x;
@@ -30,16 +33,21 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public boolean enabled = true;
     public boolean visible = true;
     public boolean hovered = false;
-    public String name = XKLibUtils.objName(this);
+    public String cssId = XKLibUtils.objName(this);
+    public String cssType = XKLibUtils.objClassName(this);
+    public String cssClass = "";
     protected boolean overflow = true;
     
     public TaffyTree tree = null;
     public TaffyStyle style = new TaffyStyle();
     public NodeId nodeId = null;
+    @Deprecated
+    //todo 替换为css
     protected IDecoration decoration;
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;
     private GuiSystem guiSystem;
+    protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
     
     public Widget(){
         this(0, 0, 0, 0);
@@ -53,6 +61,15 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.focusNode = new FocusNode(null);
         this.focusNode.widget = this;
         this.focusNode.setCanTakePrimaryFocus(this.isFocusable());
+    }
+    
+    protected void untilSetTree(Runnable runnable) {
+        if(this.tree == null) {
+            untilSetTree.add(runnable);
+        }
+        else {
+            runnable.run();
+        }
     }
     
     @Override
@@ -166,6 +183,31 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
+    public String getCSSType() {
+        return this.cssType;
+    }
+    
+    @Override
+    public void setCSSClassName(String name) {
+        this.cssClass = name;
+    }
+    
+    @Override
+    public String getCSSClassName() {
+        return this.cssClass;
+    }
+    
+    @Override
+    public void setCSSId(String name) {
+        this.cssId = name;
+    }
+    
+    @Override
+    public String getCSSId() {
+        return this.cssId;
+    }
+    
+    @Override
     public void setX(float x) {
         this.x = x;
     }
@@ -223,16 +265,6 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     @Override
     public boolean visible() {
         return this.visible;
-    }
-    
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String getName() {
-        return this.name;
     }
     
     @Override
@@ -297,6 +329,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     public void afterTreeAndNodeSet(){
         this.tree.setStyle(this.nodeId, this.style);
+        while (!this.untilSetTree.isEmpty()) {
+            this.untilSetTree.poll().run();
+        }
     }
     
     @Override
@@ -401,10 +436,14 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    public GuiSystem getGuiSystem() {
-        if(GuiSystem.INSTANCE.get() != null) return GuiSystem.INSTANCE.get();
+    public GuiSystem getGuiSystemAsync() {
         if(this.parent == null) return this.guiSystem;
-        return getRoot().getGuiSystem();
+        return getRoot().getGuiSystemAsync();
+    }
+    
+    @Override
+    public void submitTreeUpdateAsync(Runnable runnable) {
+        this.untilSetTree(() -> getGuiSystemAsync().submitTreeUpdate(runnable));
     }
     
     public void setGuiSystem(GuiSystem system){

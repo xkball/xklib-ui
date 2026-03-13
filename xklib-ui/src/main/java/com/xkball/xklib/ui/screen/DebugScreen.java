@@ -12,6 +12,7 @@ import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
 import com.xkball.xklib.ui.widget.container.TabContainer;
+import com.xkball.xklib.utils.AdjacencyList;
 import dev.vfyjxf.taffy.geometry.TaffyRect;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignItems;
@@ -45,10 +46,11 @@ public class DebugScreen extends ContainerWidget {
     private final SplitContainer treeView = new SplitContainer(false, 3);
     private final ContainerWidget treeViewContent = new ContainerWidget();
     private final ContainerWidget fieldViewContent = new ContainerWidget();
+    private final PerformanceScreen performanceScreen = new PerformanceScreen();
     private final List<WeakReference<Widget>> openNodes = new ArrayList<>();
     private WidgetData lastSelectedNode = null;
     private boolean dirty = false;
-    private BooleanLayoutVariable keepUpdating = new BooleanLayoutVariable(false);
+    private final BooleanLayoutVariable keepUpdating = new BooleanLayoutVariable(false);
 
     public DebugScreen(GuiSystem theOtherSystem) {
         this.theOtherSystem = theOtherSystem;
@@ -110,7 +112,9 @@ public class DebugScreen extends ContainerWidget {
         fieldPanel.addChild(makeHeader("组件字段"));
         fieldPanel.addChild(fieldViewContent);
 
-        this.addChild(this.tabs.addTabPage(treeView, "查看器"));
+        this.addChild(this.tabs
+                .addTabPage(treeView, "查看器")
+                .addTabPage(performanceScreen, "性能监视器"));
 
         var keepUpdatingLabel = new Label("保持更新", TextAlign.LEFT, TEXT_COLOR);
         keepUpdatingLabel.setSize("auto","100%");
@@ -141,6 +145,10 @@ public class DebugScreen extends ContainerWidget {
         });
         label.setTextScale(TextScale.EXPAND_WIDTH);
         return label;
+    }
+    
+    public void updatePerformanceData(AdjacencyList<String,Long> data){
+        this.performanceScreen.updateData(data);
     }
 
     @Override
