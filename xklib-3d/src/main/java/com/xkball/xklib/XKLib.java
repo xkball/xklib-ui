@@ -4,6 +4,7 @@ import com.xkball.xklib.utils.RegisterEventHandler;
 import com.xkball.xklib.x3d.api.event.IEvent;
 import com.xkball.xklib.x3d.api.render.IRenderContext;
 import com.xkball.xklib.x3d.backend.window.DrawTestGuiGraphics;
+import com.xkball.xklib.x3d.backend.window.DrawTestText;
 import net.lenni0451.lambdaevents.LambdaManager;
 import net.lenni0451.lambdaevents.generator.LambdaMetaFactoryGenerator;
 
@@ -19,6 +20,6 @@ public class XKLib {
     }
     
     public static void main(String[] args) {
-        new DrawTestGuiGraphics().run();
+        new DrawTestText().run();
     }
 }

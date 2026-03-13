@@ -27,9 +27,11 @@ public class FontAtlas extends AbstractTexture {
     private int currentX = 0;
     private int currentY = 0;
     private int maxRowHeight = 0;
+    private float overSampleScale;
     
-    public FontAtlas(byte[] fontData, int fontSize) {
+    public FontAtlas(byte[] fontData, int fontSize, float overSampleScale) {
         this.fontInfo = STBTTFontinfo.create();
+        this.overSampleScale = overSampleScale;
         fontDataBuffer = MemoryUtil.memAlloc(fontData.length);
         fontDataBuffer.put(fontData).flip();
         
@@ -44,7 +46,7 @@ public class FontAtlas extends AbstractTexture {
             throw new RuntimeException("Failed to initialize font");
         }
         
-        this.scale = STBTruetype.stbtt_ScaleForPixelHeight(fontInfo, fontSize);
+        this.scale = STBTruetype.stbtt_ScaleForPixelHeight(fontInfo, fontSize * overSampleScale);
         
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer ascentBuf = stack.mallocInt(1);
@@ -96,7 +98,7 @@ public class FontAtlas extends AbstractTexture {
             
             if (bitmap == null) {
                 int advance = (int)(advanceBuf.get(0) * scale);
-                return new GlyphInfo(codepoint, 0, 0, 0, 0, 0, 0, advance, 0, 0, 0, 0);
+                return new GlyphInfo(codepoint, 0, 0, 0, 0, advance, 0, 0, 0, 0);
             }
             
             int glyphWidth = widthBuf.get(0);
@@ -107,7 +109,7 @@ public class FontAtlas extends AbstractTexture {
             if (glyphWidth <= 0 || glyphHeight <= 0) {
                 STBTruetype.stbtt_FreeBitmap(bitmap);
                 int advance = (int)(advanceBuf.get(0) * scale);
-                return new GlyphInfo(codepoint, 0, 0, 0, 0, 0, 0, advance, 0, 0, 0, 0);
+                return new GlyphInfo(codepoint, 0, 0, 0, 0, advance, 0, 0, 0, 0);
             }
             
             int padding = 2;
@@ -135,17 +137,15 @@ public class FontAtlas extends AbstractTexture {
             float u1 = (float)(currentX + glyphWidth) / width;
             float v1 = (float)(currentY + glyphHeight) / height;
             
-            int advance = (int)(advanceBuf.get(0) * scale);
+            float advance = advanceBuf.get(0) * scale;
             
             GlyphInfo glyphInfo = new GlyphInfo(
                 codepoint,
-                currentX,
-                currentY,
-                glyphWidth,
-                glyphHeight,
-                xOff,
-                yOff,
-                advance,
+                glyphWidth / this.overSampleScale,
+                glyphHeight / this.overSampleScale,
+                xOff / this.overSampleScale,
+                yOff / this.overSampleScale,
+                advance / this.overSampleScale,
                 u0,
                 v0,
                 u1,

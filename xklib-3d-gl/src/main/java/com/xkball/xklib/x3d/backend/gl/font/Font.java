@@ -16,11 +16,11 @@ public class Font implements IFont {
     public Font(int fontSize) {
         this.fontSize = fontSize;
         var fontData = loadSystemFont();
-        this.atlas = new FontAtlas(fontData, fontSize);
+        this.atlas = new FontAtlas(fontData, fontSize, 2);
     }
     
     public Font() {
-        this(32);
+        this(16);
     }
     
     @Override
