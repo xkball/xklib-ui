@@ -1,6 +1,8 @@
 package com.xkball.xklib.x3d.backend.gl.window;
 
+import com.xkball.xklib.api.IProfiler;
 import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.utils.SimpleProfiler;
 import com.xkball.xklib.x3d.api.render.IBufferSource;
 import com.xkball.xklib.x3d.api.render.IRenderContext;
 import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
@@ -17,6 +19,7 @@ public class OpenGLRenderContext implements IRenderContext {
     private final GuiRenderer guiRenderer = new GuiRenderer();
     private final Font font = new Font();
     private final OpenGLGUIGraphics guiGraphics = new OpenGLGUIGraphics(guiRenderer.state, font, _ -> guiRenderer.draw());
+    private final IProfiler profiler = new SimpleProfiler();
     
     public OpenGLRenderContext(OpenGLWindow window) {
         this.window = window;
@@ -50,5 +53,10 @@ public class OpenGLRenderContext implements IRenderContext {
     @Override
     public IGUIGraphics getGUIGraphics() {
         return this.guiGraphics;
+    }
+    
+    @Override
+    public IProfiler getProfiler() {
+        return this.profiler;
     }
 }

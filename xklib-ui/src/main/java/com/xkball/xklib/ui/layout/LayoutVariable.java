@@ -13,7 +13,7 @@ public class LayoutVariable<T> implements ILayoutVariable<T> {
     private final List<Consumer<T>> callbacks = new ArrayList<>();
     
     public LayoutVariable(T value) {
-    
+        this.value = value;
     }
     @Override
     public void set(T value) {

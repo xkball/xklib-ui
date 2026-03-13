@@ -22,14 +22,14 @@ public class GuiRenderer {
         window.getFramebuffer().clearDepthStencil();
         projectionMatrix.setOrtho(0.0F, window.getWidth(), window.getHeight(), 0.0F, 1, 10000, true);
         var z = 2f;
-        var layerDepth = 9995/state.layers().size();
+        var layerDepth = 9995f/state.layers().size();
         boolean lastScissorEnabled = false;
         for (var layer : state.layers()) {
             if (layer.elements.isEmpty()) continue;
             var offset = layerDepth / layer.elements.size();
             var builderMap = new LinkedHashMap<Draw, BufferBuilder>();
             for (var ele : layer.elements) {
-                var builder = builderMap.computeIfAbsent(Draw.of(ele), rl -> BufferBuilder.start(ele.pipeline().mode(), ele.pipeline().format()));
+                var builder = builderMap.computeIfAbsent(Draw.of(ele), _ -> BufferBuilder.start(ele.pipeline().mode(), ele.pipeline().format()));
                 ele.buildVertices(builder, z);
                 z += offset;
             }

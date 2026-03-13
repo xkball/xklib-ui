@@ -5,7 +5,9 @@ import com.xkball.xklib.x3d.api.render.IRenderPipeline;
 import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
 import com.xkball.xklib.x3d.backend.vertex.BufferBuilder;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fc;
+import org.joml.Vector2f;
 
 public record LineRenderState(
         Matrix3x2fc pose,
@@ -19,6 +21,7 @@ public record LineRenderState(
         @Nullable ScreenRectangle bounds
 ) implements IGuiElementRenderState{
     
+    private static final Matrix3x2fc ROTATE90 = new Matrix3x2f().rotate((float) Math.toRadians(90));
     public LineRenderState(
             Matrix3x2fc pose,
             float x0,
@@ -34,12 +37,14 @@ public record LineRenderState(
     
     @Override
     public void buildVertices(BufferBuilder vertexConsumer, float zOffset) {
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setUv(0,0).setColor(this.col1());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setUv(1,0).setColor(this.col2());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setUv(0,0).setColor(this.col2());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setUv(0,0).setColor(this.col2());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setUv(1,0).setColor(this.col1());
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setUv(1,0).setColor(this.col2());
+        var dir = new Vector2f(x1-x0,y1-y0);
+        dir = ROTATE90.transformDirection(dir).normalize();
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setNormal(dir.x,dir.y,0).setColor(this.col1());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setNormal(dir.x,dir.y,1).setColor(this.col2());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setNormal(dir.x,dir.y,0).setColor(this.col2());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setNormal(dir.x,dir.y,0).setColor(this.col2());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), zOffset).setNormal(dir.x,dir.y,1).setColor(this.col1());
+        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset).setNormal(dir.x,dir.y,1).setColor(this.col2());
     }
     
     @Override

@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.ui.deco.ButtonLooks;
+import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -10,6 +11,7 @@ import dev.vfyjxf.taffy.geometry.TaffyRect;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.CalcExpression;
 import dev.vfyjxf.taffy.style.LengthPercentage;
 import dev.vfyjxf.taffy.style.LengthPercentageAuto;
 import dev.vfyjxf.taffy.style.TaffyDimension;
@@ -45,7 +47,6 @@ public class TabContainer extends ContainerWidget {
         btn.addDecoration(ButtonLooks.transparent());
         btn.style.margin = TaffyRect.all(LengthPercentageAuto.length(4));
         tabBar.addChild(btn);
-
         if (tabs.size() > 1) {
             widget.setStyle(s -> s.display = TaffyDisplay.NONE);
         }
@@ -83,14 +84,10 @@ public class TabContainer extends ContainerWidget {
         );
         this.style.alignItems = AlignItems.STRETCH;
         this.style.justifyContent = AlignContent.STRETCH;
-
-        var tabBarStyle = new TaffyStyle();
-        tabBarStyle.display = TaffyDisplay.FLEX;
-        tabBarStyle.alignItems = AlignItems.STRETCH;
-        tabBarStyle.justifyContent = AlignContent.STRETCH;
-        tabBar.setStyle(tabBarStyle);
-
-        this.addChild(tabBar, tabBarStyle);
+        
+        tabBar.applyStyle(DefaultStyles::flexCenteredRow);
+        contentPanel.setStyle(s -> s.size = new TaffySize<>(s.size.width, TaffyDimension.calc(CalcExpression.percentMinusLength(1,TAB_BAR_HEIGHT))));
+        this.addChild(tabBar);
         this.addChild(contentPanel);
     }
 
@@ -104,6 +101,10 @@ public class TabContainer extends ContainerWidget {
 
     public List<TabPage> getTabs() {
         return tabs;
+    }
+    
+    public ContainerWidget getTabBar(){
+        return tabBar;
     }
 
     public record TabPage(int index, String title, TaffyDisplay rawDisplay, Widget widget) {

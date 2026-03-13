@@ -1,5 +1,6 @@
 package com.xkball.xklib.x3d.backend.window;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.utils.FPSLimiter;
 import com.xkball.xklib.x3d.api.render.IWindow;
 import com.xkball.xklib.x3d.api.resource.IWindowFactory;
@@ -36,11 +37,17 @@ public class WindowAppBase implements Runnable, AutoCloseable {
         window.setVsync(false);
         var fpsLimit = new FPSLimiter(240);
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+        var profiler = XKLib.RENDER_CONTEXT.get().getProfiler();
         this.init();
         while (!this.isClosed && !window.shouldClose()) {
+            profiler.push("frame");
             this.render();
             window.swapBuffer();
+            profiler.push("wait");
             fpsLimit.tickFrame();
+            profiler.pop();
+            profiler.pop();
+            profiler.endTick();
         }
     }
     

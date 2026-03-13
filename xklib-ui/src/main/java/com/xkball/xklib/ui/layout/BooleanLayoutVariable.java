@@ -12,6 +12,14 @@ public class BooleanLayoutVariable implements ILayoutVariable<Boolean> {
     private boolean value;
     private final List<Consumer<Boolean>> callbacks = new ArrayList<>();
     
+    public BooleanLayoutVariable(){
+    
+    }
+    
+    public BooleanLayoutVariable(boolean value){
+        this.value = value;
+    }
+    
     public void setAsBoolean(boolean value){
         synchronized (this){
             if(this.value == value) return;

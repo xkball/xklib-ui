@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class WidgetTestFrame extends WindowAppBase {
     
     private final Supplier<Widget> widgetSupplier;
-    
+    public Widget widget;
     private GuiSystem guiSystem ;
     
     public WidgetTestFrame(Supplier<Widget> widgetSupplier){
@@ -30,7 +30,8 @@ public class WidgetTestFrame extends WindowAppBase {
     public void init() {
         super.init();
         this.guiSystem = GuiSystem.INSTANCE.get();
-        guiSystem.addScreenLayer(widgetSupplier.get());
+        this.widget = widgetSupplier.get();
+        guiSystem.addScreenLayer(this.widget);
     }
     
     @Override

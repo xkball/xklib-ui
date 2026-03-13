@@ -102,9 +102,13 @@ public class OpenGLWindow extends Window {
     
     @Override
     public void swapBuffer() {
+        var profiler = XKLib.RENDER_CONTEXT.get().getProfiler();
+        profiler.push("swap framebuffer");
         framebuffer.blitToDefault();
         glfwSwapBuffers(handle);
+        profiler.pushPop("poll events");
         glfwPollEvents();
+        profiler.pop();
         framebuffer.bind();
         framebuffer.clearWhite();
     }

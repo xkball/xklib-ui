@@ -273,19 +273,17 @@ public class GuiSystem implements AutoCloseable {
         this.render((int) this.lastMouseX, (int) this.lastMouseY, 0);
     }
     
-    private float renderTime;
-    
     public void render(int mouseX, int mouseY, float partialTicks) {
         if (this.graphics == null) {
             return;
         }
-        var time = System.nanoTime();
+        var profiler = XKLib.RENDER_CONTEXT.get().getProfiler();
+        profiler.push("gui update");
         synchronized (this){
             this.processTreeUpdates();
             this.processLayoutUpdates();
         }
-        var layoutTime = (System.nanoTime() - time) / 1000000f;
-        time = System.nanoTime();
+        profiler.pushPop("gui render");
         for (var pair : this.screenLayers) {
             var layer = pair.getFirst();
             var visible = layer.visible();
@@ -298,10 +296,8 @@ public class GuiSystem implements AutoCloseable {
                 this.graphics.layerUp();
             }
         }
-        graphics.drawString(String.format("%.2f", layoutTime),0,screenHeight-36,0xff000000);
-        graphics.drawString(String.format("%.2f",renderTime),0,screenHeight-36*2,0xff000000);
         this.graphics.draw();
-        renderTime = (System.nanoTime() - time) / 1000000f;
+        profiler.pop();
     }
     
     private void processTreeUpdates() {

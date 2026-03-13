@@ -105,7 +105,11 @@ public class SplitContainer extends ContainerWidget {
         super.afterTreeAndNodeSet();
         for (int i = 0; i < count; i++) {
             var panel = panels.get(i);
-            panel.setStyle(s -> s.minSize = TaffySize.all(TaffyDimension.ZERO));
+            panel.setStyle(s -> {
+                s.minSize = TaffySize.all(TaffyDimension.ZERO);
+                s.size = TaffySize.of(vertical ? TaffyDimension.percent(1) : TaffyDimension.auto(),
+                        vertical ? TaffyDimension.auto() : TaffyDimension.percent(1));
+            });
             this.addChild(panel);
             if (i < count - 1) {
                 this.addChild(new SplitBar(i));

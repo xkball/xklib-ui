@@ -56,7 +56,7 @@ public class RenderPipelines {
     public static final ThreadLocal<RenderPipeline> LINE = RenderPipeline.builder(ResourceLocation.of("line"))
             .vertexShader(ResourceLocation.of("shaders/core/line.vsh"))
             .fragmentShader(ResourceLocation.of("shaders/core/pos_color.fsh"))
-            .format(VertexFormat.Mode.TRIANGLES, VertexFormats.POSITION_TEX_COLOR)
+            .format(VertexFormat.Mode.TRIANGLES, VertexFormats.POSITION_NORMAL_COLOR)
             .uniform("screenSize",u -> {
                 var window = XKLib.RENDER_CONTEXT.get().getWindow();
                 u.set((float)window.getWidth(), (float)window.getHeight());
