@@ -20,6 +20,6 @@ public class XKLib {
     }
     
     public static void main(String[] args) {
-        new DrawTestText().run();
+        new DrawTestGuiGraphics().run();
     }
 }

@@ -33,17 +33,17 @@ public class DrawTestGuiGraphics extends WindowAppBase {
             float y0 = startY + (float) Math.sin(x0 * frequency) * amplitude;
             float x1 = startX + (i + 1) * segmentWidth;
             float y1 = startY + (float) Math.sin(x1 * frequency) * amplitude;
-            
+
             guiGraphics.renderLine(x0, y0, x1, y1, 0xff000000);
         }
         
-        for (int i = 0; i < 90; i++) {
+        for (int i = 0; i < 360; i++) {
             guiGraphics.getPose().pushMatrix();
             guiGraphics.getPose().rotate((float) Math.toRadians(i));
-            guiGraphics.renderLine(0,0, 1000,0,0xffff0000);
+//            guiGraphics.renderLine(0,0, 1000,0,0xffff0000);
             var p = guiGraphics.getPose().transformPosition(new Vector2f(1000,0));
             guiGraphics.getPose().popMatrix();
-            guiGraphics.renderLine(1000,0,1000+p.x,p.y,0xff0000ff);
+            guiGraphics.renderLine(1000,1000,1000+p.x,1000+p.y,0xff0000ff);
         }
         
         guiGraphics.draw();
