@@ -2,6 +2,7 @@ package com.xkball.xklib.x3d.backend.gl.font;
 
 public record GlyphInfo(
     int codepoint,
+    int atlasIndex,
     float width,
     float height,
     float bearingX,

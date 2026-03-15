@@ -118,24 +118,22 @@ public class OpenGLGUIGraphics implements IGUIGraphics {
         if (!(font instanceof Font glFont)) {
             return;
         }
-        String textContent = text.visit();
-        if (textContent == null || textContent.isEmpty()) {
+        if (text == null) {
             return;
         }
-        this.guiRenderState
-                .submitGuiElement(
-                        new TextRenderState(
-                                RenderPipelines.FONT.get(),
-                                TextureSetup.singleTexture(glFont.getAtlas()),
-                                new Matrix3x2f(this.pose),
-                                glFont,
-                                textContent,
-                                x, y,
-                                color,
-                                drawShadow,
-                                this.scissorStack.peek()
-                        )
-                );
+        var states = TextRenderState.buildStates(
+                RenderPipelines.FONT.get(),
+                glFont,
+                text,
+                x, y,
+                color,
+                drawShadow,
+                this.pose,
+                this.scissorStack.peek()
+        );
+        for (var state : states) {
+            this.guiRenderState.submitGuiElement(state);
+        }
     }
     
     @Override

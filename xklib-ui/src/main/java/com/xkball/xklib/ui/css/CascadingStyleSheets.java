@@ -1,12 +1,17 @@
 package com.xkball.xklib.ui.css;
 
-import com.xkball.xklib.api.gui.widget.IGuiWidget;
+import com.xkball.xklib.api.gui.css.IStyleProperty;
+import com.xkball.xklib.api.gui.css.IStyleSheet;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class CascadingStyleSheets {
+/**
+ * 并不对应真正的CSS, 而是为设置属性提供方便
+ */
+public class CascadingStyleSheets implements IStyleSheet {
 
     private static final Comparator<StyleSheetUnit> APPLY_ORDER = Comparator
             .comparingInt(StyleSheetUnit::weight)
@@ -22,4 +27,8 @@ public class CascadingStyleSheets {
         return List.copyOf(this.sheets);
     }
     
+    @Override
+    public @Nullable IStyleProperty<?> getProperty(String key) {
+        return null;
+    }
 }
