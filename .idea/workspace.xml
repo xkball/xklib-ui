@@ -5,21 +5,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/backend/window/DrawTestText.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssRuleBuilderListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/css.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/CssValueParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/ColorMapping.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssColoringListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssParserListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssStyles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/PropertyFactories.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/parser/EnumParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/parser/LengthUnitParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/parser/SizeParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/css/IPropertyFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/AbstractFloatProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/AbstractLengthProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/HeightProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/ScrollbarWidthProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/SizeProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/WidthProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/value/CssSize.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/AndSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/AnySelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/ChildSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/ClassNameSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/DescendantSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/FirstChildSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/FocusedSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/HoverSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/IdSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/LastChildSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/RootSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/TypeSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/selector/UniversalSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/CssColoringPreviewTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/Font.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/Font.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontAtlas.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontAtlas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontRenderer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/GlyphInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/GlyphInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssRuleBuilderListener.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/css/ISelector.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/css/ISelector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/StyleSheetUnit.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/StyleSheetUnit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/css/IStyleProperty.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/css/IStyleProperty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/css.md" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/css.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/CssValueParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/value/CssLengthUnit.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/value/CssLengthUnit.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +54,9 @@
       <entry key="_E:/code/java/others/xklib" value="3AJCGuN2sUsEyFlSjgzQxJuiudp" />
     </persistenceIdMap>
   </component>
+  <component name="CopilotUserSelectedChatMode">
+    <option name="chatModeId" value="Agent" />
+  </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
       <entry key="chat-panel" value="Auto" />
@@ -38,9 +64,12 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="174991" />
+    <option name="totalTimeSeconds" value="206307" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="310" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -183,6 +212,9 @@
     &quot;accountId&quot;: &quot;d3bf1754-d2e4-42d3-a507-cd285892d6b2&quot;
   }
 }</component>
+  <component name="HierarchyBrowserManager">
+    <option name="SORT_ALPHABETICALLY" value="true" />
+  </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -204,63 +236,65 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.FocusManagerTest.executor": "Debug",
-    "Gradle.xklib [:xklib-3d:com.xkball.xklib.XKLib.main()].executor": "Debug",
-    "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.CheckBoxTest.main()].executor": "Debug",
-    "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.FlameGraphPreviewTest.main()].executor": "Debug",
-    "Gradle.xklib [:xklib-ui:generateGrammarSource].executor": "Run",
-    "Gradle.xklib.executor": "Run",
-    "Gradle.xklib:xklib-3d [:xklib-3d:com.xkball.xklib.XKLib.main()].executor": "Debug",
-    "Gradle.xklib:xklib-3d [build].executor": "Run",
-    "Gradle.xklib:xklib-3d-gl [build].executor": "Run",
-    "Gradle.xklib:xklib-mc [build].executor": "Debug",
-    "Gradle.xklib:xklib-mc [runClient].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.FlexLayoutTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.GridLayoutTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.ScrollPanelTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.SimpleTextSplitterTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.SplitContainerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.CheckBoxTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ComboBoxAndDragBoxTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.LineGraphTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.LogViewerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ScalableContainerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.TextEditTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.DraggableContainerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.SectionContainerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.TabContainerTest.main()].executor": "Debug",
-    "Gradle.xklib:xklib-ui [build].executor": "Run",
-    "Gradle.构建 xklib.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "dev.sweep.assistant.data.RecentlyUsedFiles": "xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\AbsoluteContainer.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\ContainerWidget.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\DraggableContainer.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\container\\DraggableContainerTest.java;xklib-3d-gl\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\gl\\pipeline\\RenderPipelines.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\vertex\\BufferBuilder.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\container\\SectionContainerTest.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\TextEditTest.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\window\\DrawTestGuiGraphics.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\window\\WindowAppBase.java",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/code/java/others/xklib/xklib-ui/src/main/antlr",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDK",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.4668275",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "sweep.chatMode": "Agent",
-    "sweep.selectedModel": "Auto",
-    "vue.rearranger.settings.migration": "true",
-    "应用程序.CheckBoxTest.executor": "Profiler#1",
-    "应用程序.FlexLayoutTest.executor": "Profiler#1",
-    "应用程序.GridLayoutTest.executor": "Coverage"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.FocusManagerTest.executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib [:xklib-3d:build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.xklib [:xklib-3d:com.xkball.xklib.XKLib.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.CheckBoxTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.CssColoringPreviewTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.FlameGraphPreviewTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib [:xklib-ui:generateGrammarSource].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.xklib.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.xklib:xklib-3d [:xklib-3d:com.xkball.xklib.XKLib.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-3d [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.xklib:xklib-3d-gl [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.xklib:xklib-mc [build].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-mc [runClient].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.FlexLayoutTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.GridLayoutTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.ScrollPanelTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.SimpleTextSplitterTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.layout.SplitContainerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.CheckBoxTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ComboBoxAndDragBoxTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.LineGraphTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.LogViewerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.ScalableContainerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.TextEditTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.DraggableContainerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.SectionContainerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [:xklib-ui:com.xkball.xklib.ui.widget.container.TabContainerTest.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.xklib:xklib-ui [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.构建 xklib.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;dev.sweep.assistant.data.RecentlyUsedFiles&quot;: &quot;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\AbsoluteContainer.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\ContainerWidget.java;xklib-ui\\src\\main\\java\\com\\xkball\\xklib\\ui\\widget\\container\\DraggableContainer.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\container\\DraggableContainerTest.java;xklib-3d-gl\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\gl\\pipeline\\RenderPipelines.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\vertex\\BufferBuilder.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\container\\SectionContainerTest.java;xklib-ui\\src\\test\\java\\com\\xkball\\xklib\\ui\\widget\\TextEditTest.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\window\\DrawTestGuiGraphics.java;xklib-3d\\src\\main\\java\\com\\xkball\\xklib\\x3d\\backend\\window\\WindowAppBase.java&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/code/java/others/xklib/xklib-ui/src/main/antlr&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDK&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.4668275&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;sweep.chatMode&quot;: &quot;Agent&quot;,
+    &quot;sweep.selectedModel&quot;: &quot;Auto&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
+    &quot;应用程序.CheckBoxTest.executor&quot;: &quot;Profiler#1&quot;,
+    &quot;应用程序.FlexLayoutTest.executor&quot;: &quot;Profiler#1&quot;,
+    &quot;应用程序.GridLayoutTest.executor&quot;: &quot;Coverage&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\code\java\others\xklib\xklib-ui\src\main\antlr" />
@@ -275,6 +309,7 @@
       <recent name="E:\code\java\others\xklib\xklib-3d-gl\src\main" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.xkball.xklib.antlr" />
       <recent name="com.xkball.xklib.antlr.css" />
       <recent name="" />
     </key>
@@ -282,9 +317,9 @@
       <recent name="com.xkball.xklib.ui.layout" />
     </key>
   </component>
-  <component name="RunManager" selected="应用程序.CheckBoxTest">
-    <configuration name="CheckBoxTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.CheckBoxTest" />
+  <component name="RunManager" selected="应用程序.CssColoringPreviewTest">
+    <configuration name="CssColoringPreviewTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.CssColoringPreviewTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
@@ -298,19 +333,6 @@
     </configuration>
     <configuration name="FlameGraphPreviewTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.FlameGraphPreviewTest" />
-      <module name="xklib.xklib-ui.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="LineGraphTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.LineGraphTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
@@ -375,6 +397,31 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="xklib [:xklib-3d:build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":xklib-3d:build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
     <configuration name="xklib [:xklib-ui:generateGrammarSource]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -413,11 +460,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="应用程序.CssColoringPreviewTest" />
+        <item itemvalue="应用程序.XKLib" />
+        <item itemvalue="Gradle.xklib [:xklib-3d:build]" />
         <item itemvalue="Gradle.xklib [:xklib-ui:generateGrammarSource]" />
         <item itemvalue="应用程序.FlameGraphPreviewTest" />
-        <item itemvalue="应用程序.CheckBoxTest" />
-        <item itemvalue="应用程序.LineGraphTest" />
-        <item itemvalue="应用程序.XKLib" />
       </list>
     </recent_temporary>
   </component>
@@ -449,7 +496,11 @@
       <workItem from="1773272708157" duration="2911000" />
       <workItem from="1773368780095" duration="11210000" />
       <workItem from="1773396905601" duration="18415000" />
-      <workItem from="1773428267173" duration="1876000" />
+      <workItem from="1773428267173" duration="6843000" />
+      <workItem from="1773558859815" duration="11448000" />
+      <workItem from="1773595067085" duration="7575000" />
+      <workItem from="1773678001762" duration="18351000" />
+      <workItem from="1773750767464" duration="10798000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -555,7 +606,31 @@
       <option name="project" value="LOCAL" />
       <updated>1773408977672</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1773430327866</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1773430327866</updated>
+    </task>
+    <task id="LOCAL-00015" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1773559932244</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1773559932244</updated>
+    </task>
+    <task id="LOCAL-00016" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1773597909518</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1773597909518</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -578,15 +653,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="refactor" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontAtlas.java</url>
-          <line>141</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="GradleRunConfiguration">
         <watch expression="((ContainerWidget) ((Object[])((ArrayList)((ContainerWidget)((Object[])((ArrayList)((SplitContainer)layer.first).children).elementData)[0]).children).elementData)[0]).getLayout()" language="JAVA" custom="java.lang.Object[],com.xkball.xklib.ui.widget.container.ContainerWidget,com.xkball.xklib.ui.widget.container.SplitContainer,java.util.ArrayList" />

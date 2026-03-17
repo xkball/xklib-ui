@@ -6,4 +6,9 @@ public interface ISelector {
     
     boolean match(IGuiWidget widget);
     
+    int weight();
+    
+    default boolean isDynamic(){
+        return false;
+    }
 }

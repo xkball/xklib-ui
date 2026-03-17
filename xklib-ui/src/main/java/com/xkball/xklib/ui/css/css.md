@@ -6,7 +6,7 @@
 需要支持多线程调用
 
 ## 选择器, 实现在com.xkball.xklib.ui.css.selector包下:
-- `*`
+- `*` 
 - 按id选择 `IGuiWidget#getCSSId` `#foo`
 - 按class选择 `IGuiWidget#getCSSClassName` `.foo`
 - 按元素类型选择 `IGuiWidget#getCSSType` `foo`
