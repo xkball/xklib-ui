@@ -16,7 +16,7 @@ public class LengthUnitParser implements IPropertyFactory<CssLengthUnit> {
     }
     
     public static CssLengthUnit parseInner(List<css3Parser.TermContext> terms){
-        var first = CssLengthUnit.of(terms.getFirst().getRuleContext().getText());
+        var first = CssLengthUnit.of(terms.getFirst().getRuleContext().getText().trim());
         if(terms.size() == 1){
             return first;
         }

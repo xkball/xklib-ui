@@ -93,13 +93,13 @@ public class FontAtlas extends AbstractTexture {
             IntBuffer xOffBuf = stack.mallocInt(1);
             IntBuffer yOffBuf = stack.mallocInt(1);
 
-            ByteBuffer bitmap = STBTruetype.stbtt_GetCodepointBitmap(
-                fontInfo, scale, scale, codepoint, widthBuf, heightBuf, xOffBuf, yOffBuf
+            ByteBuffer bitmap = STBTruetype.stbtt_GetCodepointSDF(
+                fontInfo, scale, codepoint, 10, (byte) 128, 48f, widthBuf, heightBuf, xOffBuf, yOffBuf
             );
 
             if (bitmap == null) {
                 int advance = (int) (advanceBuf.get(0) * scale);
-                return new GlyphInfo(codepoint, atlasIndex, 0, 0, 0, 0, advance, 0, 0, 0, 0);
+                return new GlyphInfo(codepoint, atlasIndex, 0, 0, 0, 0, advance / this.overSampleScale, 0, 0, 0, 0);
             }
 
             int glyphWidth = widthBuf.get(0);
@@ -110,7 +110,7 @@ public class FontAtlas extends AbstractTexture {
             if (glyphWidth <= 0 || glyphHeight <= 0) {
                 STBTruetype.stbtt_FreeBitmap(bitmap);
                 int advance = (int) (advanceBuf.get(0) * scale);
-                return new GlyphInfo(codepoint, atlasIndex, 0, 0, 0, 0, advance, 0, 0, 0, 0);
+                return new GlyphInfo(codepoint, atlasIndex, 0, 0, 0, 0, advance / this.overSampleScale, 0, 0, 0, 0);
             }
 
             int padding = 2;

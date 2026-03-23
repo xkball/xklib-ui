@@ -8,19 +8,14 @@ public class SizeParser implements IPropertyFactory<CssSize> {
     
     @Override
     public CssSize parse(css3Parser.ExprContext expr) {
-        var splitIndex = 0;
-        var splitCount = 0;
-        var terms = expr.term();
-        for (int i = 0; i < terms.size() - 1; i++) {
-            var split = !terms.get(i).getRuleContext(css3Parser.WsContext.class, 0).Space().isEmpty();
-            if(split){
-                splitCount += 1;
-                splitIndex = i;
-            }
+        var groups = CssExprTerms.splitBySpace(expr);
+        if(groups.size() == 1){
+            var value = LengthUnitParser.parseInner(groups.getFirst());
+            return new CssSize(value,value);
         }
-        if(splitCount == 1){
-            var first = LengthUnitParser.parseInner(terms.subList(0,splitIndex + 1));
-            var second = LengthUnitParser.parseInner(terms.subList(splitIndex + 1, terms.size()));
+        if(groups.size() == 2){
+            var first = LengthUnitParser.parseInner(groups.getFirst());
+            var second = LengthUnitParser.parseInner(groups.get(1));
             return new CssSize(first,second);
         }
         throw new IllegalArgumentException("Cannot parse size: " + expr.getText());

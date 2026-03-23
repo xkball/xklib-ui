@@ -1,5 +1,7 @@
 package com.xkball.xklib.api.gui.widget;
 
+import com.xkball.xklib.api.gui.css.IStyleSheet;
+import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.TaffySizeParser;
@@ -105,6 +107,22 @@ public interface IGuiWidget {
      * 为多线程情况准备, 调用成本较高, 如果确认在UI线程请使用GuiSystem.INSTANCE.get()
      */
     GuiSystem getGuiSystemAsync();
+
+    IStyleSheet getStyleSheet();
+
+    void setStyleSheet(IStyleSheet styleSheet);
+    
+    CascadingStyleSheets getStyleSheetAsRoot();
+    
+    CascadingStyleSheets getStyleSheetAsSelf();
+    
+    default String createCSSAsRoot(){
+        return "";
+    }
+    
+    default String createCSSAsSelf(){
+        return "";
+    }
     
     default List<? extends IGuiWidget> getChildren(){
         return List.of();

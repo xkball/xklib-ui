@@ -15,13 +15,16 @@ public class EnumParser<T extends Enum<T>> implements IPropertyFactory<T> {
     public EnumParser(Class<T> clazz) {
         this.clazz = clazz;
         for(var e : clazz.getEnumConstants()){
-            values.put(e.name().toLowerCase(Locale.ROOT),e);
+            String lowered = e.name().toLowerCase(Locale.ROOT);
+            values.put(lowered, e);
+            values.put(lowered.replace('_', '-'), e);
         }
     }
     
     @Override
     public T parse(css3Parser.ExprContext expr) {
         if(expr.term().size() != 1) return null;
-        return values.get(expr.term().getFirst().getRuleContext(css3Parser.IdentContext.class,0).getText());
+        String raw = expr.term().getFirst().getRuleContext().getText().trim().toLowerCase(Locale.ROOT);
+        return values.get(raw);
     }
 }

@@ -1,5 +1,7 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.antlr.css.CssParser;
+import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -11,6 +13,7 @@ import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.IRenderable;
+import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.utils.XKLibUtils;
@@ -47,6 +50,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;
     private GuiSystem guiSystem;
+    protected final CascadingStyleSheets styleSheetAsRoot;
+    protected final CascadingStyleSheets styleSheetAsSelf;
+    protected IStyleSheet styleSheet = new CascadingStyleSheets.SimpleStyleSheet();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
     
     public Widget(){
@@ -61,6 +67,10 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.focusNode = new FocusNode(null);
         this.focusNode.widget = this;
         this.focusNode.setCanTakePrimaryFocus(this.isFocusable());
+        var rootStyle = this.createCSSAsRoot();
+        this.styleSheetAsRoot = rootStyle.isEmpty() ? new CascadingStyleSheets() : CssParser.parse(rootStyle);
+        var selfStyle = this.createCSSAsSelf();
+        this.styleSheetAsSelf = selfStyle.isEmpty() ? new CascadingStyleSheets() : CssParser.parse(selfStyle);
     }
     
     protected void untilSetTree(Runnable runnable) {
@@ -439,6 +449,26 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public GuiSystem getGuiSystemAsync() {
         if(this.parent == null) return this.guiSystem;
         return getRoot().getGuiSystemAsync();
+    }
+
+    @Override
+    public IStyleSheet getStyleSheet() {
+        return this.styleSheet;
+    }
+
+    @Override
+    public void setStyleSheet(IStyleSheet styleSheet) {
+        this.styleSheet = styleSheet;
+    }
+
+    @Override
+    public CascadingStyleSheets getStyleSheetAsRoot() {
+        return this.styleSheetAsRoot;
+    }
+
+    @Override
+    public CascadingStyleSheets getStyleSheetAsSelf() {
+        return this.styleSheetAsSelf;
     }
     
     @Override
