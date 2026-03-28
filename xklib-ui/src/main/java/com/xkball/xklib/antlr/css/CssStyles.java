@@ -6,6 +6,7 @@ import com.xkball.xklib.ui.css.property.FunctionalStyleProperty;
 import com.xkball.xklib.ui.css.property.HeightProperty;
 import com.xkball.xklib.ui.css.property.ScrollbarWidthProperty;
 import com.xkball.xklib.ui.css.property.SizeProperty;
+import com.xkball.xklib.ui.css.property.WidgetIntStyleProperty;
 import com.xkball.xklib.ui.css.property.WidthProperty;
 import com.xkball.xklib.ui.css.property.value.CssGridLine;
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
@@ -13,6 +14,14 @@ import com.xkball.xklib.ui.css.property.value.CssOverflow;
 import com.xkball.xklib.ui.css.property.value.CssRect;
 import com.xkball.xklib.ui.css.property.value.CssSize;
 import com.xkball.xklib.ui.css.property.value.CssTrackList;
+import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.CheckBox;
+import com.xkball.xklib.ui.widget.DragBox;
+import com.xkball.xklib.ui.widget.Label;
+import com.xkball.xklib.ui.widget.LineGraph;
+import com.xkball.xklib.ui.widget.TextEdit;
+import com.xkball.xklib.ui.widget.container.ContainerWidget;
+import com.xkball.xklib.ui.widget.container.SplitContainer;
 import dev.vfyjxf.taffy.geometry.TaffyLine;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
 import dev.vfyjxf.taffy.geometry.TaffyRect;
@@ -62,6 +71,139 @@ public class CssStyles {
         this.register(HeightProperty.NAME,HeightProperty::new, CssLengthUnit.class);
         this.register(SizeProperty.NAME, SizeProperty::new, CssSize.class);
         this.register(ScrollbarWidthProperty.NAME, ScrollbarWidthProperty::new, Float.class);
+
+        this.register("label-text-color", value -> new WidgetIntStyleProperty("label-text-color", value,
+                (widget, color) -> {
+                    if (widget instanceof Label label) {
+                        label.setColor(color);
+                    }
+                }), Integer.class);
+        this.register("button-text-color", value -> new WidgetIntStyleProperty("button-text-color", value,
+                (widget, color) -> {
+                    if (widget instanceof Button button) {
+                        button.setColor(color);
+                    }
+                }), Integer.class);
+        this.register("checkbox-track-color", value -> new WidgetIntStyleProperty("checkbox-track-color", value,
+                (widget, color) -> {
+                    if (widget instanceof CheckBox checkBox) {
+                        checkBox.setTrackColor(color);
+                    }
+                }), Integer.class);
+        this.register("checkbox-thumb-color", value -> new WidgetIntStyleProperty("checkbox-thumb-color", value,
+                (widget, color) -> {
+                    if (widget instanceof CheckBox checkBox) {
+                        checkBox.setThumbColor(color);
+                    }
+                }), Integer.class);
+        this.register("checkbox-on-color", value -> new WidgetIntStyleProperty("checkbox-on-color", value,
+                (widget, color) -> {
+                    if (widget instanceof CheckBox checkBox) {
+                        checkBox.setOnOverlayColor(color);
+                    }
+                }), Integer.class);
+        this.register("dragbox-track-color", value -> new WidgetIntStyleProperty("dragbox-track-color", value,
+                (widget, color) -> {
+                    if (widget instanceof DragBox dragBox) {
+                        dragBox.setTrackColor(color);
+                    }
+                }), Integer.class);
+        this.register("dragbox-thumb-color", value -> new WidgetIntStyleProperty("dragbox-thumb-color", value,
+                (widget, color) -> {
+                    if (widget instanceof DragBox dragBox) {
+                        dragBox.setThumbColor(color);
+                    }
+                }), Integer.class);
+        this.register("dragbox-thumb-hover-color", value -> new WidgetIntStyleProperty("dragbox-thumb-hover-color", value,
+                (widget, color) -> {
+                    if (widget instanceof DragBox dragBox) {
+                        dragBox.setThumbHoverColor(color);
+                    }
+                }), Integer.class);
+        this.register("dragbox-border-color", value -> new WidgetIntStyleProperty("dragbox-border-color", value,
+                (widget, color) -> {
+                    if (widget instanceof DragBox dragBox) {
+                        dragBox.setBorderColor(color);
+                    }
+                }), Integer.class);
+        this.register("linegraph-axis-color", value -> new WidgetIntStyleProperty("linegraph-axis-color", value,
+                (widget, color) -> {
+                    if (widget instanceof LineGraph lineGraph) {
+                        lineGraph.axisColor = color;
+                    }
+                }), Integer.class);
+        this.register("linegraph-num-color", value -> new WidgetIntStyleProperty("linegraph-num-color", value,
+                (widget, color) -> {
+                    if (widget instanceof LineGraph lineGraph) {
+                        lineGraph.numColor = color;
+                    }
+                }), Integer.class);
+        this.register("linegraph-line-color", value -> new WidgetIntStyleProperty("linegraph-line-color", value,
+                (widget, color) -> {
+                    if (widget instanceof LineGraph lineGraph) {
+                        lineGraph.lineColor = color;
+                    }
+                }), Integer.class);
+        this.register("linegraph-bg-color", value -> new WidgetIntStyleProperty("linegraph-bg-color", value,
+                (widget, color) -> {
+                    if (widget instanceof LineGraph lineGraph) {
+                        lineGraph.bgColor = color;
+                    }
+                }), Integer.class);
+        this.register("linegraph-grid-color", value -> new WidgetIntStyleProperty("linegraph-grid-color", value,
+                (widget, color) -> {
+                    if (widget instanceof LineGraph lineGraph) {
+                        lineGraph.gridColor = color;
+                    }
+                }), Integer.class);
+        this.register("textedit-text-color", value -> new WidgetIntStyleProperty("textedit-text-color", value,
+                (widget, color) -> {
+                    if (widget instanceof TextEdit textEdit) {
+                        textEdit.setTextColor(color);
+                    }
+                }), Integer.class);
+        this.register("textedit-selection-color", value -> new WidgetIntStyleProperty("textedit-selection-color", value,
+                (widget, color) -> {
+                    if (widget instanceof TextEdit textEdit) {
+                        textEdit.setSelectionColor(color);
+                    }
+                }), Integer.class);
+        this.register("textedit-cursor-color", value -> new WidgetIntStyleProperty("textedit-cursor-color", value,
+                (widget, color) -> {
+                    if (widget instanceof TextEdit textEdit) {
+                        textEdit.setCursorColor(color);
+                    }
+                }), Integer.class);
+        this.register("split-bar-color", value -> new WidgetIntStyleProperty("split-bar-color", value,
+                (widget, color) -> {
+                    if (widget instanceof SplitContainer splitContainer) {
+                        splitContainer.setBarColor(color);
+                    }
+                }), Integer.class);
+        this.register("split-bar-hover-color", value -> new WidgetIntStyleProperty("split-bar-hover-color", value,
+                (widget, color) -> {
+                    if (widget instanceof SplitContainer splitContainer) {
+                        splitContainer.setBarHoverColor(color);
+                    }
+                }), Integer.class);
+        this.register("container-scrollbar-track-color", value -> new WidgetIntStyleProperty("container-scrollbar-track-color", value,
+                (widget, color) -> {
+                    if (widget instanceof ContainerWidget containerWidget) {
+                        containerWidget.setScrollBarTrackColor(color);
+                    }
+                }), Integer.class);
+        this.register("container-scrollbar-thumb-color", value -> new WidgetIntStyleProperty("container-scrollbar-thumb-color", value,
+                (widget, color) -> {
+                    if (widget instanceof ContainerWidget containerWidget) {
+                        containerWidget.setScrollBarThumbColor(color);
+                    }
+                }), Integer.class);
+        this.register("container-scrollbar-thumb-hover-color", value -> new WidgetIntStyleProperty("container-scrollbar-thumb-hover-color", value,
+                (widget, color) -> {
+                    if (widget instanceof ContainerWidget containerWidget) {
+                        containerWidget.setScrollBarThumbHoverColor(color);
+                    }
+                }), Integer.class);
 
         this.registerField("position", TaffyPosition.class, (s, v) -> s.position = v);
         this.registerField("inset", CssRect.class, (s, v) -> s.inset = toLengthPercentageAutoRect(v));

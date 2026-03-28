@@ -5,30 +5,35 @@ import com.xkball.xklib.ui.layout.SimpleTextSplitter;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignContent;
-import dev.vfyjxf.taffy.style.AlignItems;
-import dev.vfyjxf.taffy.style.CalcExpression;
-import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TextAlign;
 
 public class TextDisplay extends ContainerWidget {
+    private static final String SELF_CSS = """
+            * {
+                display: flex;
+                flex-direction: column;
+                justify-content: start;
+                align-items: stretch;
+                size: 100% 100%-30;
+            }
+            """;
+
     private final String text;
     private int lastWidth = -1;
     
     public TextDisplay(String text) {
         this.text = text;
     }
+
+    @Override
+    public String createCSSAsSelf() {
+        return super.createCSSAsSelf() + SELF_CSS;
+    }
     
     @Override
     public void init() {
         super.init();
-        this.setStyle(s -> {
-            s.flexDirection = FlexDirection.COLUMN;
-            s.justifyContent = AlignContent.START;
-            s.alignItems = AlignItems.STRETCH;
-            s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.calc(CalcExpression.percentMinusLength(1, 30)));
-        });
         this.setYScrollEnable(true);
     }
     

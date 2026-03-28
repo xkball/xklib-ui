@@ -4,20 +4,14 @@ import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
-import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffyRect;
 import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignContent;
-import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.CalcExpression;
-import dev.vfyjxf.taffy.style.LengthPercentage;
 import dev.vfyjxf.taffy.style.LengthPercentageAuto;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
-import dev.vfyjxf.taffy.style.TaffyStyle;
-import dev.vfyjxf.taffy.style.TrackSizingFunction;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,6 +20,16 @@ import java.util.List;
 public class TabContainer extends ContainerWidget {
 
     private static final int TAB_BAR_HEIGHT = 32;
+    private static final String SELF_CSS = """
+            * {
+                display: grid;
+                size: 100% 100%;
+                grid-template-columns: 1fr;
+                grid-template-rows: 32 1fr;
+                align-items: stretch;
+                justify-content: stretch;
+            }
+            """;
 
     protected IntLayoutVariable selected = new IntLayoutVariable(0);
     protected final List<TabPage> tabs = new ArrayList<>();
@@ -35,6 +39,11 @@ public class TabContainer extends ContainerWidget {
     public TabContainer() {
         super();
         this.selected.addCallback(this::onSelectedChanged);
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return super.createCSSAsSelf() + SELF_CSS;
     }
 
     public TabContainer addTabPage(Widget widget, String title, int order) {
@@ -74,16 +83,6 @@ public class TabContainer extends ContainerWidget {
     @Override
     public void init() {
         super.init();
-
-        this.style.display = TaffyDisplay.GRID;
-        this.style.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-        this.style.gridTemplateColumns = List.of(TrackSizingFunction.fr(1f));
-        this.style.gridTemplateRows = List.of(
-                TrackSizingFunction.fixed(LengthPercentage.length(TAB_BAR_HEIGHT)),
-                TrackSizingFunction.fr(1f)
-        );
-        this.style.alignItems = AlignItems.STRETCH;
-        this.style.justifyContent = AlignContent.STRETCH;
         
         tabBar.applyStyle(DefaultStyles::flexCenteredRow);
         contentPanel.setStyle(s -> s.size = new TaffySize<>(s.size.width, TaffyDimension.calc(CalcExpression.percentMinusLength(1,TAB_BAR_HEIGHT))));

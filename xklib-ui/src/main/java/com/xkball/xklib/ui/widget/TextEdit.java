@@ -22,6 +22,13 @@ import java.util.List;
 public class TextEdit extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(TextEdit.class);
+    private static final String SELF_CSS = """
+            * {
+                textedit-text-color: 0xFFFFFFFF;
+                textedit-selection-color: 0x800080FF;
+                textedit-cursor-color: 0xFFFFFFFF;
+            }
+            """;
     
     protected boolean multiLine = false;
     protected boolean wrapLine = true;
@@ -29,6 +36,9 @@ public class TextEdit extends Widget {
     protected float lineHeight;
     protected float lineGap = 2;
     protected TextAlign textAlign = TextAlign.LEFT;
+    protected int textColor;
+    protected int selectionColor;
+    protected int cursorColor;
     
     protected StringBuilder text;
     protected List<String> displayLines = new ArrayList<>();
@@ -51,6 +61,11 @@ public class TextEdit extends Widget {
         this.displayLines.add(initialText);
         this.lineHeight = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont().lineHeight();
         this.setSize("content","content");
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
     }
     
     public void updateSize(){
@@ -175,7 +190,7 @@ public class TextEdit extends Widget {
                 renderSelection(graphics, i, line, textX, currentY, font);
             }
             
-            graphics.drawString(font, line, textX, currentY, 0xFFFFFFFF);
+            graphics.drawString(font, line, textX, currentY, this.textColor);
             
             if (this.isPrimaryFocused() && shouldShowCursor()) {
                 if (multiLine && wrapLine) {
@@ -239,7 +254,7 @@ public class TextEdit extends Widget {
     protected void renderCursorAtColumn(IGUIGraphics graphics, String line, float textX, float textY, IFont font, int column) {
         String beforeCursor = column > line.length() ? line : line.substring(0, Math.min(column, line.length()));
         float cursorX = textX + font.width(beforeCursor);
-        graphics.vLine(cursorX, textY, textY + lineHeight, 0xFFFFFFFF);
+        graphics.vLine(cursorX, textY, textY + lineHeight, this.cursorColor);
     }
     
     protected float calculateTextX(IGUIGraphics graphics, String line) {
@@ -296,7 +311,7 @@ public class TextEdit extends Widget {
         float selX = textX + font.width(beforeSel);
         float selWidth = font.width(selected);
         
-        graphics.fill(selX, textY, selX + selWidth, textY + lineHeight, 0x800080FF);
+        graphics.fill(selX, textY, selX + selWidth, textY + lineHeight, this.selectionColor);
     }
     
     protected void renderSelectionWrapped(IGUIGraphics graphics, int displayLineIndex, String displayLine, float textX, float textY, IFont font) {
@@ -331,7 +346,7 @@ public class TextEdit extends Widget {
         float selX = textX + font.width(beforeSel);
         float selWidth = font.width(selected);
         
-        graphics.fill(selX, textY, selX + selWidth, textY + lineHeight, 0x800080FF);
+        graphics.fill(selX, textY, selX + selWidth, textY + lineHeight, this.selectionColor);
     }
     
     protected boolean hasSelection() {
@@ -349,6 +364,18 @@ public class TextEdit extends Widget {
     
     public float getLineHeight(){
         return this.lineHeight;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
+    public void setSelectionColor(int selectionColor) {
+        this.selectionColor = selectionColor;
+    }
+
+    public void setCursorColor(int cursorColor) {
+        this.cursorColor = cursorColor;
     }
     
     @Override

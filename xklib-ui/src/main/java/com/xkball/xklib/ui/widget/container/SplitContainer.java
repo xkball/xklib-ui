@@ -4,24 +4,28 @@ import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignContent;
-import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.CalcExpression;
 import dev.vfyjxf.taffy.style.LengthPercentage;
 import dev.vfyjxf.taffy.style.TaffyDimension;
-import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
+import dev.vfyjxf.taffy.style.TrackSizingFunction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.vfyjxf.taffy.style.TrackSizingFunction.*;
-
 public class SplitContainer extends ContainerWidget {
 
     private static final float BAR_SIZE = 4f;
-    private static final int BAR_COLOR = 0xFF444444;
-    private static final int BAR_HOVER_COLOR = 0xFF888888;
+    private static final String SELF_CSS = """
+            * {
+                display: grid;
+                size: 100% 100%;
+                align-items: stretch;
+                justify-content: stretch;
+                split-bar-color: 0xFF444444;
+                split-bar-hover-color: 0xFF888888;
+            }
+            """;
 
     protected boolean vertical;
     private final int count;
@@ -31,6 +35,8 @@ public class SplitContainer extends ContainerWidget {
     private int draggingBarIndex = -1;
     private float barDragStartMouse = 0f;
     private float barDragStartRatio = 0f;
+    private int barColor;
+    private int barHoverColor;
 
     public SplitContainer(boolean vertical, int count) {
         if (count < 2) throw new IllegalArgumentException("count must >= 2");
@@ -46,6 +52,11 @@ public class SplitContainer extends ContainerWidget {
         applyContainerStyle();
     }
 
+    @Override
+    public String createCSSAsSelf() {
+        return super.createCSSAsSelf() + SELF_CSS;
+    }
+
     public SplitContainer(boolean vertical) {
         this(vertical, 2);
     }
@@ -59,13 +70,7 @@ public class SplitContainer extends ContainerWidget {
     }
 
     private void applyContainerStyle() {
-        var s = this.style;
-        s.display = TaffyDisplay.GRID;
-        s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-        s.alignItems = AlignItems.STRETCH;
-        s.justifyContent = AlignContent.STRETCH;
-        rebuildGridTemplate(s);
-        this.markDirty();
+        this.setStyle(this::rebuildGridTemplate);
     }
 
     @Override
@@ -76,22 +81,24 @@ public class SplitContainer extends ContainerWidget {
     }
 
     private void rebuildGridTemplate(TaffyStyle s) {
-        var tracks = new ArrayList<dev.vfyjxf.taffy.style.TrackSizingFunction>();
+        var tracks = new ArrayList<TrackSizingFunction>();
         float totalBars = (count - 1) * BAR_SIZE;
         for (int i = 0; i < count; i++) {
             float panelPercent = panelPercent(i);
-            tracks.add(minmax(fixed(0), fixed(LengthPercentage.calc(
+            tracks.add(TrackSizingFunction.minmax(
+                    TrackSizingFunction.fixed(0),
+                    TrackSizingFunction.fixed(LengthPercentage.calc(
                     CalcExpression.percentMinusLength(panelPercent, totalBars * panelPercent)))));
             if (i < count - 1) {
-                tracks.add(fixed(LengthPercentage.length(BAR_SIZE)));
+                tracks.add(TrackSizingFunction.fixed(LengthPercentage.length(BAR_SIZE)));
             }
         }
         if (!vertical) {
             s.gridTemplateColumns = tracks;
-            s.gridTemplateRows = List.of(percent(1f));
+            s.gridTemplateRows = List.of(TrackSizingFunction.percent(1f));
         } else {
             s.gridTemplateRows = tracks;
-            s.gridTemplateColumns = List.of(percent(1f));
+            s.gridTemplateColumns = List.of(TrackSizingFunction.percent(1f));
         }
     }
 
@@ -206,7 +213,7 @@ public class SplitContainer extends ContainerWidget {
         @Override
         public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
             super.doRender(graphics, mouseX, mouseY, a);
-            int color = (this.hovered || draggingBarIndex == barIndex) ? BAR_HOVER_COLOR : BAR_COLOR;
+            int color = (this.hovered || draggingBarIndex == barIndex) ? barHoverColor : barColor;
             graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, color);
         }
 
@@ -214,5 +221,13 @@ public class SplitContainer extends ContainerWidget {
         public void onFocusChanged(boolean focused) {
             if (!focused && draggingBarIndex == barIndex) draggingBarIndex = -1;
         }
+    }
+
+    public void setBarColor(int barColor) {
+        this.barColor = barColor;
+    }
+
+    public void setBarHoverColor(int barHoverColor) {
+        this.barHoverColor = barHoverColor;
     }
 }

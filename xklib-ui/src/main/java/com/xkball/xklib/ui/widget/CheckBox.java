@@ -11,14 +11,24 @@ import java.util.List;
 public class CheckBox extends Widget implements IInputWidget<Boolean> {
 
     private static final int THUMB_MARGIN = 2;
-    private static final int TRACK_COLOR = 0xFFCBD5E1;
-    private static final int TRACK_BORDER_COLOR = 0xFF94A3B8;
-    private static final int THUMB_COLOR = 0xFFFFFFFF;
-    private static final int THUMB_BORDER_COLOR = 0xFF64748B;
-    private static final int ON_OVERLAY_COLOR = 0x8022C55E;
+    private static final String SELF_CSS = """
+            * {
+                checkbox-track-color: 0xFFCBD5E1;
+                checkbox-thumb-color: 0xFFFFFFFF;
+                checkbox-on-color: 0x8022C55E;
+            }
+            """;
 
     private boolean checked = false;
+    private int trackColor;
+    private int thumbColor;
+    private int onOverlayColor;
     private final List<ILayoutVariable<Boolean>> bindings = new ArrayList<>();
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
+    }
 
     @Override
     public Boolean getValue() {
@@ -61,10 +71,22 @@ public class CheckBox extends Widget implements IInputWidget<Boolean> {
                 ? x + w - THUMB_MARGIN - thumbSize
                 : x + THUMB_MARGIN;
 
-        graphics.fillRounded(x, y, x + w, y + h, TRACK_COLOR, radius);
+        graphics.fillRounded(x, y, x + w, y + h, this.trackColor, radius);
         if (checked) {
-            graphics.fillRounded(x, y, x + w, y + h, ON_OVERLAY_COLOR, radius);
+            graphics.fillRounded(x, y, x + w, y + h, this.onOverlayColor, radius);
         }
-        graphics.fillRounded(thumbX, thumbY, thumbX + thumbSize, thumbY + thumbSize, THUMB_COLOR, thumbSize / 2f);
+        graphics.fillRounded(thumbX, thumbY, thumbX + thumbSize, thumbY + thumbSize, this.thumbColor, thumbSize / 2f);
+    }
+
+    public void setTrackColor(int trackColor) {
+        this.trackColor = trackColor;
+    }
+
+    public void setThumbColor(int thumbColor) {
+        this.thumbColor = thumbColor;
+    }
+
+    public void setOnOverlayColor(int onOverlayColor) {
+        this.onOverlayColor = onOverlayColor;
     }
 }

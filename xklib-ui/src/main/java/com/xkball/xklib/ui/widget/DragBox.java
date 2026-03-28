@@ -7,10 +7,19 @@ import java.util.function.Consumer;
 
 public class DragBox extends Widget{
     private static final int THUMB_WIDTH = 10;
-    private static final int TRACK_COLOR = 0xFFCBD5E1;
-    private static final int THUMB_COLOR = 0xFF7DD3FC;
-    private static final int THUMB_HOVER_COLOR = 0xFF38BDF8;
-    private static final int BORDER_COLOR = 0xFF94A3B8;
+    private static final String SELF_CSS = """
+            * {
+                dragbox-track-color: 0xFFCBD5E1;
+                dragbox-thumb-color: 0xFF7DD3FC;
+                dragbox-thumb-hover-color: 0xFF38BDF8;
+                dragbox-border-color: 0xFF94A3B8;
+            }
+            """;
+
+    private int trackColor;
+    private int thumbColor;
+    private int thumbHoverColor;
+    private int borderColor;
     
     private double minValue;
     private double maxValue;
@@ -27,6 +36,11 @@ public class DragBox extends Widget{
     
     public DragBox(double minValue, double maxValue) {
         this(minValue, maxValue, minValue);
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
     }
     
     public double getMinValue() {
@@ -120,15 +134,29 @@ public class DragBox extends Widget{
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         super.doRender(graphics, mouseX, mouseY, a);
-        graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, TRACK_COLOR);
-        graphics.renderOutline(this.x, this.y, this.width, this.height, BORDER_COLOR);
+        graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, this.trackColor);
+        graphics.renderOutline(this.x, this.y, this.width, this.height, this.borderColor);
         
         var tx = thumbX();
         boolean thumbHovered = this.dragging || isOverThumb(mouseX,mouseY);
-        int thumbColor = thumbHovered ? THUMB_HOVER_COLOR : THUMB_COLOR;
-        graphics.fill(tx, this.y, tx + THUMB_WIDTH, this.y + this.height, thumbColor);
-        graphics.renderOutline(tx, this.y, THUMB_WIDTH, this.height, BORDER_COLOR);
-        
-        
+        int currentThumbColor = thumbHovered ? this.thumbHoverColor : this.thumbColor;
+        graphics.fill(tx, this.y, tx + THUMB_WIDTH, this.y + this.height, currentThumbColor);
+        graphics.renderOutline(tx, this.y, THUMB_WIDTH, this.height, this.borderColor);
+    }
+
+    public void setTrackColor(int trackColor) {
+        this.trackColor = trackColor;
+    }
+
+    public void setThumbColor(int thumbColor) {
+        this.thumbColor = thumbColor;
+    }
+
+    public void setThumbHoverColor(int thumbHoverColor) {
+        this.thumbHoverColor = thumbHoverColor;
+    }
+
+    public void setBorderColor(int borderColor) {
+        this.borderColor = borderColor;
     }
 }

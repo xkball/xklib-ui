@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.widget.container;
 
-import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -9,6 +8,16 @@ import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TextAlign;
 
 public class SectionContainer extends ContainerWidget {
+
+    private static final String SELF_CSS = """
+            * {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: start;
+                size: 100% 100%;
+            }
+            """;
     
     private final Label header;
     private Widget content;
@@ -26,6 +35,11 @@ public class SectionContainer extends ContainerWidget {
         this.content = content;
         this.addChild(header);
     }
+
+    @Override
+    public String createCSSAsSelf() {
+        return super.createCSSAsSelf() + SELF_CSS;
+    }
     
     private static Widget createDefaultContent() {
         Widget widget = new Widget();
@@ -36,7 +50,6 @@ public class SectionContainer extends ContainerWidget {
     @Override
     public void init() {
         super.init();
-        this.applyStyle(DefaultStyles::flexCenteredColum);
         this.header.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(32)));
     }
     

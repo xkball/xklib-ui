@@ -22,6 +22,14 @@ import java.util.function.Function;
 
 public class ComboBox<T> extends ContainerWidget {
 
+    private static final String SELF_CSS = """
+            * {
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+            }
+            """;
+
     private static final float ARROW_BTN_WIDTH = 24f;
     private static final int BORDER_COLOR = 0xFF94A3B8;
     private static final int BG_COLOR = 0xFF1E293B;
@@ -43,6 +51,11 @@ public class ComboBox<T> extends ContainerWidget {
         this.nullable = nullable;
         this.selected = nullable ? null : (options.isEmpty() ? null : options.getFirst());
         this.displayLabel = new Label(selectedText(), TextAlign.LEFT, 0xFFE2E8F0);
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return super.createCSSAsSelf() + SELF_CSS;
     }
 
     public ComboBox(List<T> options, Function<T, String> toDisplay) {
@@ -71,10 +84,6 @@ public class ComboBox<T> extends ContainerWidget {
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
 
-        var containerStyle = this.style;
-        containerStyle.flexDirection = FlexDirection.ROW;
-        containerStyle.alignItems = AlignItems.STRETCH;
-        this.setStyle(containerStyle);
 
         var labelStyle = new TaffyStyle();
         labelStyle.flexGrow = 1f;

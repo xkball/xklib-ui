@@ -27,7 +27,8 @@ public class SimpleProfiler implements IProfiler {
     }
     
     public long getTime(String label){
-        return lastTick.getData(label);
+        Long time = lastTick.getData(label);
+        return time == null ? 0 : time;
     }
     
     @Override

@@ -2,6 +2,7 @@ package com.xkball.xklib.antlr.css;
 
 import com.xkball.xklib.antlr.css.parser.EnumParser;
 import com.xkball.xklib.antlr.css.parser.BooleanParser;
+import com.xkball.xklib.antlr.css.parser.ColorParser;
 import com.xkball.xklib.antlr.css.parser.GridLineParser;
 import com.xkball.xklib.antlr.css.parser.LengthUnitParser;
 import com.xkball.xklib.antlr.css.parser.OverflowParser;
@@ -57,6 +58,7 @@ public class PropertyFactories {
         this.register(TextAlign.class, new EnumParser<>(TextAlign.class));
         this.register(Overflow.class, new EnumParser<>(Overflow.class));
         this.register(Boolean.class, BooleanParser::new);
+        this.register(Integer.class, ColorParser::new);
         this.register(Float.class,(expr) -> {
             String text = expr.getText().trim();
             String[] ratio = text.split("/", 2);

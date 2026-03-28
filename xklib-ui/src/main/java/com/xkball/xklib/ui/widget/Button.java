@@ -6,6 +6,12 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 
 public class Button extends Widget {
+
+    private static final String SELF_CSS = """
+            * {
+                button-text-color: 0xFF000000;
+            }
+            """;
     
     private TextScale textScale = TextScale.FIXED;
     private String text = "";
@@ -18,6 +24,11 @@ public class Button extends Widget {
     }
     
     public Button() {}
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
+    }
     
     public void onTextChanged(){
         this.submitTreeUpdate(() -> {

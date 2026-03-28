@@ -99,6 +99,61 @@ public class CssStylesTest {
         Assertions.assertTrue(properties.containsKey("grid-column"));
     }
 
+    @Test
+    public void shouldParseWidgetColorProperties() {
+        CascadingStyleSheets sheets = CssParser.parse("""
+                Label {
+                    label-text-color: #123456;
+                    button-text-color: 0xFFABCDEF;
+                    checkbox-track-color: #89ab;
+                    checkbox-thumb-color: #fff;
+                    checkbox-on-color: 0x8022C55E;
+                    dragbox-track-color: #1a2b3c;
+                    dragbox-thumb-color: #ff00ff;
+                    dragbox-thumb-hover-color: #11223344;
+                    dragbox-border-color: 0xFF94A3B8;
+                    linegraph-axis-color: #4A5568;
+                    linegraph-num-color: #718096;
+                    linegraph-line-color: #63B3ED;
+                    linegraph-bg-color: #1A202C;
+                    linegraph-grid-color: #22ffffff;
+                    textedit-text-color: #ffffff;
+                    textedit-selection-color: #800080ff;
+                    textedit-cursor-color: #ffffffff;
+                    split-bar-color: #444444;
+                    split-bar-hover-color: #888888;
+                    container-scrollbar-track-color: #2D2D2D;
+                    container-scrollbar-thumb-color: #888888;
+                    container-scrollbar-thumb-hover-color: #AAAAAA;
+                }
+                """);
+
+        Map<String, IStyleProperty<?>> properties = toPropertyMap(sheets.sheets().getFirst());
+
+        Assertions.assertTrue(properties.containsKey("label-text-color"));
+        Assertions.assertTrue(properties.containsKey("button-text-color"));
+        Assertions.assertTrue(properties.containsKey("checkbox-track-color"));
+        Assertions.assertTrue(properties.containsKey("checkbox-thumb-color"));
+        Assertions.assertTrue(properties.containsKey("checkbox-on-color"));
+        Assertions.assertTrue(properties.containsKey("dragbox-track-color"));
+        Assertions.assertTrue(properties.containsKey("dragbox-thumb-color"));
+        Assertions.assertTrue(properties.containsKey("dragbox-thumb-hover-color"));
+        Assertions.assertTrue(properties.containsKey("dragbox-border-color"));
+        Assertions.assertTrue(properties.containsKey("linegraph-axis-color"));
+        Assertions.assertTrue(properties.containsKey("linegraph-num-color"));
+        Assertions.assertTrue(properties.containsKey("linegraph-line-color"));
+        Assertions.assertTrue(properties.containsKey("linegraph-bg-color"));
+        Assertions.assertTrue(properties.containsKey("linegraph-grid-color"));
+        Assertions.assertTrue(properties.containsKey("textedit-text-color"));
+        Assertions.assertTrue(properties.containsKey("textedit-selection-color"));
+        Assertions.assertTrue(properties.containsKey("textedit-cursor-color"));
+        Assertions.assertTrue(properties.containsKey("split-bar-color"));
+        Assertions.assertTrue(properties.containsKey("split-bar-hover-color"));
+        Assertions.assertTrue(properties.containsKey("container-scrollbar-track-color"));
+        Assertions.assertTrue(properties.containsKey("container-scrollbar-thumb-color"));
+        Assertions.assertTrue(properties.containsKey("container-scrollbar-thumb-hover-color"));
+    }
+
     private Map<String, IStyleProperty<?>> toPropertyMap(StyleSheetUnit sheet) {
         Map<String, IStyleProperty<?>> map = new HashMap<>();
         for (IStyleProperty<?> property : sheet.properties()) {

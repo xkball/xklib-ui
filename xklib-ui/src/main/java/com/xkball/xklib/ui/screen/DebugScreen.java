@@ -13,13 +13,6 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
 import com.xkball.xklib.ui.widget.container.TabContainer;
 import com.xkball.xklib.utils.AdjacencyList;
-import dev.vfyjxf.taffy.geometry.TaffyRect;
-import dev.vfyjxf.taffy.geometry.TaffySize;
-import dev.vfyjxf.taffy.style.AlignItems;
-import dev.vfyjxf.taffy.style.FlexDirection;
-import dev.vfyjxf.taffy.style.LengthPercentage;
-import dev.vfyjxf.taffy.style.LengthPercentageAuto;
-import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TextAlign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +28,60 @@ import java.util.Map;
 public class DebugScreen extends ContainerWidget {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugScreen.class);
-    private static final int NODE_HEIGHT = 22;
     private static final int TEXT_COLOR = 0xFF1E293B;
     private static final int HEADER_BG = 0xFFE2E8F0;
     private static final int PANEL_BG = 0xFFF8FAFC;
     private static final int HOVER_COLOR = 0x33000000;
+    private static final String ROOT_CSS = """
+            DebugScreen {
+                size: 100% 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            ContainerWidget.debug-tree-content {
+                flex-direction: column;
+                align-items: start;
+                size: 100% 100%;
+            }
+            ContainerWidget.debug-field-content {
+                flex-direction: column;
+                align-items: start;
+                size: 100% 100%;
+            }
+            ContainerWidget.debug-tree-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            ContainerWidget.debug-field-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            Label.debug-header {
+                size: 100% 22;
+                flex-shrink: 0;
+            }
+            Label.debug-keep-updating {
+                size: auto 100%;
+                margin: auto 0 0 0;
+                padding: 4;
+            }
+            CheckBox.debug-keep-updating {
+                size: 48 24;
+                margin: 4;
+            }
+            Label.debug-node-row {
+                flex-direction: row;
+                align-items: stretch;
+                size: auto 22;
+                flex-shrink: 0;
+            }
+            Label.debug-field-row {
+                flex-direction: row;
+                align-items: stretch;
+                size: auto 22;
+                flex-shrink: 0;
+            }
+            """;
 
     private final GuiSystem theOtherSystem;
     private final TabContainer tabs = new TabContainer();
@@ -57,6 +99,11 @@ public class DebugScreen extends ContainerWidget {
     }
 
     @Override
+    public String createCSSAsRoot() {
+        return ROOT_CSS;
+    }
+
+    @Override
     public void onRemove() {
         super.onRemove();
         if (!this.theOtherSystem.isClosed()) {
@@ -67,27 +114,14 @@ public class DebugScreen extends ContainerWidget {
     @Override
     public void init() {
         super.init();
-        this.setStyle(s -> {
-            s.size = TaffySize.all(TaffyDimension.percent(1f));
-            s.flexDirection = FlexDirection.COLUMN;
-            s.alignItems = AlignItems.STRETCH;
-        });
 
+        treeViewContent.setCSSClassName("debug-tree-content");
         treeViewContent.addDecoration(new Background(PANEL_BG));
-        treeViewContent.setStyle(s -> {
-            s.flexDirection = FlexDirection.COLUMN;
-            s.alignItems = AlignItems.START;
-            s.size = TaffySize.all(TaffyDimension.percent(1f));
-        });
         treeViewContent.setYScrollEnable();
         treeViewContent.setXScrollEnable();
 
+        fieldViewContent.setCSSClassName("debug-field-content");
         fieldViewContent.addDecoration(new Background(PANEL_BG));
-        fieldViewContent.setStyle(s -> {
-            s.flexDirection = FlexDirection.COLUMN;
-            s.alignItems = AlignItems.START;
-            s.size = TaffySize.all(TaffyDimension.percent(1f));
-        });
         fieldViewContent.setYScrollEnable();
         fieldViewContent.setXScrollEnable();
 
@@ -95,20 +129,14 @@ public class DebugScreen extends ContainerWidget {
         treeView.getPanel(0).addChild(makeHeader(""));
 
         var treePanel = treeView.getPanel(1);
+        treePanel.setCSSClassName("debug-tree-panel");
         treePanel.addDecoration(new Background(PANEL_BG));
-        treePanel.setStyle(s -> {
-            s.flexDirection = FlexDirection.COLUMN;
-            s.alignItems = AlignItems.STRETCH;
-        });
         treePanel.addChild(makeHeader("组件树"));
         treePanel.addChild(treeViewContent);
 
         var fieldPanel = treeView.getPanel(2);
+        fieldPanel.setCSSClassName("debug-field-panel");
         fieldPanel.addDecoration(new Background(PANEL_BG));
-        fieldPanel.setStyle(s -> {
-            s.flexDirection = FlexDirection.COLUMN;
-            s.alignItems = AlignItems.STRETCH;
-        });
         fieldPanel.addChild(makeHeader("组件字段"));
         fieldPanel.addChild(fieldViewContent);
 
@@ -117,19 +145,12 @@ public class DebugScreen extends ContainerWidget {
                 .addTabPage(performanceScreen, "性能监视器"));
 
         var keepUpdatingLabel = new Label("保持更新", TextAlign.LEFT, TEXT_COLOR);
-        keepUpdatingLabel.setSize("auto","100%");
-        keepUpdatingLabel.setStyle( s -> {
-            s.margin = new TaffyRect<>(
-                    LengthPercentageAuto.auto(),LengthPercentageAuto.length(0),
-                    LengthPercentageAuto.length(0),LengthPercentageAuto.length(0));
-            s.padding = TaffyRect.all(LengthPercentage.length(4));
-        });
+        keepUpdatingLabel.setCSSClassName("debug-keep-updating");
         keepUpdatingLabel.setTextScale(TextScale.EXPAND_WIDTH);
 
         var keepUpdatingCb = new CheckBox();
+        keepUpdatingCb.setCSSClassName("debug-keep-updating");
         keepUpdatingCb.bind(keepUpdating);
-        keepUpdatingCb.setStyle( s -> s.margin = TaffyRect.all(LengthPercentageAuto.length(4)));
-        keepUpdatingCb.setSize("48","24");
 
         this.tabs.getTabBar().addChild(keepUpdatingLabel);
         this.tabs.getTabBar().addChild(keepUpdatingCb);
@@ -138,11 +159,8 @@ public class DebugScreen extends ContainerWidget {
 
     private Label makeHeader(String text) {
         var label = new Label(text, TextAlign.CENTER, TEXT_COLOR);
+        label.setCSSClassName("debug-header");
         label.addDecoration(new Background(HEADER_BG));
-        label.setStyle(s -> {
-            s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(NODE_HEIGHT));
-            s.flexShrink = 0;
-        });
         label.setTextScale(TextScale.EXPAND_WIDTH);
         return label;
     }
@@ -288,17 +306,12 @@ public class DebugScreen extends ContainerWidget {
             FieldRow(String text, Object fieldValue) {
                 super(text, TextAlign.LEFT, TEXT_COLOR);
                 this.fieldValue = fieldValue;
+                this.setCSSClassName("debug-field-row");
             }
 
             @Override
             public void init() {
                 super.init();
-                this.setStyle(s -> {
-                    s.flexDirection = FlexDirection.ROW;
-                    s.alignItems = AlignItems.STRETCH;
-                    s.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(NODE_HEIGHT));
-                    s.flexShrink = 0;
-                });
                 this.setTextScale(TextScale.EXPAND_WIDTH);
             }
 
@@ -322,17 +335,12 @@ public class DebugScreen extends ContainerWidget {
         NodeRow(Widget target, String text) {
             super(text, TextAlign.LEFT, TEXT_COLOR);
             this.target = target;
+            this.setCSSClassName("debug-node-row");
         }
 
         @Override
         public void init() {
             super.init();
-            this.setStyle(s -> {
-                s.flexDirection = FlexDirection.ROW;
-                s.alignItems = AlignItems.STRETCH;
-                s.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(NODE_HEIGHT));
-                s.flexShrink = 0;
-            });
             this.setTextScale(TextScale.EXPAND_WIDTH);
         }
 

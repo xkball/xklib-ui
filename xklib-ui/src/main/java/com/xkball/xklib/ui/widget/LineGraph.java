@@ -10,6 +10,16 @@ import java.util.List;
 
 public class LineGraph extends Widget {
 
+    private static final String SELF_CSS = """
+            * {
+                linegraph-axis-color: 0xFF4A5568;
+                linegraph-num-color: 0xFF718096;
+                linegraph-line-color: 0xFF63B3ED;
+                linegraph-bg-color: 0xFF1A202C;
+                linegraph-grid-color: 0x22FFFFFF;
+            }
+            """;
+
     public int axisColor = 0xFF4A5568;
     public int numColor = 0xFF718096;
     public int lineColor = 0xFF63B3ED;
@@ -34,6 +44,11 @@ public class LineGraph extends Widget {
     private static final float PADDING_BOTTOM = 18f;
     private static final float PADDING_TOP = 8f;
     private static final float PADDING_RIGHT = 8f;
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
+    }
 
     public void setData(FloatList xValues, FloatList yValues) {
         this.xValues.clear();

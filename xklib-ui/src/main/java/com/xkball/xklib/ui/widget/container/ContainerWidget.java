@@ -24,12 +24,22 @@ import java.util.function.Supplier;
 public class ContainerWidget extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
+    private static final String SELF_CSS = """
+            * {
+                container-scrollbar-track-color: 0xFF2D2D2D;
+                container-scrollbar-thumb-color: 0xFF888888;
+                container-scrollbar-thumb-hover-color: 0xFFAAAAAA;
+            }
+            """;
     
     protected final List<Widget> children = new ArrayList<>();
     protected float xScrollOffset = 0;
     protected float yScrollOffset = 0;
     protected ScrollBar scrollBarX = new ScrollBar(false);
     protected ScrollBar scrollBarY = new ScrollBar(true);
+    protected int scrollBarTrackColor;
+    protected int scrollBarThumbColor;
+    protected int scrollBarThumbHoverColor;
     
     
     public ContainerWidget(int x, int y, int width, int height) {
@@ -38,6 +48,23 @@ public class ContainerWidget extends Widget {
     
     public ContainerWidget() {
         super();
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
+    }
+
+    public void setScrollBarTrackColor(int scrollBarTrackColor) {
+        this.scrollBarTrackColor = scrollBarTrackColor;
+    }
+
+    public void setScrollBarThumbColor(int scrollBarThumbColor) {
+        this.scrollBarThumbColor = scrollBarThumbColor;
+    }
+
+    public void setScrollBarThumbHoverColor(int scrollBarThumbHoverColor) {
+        this.scrollBarThumbHoverColor = scrollBarThumbHoverColor;
     }
     
     /**
@@ -96,11 +123,6 @@ public class ContainerWidget extends Widget {
             widget.setParent(null);
         }
         this.children.clear();
-    }
-    
-    @Override
-    public String getCSSType() {
-        return "div";
     }
     
     @Override
@@ -515,10 +537,6 @@ public class ContainerWidget extends Widget {
     
     public class ScrollBar implements IGuiEventListener, IRenderable {
 
-        private static final int TRACK_COLOR = 0xFF2D2D2D;
-        private static final int THUMB_COLOR = 0xFF888888;
-        private static final int THUMB_HOVER_COLOR = 0xFFAAAAAA;
-
         float x;
         float y;
         float width;
@@ -653,11 +671,11 @@ public class ContainerWidget extends Widget {
         @Override
         public void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
             if (width == 0 || height == 0) return;
-            graphics.fill(x, y, x + width, y + height, TRACK_COLOR);
+            graphics.fill(x, y, x + width, y + height, ContainerWidget.this.scrollBarTrackColor);
             float offset = thumbOffset();
             float ts = thumbSize();
             boolean hover = isMouseOverThumb(mouseX, mouseY) || dragging;
-            int thumbColor = hover ? THUMB_HOVER_COLOR : THUMB_COLOR;
+            int thumbColor = hover ? ContainerWidget.this.scrollBarThumbHoverColor : ContainerWidget.this.scrollBarThumbColor;
             if (vertical) {
                 graphics.fill(x, y + offset, x + width, y + offset + ts, thumbColor);
             } else {

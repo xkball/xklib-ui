@@ -7,6 +7,12 @@ import dev.vfyjxf.taffy.style.TextAlign;
 
 @SuppressWarnings("unused")
 public class Label extends Widget {
+
+    private static final String SELF_CSS = """
+            * {
+                label-text-color: 0xFF000000;
+            }
+            """;
     
     private TextAlign align = TextAlign.LEFT;
     private String text = "";
@@ -33,6 +39,11 @@ public class Label extends Widget {
 
     public Label(String text) {
         this.text = text;
+    }
+
+    @Override
+    public String createCSSAsSelf() {
+        return SELF_CSS;
     }
 
     @Override
