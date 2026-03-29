@@ -5,44 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IconComponent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/attribute.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/down.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/down_double.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/left.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/left_double.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/right.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/right_double.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/up.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/resources/assets/xklib/textures/icon/up_double.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/screen/DebugScreenIconTextTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/screen/DebugScreenIterableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/MathUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/Font.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/Font.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontAtlas.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/font/FontAtlas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/pipeline/RenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/pipeline/RenderPipelines.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/shader/ShaderProgram.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/shader/ShaderProgram.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/state/TextRenderState.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/state/TextRenderState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureAtlas.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureAtlas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureAtlasSprite.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureAtlasSprite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d-gl/src/main/java/com/xkball/xklib/x3d/backend/gl/texture/TextureManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IFont.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IFont.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IGUIGraphics.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IGUIGraphics.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/LiteralComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/LiteralComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/TranslatableComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/TranslatableComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/api/render/ITextureAtlasSprite.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/api/render/ITextureAtlasSprite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/backend/window/DrawTestText.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/backend/window/DrawTestText.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/TextScale.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/layout/TextScale.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/PerformanceScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/PerformanceScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Label.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Label.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ContainerWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ContainerWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/TabContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/TabContainer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,17 +26,17 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
-      <entry key="chat-panel" value="Auto" />
-      <entry key="agent-panel" value="Auto" />
+      <entry key="chat-panel" value="Gemini 3.1 Pro" />
+      <entry key="agent-panel" value="Gemini 3.1 Pro" />
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="238910" />
+    <option name="totalTimeSeconds" value="242788" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="344" />
+    <option name="cachedIndexableFilesCount" value="356" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -295,7 +262,7 @@
     "project.structure.last.edited": "项目",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.4668275",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.selected.configurable": "Qoder",
     "sweep.chatMode": "Agent",
     "sweep.selectedModel": "Auto",
     "vue.rearranger.settings.migration": "true",
@@ -328,6 +295,9 @@
     </key>
     <key name="MoveInnerDialog.RECENTS_KEY">
       <recent name="com.xkball.xklib.ui.layout" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.xkball.xklib.utils.math" />
     </key>
   </component>
   <component name="RunManager" selected="应用程序.SectionContainerTest">
@@ -492,7 +462,8 @@
       <workItem from="1773750767464" duration="35738000" />
       <workItem from="1774203387421" duration="13484000" />
       <workItem from="1774454484256" duration="1984000" />
-      <workItem from="1774521798017" duration="25252000" />
+      <workItem from="1774521798017" duration="28393000" />
+      <workItem from="1774801196244" duration="2193000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -646,7 +617,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774723534681</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1774797912002</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1774797912002</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

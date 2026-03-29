@@ -6,7 +6,9 @@ import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
+import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.render.IFont;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.CheckBox;
@@ -16,6 +18,7 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
 import com.xkball.xklib.ui.widget.container.TabContainer;
 import com.xkball.xklib.utils.AdjacencyList;
+import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.style.TextAlign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,9 @@ public class DebugScreen extends ContainerWidget {
     private static final int HEADER_BG = 0xFFE2E8F0;
     private static final int PANEL_BG = 0xFFF8FAFC;
     private static final int HOVER_COLOR = 0x33000000;
+    private static final int BOX_MARGIN_COLOR = 0xFFFEE2E2;
+    private static final int BOX_PADDING_COLOR = 0xFFDBEAFE;
+    private static final int BOX_CONTENT_COLOR = 0xFFE2FBE8;
     private static final String ROOT_CSS = """
             DebugScreen {
                 size: 100% 100%;
@@ -61,9 +67,36 @@ public class DebugScreen extends ContainerWidget {
                 flex-direction: column;
                 align-items: stretch;
             }
+            ContainerWidget.debug-style-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            ContainerWidget.debug-style-content {
+                flex-direction: column;
+                align-items: stretch;
+                size: 100% 100%;
+            }
+            ContainerWidget.debug-css-matched-content {
+                flex-direction: column;
+                align-items: stretch;
+                size: 100% 100%;
+            }
             Label.debug-header {
                 size: 100% 22;
                 flex-shrink: 0;
+            }
+            Label.debug-style-title {
+                size: 100% 22;
+                flex-shrink: 0;
+            }
+            .debug-style-row {
+                size: 100% 20;
+                flex-shrink: 0;
+            }
+            .debug-box-model {
+                size: 100% 160;
+                flex-shrink: 0;
+                margin: 4;
             }
             .debug-keep-updating-l {
                 size: auto 100%;
@@ -74,16 +107,16 @@ public class DebugScreen extends ContainerWidget {
                 size: 48 24;
                 margin: 4;
             }
-            Label.debug-node-row {
+            .debug-node-row {
                 flex-direction: row;
                 align-items: stretch;
-                size: auto 22;
+                size: auto 20;
                 flex-shrink: 0;
             }
-            Label.debug-field-row {
+            .debug-field-row {
                 flex-direction: row;
                 align-items: stretch;
-                size: auto 22;
+                size: auto 20;
                 flex-shrink: 0;
             }
             """;
@@ -91,6 +124,10 @@ public class DebugScreen extends ContainerWidget {
     private final GuiSystem theOtherSystem;
     private final TabContainer tabs = new TabContainer();
     private final SplitContainer treeView = new SplitContainer(false, 3);
+    private final ContainerWidget styleViewContent = new ContainerWidget();
+    private final ContainerWidget matchedCssContent = new ContainerWidget();
+    private final Label styleTargetTitle = new Label("未选择组件", TextAlign.LEFT, TEXT_COLOR);
+    private final BoxModelPreview boxModelPreview = new BoxModelPreview();
     private final ContainerWidget treeViewContent = new ContainerWidget();
     private final ContainerWidget fieldViewContent = new ContainerWidget();
     private final PerformanceScreen performanceScreen = new PerformanceScreen();
@@ -130,8 +167,26 @@ public class DebugScreen extends ContainerWidget {
         fieldViewContent.setYScrollEnable();
         fieldViewContent.setXScrollEnable();
 
-        treeView.getPanel(0).addDecoration(new Background(PANEL_BG));
-        treeView.getPanel(0).addChild(makeHeader(""));
+        styleViewContent.setCSSClassName("debug-style-content");
+        styleViewContent.addDecoration(new Background(PANEL_BG));
+        styleViewContent.setYScrollEnable();
+
+        styleTargetTitle.setCSSClassName("debug-style-title");
+        styleTargetTitle.setTextScale(TextScale.EXPAND_WIDTH);
+
+        matchedCssContent.setCSSClassName("debug-css-matched-content");
+        matchedCssContent.setYScrollEnable();
+        matchedCssContent.setXScrollEnable();
+
+        var stylePanel = treeView.getPanel(0);
+        stylePanel.setCSSClassName("debug-style-panel");
+        stylePanel.addDecoration(new Background(PANEL_BG));
+        stylePanel.addChild(makeHeader("组件样式"));
+        styleViewContent.addChild(styleTargetTitle);
+        boxModelPreview.setCSSClassName("debug-box-model");
+        styleViewContent.addChild(boxModelPreview);
+        styleViewContent.addChild(matchedCssContent);
+        stylePanel.addChild(styleViewContent);
 
         var treePanel = treeView.getPanel(1);
         treePanel.setCSSClassName("debug-tree-panel");
@@ -193,8 +248,65 @@ public class DebugScreen extends ContainerWidget {
     public void update() {
         synchronized (theOtherSystem) {
             this.buildTreeView();
+            this.buildStyleView();
             this.buildFieldView();
         }
+    }
+
+    private static String formatSizeValue(Object value) {
+        if (value == null) {
+            return "-";
+        }
+        var text = String.valueOf(value);
+        var lower = text.toLowerCase();
+        if (lower.contains("calc") || value.getClass().getSimpleName().toLowerCase().contains("calc")) {
+            return "calc";
+        }
+        var id = text.indexOf('.');
+        if(id > 0 && String.valueOf(value).endsWith(".0")) return text.substring(0, id);
+        return text;
+    }
+
+    private void buildStyleView() {
+        matchedCssContent.clearChildren();
+        if (this.lastSelectedNode == null) {
+            this.styleTargetTitle.setText("未选择组件");
+            this.boxModelPreview.setBoxModel(null);
+            matchedCssContent.addChild(createStyleRow("暂无匹配规则", false));
+            return;
+        }
+        Widget widget = this.lastSelectedNode.target;
+        this.styleTargetTitle.setText(widget.getClass().getSimpleName() + "  #" + widget.getCSSId());
+        var style = widget.getStyle();
+        var sizeText = "w=" + formatSizeValue(style.size.width) + " h=" + formatSizeValue(style.size.height);
+        this.boxModelPreview.setBoxModel(style);
+
+        if (widget.getStyleSheet() instanceof CascadingStyleSheets.SimpleStyleSheet sheet) {
+            var units = sheet.matchedUnits();
+            if (units.isEmpty()) {
+                matchedCssContent.addChild(createStyleRow("暂无匹配规则", false));
+                return;
+            }
+            int index = 1;
+            for (var unit : units) {
+                var selectorName = unit.selector().getClass().getSimpleName();
+                var unitText = String.format("%d. %s (w=%d, o=%d)", index, selectorName, unit.weight(), unit.sourceOrder());
+                matchedCssContent.addChild(createStyleRow(unitText, true));
+                for (var property : unit.properties()) {
+                    matchedCssContent.addChild(createStyleRow("  " + property.propertyName() + ": " + property.valueString(), false));
+                }
+                index++;
+            }
+            return;
+        }
+        matchedCssContent.addChild(createStyleRow("样式表类型不支持展示匹配规则", false));
+    }
+
+    private Label createStyleRow(String text, boolean strong) {
+        var label = new Label(text, TextAlign.LEFT, strong ? 0xFF0F172A : TEXT_COLOR);
+        label.setCSSClassName("debug-style-row");
+        label.setTextScale(TextScale.EXPAND_WIDTH);
+        return label;
     }
 
     private void buildTreeView() {
@@ -376,7 +488,7 @@ public class DebugScreen extends ContainerWidget {
     private class NodeRow extends Label {
 
         private final Widget target;
-        private boolean isSelected;
+        private final boolean isSelected;
 
         NodeRow(Widget target, IComponent text, boolean isSelected) {
             super(text, TextAlign.LEFT, TEXT_COLOR);
@@ -417,6 +529,95 @@ public class DebugScreen extends ContainerWidget {
                 return true;
             }
             return false;
+        }
+    }
+
+    private static class BoxModelPreview extends Widget {
+
+        private TaffyStyle style;
+        
+        void setBoxModel(TaffyStyle style) {
+            this.style = style;
+        }
+
+        @Override
+        public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+            super.doRender(graphics, mouseX, mouseY, a);
+            if (this.style == null) return;
+
+            var font = graphics.defaultFont();
+            float centerX = this.x + this.width / 2;
+            float centerY = this.y + this.height / 2;
+            
+            float m = font.lineHeight() + 4;
+            
+            String mt = formatSizeValue(style.margin.top);
+            String mb = formatSizeValue(style.margin.bottom);
+            String ml = formatSizeValue(style.margin.left);
+            String mr = formatSizeValue(style.margin.right);
+            
+            String pt = formatSizeValue(style.padding.top);
+            String pb = formatSizeValue(style.padding.bottom);
+            String pl = formatSizeValue(style.padding.left);
+            String pr = formatSizeValue(style.padding.right);
+            
+            String wStr = formatSizeValue(style.size.width);
+            String hStr = formatSizeValue(style.size.height);
+            String contentText = wStr + " × " + hStr;
+            
+            float maxLeftText = Math.max(font.width(ml), font.width(pl));
+            float maxRightText = Math.max(font.width(mr), font.width(pr));
+            
+            float leftThick = Math.max(m, maxLeftText + 4);
+            float rightThick = Math.max(m, maxRightText + 4);
+            
+            float innerW = font.width(contentText) + 8;
+            float innerH = font.lineHeight() + 8;
+            
+            float totalW = innerW + (leftThick + rightThick) * 2;
+            float totalH = innerH + (m * 4);
+            
+            float boxSizeW = Math.max(totalW, this.width * 0.8f);
+            float boxSizeH = Math.max(totalH, this.height * 0.8f);
+            
+            float hw = boxSizeW / 2;
+            float hh = boxSizeH / 2;
+
+            float left = centerX - hw;
+            float right = centerX + hw;
+            float top = centerY - hh;
+            float bottom = centerY + hh;
+            
+            graphics.fill(left, top, right, bottom, BOX_MARGIN_COLOR);
+            graphics.renderOutline(left, top, right - left, bottom - top, 0xFFB91C1C);
+            drawLabels(graphics, font, left, right, top, bottom, mt, mb, ml, mr);
+            
+            float pLeft = left + leftThick;
+            float pRight = right - rightThick;
+            float pTop = top + m;
+            float pBottom = bottom - m;
+
+            graphics.fill(pLeft, pTop, pRight, pBottom, BOX_PADDING_COLOR);
+            graphics.renderOutline(pLeft, pTop, pRight - pLeft, pBottom - pTop, 0xFF1D4ED8);
+            drawLabels(graphics, font, pLeft, pRight, pTop, pBottom, pt, pb, pl, pr);
+
+            float cLeft = pLeft + leftThick;
+            float cRight = pRight - rightThick;
+            float cTop = pTop + m;
+            float cBottom = pBottom - m;
+            
+            graphics.fill(cLeft, cTop, cRight, cBottom, BOX_CONTENT_COLOR);
+            graphics.renderOutline(cLeft, cTop, cRight - cLeft, cBottom - cTop, 0xFF15803D);
+
+            graphics.drawString(font, contentText, cLeft + (cRight - cLeft - font.width(contentText)) / 2, cTop + (cBottom - cTop - font.lineHeight()) / 2, 0xFF000000);
+        }
+
+        private void drawLabels(IGUIGraphics graphics, IFont font, float l, float r, float t, float b, String top, String bot, String left, String right) {
+            int color = 0xFF000000;
+            graphics.drawString(font, top, l + (r - l - font.width(top)) / 2, t + 2, color);
+            graphics.drawString(font, bot, l + (r - l - font.width(bot)) / 2, b - font.lineHeight() - 2, color);
+            graphics.drawString(font, left, l + 2, t + (b - t - font.lineHeight()) / 2, color);
+            graphics.drawString(font, right, r - font.width(right) - 2, t + (b - t - font.lineHeight()) / 2, color);
         }
     }
 }

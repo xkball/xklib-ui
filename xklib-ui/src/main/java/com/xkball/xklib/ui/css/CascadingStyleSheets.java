@@ -84,6 +84,14 @@ public class CascadingStyleSheets {
             return this.dynamicMatchedCount;
         }
 
+        public List<StyleSheetUnit> matchedUnits() {
+            var ordered = new ArrayList<StyleSheetUnit>(this.staticMatched.size() + this.dynamicMatched.size());
+            ordered.addAll(this.staticMatched);
+            ordered.addAll(this.dynamicMatched);
+            ordered.sort(APPLY_ORDER);
+            return List.copyOf(ordered);
+        }
+
         private static List<StyleSheetUnit> collectMatched(CascadingStyleSheets root, IGuiWidget widget, boolean dynamic) {
             var unitList = new ArrayList<StyleSheetUnit>();
             for (var unit : root.sheets) {
