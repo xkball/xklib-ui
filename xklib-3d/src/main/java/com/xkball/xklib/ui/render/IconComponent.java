@@ -1,6 +1,8 @@
 package com.xkball.xklib.ui.render;
 
-record LiteralComponent(String text, ComponentStyle style) implements IComponent {
+import com.xkball.xklib.resource.ResourceLocation;
+
+public record IconComponent(ResourceLocation icon, ComponentStyle style) implements IComponent {
 
     @Override
     public ComponentStyle style() {
@@ -9,17 +11,22 @@ record LiteralComponent(String text, ComponentStyle style) implements IComponent
 
     @Override
     public IComponent withStyle(ComponentStyle newStyle) {
-        return new LiteralComponent(text, newStyle);
+        return new IconComponent(icon, newStyle);
     }
 
     @Override
     public void visitStyled(IComponent.StyledVisitor visitor, ComponentStyle parentStyle) {
-        visitor.accept(this,text, style.applyParent(parentStyle));
+        visitor.accept(this,"", style.applyParent(parentStyle));
     }
 
     @Override
     public String visit() {
-        return text;
+        return "";
+    }
+
+    public ResourceLocation getIcon() {
+        return icon;
     }
 }
+
 

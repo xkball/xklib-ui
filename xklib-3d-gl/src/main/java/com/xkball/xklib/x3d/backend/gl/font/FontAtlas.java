@@ -94,7 +94,7 @@ public class FontAtlas extends AbstractTexture {
             IntBuffer yOffBuf = stack.mallocInt(1);
 
             ByteBuffer bitmap = STBTruetype.stbtt_GetCodepointSDF(
-                fontInfo, scale, codepoint, 10, (byte) 128, 48f, widthBuf, heightBuf, xOffBuf, yOffBuf
+                fontInfo, scale, codepoint, 10, (byte) 128, 64f, widthBuf, heightBuf, xOffBuf, yOffBuf
             );
 
             if (bitmap == null) {

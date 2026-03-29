@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.layout.TextScale;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import dev.vfyjxf.taffy.style.TextAlign;
@@ -15,30 +16,50 @@ public class Label extends Widget {
             """;
     
     private TextAlign align = TextAlign.LEFT;
-    private String text = "";
+    private IComponent text = IComponent.literal("");
     private int color = 0xFF000000;
     private TextScale textScale = TextScale.FIXED;
 
     public Label(){}
+    
+    public Label(IComponent text, TextAlign align, int color){
+        this.text = text;
+        this.align = align;
+        this.color = color;
+    }
+    
+    public Label(IComponent text, TextAlign align){
+        this.text = text;
+        this.align = align;
+    }
+    
+    public Label(IComponent text, int color){
+        this.text = text;
+        this.color = color;
+    }
+    
+    public Label(IComponent text) {
+        this.text = text;
+    }
 
     public Label(String text, TextAlign align, int color){
-        this.text = text;
+        this.text = IComponent.literal(text);
         this.align = align;
         this.color = color;
     }
 
     public Label(String text, TextAlign align){
-        this.text = text;
+        this.text = IComponent.literal(text);
         this.align = align;
     }
 
     public Label(String text, int color){
-        this.text = text;
+        this.text = IComponent.literal(text);
         this.color = color;
     }
 
     public Label(String text) {
-        this.text = text;
+        this.text = IComponent.literal(text);
     }
 
     @Override
@@ -79,12 +100,12 @@ public class Label extends Widget {
         
     }
     
-    public String getText() {
+    public IComponent getText() {
         return text;
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = IComponent.literal(text);
         this.onTextChanged();
     }
     

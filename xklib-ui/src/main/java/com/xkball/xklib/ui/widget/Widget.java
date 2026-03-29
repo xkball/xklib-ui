@@ -458,6 +458,11 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
 
     @Override
     public void setStyleSheet(IStyleSheet styleSheet) {
+        if (this.styleSheet != styleSheet) {
+            this.styleSheet = styleSheet;
+            this.onStyleSheetChanged();
+            return;
+        }
         this.styleSheet = styleSheet;
     }
 

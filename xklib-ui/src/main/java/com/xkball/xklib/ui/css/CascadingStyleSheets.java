@@ -54,7 +54,9 @@ public class CascadingStyleSheets {
             if (staticChanged || dynamicChanged || this.style.isEmpty()) {
                 this.staticMatched = newStaticMatched;
                 this.dynamicMatched = newDynamicMatched;
-                rebuild(widget, this.staticMatched, this.dynamicMatched);
+                if (rebuild(widget, this.staticMatched, this.dynamicMatched)) {
+                    widget.onStyleSheetChanged();
+                }
                 return;
             }
 
@@ -99,7 +101,8 @@ public class CascadingStyleSheets {
             return unitList;
         }
 
-        private void rebuild(IGuiWidget widget, List<StyleSheetUnit> staticUnits, List<StyleSheetUnit> dynamicUnits) {
+        private boolean rebuild(IGuiWidget widget, List<StyleSheetUnit> staticUnits, List<StyleSheetUnit> dynamicUnits) {
+            var oldValues = snapshotStyleValues(this.style);
             var ordered = new ArrayList<StyleSheetUnit>(staticUnits.size() + dynamicUnits.size());
             ordered.addAll(staticUnits);
             ordered.addAll(dynamicUnits);
@@ -125,6 +128,15 @@ public class CascadingStyleSheets {
                 }
             }
             this.activeDynamicProperties = List.copyOf(currentDynamicProperties);
+            return !oldValues.equals(snapshotStyleValues(this.style));
+        }
+
+        private static Map<String, Object> snapshotStyleValues(Map<String, IStyleProperty<?>> styleMap) {
+            var values = new LinkedHashMap<String, Object>(styleMap.size());
+            for (var entry : styleMap.entrySet()) {
+                values.put(entry.getKey(), entry.getValue().value());
+            }
+            return values;
         }
 
         private void applyDynamic(IGuiWidget widget) {

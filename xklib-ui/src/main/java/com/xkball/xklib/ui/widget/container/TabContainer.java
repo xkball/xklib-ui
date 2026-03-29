@@ -16,6 +16,7 @@ import dev.vfyjxf.taffy.style.TaffyDisplay;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class TabContainer extends ContainerWidget {
 
@@ -73,13 +74,20 @@ public class TabContainer extends ContainerWidget {
             var tab = tabs.get(i);
             var widget = tab.widget();
             if (i == newSelected) {
-                widget.setStyle(s -> s.display = tab.rawDisplay());
+                if(widget.style.display == TaffyDisplay.NONE) widget.setStyle(s -> s.display = tab.rawDisplay());
             } else {
+                if(widget.style.display != TaffyDisplay.NONE) tab.rawDisplay = widget.style.display;
                 widget.setStyle(s -> s.display = TaffyDisplay.NONE);
             }
         }
     }
-
+    
+    //调用太早 子组件还没有遍历就调用了
+    @Override
+    public void onStyleSheetChanged() {
+        this.onSelectedChanged(this.selected.get());
+    }
+    
     @Override
     public void init() {
         super.init();
@@ -105,8 +113,61 @@ public class TabContainer extends ContainerWidget {
     public ContainerWidget getTabBar(){
         return tabBar;
     }
-
-    public record TabPage(int index, String title, TaffyDisplay rawDisplay, Widget widget) {
+    
+    public static final class TabPage {
+        private final int index;
+        private final String title;
+        private TaffyDisplay rawDisplay;
+        private final Widget widget;
+        
+        public TabPage(int index, String title, TaffyDisplay rawDisplay, Widget widget) {
+            this.index = index;
+            this.title = title;
+            this.rawDisplay = rawDisplay;
+            this.widget = widget;
+        }
+        
+        public int index() {
+            return index;
+        }
+        
+        public String title() {
+            return title;
+        }
+        
+        public TaffyDisplay rawDisplay() {
+            return rawDisplay;
+        }
+        
+        public Widget widget() {
+            return widget;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (TabPage) obj;
+            return this.index == that.index &&
+                    Objects.equals(this.title, that.title) &&
+                    Objects.equals(this.rawDisplay, that.rawDisplay) &&
+                    Objects.equals(this.widget, that.widget);
+        }
+        
+        @Override
+        public int hashCode() {
+            return Objects.hash(index, title, rawDisplay, widget);
+        }
+        
+        @Override
+        public String toString() {
+            return "TabPage[" +
+                    "index=" + index + ", " +
+                    "title=" + title + ", " +
+                    "rawDisplay=" + rawDisplay + ", " +
+                    "widget=" + widget + ']';
+        }
+        
     }
     
 }

@@ -1,9 +1,12 @@
 package com.xkball.xklib.x3d.backend.gl.state;
 
 import com.ibm.icu.text.BreakIterator;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.render.ComponentStyle;
 import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.render.IconComponent;
 import com.xkball.xklib.x3d.api.render.IRenderPipeline;
+import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
 import com.xkball.xklib.x3d.backend.gl.font.Font;
 import com.xkball.xklib.x3d.backend.gl.font.GlyphInfo;
 import com.xkball.xklib.x3d.backend.gl.pipeline.RenderPipelines;
@@ -47,24 +50,41 @@ public class TextRenderState {
         Map<Integer, List<GlyphBatchRenderState.GlyphQuad>> shadowQuads = new LinkedHashMap<>();
         Map<Integer, List<GlyphBatchRenderState.GlyphQuad>> normalQuads = new LinkedHashMap<>();
         List<float[]> lines = new ArrayList<>();
+        List<IGuiElementRenderState> result = new ArrayList<>();
 
         for (SegmentInfo seg : segments) {
-            if (drawShadow) {
-                collectGlyphs(font, seg.text, seg.startX + 1, baseY + 1, mulColor(seg.color, 0.25f), shadowQuads);
-            }
-            collectGlyphs(font, seg.text, seg.startX, baseY, seg.color, normalQuads);
+            if (seg.isIcon()) {
+                float iconWidth = font.getFontSize();
+                float iconX = seg.startX;
+                var textureManger = XKLib.RENDER_CONTEXT.get().getTextureManager();
+                var sprite = textureManger.getSprite(seg.getIcon().icon());
+                if (sprite != null) {
+                    result.add(new BlitRenderState(
+                        IRenderPipelineSource.getInstance().getGuiTextured(),
+                        TextureSetup.singleTexture(sprite.texture()),
+                        new Matrix3x2f(pose),
+                        iconX, y, iconX + iconWidth, y + font.getFontSize(),
+                        sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(),
+                        0xffffffff,
+                        scissorArea
+                    ));
+                }
+            } else {
+                if (drawShadow) {
+                    collectGlyphs(font, seg.text, seg.startX + 1, baseY + 1, mulColor(seg.color, 0.25f), shadowQuads);
+                }
+                collectGlyphs(font, seg.text, seg.startX, baseY, seg.color, normalQuads);
 
-            if (seg.style.strikethrough()) {
-                float strikeY = y + font.getFontSize() * 0.5f;
-                lines.add(new float[]{seg.startX, strikeY, seg.endX, strikeY + 1f, seg.color});
-            }
-            if (seg.style.baseline()) {
-                float sy = y + font.getFontSize() - 2;
-                lines.add(new float[]{seg.startX, sy, seg.endX, sy + 1f, seg.color});
+                if (seg.style.strikethrough()) {
+                    float strikeY = y + font.getFontSize() * 0.5f;
+                    lines.add(new float[]{seg.startX, strikeY, seg.endX, strikeY + 1f, seg.color});
+                }
+                if (seg.style.baseline()) {
+                    float sy = y + font.getFontSize() - 2;
+                    lines.add(new float[]{seg.startX, sy, seg.endX, sy + 1f, seg.color});
+                }
             }
         }
-
-        List<IGuiElementRenderState> result = new ArrayList<>();
 
         for (var entry : shadowQuads.entrySet()) {
             result.add(new GlyphBatchRenderState(
@@ -106,7 +126,17 @@ public class TextRenderState {
         List<SegmentInfo> segments = new ArrayList<>();
         float[] xTracker = {startX};
 
-        component.visitStyled((text, style) -> {
+        collectSegmentsRecursive(font, component, xTracker, defaultColor, segments);
+        return segments;
+    }
+
+    private static void collectSegmentsRecursive(Font font, IComponent component, float[] xTracker, int defaultColor, List<SegmentInfo> segments) {
+        component.visitStyled((ic,text, style) -> {
+            if (ic instanceof IconComponent icon) {
+                float iconWidth = font.getFontSize();
+                segments.add(new SegmentInfo(icon, xTracker[0], iconWidth, -1, ComponentStyle.EMPTY));
+                xTracker[0] += iconWidth;
+            }
             if (text == null || text.isEmpty()) {
                 return;
             }
@@ -116,8 +146,6 @@ public class TextRenderState {
             segments.add(new SegmentInfo(text, segStart, segEnd, segColor, style));
             xTracker[0] = segEnd;
         }, ComponentStyle.EMPTY);
-
-        return segments;
     }
 
     private static void collectGlyphs(
@@ -168,6 +196,38 @@ public class TextRenderState {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    private record SegmentInfo(String text, float startX, float endX, int color, ComponentStyle style) {
+    private static class SegmentInfo {
+        private final String text;
+        private final IconComponent icon;
+        private final float startX;
+        private final float endX;
+        private final int color;
+        private final ComponentStyle style;
+
+        SegmentInfo(String text, float startX, float endX, int color, ComponentStyle style) {
+            this.text = text;
+            this.icon = null;
+            this.startX = startX;
+            this.endX = endX;
+            this.color = color;
+            this.style = style;
+        }
+
+        SegmentInfo(IconComponent icon, float startX, float width, int color, ComponentStyle style) {
+            this.text = null;
+            this.icon = icon;
+            this.startX = startX;
+            this.endX = startX + width;
+            this.color = color;
+            this.style = style;
+        }
+
+        boolean isIcon() {
+            return icon != null;
+        }
+
+        IconComponent getIcon() {
+            return icon;
+        }
     }
 }

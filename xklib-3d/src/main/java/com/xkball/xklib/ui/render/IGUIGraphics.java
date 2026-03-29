@@ -136,6 +136,20 @@ public interface IGUIGraphics {
         this.drawString(font, text, x - font.width(text) * scale / 2, y, color, height);
     }
     
+    default void drawCenteredString(IComponent text, float x, float y, int color, float height) {
+        var font = this.defaultFont();
+        var scale = height / (float)font.lineHeight();
+        this.drawString(font, text, x - font.width(text) * scale / 2, y, color, height);
+    }
+    
+    default void drawString(IFont font, @Nullable IComponent text, float x, float y, int color, float height){
+        this.getPose().pushMatrix();
+        var scale = height / (float)font.lineHeight();
+        this.getPose().scale(scale,scale);
+        this.drawString(font, text, x/scale, y/scale, color);
+        this.getPose().popMatrix();
+    }
+    
     default void drawString(IFont font, @Nullable String text, float x, float y, int color, float height){
         this.getPose().pushMatrix();
         var scale = height / (float)font.lineHeight();
@@ -149,6 +163,14 @@ public interface IGUIGraphics {
     }
     
     default void drawString(@Nullable String text, float x, float y, int color) {
+        this.drawString(this.defaultFont(), text, x, y, color, false);
+    }
+    
+    default void drawString(@Nullable IComponent text, float x, float y, int color, float height){
+        this.drawString(this.defaultFont(), text, x, y, color, height);
+    }
+    
+    default void drawString(@Nullable IComponent text, float x, float y, int color) {
         this.drawString(this.defaultFont(), text, x, y, color, false);
     }
     

@@ -14,7 +14,7 @@ record TranslatableComponent(String key, ComponentStyle style) implements ICompo
 
     @Override
     public void visitStyled(IComponent.StyledVisitor visitor, ComponentStyle parentStyle) {
-        visitor.accept(key, style.applyParent(parentStyle));
+        visitor.accept(this,key, style.applyParent(parentStyle));
     }
 
     @Override

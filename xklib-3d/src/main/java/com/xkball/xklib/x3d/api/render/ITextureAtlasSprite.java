@@ -6,6 +6,8 @@ public interface ITextureAtlasSprite {
     
     ResourceLocation atlasLocation();
     
+    ITexture texture();
+    
     float getU0();
     
     float getU1();

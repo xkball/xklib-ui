@@ -35,7 +35,7 @@ public class RenderPipelines {
             .cullFace(false)
             .buildThreadLocal();
     
-    public static final ThreadLocal<RenderPipeline> GUI_TEXTURED = RenderPipeline.builder(ResourceLocation.of("gui_textured"))
+    public static final ThreadLocal<RenderPipeline>  GUI_TEXTURED = RenderPipeline.builder(ResourceLocation.of("gui_textured"))
             .vertexShader(ResourceLocation.of("shaders/core/pos_tex_color.vsh"))
             .fragmentShader(ResourceLocation.of("shaders/core/pos_tex_color.fsh"))
             .format(VertexFormat.Mode.QUADS, VertexFormats.POSITION_TEX_COLOR)

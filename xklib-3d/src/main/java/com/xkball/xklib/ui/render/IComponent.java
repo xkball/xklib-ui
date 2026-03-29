@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui.render;
 
 import com.xkball.xklib.annotation.NoImplInMinecraft;
+import com.xkball.xklib.resource.ResourceLocation;
 
 import java.util.List;
 
@@ -20,6 +21,10 @@ public interface IComponent {
 
     static IComponent sequence(List<IComponent> parts) {
         return new SequenceComponent(List.copyOf(parts), ComponentStyle.EMPTY);
+    }
+    
+    static IComponent icon(ResourceLocation icon) {
+        return new IconComponent(icon, ComponentStyle.EMPTY);
     }
 
     @NoImplInMinecraft
@@ -54,7 +59,11 @@ public interface IComponent {
 
     @NoImplInMinecraft
     default void visitStyled(StyledVisitor visitor, ComponentStyle parentStyle) {
-        visitor.accept(visit(), parentStyle);
+        visitor.accept(this,visit(), parentStyle);
+    }
+    
+    default int extraWidth(){
+        return 0;
     }
 
     @NoImplInMinecraft
@@ -62,6 +71,6 @@ public interface IComponent {
 
     @FunctionalInterface
     interface StyledVisitor {
-        void accept(String text, ComponentStyle style);
+        void accept(IComponent self, String text, ComponentStyle style);
     }
 }

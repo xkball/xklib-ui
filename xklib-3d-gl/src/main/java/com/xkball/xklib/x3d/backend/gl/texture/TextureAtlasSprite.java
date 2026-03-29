@@ -3,7 +3,7 @@ package com.xkball.xklib.x3d.backend.gl.texture;
 import com.xkball.xklib.x3d.api.render.ITextureAtlasSprite;
 import com.xkball.xklib.resource.ResourceLocation;
 
-public record TextureAtlasSprite(ResourceLocation location, int x, int y, float u0, float v0, float u1, float v1) implements ITextureAtlasSprite {
+public record TextureAtlasSprite(ResourceLocation location,TextureAtlas texture, int x, int y, float u0, float v0, float u1, float v1) implements ITextureAtlasSprite {
     
     
     @Override

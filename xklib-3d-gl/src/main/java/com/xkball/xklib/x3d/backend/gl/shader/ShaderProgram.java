@@ -1,11 +1,13 @@
 package com.xkball.xklib.x3d.backend.gl.shader;
 
 import com.google.common.collect.Maps;
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.x3d.api.render.IShaderProgram;
 import com.xkball.xklib.x3d.api.render.IUniform;
 import com.xkball.xklib.x3d.api.resource.IResource;
 import com.xkball.xklib.resource.ClasspathResourceManager;
 import com.xkball.xklib.resource.ResourceLocation;
+import com.xkball.xklib.x3d.api.resource.IResourceManager;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
@@ -26,10 +28,10 @@ public final class ShaderProgram implements IShaderProgram {
     private final Map<String, Uniform> uniformMap = Maps.newHashMap();
 
     public ShaderProgram(ResourceLocation vertexShader, ResourceLocation fragmentShader) {
-        this(vertexShader, fragmentShader, new ClasspathResourceManager());
+        this(vertexShader, fragmentShader, XKLib.RENDER_CONTEXT.get().getResourceManager());
     }
 
-    public ShaderProgram(ResourceLocation vertexShader, ResourceLocation fragmentShader, ClasspathResourceManager resourceManager) {
+    public ShaderProgram(ResourceLocation vertexShader, ResourceLocation fragmentShader, IResourceManager resourceManager) {
         Objects.requireNonNull(vertexShader, "vertexShader");
         Objects.requireNonNull(fragmentShader, "fragmentShader");
         Objects.requireNonNull(resourceManager, "resourceManager");

@@ -1,6 +1,7 @@
 package com.xkball.xklib.x3d.backend.window;
 
 import com.xkball.xklib.XKLib;
+import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IFont;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -18,7 +19,9 @@ public class DrawTestText extends WindowAppBase{
             IComponent.literal("Green").withColor(0xFF64DD6A),
             IComponent.literal("Blue").withColor(0xFF66B2FF),
             IComponent.literal("Strike").withColor(0xFFFFD166).withStrikethrough(true),
-            IComponent.literal("Baseline+g").withColor(0xFFB794F4).withBaseline(true)
+            IComponent.literal("Baseline+g").withColor(0xFFB794F4).withBaseline(true),
+            IComponent.literal(" ").withColor(0xFFCCCCCC),
+            IComponent.icon(ResourceLocation.of("textures/icon/down.png"))
     );
     private static final int PADDING = 20;
     private static final int LINE_GAP = 4;
@@ -70,7 +73,7 @@ public class DrawTestText extends WindowAppBase{
         super.render();
         var guiGraphics = XKLib.RENDER_CONTEXT.get().getGUIGraphics();
         guiGraphics.getPose().pushMatrix();
-        guiGraphics.getPose().scale(1f);
+        guiGraphics.getPose().scale(1.2f);
         guiGraphics.getPose().translate(0,0.5f);
         var font = guiGraphics.defaultFont();
         float x = PADDING;
@@ -78,10 +81,10 @@ public class DrawTestText extends WindowAppBase{
         float y = PADDING;
         var list = new ArrayList<>(List.of(jsb.split("\n")));
         
-        for(var str : list){
-            guiGraphics.drawString(str, PADDING, y, 0xFF000000);
-            y += font.lineHeight() + LINE_GAP;
-        }
+//        for(var str : list){
+//            guiGraphics.drawString(str, PADDING, y, 0xFF000000);
+//            y += font.lineHeight() + LINE_GAP;
+//        }
 //        guiGraphics.fill(0, 0, this.window.getWidth(), this.window.getHeight(), BG_COLOR);
 //        guiGraphics.drawString(font, "ASCII", x, y, 0xFF66B2FF);
 //        y += font.lineHeight() + LINE_GAP;
@@ -92,10 +95,10 @@ public class DrawTestText extends WindowAppBase{
 //        y += font.lineHeight() + LINE_GAP;
 //        y = drawWrapped(guiGraphics, font, COMMON_1000, x, y, maxWidth, TEXT_COLOR);
 //
-//        y += font.lineHeight() + LINE_GAP;
-//        guiGraphics.drawString(font, "RICH_TEXT", x, y, 0xFF66B2FF);
-//        y += font.lineHeight() + LINE_GAP;
-//        guiGraphics.drawString(font, RICH_TEXT, x, y, TEXT_COLOR);
+        y += font.lineHeight() + LINE_GAP;
+        guiGraphics.drawString(font, "RICH_TEXT", x, y, 0xFF66B2FF);
+        y += font.lineHeight() + LINE_GAP;
+        guiGraphics.drawString(font, RICH_TEXT, x, y, TEXT_COLOR);
 //
 //        y += font.lineHeight() + LINE_GAP;
 //        guiGraphics.drawString(font, "MULTI_ATLAS", x, y, 0xFF66B2FF);

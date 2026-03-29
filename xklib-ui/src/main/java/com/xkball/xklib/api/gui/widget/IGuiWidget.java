@@ -162,6 +162,10 @@ public interface IGuiWidget {
     default void onFocusChanged(boolean focused) {
     
     }
+
+    default void onStyleSheetChanged() {
+
+    }
     
     default void onRemove(){
         for(var child : this.getChildren()){

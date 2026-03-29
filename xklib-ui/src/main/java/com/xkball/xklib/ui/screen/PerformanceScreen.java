@@ -1,5 +1,7 @@
 package com.xkball.xklib.ui.screen;
 
+import com.xkball.xklib.api.gui.css.IStyleSheet;
+import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
@@ -16,6 +18,7 @@ import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
+import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.style.TextAlign;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
@@ -29,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 //todo 火焰图
 public class PerformanceScreen extends SplitContainer {
@@ -70,7 +74,17 @@ public class PerformanceScreen extends SplitContainer {
         metrics.add(new MetricEntry("Alloc Rate", memAlloc, 1f, " MB/s", false));
         flameEntry = new MetricEntry("Profiler Tree", null, 1f, "", true);
     }
-
+    
+    @Override
+    public void setStyle(TaffyStyle style) {
+        super.setStyle(style);
+    }
+    
+    @Override
+    public IGuiWidget setStyle(Consumer<TaffyStyle> styleUpdate) {
+        return super.setStyle(styleUpdate);
+    }
+    
     @Override
     public void init() {
         super.init();

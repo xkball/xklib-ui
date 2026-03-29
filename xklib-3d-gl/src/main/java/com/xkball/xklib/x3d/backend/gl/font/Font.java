@@ -1,6 +1,8 @@
 package com.xkball.xklib.x3d.backend.gl.font;
 
 import com.ibm.icu.text.BreakIterator;
+import com.xkball.xklib.ui.render.ComponentStyle;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IFont;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Font implements IFont {
 
@@ -129,7 +132,15 @@ public class Font implements IFont {
 
         return width;
     }
-
+    
+    @Override
+    public int width(IComponent component) {
+        AtomicInteger l = new AtomicInteger();
+        component.visitStyled((c, t, _) ->
+                l.addAndGet(c.extraWidth() + this.width(t)), ComponentStyle.EMPTY);
+        return l.get();
+    }
+    
     public int getFontSize() {
         return fontSize;
     }

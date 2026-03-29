@@ -1,10 +1,13 @@
 package com.xkball.xklib.ui.screen;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
+import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.CheckBox;
 import com.xkball.xklib.ui.widget.Label;
@@ -28,6 +31,8 @@ import java.util.Map;
 public class DebugScreen extends ContainerWidget {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugScreen.class);
+    public static final IComponent ICON_RIGHT = IComponent.icon(ResourceLocation.of("textures/icon/right.png"));
+    public static final IComponent ICON_DOWN = IComponent.icon(ResourceLocation.of("textures/icon/down.png"));
     private static final int TEXT_COLOR = 0xFF1E293B;
     private static final int HEADER_BG = 0xFFE2E8F0;
     private static final int PANEL_BG = 0xFFF8FAFC;
@@ -60,12 +65,12 @@ public class DebugScreen extends ContainerWidget {
                 size: 100% 22;
                 flex-shrink: 0;
             }
-            Label.debug-keep-updating {
+            .debug-keep-updating-l {
                 size: auto 100%;
-                margin: auto 0 0 0;
+                margin: 0 0 0 auto;
                 padding: 4;
             }
-            CheckBox.debug-keep-updating {
+            .debug-keep-updating-c {
                 size: 48 24;
                 margin: 4;
             }
@@ -145,11 +150,11 @@ public class DebugScreen extends ContainerWidget {
                 .addTabPage(performanceScreen, "性能监视器"));
 
         var keepUpdatingLabel = new Label("保持更新", TextAlign.LEFT, TEXT_COLOR);
-        keepUpdatingLabel.setCSSClassName("debug-keep-updating");
+        keepUpdatingLabel.setCSSClassName("debug-keep-updating-l");
         keepUpdatingLabel.setTextScale(TextScale.EXPAND_WIDTH);
 
         var keepUpdatingCb = new CheckBox();
-        keepUpdatingCb.setCSSClassName("debug-keep-updating");
+        keepUpdatingCb.setCSSClassName("debug-keep-updating-c");
         keepUpdatingCb.bind(keepUpdating);
 
         this.tabs.getTabBar().addChild(keepUpdatingLabel);
@@ -216,7 +221,7 @@ public class DebugScreen extends ContainerWidget {
         var isOpen = openNodes.stream().anyMatch(r -> r.get() == widget);
         var hasChildren = !widget.getChildren().isEmpty();
 
-        var prefix = "  ".repeat(depth) + (hasChildren ? (isOpen ? "▼ " : "▶ ") : "  ");
+        var prefix = IComponent.literal("  ".repeat(depth)).append(hasChildren ? (isOpen ? ICON_DOWN : ICON_RIGHT) : IComponent.literal("  "));
         var layout = widget.getLayout();
         var display = widget.getChildren().isEmpty() ? "" : widget.getStyle().display.toString();
         var size = widget.getStyle().size;
@@ -226,9 +231,9 @@ public class DebugScreen extends ContainerWidget {
                         layout.contentBoxX(), layout.contentBoxY(),
                         layout.contentBoxWidth(), layout.contentBoxHeight())
                 : "x=? y=? w=? h=?";
-        var text = prefix + widget.getClass().getSimpleName() + " " + display + " " + sizeStr + "  " + layoutStr;
+        var text = prefix.append(IComponent.literal(widget.getClass().getSimpleName() + " " + display + " " + sizeStr + "  " + layoutStr));
 
-        var label = new NodeRow(widget, text);
+        var label = new NodeRow(widget, text, this.lastSelectedNode != null && widget == this.lastSelectedNode.target);
         label.addDecoration(ButtonLooks.transparent(HOVER_COLOR));
         treeViewContent.addChild(label);
 
@@ -255,6 +260,10 @@ public class DebugScreen extends ContainerWidget {
 
         private void buildObjectFields(ContainerWidget container, Object obj, int depth, IdentityHashMap<Object, Boolean> visited) {
             if (obj == null) return;
+            if (obj instanceof Iterable<?> iterable) {
+                buildIterableFields(container, iterable, depth, visited);
+                return;
+            }
             Class<?> clazz = obj.getClass();
             while (clazz != null && clazz != Object.class) {
                 for (Field field : clazz.getDeclaredFields()) {
@@ -267,23 +276,14 @@ public class DebugScreen extends ContainerWidget {
                         LOGGER.warn("can not access field {} of object {}", field.getName(), obj, e);
                         value = "<can not access>";
                     }
-                    boolean isExpandable = value != null
-                            && !(value instanceof String)
-                            && !(value instanceof Number)
-                            && !(value instanceof Boolean)
-                            && !(value instanceof Character)
-                            && !value.getClass().isPrimitive()
-                            && !value.getClass().isEnum();
+                    boolean isExpandable = isExpandable(value);
 
                     boolean isOpen = isExpandable && openFields.getOrDefault(value, false);
                     boolean hasCycle = isExpandable && visited.containsKey(value);
 
-                    String prefix = "  ".repeat(depth);
-                    String valueStr = value == null ? "null"
-                            : hasCycle ? "<循环引用: " + value.getClass().getSimpleName() + ">"
-                            : isExpandable ? (isOpen ? "▼ " : "▶ ") + value.getClass().getSimpleName()
-                            : String.valueOf(value);
-                    String text = prefix + field.getName() + ": " + valueStr;
+                    var prefix = "  ".repeat(depth);
+                    var valueStr = buildValueText(value, isExpandable, isOpen, hasCycle);
+                    var text = IComponent.literal(prefix + field.getName() + ": ").append(valueStr);
 
                     final Object capturedValue = value;
                     var row = new FieldRow(text, isExpandable && !hasCycle ? capturedValue : null);
@@ -300,10 +300,54 @@ public class DebugScreen extends ContainerWidget {
             }
         }
 
+        private void buildIterableFields(ContainerWidget container, Iterable<?> iterable, int depth, IdentityHashMap<Object, Boolean> visited) {
+            int index = 0;
+            for (Object value : iterable) {
+                boolean isExpandable = isExpandable(value);
+                boolean isOpen = isExpandable && openFields.getOrDefault(value, false);
+                boolean hasCycle = isExpandable && visited.containsKey(value);
+                var prefix = "  ".repeat(depth);
+                var valueStr = buildValueText(value, isExpandable, isOpen, hasCycle);
+                var text = IComponent.literal(prefix + "[" + index + "]: ").append(valueStr);
+                var row = new FieldRow(text, isExpandable && !hasCycle ? value : null);
+                row.addDecoration(ButtonLooks.transparent(HOVER_COLOR));
+                container.addChild(row);
+                if (isOpen && !hasCycle) {
+                    visited.put(value, true);
+                    buildObjectFields(container, value, depth + 1, visited);
+                    visited.remove(value);
+                }
+                index++;
+            }
+        }
+
+        private boolean isExpandable(Object value) {
+            return value != null
+                    && !(value instanceof String)
+                    && !(value instanceof Number)
+                    && !(value instanceof Boolean)
+                    && !(value instanceof Character)
+                    && !value.getClass().isPrimitive()
+                    && !value.getClass().isEnum();
+        }
+
+        private IComponent buildValueText(Object value, boolean isExpandable, boolean isOpen, boolean hasCycle) {
+            if (value == null) {
+                return IComponent.literal("null");
+            }
+            if (hasCycle) {
+                return IComponent.literal("<循环引用: " + value.getClass().getSimpleName() + ">");
+            }
+            if (isExpandable) {
+                return (isOpen ? ICON_DOWN : ICON_RIGHT).append(IComponent.literal(value.getClass().getSimpleName()));
+            }
+            return IComponent.literal(String.valueOf(value));
+        }
+
         private class FieldRow extends Label {
             private final Object fieldValue;
 
-            FieldRow(String text, Object fieldValue) {
+            FieldRow(IComponent text, Object fieldValue) {
                 super(text, TextAlign.LEFT, TEXT_COLOR);
                 this.fieldValue = fieldValue;
                 this.setCSSClassName("debug-field-row");
@@ -325,16 +369,19 @@ public class DebugScreen extends ContainerWidget {
                 }
                 return false;
             }
+            
         }
     }
 
     private class NodeRow extends Label {
 
         private final Widget target;
+        private boolean isSelected;
 
-        NodeRow(Widget target, String text) {
+        NodeRow(Widget target, IComponent text, boolean isSelected) {
             super(text, TextAlign.LEFT, TEXT_COLOR);
             this.target = target;
+            this.isSelected = isSelected;
             this.setCSSClassName("debug-node-row");
         }
 
@@ -343,18 +390,27 @@ public class DebugScreen extends ContainerWidget {
             super.init();
             this.setTextScale(TextScale.EXPAND_WIDTH);
         }
-
+        
+        @Override
+        public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+            if(this.isSelected){
+                graphics.fill(this.x,this.y,this.x + this.width+10000,this.y + this.height,0x22267457);
+            }
+            super.doRender(graphics, mouseX, mouseY, a);
+        }
+        
         @Override
         protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
             DebugScreen.this.markDirty();
+            boolean doFocus = false;
             if(DebugScreen.this.lastSelectedNode == null || DebugScreen.this.lastSelectedNode.target != this.target){
                 DebugScreen.this.lastSelectedNode = new WidgetData(this.target);
-                return true;
+                doFocus = true;
             }
             if (!target.getChildren().isEmpty()) {
                 boolean wasOpen = openNodes.stream().anyMatch(r -> r.get() == target);
                 if (wasOpen) {
-                    openNodes.removeIf(r -> r.get() == target);
+                    if(!doFocus) openNodes.removeIf(r -> r.get() == target);
                 } else {
                     openNodes.add(new WeakReference<>(target));
                 }

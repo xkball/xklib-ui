@@ -529,10 +529,10 @@ public class ContainerWidget extends Widget {
     
     @Override
     public void visitWidgets(Consumer<IGuiWidget> widgetVisitor) {
-        widgetVisitor.accept(this);
         for (Widget child : this.children) {
             child.visitWidgets(widgetVisitor);
         }
+        widgetVisitor.accept(this);
     }
     
     public class ScrollBar implements IGuiEventListener, IRenderable {

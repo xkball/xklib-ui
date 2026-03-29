@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @AutoService(ITextureManager.class)
 public class TextureManager implements ITextureManager {
@@ -30,12 +31,14 @@ public class TextureManager implements ITextureManager {
     
     public TextureManager(IResourceManager resourceManager) {
         this.resourceManager = resourceManager;
+        this.load(ResourceLocation.of("textures/icon"));
     }
     
     @Nullable
     @Override
     public ITextureAtlasSprite getSprite(ResourceLocation location){
         var texture = atlasMap.get(location);
+        if(texture == null) return null;
         return texture.getSprite(location);
     }
     
@@ -56,6 +59,9 @@ public class TextureManager implements ITextureManager {
             IResource resource = resourceStacks.values().iterator().next().getFirst();
             return new SimpleTexture(resource);
         } else {
+            resourceStacks = resourceStacks.entrySet().stream().filter(
+                    entry -> entry.getKey().path().endsWith(".png")
+            ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             var result = new TextureAtlas(resourceStacks);
             for(var entry : resourceStacks.entrySet()){
                 atlasMap.put(entry.getKey(), result);
