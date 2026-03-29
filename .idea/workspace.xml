@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/MathUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/container/SplineTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +30,7 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="242788" />
+    <option name="totalTimeSeconds" value="245984" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -217,6 +216,7 @@
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.CssColoringPreviewTest.main()].executor": "Debug",
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.FlameGraphPreviewTest.main()].executor": "Debug",
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.LineGraphTest.main()].executor": "Debug",
+    "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.SplineTest.main()].executor": "Debug",
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.container.DraggableContainerTest.main()].executor": "Debug",
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.container.SectionContainerTest.main()].executor": "Debug",
     "Gradle.xklib [:xklib-ui:com.xkball.xklib.ui.widget.container.TabContainerTest.main()].executor": "Debug",
@@ -300,13 +300,13 @@
       <recent name="com.xkball.xklib.utils.math" />
     </key>
   </component>
-  <component name="RunManager" selected="应用程序.SectionContainerTest">
-    <configuration name="CheckBoxTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.CheckBoxTest" />
+  <component name="RunManager" selected="应用程序.SplineTest">
+    <configuration name="SectionContainerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.container.SectionContainerTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -314,12 +314,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SectionContainerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.container.SectionContainerTest" />
+    <configuration name="SplineTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.SplineTest" />
       <module name="xklib.xklib-ui.test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.container.*" />
+          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -419,11 +419,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="应用程序.SplineTest" />
         <item itemvalue="应用程序.TabContainerTest" />
         <item itemvalue="应用程序.SectionContainerTest" />
         <item itemvalue="应用程序.SplitContainerTest" />
         <item itemvalue="应用程序.XKLib" />
-        <item itemvalue="应用程序.CheckBoxTest" />
       </list>
     </recent_temporary>
   </component>
@@ -463,7 +463,7 @@
       <workItem from="1774203387421" duration="13484000" />
       <workItem from="1774454484256" duration="1984000" />
       <workItem from="1774521798017" duration="28393000" />
-      <workItem from="1774801196244" duration="2193000" />
+      <workItem from="1774801196244" duration="5503000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -625,7 +625,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774797912002</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1774805724259</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1774805724259</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
