@@ -5,10 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/WidgetBooleanStyleProperty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/XKLib.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/utils/math/CubicSpline2D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/container/SplineTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/backend/window/DrawTestHighLoad.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/x3d/backend/window/DrawTestHighLoad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssStyles.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssStyles.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/parser/LengthUnitParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/parser/LengthUnitParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ScalableContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ScalableContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/SectionContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/SectionContainer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/antlr/css/CssStylesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/antlr/css/CssStylesTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,12 +32,12 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
-      <entry key="chat-panel" value="Gemini 3.1 Pro" />
-      <entry key="agent-panel" value="Gemini 3.1 Pro" />
+      <entry key="chat-panel" value="GPT-5.1-Codex-Max" />
+      <entry key="agent-panel" value="GPT-5.1-Codex-Max" />
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="245984" />
+    <option name="totalTimeSeconds" value="254543" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -300,7 +307,7 @@
       <recent name="com.xkball.xklib.utils.math" />
     </key>
   </component>
-  <component name="RunManager" selected="应用程序.SplineTest">
+  <component name="RunManager" selected="应用程序.SectionContainerTest">
     <configuration name="SectionContainerTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.container.SectionContainerTest" />
       <module name="xklib.xklib-ui.test" />
@@ -419,11 +426,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="应用程序.XKLib" />
         <item itemvalue="应用程序.SplineTest" />
         <item itemvalue="应用程序.TabContainerTest" />
         <item itemvalue="应用程序.SectionContainerTest" />
         <item itemvalue="应用程序.SplitContainerTest" />
-        <item itemvalue="应用程序.XKLib" />
       </list>
     </recent_temporary>
   </component>
@@ -463,7 +470,7 @@
       <workItem from="1774203387421" duration="13484000" />
       <workItem from="1774454484256" duration="1984000" />
       <workItem from="1774521798017" duration="28393000" />
-      <workItem from="1774801196244" duration="5503000" />
+      <workItem from="1774801196244" duration="18287000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -633,7 +640,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774805724259</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1774808998620</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1774808998620</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -6,6 +6,7 @@ import com.xkball.xklib.ui.css.property.FunctionalStyleProperty;
 import com.xkball.xklib.ui.css.property.HeightProperty;
 import com.xkball.xklib.ui.css.property.ScrollbarWidthProperty;
 import com.xkball.xklib.ui.css.property.SizeProperty;
+import com.xkball.xklib.ui.css.property.WidgetBooleanStyleProperty;
 import com.xkball.xklib.ui.css.property.WidgetIntStyleProperty;
 import com.xkball.xklib.ui.css.property.WidthProperty;
 import com.xkball.xklib.ui.css.property.value.CssGridLine;
@@ -22,6 +23,7 @@ import com.xkball.xklib.ui.widget.LineGraph;
 import com.xkball.xklib.ui.widget.TextEdit;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
+import com.xkball.xklib.ui.widget.container.ScalableContainer;
 import dev.vfyjxf.taffy.geometry.TaffyLine;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
 import dev.vfyjxf.taffy.geometry.TaffyRect;
@@ -202,6 +204,18 @@ public class CssStyles {
                 (widget, color) -> {
                     if (widget instanceof ContainerWidget containerWidget) {
                         containerWidget.setScrollBarThumbHoverColor(color);
+                    }
+                }), Integer.class);
+        this.register("scalable-grid-enabled", value -> new WidgetBooleanStyleProperty("scalable-grid-enabled", value,
+                (widget, enabled) -> {
+                    if (widget instanceof ScalableContainer scalableContainer) {
+                        scalableContainer.setGridEnabled(enabled);
+                    }
+                }), Boolean.class);
+        this.register("scalable-grid-color", value -> new WidgetIntStyleProperty("scalable-grid-color", value,
+                (widget, color) -> {
+                    if (widget instanceof ScalableContainer scalableContainer) {
+                        scalableContainer.setGridColor(color);
                     }
                 }), Integer.class);
 

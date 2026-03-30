@@ -26,9 +26,9 @@ public class LengthUnitParser implements IPropertyFactory<CssLengthUnit> {
                 var term = terms.get(i);
                 var next = CssLengthUnit.of(term.getRuleContext().getText().trim());
                 var type = term.getRuleContext(ParserRuleContext.class,0);
-                var sign = type.getToken(css3Parser.Minus, 0);
-                if(result == null) result = new CssLengthUnit.Combination(first,next,sign == null);
-                else result = new CssLengthUnit.Combination(new CssLengthUnit(result),next,sign == null);
+//                var sign = type.getToken(css3Parser.Minus, 0);
+                if(result == null) result = new CssLengthUnit.Combination(first,next,true);
+                else result = new CssLengthUnit.Combination(new CssLengthUnit(result),next,true);
             }
             return new CssLengthUnit(result);
         }

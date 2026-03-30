@@ -5,6 +5,8 @@ import com.xkball.xklib.ui.input.MouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
+import dev.vfyjxf.taffy.geometry.TaffySize;
+import dev.vfyjxf.taffy.style.AvailableSpace;
 import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,8 @@ public class ScalableContainer extends AbsoluteContainer {
     protected float xOffset = 0;
     protected float yOffset = 0;
     protected boolean draggingPanel = false;
+    protected boolean renderGrid = false;
+    protected int gridColor = 0x404B5563;
     
     public ScalableContainer() {
         this.clampWidget = false;
@@ -48,6 +52,18 @@ public class ScalableContainer extends AbsoluteContainer {
         return this;
     }
     
+    public ScalableContainer setGridEnabled(boolean value) {
+        this.renderGrid = value;
+        this.markDirty();
+        return this;
+    }
+    
+    public ScalableContainer setGridColor(int value) {
+        this.gridColor = value;
+        this.markDirty();
+        return this;
+    }
+    
     protected float clampScale(float value) {
         return Math.clamp(value, minScale, maxScale);
     }
@@ -62,6 +78,9 @@ public class ScalableContainer extends AbsoluteContainer {
         var mat = graphics.getPose().pushMatrix();
         mat.translate(this.x + this.xOffset, this.y + this.yOffset);
         mat.scale(this.scale, this.scale);
+        if (this.renderGrid) {
+            this.renderGrid(graphics);
+        }
         for (Widget child : this.children.reversed()) {
             if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
                 child.render(graphics, mouseX, mouseY, a);
@@ -292,6 +311,50 @@ public class ScalableContainer extends AbsoluteContainer {
             }
         }
         return super.mouseScrolled(x, y, scrollX, scrollY);
+    }
+    
+    @Override
+    public void resize(float offsetX, float offsetY) {
+        for(var widget : this.children) {
+            widget.tree.computeLayout(widget.nodeId,
+                    TaffySize.of(AvailableSpace.definite(widget.getWidth()), AvailableSpace.definite(widget.getHeight())));
+        }
+        var layout = this.getLayout();
+        if (layout != null) {
+            this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
+            this.setSize(layout.contentBoxWidth(), layout.contentBoxHeight());
+            for (var widget : this.children) {
+                widget.resize(widget.getAbsoluteX(), widget.getAbsoluteY());
+            }
+            this.resizeScrollBar();
+        }
+    }
+    
+    protected void renderGrid(IGUIGraphics graphics) {
+        float viewLeft = -this.xOffset / scale;
+        float viewRight = (this.width - this.xOffset) / scale;
+        float viewTop = -this.yOffset / scale;
+        float viewBottom = (this.height - this.yOffset) / scale;
+        float target = 100f / this.scale;
+        double pow = Math.pow(10, Math.round(Math.log10(Math.max(target, 1e-6f))));
+        float spacing = (float) pow;
+        if (spacing <= 0) {
+            return;
+        }
+        float startX = (float) Math.floor(viewLeft / spacing) * spacing;
+        float startY = (float) Math.floor(viewTop / spacing) * spacing;
+        var font = graphics.defaultFont();
+        float textHeight = font.lineHeight() / this.scale;
+        for (float x = startX; x <= viewRight; x += spacing) {
+            graphics.renderLine(x, viewTop, x, viewBottom, this.gridColor);
+            var label = String.valueOf((long) x);
+            graphics.drawString(label, x + 2, viewTop + 2, this.gridColor, textHeight);
+        }
+        for (float y = startY; y <= viewBottom; y += spacing) {
+            graphics.renderLine(viewLeft, y, viewRight, y, this.gridColor);
+            var label = String.valueOf((long) y);
+            graphics.drawString(label, viewLeft + 2, y + 2, this.gridColor, textHeight);
+        }
     }
     
 }

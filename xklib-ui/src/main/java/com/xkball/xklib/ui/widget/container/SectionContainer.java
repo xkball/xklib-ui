@@ -15,7 +15,7 @@ public class SectionContainer extends ContainerWidget {
                 flex-direction: column;
                 align-items: stretch;
                 justify-content: start;
-                size: 100% 100%;
+                size: 100% content;
             }
             """;
     

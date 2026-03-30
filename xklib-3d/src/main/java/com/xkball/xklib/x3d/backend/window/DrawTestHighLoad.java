@@ -12,7 +12,7 @@ public class DrawTestHighLoad extends WindowAppBase{
         var guiGraphics = XKLib.RENDER_CONTEXT.get().getGUIGraphics();
         var w = XKLib.RENDER_CONTEXT.get().getWindow().getWidth();
         var h = XKLib.RENDER_CONTEXT.get().getWindow().getHeight();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 1000; i++) {
             var x1 = random.nextFloat() * w;
             var y1 = random.nextFloat() * h;
             guiGraphics.fill(x1,y1,x1+random.nextFloat()*5,y1+random.nextFloat()*5,random.nextInt()|0XFF000000);

@@ -154,6 +154,23 @@ public class CssStylesTest {
         Assertions.assertTrue(properties.containsKey("container-scrollbar-thumb-hover-color"));
     }
 
+    @Test
+    public void shouldParseScalableGridProperties() {
+        CascadingStyleSheets sheets = CssParser.parse("""
+                .area {
+                    scalable-grid-enabled: true;
+                    scalable-grid-color: #445566;
+                }
+                """);
+
+        Map<String, IStyleProperty<?>> properties = toPropertyMap(sheets.sheets().getFirst());
+
+        Assertions.assertTrue(properties.containsKey("scalable-grid-enabled"));
+        Assertions.assertTrue(properties.containsKey("scalable-grid-color"));
+        Assertions.assertEquals("true", properties.get("scalable-grid-enabled").valueString());
+        Assertions.assertEquals(String.valueOf(0xFF445566), properties.get("scalable-grid-color").valueString());
+    }
+
     private Map<String, IStyleProperty<?>> toPropertyMap(StyleSheetUnit sheet) {
         Map<String, IStyleProperty<?>> map = new HashMap<>();
         for (IStyleProperty<?> property : sheet.properties()) {
