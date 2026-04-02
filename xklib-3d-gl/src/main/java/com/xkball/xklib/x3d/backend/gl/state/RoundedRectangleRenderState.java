@@ -51,7 +51,7 @@ public record RoundedRectangleRenderState(
     public void buildVertices(BufferBuilder vertexConsumer, float zOffset) {
         float width = this.x1() - this.x0();
         float height = this.y1() - this.y0();
-        float r = (float) this.radius();
+        float r = this.radius();
         vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), zOffset)
                 .setUv(0, 0).setUv2(width,height).setColor(this.col1())
                 .setUnsafe(VertexFormatElement.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr, r));

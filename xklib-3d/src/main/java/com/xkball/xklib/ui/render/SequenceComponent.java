@@ -3,7 +3,7 @@ package com.xkball.xklib.ui.render;
 import java.util.ArrayList;
 import java.util.List;
 
-record SequenceComponent(List<IComponent> parts, ComponentStyle style) implements IComponent {
+public record SequenceComponent(List<IComponent> parts, ComponentStyle style) implements IComponent {
 
     @Override
     public ComponentStyle style() {

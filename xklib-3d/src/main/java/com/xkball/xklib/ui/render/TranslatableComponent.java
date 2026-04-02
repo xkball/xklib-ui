@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.render;
 
-record TranslatableComponent(String key, ComponentStyle style) implements IComponent {
+public record TranslatableComponent(String key, ComponentStyle style) implements IComponent {
 
     @Override
     public ComponentStyle style() {

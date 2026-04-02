@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.render;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
 import com.xkball.xklib.x3d.api.render.IRenderPipeline;
 import com.xkball.xklib.x3d.api.render.ITexture;
@@ -73,7 +74,7 @@ public interface IGUIGraphics {
     }
     
     default void fill(float minX, float minY, float maxX, float maxY, int color) {
-        this.fill(IRenderPipelineSource.getInstance().getGui(), minX, minY, maxX, maxY, color);
+        this.fill(XKLib.RENDER_CONTEXT.get().getPipelineSource().getGui(), minX, minY, maxX, maxY, color);
     }
     
     default void fill(IRenderPipeline pipeline, float minX, float minY, float maxX, float maxY, int color) {
@@ -97,7 +98,7 @@ public interface IGUIGraphics {
     }
     
     default void fillGradient(float minX, float minY, float maxX, float maxY, int colorFrom, int colorTo) {
-        this.submitColoredRectangle(IRenderPipelineSource.getInstance().getGui(), minX, minY, maxX, maxY, colorFrom, colorTo);
+        this.submitColoredRectangle(XKLib.RENDER_CONTEXT.get().getPipelineSource().getGui(), minX, minY, maxX, maxY, colorFrom, colorTo);
     }
     
     default void hLine(float minX, float maxX, float y, int color) {
@@ -330,7 +331,7 @@ public interface IGUIGraphics {
     }
     
     default void blit(ResourceLocation location, float x0, float y0, float x1, float y1, float u0, float u1, float v0, float v1) {
-        this.innerBlit(IRenderPipelineSource.getInstance().getGuiTextured(), location, x0, x1, y0, y1, u0, u1, v0, v1, -1);
+        this.innerBlit(XKLib.RENDER_CONTEXT.get().getPipelineSource().getGuiTextured(), location, x0, x1, y0, y1, u0, u1, v0, v1, -1);
     }
     
     default void innerBlit(

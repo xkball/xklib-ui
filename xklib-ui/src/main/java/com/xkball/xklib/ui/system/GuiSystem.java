@@ -162,7 +162,7 @@ public class GuiSystem implements AutoCloseable {
         }
     }
     
-    private void onMouseButton(long window, int button, int action, int mods) {
+    public void onMouseButton(long window, int button, int action, int mods) {
         if (window != this.windowHandle) {
             return;
         }
@@ -261,7 +261,7 @@ public class GuiSystem implements AutoCloseable {
         this.dispatchEventReversed(widget -> widget.charTyped(event));
     }
     
-    private void dispatchEventReversed(Function<Widget, Boolean> eventHandler) {
+    public void dispatchEventReversed(Function<Widget, Boolean> eventHandler) {
         for (int i = this.screenLayers.size() - 1; i >= 0; i--) {
             var layer = this.screenLayers.get(i);
             if (eventHandler.apply(layer.getFirst())) {

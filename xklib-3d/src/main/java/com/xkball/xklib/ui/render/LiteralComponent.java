@@ -1,6 +1,6 @@
 package com.xkball.xklib.ui.render;
 
-record LiteralComponent(String text, ComponentStyle style) implements IComponent {
+public record LiteralComponent(String text, ComponentStyle style) implements IComponent {
 
     @Override
     public ComponentStyle style() {

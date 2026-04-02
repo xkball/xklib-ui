@@ -1,4 +1,4 @@
-package com.xkball.xklib;
+package com.xkball.xklibmc;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
