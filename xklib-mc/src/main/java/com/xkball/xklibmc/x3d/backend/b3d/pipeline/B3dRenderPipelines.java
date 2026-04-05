@@ -28,6 +28,7 @@ public class B3dRenderPipelines {
             .withFragmentShader(VanillaUtils.modRL("core/pos_color"))
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL,VertexFormat.Mode.TRIANGLES)
             .withUniform("screenSize", UniformType.UNIFORM_BUFFER)
+            //todo
 //            .uniform("screenSize",u -> {
 //                var window = XKLib.RENDER_CONTEXT.get().getWindow();
 //                u.set((float)window.getWidth(), (float)window.getHeight());

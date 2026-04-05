@@ -13,6 +13,7 @@ import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
 import dev.vfyjxf.taffy.style.Overflow;
 import dev.vfyjxf.taffy.style.TaffyStyle;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -349,6 +350,21 @@ public class ContainerWidget extends Widget {
         }
         
         return super.charTyped(event);
+    }
+    
+    @Override
+    public boolean preeditUpdated(@Nullable Object event) {
+        if (!this.enabled || !this.visible || !this.isFocused()) {
+            return false;
+        }
+        
+        for (Widget child : this.children) {
+            if (child.preeditUpdated(event)) {
+                return true;
+            }
+        }
+        
+        return super.preeditUpdated(event);
     }
     
     public void scrollToX(float x){

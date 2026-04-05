@@ -19,4 +19,8 @@ public interface ITextureAtlasSprite {
     float getU(float offset);
     
     float getV(float offset);
+    
+    static ITextureAtlasSprite cast(Object o) {
+        return (ITextureAtlasSprite)o;
+    }
 }

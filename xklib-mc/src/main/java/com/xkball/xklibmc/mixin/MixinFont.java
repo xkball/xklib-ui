@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.mixin;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IFont;
 import net.minecraft.client.gui.Font;
@@ -21,6 +22,6 @@ public abstract class MixinFont implements IFont {
     
     @Override
     public int lineHeight() {
-        return this.lineHeight;
+        return 16;
     }
 }

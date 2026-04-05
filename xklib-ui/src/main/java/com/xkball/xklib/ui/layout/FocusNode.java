@@ -39,16 +39,16 @@ public class FocusNode {
     
     public void setCanTakePrimaryFocus(boolean canTakePrimaryFocus) {
         this.canTakePrimaryFocus = canTakePrimaryFocus;
+        if(!this.canTakePrimaryFocus){
+            this.primaryFocused = false;
+        }
     }
     
-    public void setFocused(boolean focused) {
-        var changed = this.focused != focused;
+    public void setFocused(boolean focused, boolean primaryFocused) {
+        var changed = this.focused != focused || this.primaryFocused != primaryFocused;
         this.focused = focused;
-        if(changed && this.widget != null) widget.onFocusChanged(focused);
-    }
-    
-    public void setPrimaryFocused(boolean primaryFocused) {
         this.primaryFocused = primaryFocused;
+        if(changed && this.widget != null) widget.onFocusChanged(focused);
     }
     
     public boolean isLeaf() {
@@ -57,16 +57,14 @@ public class FocusNode {
     
     public void addChild(FocusNode child) {
         child.setParent(this);
-        child.setFocused(false);
-        child.setPrimaryFocused(false);
+        child.setFocused(false,false);
         this.children.add(child);
     }
     
     public void removeChild(FocusNode child) {
         if(this.children.contains(child)) {
             child.setParent(null);
-            child.setFocused(false);
-            child.setPrimaryFocused(false);
+            child.setFocused(false,false);
             this.children.remove(child);
         }
     }

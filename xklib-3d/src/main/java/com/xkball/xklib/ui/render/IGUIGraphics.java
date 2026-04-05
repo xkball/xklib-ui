@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.render;
 
 import com.xkball.xklib.XKLib;
-import com.xkball.xklib.x3d.api.render.IRenderPipelineSource;
 import com.xkball.xklib.x3d.api.render.IRenderPipeline;
 import com.xkball.xklib.x3d.api.render.ITexture;
 import com.xkball.xklib.x3d.api.render.ITextureAtlasSprite;
@@ -231,7 +230,7 @@ public interface IGUIGraphics {
         }
     }
     
-    private void blitSprite(
+    default void blitSprite(
             IRenderPipeline renderPipeline,
             ITextureAtlasSprite sprite,
             float spriteWidth,
@@ -252,10 +251,10 @@ public interface IGUIGraphics {
                     x + width,
                     y,
                     y + height,
-                    sprite.getU((float)textureX / spriteWidth),
-                    sprite.getU((float)(textureX + width) / spriteWidth),
-                    sprite.getV((float)textureY / spriteHeight),
-                    sprite.getV((float)(textureY + height) / spriteHeight),
+                    sprite.getU(textureX / spriteWidth),
+                    sprite.getU((textureX + width) / spriteWidth),
+                    sprite.getV(textureY / spriteHeight),
+                    sprite.getV((textureY + height) / spriteHeight),
                     color
             );
         }

@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.annotation.OnlyImplInMinecraft;
 import com.xkball.xklib.antlr.css.CssParser;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.input.ICharEvent;
@@ -22,6 +23,7 @@ import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
 
+import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -157,6 +159,11 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
             return false;
         }
         return this.onCharTyped(event);
+    }
+    
+    @OnlyImplInMinecraft
+    public boolean preeditUpdated(@Nullable Object event) {
+        return false;
     }
     
     @Override

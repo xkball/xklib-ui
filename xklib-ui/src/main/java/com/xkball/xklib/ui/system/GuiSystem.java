@@ -261,13 +261,14 @@ public class GuiSystem implements AutoCloseable {
         this.dispatchEventReversed(widget -> widget.charTyped(event));
     }
     
-    public void dispatchEventReversed(Function<Widget, Boolean> eventHandler) {
+    public boolean dispatchEventReversed(Function<Widget, Boolean> eventHandler) {
         for (int i = this.screenLayers.size() - 1; i >= 0; i--) {
             var layer = this.screenLayers.get(i);
             if (eventHandler.apply(layer.getFirst())) {
-                break;
+                return true;
             }
         }
+        return false;
     }
     
     public void render(){

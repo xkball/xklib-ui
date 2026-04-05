@@ -12,12 +12,16 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.Nullable;
 
 @NonnullByDefault
 public class XKLibBaseScreen extends Screen {
     
     protected GuiSystem guiSystem = new GuiSystem();
+    protected float scaleX = 1;
+    protected float scaleY = 1;
     
     public XKLibBaseScreen() {
         super(Component.empty());
@@ -54,31 +58,27 @@ public class XKLibBaseScreen extends Screen {
         super.init();
         if(!this.initialized){
             XKLib.RENDER_CONTEXT.set(new B3dRenderContext());
+            guiSystem.windowHandle = XKLib.RENDER_CONTEXT.get().getWindow().getHandle();
         }
-        var window = XKLib.RENDER_CONTEXT.get().getWindow();
-        guiSystem.resize(window.getWidth(), window.getHeight());
+        this.resize_();
     }
     
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         var guiGraphics = (B3dGuiGraphics) XKLib.RENDER_CONTEXT.get().getGUIGraphics();
         guiGraphics.setInner(graphics);
+        guiGraphics.scaleX = this.scaleX;
+        guiGraphics.scaleY = this.scaleY;
         guiSystem.setGraphics(guiGraphics);
-        var window = XKLib.RENDER_CONTEXT.get().getWindow();
-        var actualW = window.getWidth();
-        var actualH = window.getHeight();
-        var w = this.width;
-        var h = this.height;
-        //todo 变换输入
         graphics.pose().pushMatrix();
-        graphics.pose().scale(w/(float)actualW, h/(float)actualH);
-        guiSystem.render(mouseX, mouseY, a);
+        graphics.pose().scale(1/scaleX,1/scaleY);
+        guiSystem.render((int) (mouseX * scaleX), (int) (mouseY * scaleY), a);
         graphics.pose().popMatrix();
-        super.extractRenderState(graphics, mouseX, mouseY, a);
+        super.extractRenderState(graphics, (int) (mouseX * scaleX), (int) (mouseY * scaleY), a);
     }
     
     public com.xkball.xklib.ui.input.MouseButtonEvent convertMouseButtonEvent(MouseButtonEvent event) {
-        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x(),event.y(),event.button(),event.modifiers());
+        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x() * scaleX,event.y() * scaleY,event.button(),event.modifiers());
     }
     
     public com.xkball.xklib.ui.input.KeyEvent convertKeyEvent(KeyEvent event) {
@@ -92,35 +92,41 @@ public class XKLibBaseScreen extends Screen {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
+        this.resize_();
+    }
+    
+    private void resize_(){
         var window = XKLib.RENDER_CONTEXT.get().getWindow();
-        guiSystem.resize(window.getWidth(), window.getHeight());
+        var actualW = window.getWidth();
+        var actualH = window.getHeight();
+        var w = this.width;
+        var h = this.height;
+        this.scaleX = actualW/(float)w;
+        this.scaleY = actualH/(float)h;
+        guiSystem.resize(actualW, actualH);
     }
     
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         var e = convertMouseButtonEvent(event);
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseClicked(e,doubleClick));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseClicked(e,doubleClick));
     }
     
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         var e = convertMouseButtonEvent(event);
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseReleased(e));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseReleased(e));
     }
     
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         var e = convertMouseButtonEvent(event);
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx,dy));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx * scaleX, dy * scaleY));
     }
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x,y,scrollX,scrollY));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x * scaleX, y * scaleY, scrollX * scaleX, scrollY * scaleY));
     }
     
     @Override
@@ -133,20 +139,37 @@ public class XKLibBaseScreen extends Screen {
     @Override
     public boolean keyReleased(KeyEvent event) {
         var e = convertKeyEvent(event);
-        this.guiSystem.dispatchEventReversed(widget -> widget.keyReleased(e));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.keyReleased(e));
     }
     
     @Override
     public boolean charTyped(CharacterEvent event) {
         var e = convertCharacterEvent(event);
-        this.guiSystem.dispatchEventReversed(widget -> widget.charTyped(e));
-        return true;
+        return this.guiSystem.dispatchEventReversed(widget -> widget.charTyped(e));
     }
     
     @Override
     public void mouseMoved(double x, double y) {
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x,y));
+        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * scaleX,y * scaleY));
+    }
+    
+    @Override
+    public boolean preeditUpdated(@Nullable PreeditEvent event) {
+        return this.guiSystem.dispatchEventReversed(widget -> widget.preeditUpdated(event));
+    }
+    
+    public static float tryGetScaleX(){
+        if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics){
+            return guiGraphics.scaleX;
+        }
+        return 1;
+    }
+    
+    public static float tryGetScaleY(){
+        if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics){
+            return guiGraphics.scaleY;
+        }
+        return 1;
     }
     
 }

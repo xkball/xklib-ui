@@ -14,7 +14,7 @@ public class FocusManager {
     public void takeFocus(FocusNode node) {
         if (node == null) return;
 
-        if (currentFocusedNode != null) {
+        if (currentFocusedNode != null && node != currentFocusedNode) {
             clearPath(currentFocusedNode);
         }
 
@@ -23,7 +23,7 @@ public class FocusManager {
 
         if (node.canTakePrimaryFocus()) {
             primaryFocusedNode = node;
-            node.setPrimaryFocused(true);
+            node.setFocused(true,true);
         } else {
             primaryFocusedNode = null;
         }
@@ -47,14 +47,13 @@ public class FocusManager {
 
     private void applyPath(FocusNode node) {
         for (FocusNode n : buildPath(node)) {
-            n.setFocused(true);
+            n.setFocused(true,false);
         }
     }
 
     private void clearPath(FocusNode node) {
         for (FocusNode n : buildPath(node)) {
-            n.setFocused(false);
-            n.setPrimaryFocused(false);
+            n.setFocused(false,false);
         }
     }
 
