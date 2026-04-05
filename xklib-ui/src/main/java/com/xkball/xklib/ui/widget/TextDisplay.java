@@ -10,13 +10,11 @@ import dev.vfyjxf.taffy.style.TextAlign;
 
 public class TextDisplay extends ContainerWidget {
     private static final String SELF_CSS = """
-            * {
-                display: flex;
-                flex-direction: column;
-                justify-content: start;
-                align-items: stretch;
-                size: 100% 100%-30;
-            }
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: stretch;
+            size: 100% 100%-30;
             """;
 
     private final String text;
@@ -24,11 +22,7 @@ public class TextDisplay extends ContainerWidget {
     
     public TextDisplay(String text) {
         this.text = text;
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
     
     @Override

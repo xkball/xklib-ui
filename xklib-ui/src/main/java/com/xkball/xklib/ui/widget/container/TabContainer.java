@@ -22,14 +22,12 @@ public class TabContainer extends ContainerWidget {
 
     private static final int TAB_BAR_HEIGHT = 32;
     private static final String SELF_CSS = """
-            * {
-                display: grid;
-                size: 100% 100%;
-                grid-template-columns: 1fr;
-                grid-template-rows: 32 1fr;
-                align-items: stretch;
-                justify-content: stretch;
-            }
+            display: grid;
+            size: 100% 100%;
+            grid-template-columns: 1fr;
+            grid-template-rows: 32 1fr;
+            align-items: stretch;
+            justify-content: stretch;
             """;
 
     protected IntLayoutVariable selected = new IntLayoutVariable(0);
@@ -40,11 +38,7 @@ public class TabContainer extends ContainerWidget {
     public TabContainer() {
         super();
         this.selected.addCallback(this::onSelectedChanged);
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
 
     public TabContainer addTabPage(Widget widget, String title, int order) {

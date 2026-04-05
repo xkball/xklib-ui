@@ -26,11 +26,9 @@ public class ContainerWidget extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
     private static final String SELF_CSS = """
-            * {
-                container-scrollbar-track-color: 0xFF2D2D2D;
-                container-scrollbar-thumb-color: 0xFF888888;
-                container-scrollbar-thumb-hover-color: 0xFFAAAAAA;
-            }
+            container-scrollbar-track-color: 0xFF2D2D2D;
+            container-scrollbar-thumb-color: 0xFF888888;
+            container-scrollbar-thumb-hover-color: 0xFFAAAAAA;
             """;
     
     protected final List<Widget> children = new ArrayList<>();
@@ -45,15 +43,12 @@ public class ContainerWidget extends Widget {
     
     public ContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
+        this.inlineStyle(SELF_CSS);
     }
     
     public ContainerWidget() {
         super();
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
 
     public void setScrollBarTrackColor(int scrollBarTrackColor) {

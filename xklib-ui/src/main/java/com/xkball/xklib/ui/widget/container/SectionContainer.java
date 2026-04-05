@@ -10,13 +10,11 @@ import dev.vfyjxf.taffy.style.TextAlign;
 public class SectionContainer extends ContainerWidget {
 
     private static final String SELF_CSS = """
-            * {
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                justify-content: start;
-                size: 100% content;
-            }
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: start;
+            size: 100% content;
             """;
     
     private final Label header;
@@ -34,11 +32,7 @@ public class SectionContainer extends ContainerWidget {
         this.header.setCSSId("header");
         this.content = content;
         this.addChild(header);
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
     
     private static Widget createDefaultContent() {

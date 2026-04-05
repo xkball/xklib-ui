@@ -45,11 +45,11 @@ public interface IGuiWidget {
     
     String getCSSType();
     
-    void setCSSClassName(String name);
+    IGuiWidget setCSSClassName(String name);
     
     String getCSSClassName();
     
-    void setCSSId(String name);
+    IGuiWidget setCSSId(String name);
     
     String getCSSId();
     
@@ -120,9 +120,7 @@ public interface IGuiWidget {
         return "";
     }
     
-    default String createCSSAsSelf(){
-        return "";
-    }
+    IGuiWidget inlineStyle(String style);
     
     default List<? extends IGuiWidget> getChildren(){
         return List.of();

@@ -23,11 +23,9 @@ import java.util.function.Function;
 public class ComboBox<T> extends ContainerWidget {
 
     private static final String SELF_CSS = """
-            * {
-                display: flex;
-                flex-direction: row;
-                align-items: stretch;
-            }
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
             """;
 
     private static final float ARROW_BTN_WIDTH = 24f;
@@ -51,11 +49,7 @@ public class ComboBox<T> extends ContainerWidget {
         this.nullable = nullable;
         this.selected = nullable ? null : (options.isEmpty() ? null : options.getFirst());
         this.displayLabel = new Label(selectedText(), TextAlign.LEFT, 0xFFE2E8F0);
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
 
     public ComboBox(List<T> options, Function<T, String> toDisplay) {

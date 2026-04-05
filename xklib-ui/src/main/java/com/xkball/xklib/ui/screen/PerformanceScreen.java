@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.screen;
 
-import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;

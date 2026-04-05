@@ -23,11 +23,9 @@ public class TextEdit extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(TextEdit.class);
     private static final String SELF_CSS = """
-            * {
-                textedit-text-color: 0xFFFFFFFF;
-                textedit-selection-color: 0x800080FF;
-                textedit-cursor-color: 0xFFFFFFFF;
-            }
+            textedit-text-color: 0xFFFFFFFF;
+            textedit-selection-color: 0x800080FF;
+            textedit-cursor-color: 0xFFFFFFFF;
             """;
     
     protected boolean multiLine = false;
@@ -61,11 +59,7 @@ public class TextEdit extends Widget {
         this.displayLines.add(initialText);
         this.lineHeight = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont().lineHeight();
         this.setSize("content","content");
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
     
     public void updateSize(){

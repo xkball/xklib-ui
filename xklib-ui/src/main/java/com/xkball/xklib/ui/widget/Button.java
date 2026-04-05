@@ -8,9 +8,7 @@ import com.xkball.xklib.ui.system.GuiSystem;
 public class Button extends Widget {
 
     private static final String SELF_CSS = """
-            * {
-                button-text-color: 0xFF000000;
-            }
+            button-text-color: 0xFF000000;
             """;
     
     private TextScale textScale = TextScale.FIXED;
@@ -21,13 +19,11 @@ public class Button extends Widget {
     public Button(String text, Runnable callback){
         this.text = text;
         this.callback = callback;
+        this.inlineStyle(SELF_CSS);
     }
     
-    public Button() {}
-
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
+    public Button() {
+        this.inlineStyle(SELF_CSS);
     }
     
     public void onTextChanged(){

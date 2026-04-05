@@ -17,12 +17,10 @@ import java.util.function.Consumer;
 public class LogViewer extends ContainerWidget {
 
     private static final String SELF_CSS = """
-            * {
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                size: 100% 100%;
-            }
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            size: 100% 100%;
             """;
     
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -34,11 +32,7 @@ public class LogViewer extends ContainerWidget {
     public LogViewer() {
         this.logContainer = new ContainerWidget();
         this.logListener = this::addLogEntry;
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
     
     @Override

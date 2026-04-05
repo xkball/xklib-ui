@@ -12,11 +12,9 @@ public class CheckBox extends Widget implements IInputWidget<Boolean> {
 
     private static final int THUMB_MARGIN = 2;
     private static final String SELF_CSS = """
-            * {
-                checkbox-track-color: 0xFFCBD5E1;
-                checkbox-thumb-color: 0xFFFFFFFF;
-                checkbox-on-color: 0x8022C55E;
-            }
+            checkbox-track-color: 0xFFCBD5E1;
+            checkbox-thumb-color: 0xFFFFFFFF;
+            checkbox-on-color: 0x8022C55E;
             """;
 
     private boolean checked = false;
@@ -25,9 +23,8 @@ public class CheckBox extends Widget implements IInputWidget<Boolean> {
     private int onOverlayColor;
     private final List<ILayoutVariable<Boolean>> bindings = new ArrayList<>();
 
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
+    public CheckBox() {
+        this.inlineStyle(SELF_CSS);
     }
 
     @Override

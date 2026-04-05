@@ -8,12 +8,10 @@ import java.util.function.Consumer;
 public class DragBox extends Widget{
     private static final int THUMB_WIDTH = 10;
     private static final String SELF_CSS = """
-            * {
-                dragbox-track-color: 0xFFCBD5E1;
-                dragbox-thumb-color: 0xFF7DD3FC;
-                dragbox-thumb-hover-color: 0xFF38BDF8;
-                dragbox-border-color: 0xFF94A3B8;
-            }
+            dragbox-track-color: 0xFFCBD5E1;
+            dragbox-thumb-color: 0xFF7DD3FC;
+            dragbox-thumb-hover-color: 0xFF38BDF8;
+            dragbox-border-color: 0xFF94A3B8;
             """;
 
     private int trackColor;
@@ -32,17 +30,13 @@ public class DragBox extends Widget{
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.value = clamp(value);
+        this.inlineStyle(SELF_CSS);
     }
     
     public DragBox(double minValue, double maxValue) {
         this(minValue, maxValue, minValue);
     }
 
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
-    }
-    
     public double getMinValue() {
         return this.minValue;
     }

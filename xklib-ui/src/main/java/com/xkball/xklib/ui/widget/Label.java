@@ -10,9 +10,7 @@ import dev.vfyjxf.taffy.style.TextAlign;
 public class Label extends Widget {
 
     private static final String SELF_CSS = """
-            * {
-                label-text-color: 0xFF000000;
-            }
+            label-text-color: 0xFF000000;
             """;
     
     private TextAlign align = TextAlign.LEFT;
@@ -20,51 +18,56 @@ public class Label extends Widget {
     private int color = 0xFF000000;
     private TextScale textScale = TextScale.FIXED;
 
-    public Label(){}
+    public Label(){
+        this.inlineStyle(SELF_CSS);
+    }
     
     public Label(IComponent text, TextAlign align, int color){
         this.text = text;
         this.align = align;
         this.color = color;
+        this.inlineStyle(SELF_CSS);
     }
     
     public Label(IComponent text, TextAlign align){
         this.text = text;
         this.align = align;
+        this.inlineStyle(SELF_CSS);
     }
     
     public Label(IComponent text, int color){
         this.text = text;
         this.color = color;
+        this.inlineStyle(SELF_CSS);
     }
     
     public Label(IComponent text) {
         this.text = text;
+        this.inlineStyle(SELF_CSS);
     }
 
     public Label(String text, TextAlign align, int color){
         this.text = IComponent.literal(text);
         this.align = align;
         this.color = color;
+        this.inlineStyle(SELF_CSS);
     }
 
     public Label(String text, TextAlign align){
         this.text = IComponent.literal(text);
         this.align = align;
+        this.inlineStyle(SELF_CSS);
     }
 
     public Label(String text, int color){
         this.text = IComponent.literal(text);
         this.color = color;
+        this.inlineStyle(SELF_CSS);
     }
 
     public Label(String text) {
         this.text = IComponent.literal(text);
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
 
     @Override

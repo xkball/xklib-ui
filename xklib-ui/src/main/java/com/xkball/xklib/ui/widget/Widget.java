@@ -53,7 +53,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     protected FocusNode focusNode;
     private GuiSystem guiSystem;
     protected final CascadingStyleSheets styleSheetAsRoot;
-    protected final CascadingStyleSheets styleSheetAsSelf;
+    protected final CascadingStyleSheets.Inline styleSheetAsSelf;
     protected IStyleSheet styleSheet = new CascadingStyleSheets.SimpleStyleSheet();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
     
@@ -71,8 +71,17 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.focusNode.setCanTakePrimaryFocus(this.isFocusable());
         var rootStyle = this.createCSSAsRoot();
         this.styleSheetAsRoot = rootStyle.isEmpty() ? new CascadingStyleSheets() : CssParser.parse(rootStyle);
-        var selfStyle = this.createCSSAsSelf();
-        this.styleSheetAsSelf = selfStyle.isEmpty() ? new CascadingStyleSheets() : CssParser.parse(selfStyle);
+        this.styleSheetAsSelf = new CascadingStyleSheets.Inline();
+    }
+    
+    public IGuiWidget inlineStyle(String style){
+        if ((style.isEmpty())) return this;
+        style ="* { %s }".formatted(style);
+        var sheets = CssParser.parse(style).sheets();
+        if(sheets.size() == 1){
+            this.styleSheetAsSelf.addProperties(sheets.getFirst().properties());
+        }
+        return this;
     }
     
     protected void untilSetTree(Runnable runnable) {
@@ -205,8 +214,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    public void setCSSClassName(String name) {
+    public IGuiWidget setCSSClassName(String name) {
         this.cssClass = name;
+        return this;
     }
     
     @Override
@@ -215,8 +225,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    public void setCSSId(String name) {
+    public IGuiWidget setCSSId(String name) {
         this.cssId = name;
+        return this;
     }
     
     @Override

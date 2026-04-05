@@ -17,14 +17,12 @@ public class SplitContainer extends ContainerWidget {
 
     private static final float BAR_SIZE = 4f;
     private static final String SELF_CSS = """
-            * {
-                display: grid;
-                size: 100% 100%;
-                align-items: stretch;
-                justify-content: stretch;
-                split-bar-color: 0xFF444444;
-                split-bar-hover-color: 0xFF888888;
-            }
+            display: grid;
+            size: 100% 100%;
+            align-items: stretch;
+            justify-content: stretch;
+            split-bar-color: 0xFF444444;
+            split-bar-hover-color: 0xFF888888;
             """;
 
     protected boolean vertical;
@@ -50,11 +48,7 @@ public class SplitContainer extends ContainerWidget {
             panels.add(new ContainerWidget());
         }
         applyContainerStyle();
-    }
-
-    @Override
-    public String createCSSAsSelf() {
-        return super.createCSSAsSelf() + SELF_CSS;
+        this.inlineStyle(SELF_CSS);
     }
 
     public SplitContainer(boolean vertical) {

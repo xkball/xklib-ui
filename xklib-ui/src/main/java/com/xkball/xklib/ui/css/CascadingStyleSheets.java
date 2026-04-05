@@ -3,6 +3,8 @@ package com.xkball.xklib.ui.css;
 import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
+import com.xkball.xklib.ui.css.selector.AnySelector;
+import com.xkball.xklib.ui.css.selector.UniversalSelector;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -19,14 +21,31 @@ public class CascadingStyleSheets {
             .comparingInt(StyleSheetUnit::weight)
             .thenComparingInt(StyleSheetUnit::sourceOrder);
 
-    private final List<StyleSheetUnit> sheets = new ArrayList<>();
+    protected final List<StyleSheetUnit> sheets = new ArrayList<>();
 
     public void add(StyleSheetUnit unit) {
         this.sheets.add(unit);
     }
 
     public List<StyleSheetUnit> sheets() {
-        return List.copyOf(this.sheets);
+        return this.sheets;
+    }
+    
+    public static class Inline extends CascadingStyleSheets{
+        
+        private StyleSheetUnit style = new StyleSheetUnit(1000,0,new UniversalSelector(),List.of());
+        
+        public Inline(){
+            this.add(style);
+        }
+        
+        public void addProperties(List<IStyleProperty<?>> properties) {
+            this.sheets.clear();
+            var list = new ArrayList<>(this.style.properties());
+            list.addAll(properties);
+            this.style = new StyleSheetUnit(1000,0,new UniversalSelector(),list);
+            this.add(style);
+        }
     }
     
     public static class SimpleStyleSheet implements IStyleSheet{
