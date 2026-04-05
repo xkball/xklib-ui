@@ -2,8 +2,6 @@ package com.xkball.xklib.ui.screen;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.resource.ResourceLocation;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.css.CascadingStyleSheets;
@@ -37,9 +35,6 @@ public class DebugScreen extends ContainerWidget {
     public static final IComponent ICON_RIGHT = IComponent.icon(ResourceLocation.of("textures/icon/right.png"));
     public static final IComponent ICON_DOWN = IComponent.icon(ResourceLocation.of("textures/icon/down.png"));
     private static final int TEXT_COLOR = 0xFF1E293B;
-    private static final int HEADER_BG = 0xFFE2E8F0;
-    private static final int PANEL_BG = 0xFFF8FAFC;
-    private static final int HOVER_COLOR = 0x33000000;
     private static final int BOX_MARGIN_COLOR = 0xFFFEE2E2;
     private static final int BOX_PADDING_COLOR = 0xFFDBEAFE;
     private static final int BOX_CONTENT_COLOR = 0xFFE2FBE8;
@@ -53,28 +48,34 @@ public class DebugScreen extends ContainerWidget {
                 flex-direction: column;
                 align-items: start;
                 size: 100% 100%;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-field-content {
                 flex-direction: column;
                 align-items: start;
                 size: 100% 100%;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-tree-panel {
                 flex-direction: column;
                 align-items: stretch;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-field-panel {
                 flex-direction: column;
                 align-items: stretch;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-style-panel {
                 flex-direction: column;
                 align-items: stretch;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-style-content {
                 flex-direction: column;
                 align-items: stretch;
                 size: 100% 100%;
+                background-color: 0xFFF8FAFC;
             }
             ContainerWidget.debug-css-matched-content {
                 flex-direction: column;
@@ -84,6 +85,7 @@ public class DebugScreen extends ContainerWidget {
             Label.debug-header {
                 size: 100% 22;
                 flex-shrink: 0;
+                background-color: 0xFFE2E8F0;
             }
             Label.debug-style-title {
                 size: 100% 22;
@@ -158,17 +160,14 @@ public class DebugScreen extends ContainerWidget {
         super.init();
 
         treeViewContent.setCSSClassName("debug-tree-content");
-        treeViewContent.addDecoration(new Background(PANEL_BG));
         treeViewContent.setYScrollEnable();
         treeViewContent.setXScrollEnable();
 
         fieldViewContent.setCSSClassName("debug-field-content");
-        fieldViewContent.addDecoration(new Background(PANEL_BG));
         fieldViewContent.setYScrollEnable();
         fieldViewContent.setXScrollEnable();
 
         styleViewContent.setCSSClassName("debug-style-content");
-        styleViewContent.addDecoration(new Background(PANEL_BG));
         styleViewContent.setYScrollEnable();
 
         styleTargetTitle.setCSSClassName("debug-style-title");
@@ -180,7 +179,6 @@ public class DebugScreen extends ContainerWidget {
 
         var stylePanel = treeView.getPanel(0);
         stylePanel.setCSSClassName("debug-style-panel");
-        stylePanel.addDecoration(new Background(PANEL_BG));
         stylePanel.addChild(makeHeader("组件样式"));
         styleViewContent.addChild(styleTargetTitle);
         boxModelPreview.setCSSClassName("debug-box-model");
@@ -190,13 +188,11 @@ public class DebugScreen extends ContainerWidget {
 
         var treePanel = treeView.getPanel(1);
         treePanel.setCSSClassName("debug-tree-panel");
-        treePanel.addDecoration(new Background(PANEL_BG));
         treePanel.addChild(makeHeader("组件树"));
         treePanel.addChild(treeViewContent);
 
         var fieldPanel = treeView.getPanel(2);
         fieldPanel.setCSSClassName("debug-field-panel");
-        fieldPanel.addDecoration(new Background(PANEL_BG));
         fieldPanel.addChild(makeHeader("组件字段"));
         fieldPanel.addChild(fieldViewContent);
 
@@ -220,7 +216,6 @@ public class DebugScreen extends ContainerWidget {
     private Label makeHeader(String text) {
         var label = new Label(text, TextAlign.CENTER, TEXT_COLOR);
         label.setCSSClassName("debug-header");
-        label.addDecoration(new Background(HEADER_BG));
         label.setTextScale(TextScale.EXPAND_WIDTH);
         return label;
     }
@@ -346,7 +341,7 @@ public class DebugScreen extends ContainerWidget {
         var text = prefix.append(IComponent.literal(widget.getClass().getSimpleName() + " " + display + " " + sizeStr + "  " + layoutStr));
 
         var label = new NodeRow(widget, text, this.lastSelectedNode != null && widget == this.lastSelectedNode.target);
-        label.addDecoration(ButtonLooks.transparent(HOVER_COLOR));
+        label.inlineStyle("button-hover-color: 0x33000000;");
         treeViewContent.addChild(label);
 
         if (isOpen) {
@@ -399,7 +394,7 @@ public class DebugScreen extends ContainerWidget {
 
                     final Object capturedValue = value;
                     var row = new FieldRow(text, isExpandable && !hasCycle ? capturedValue : null);
-                    row.addDecoration(ButtonLooks.transparent(HOVER_COLOR));
+                    row.inlineStyle("button-hover-color: 0x33000000;");
                     container.addChild(row);
 
                     if (isOpen && !hasCycle) {
@@ -422,7 +417,7 @@ public class DebugScreen extends ContainerWidget {
                 var valueStr = buildValueText(value, isExpandable, isOpen, hasCycle);
                 var text = IComponent.literal(prefix + "[" + index + "]: ").append(valueStr);
                 var row = new FieldRow(text, isExpandable && !hasCycle ? value : null);
-                row.addDecoration(ButtonLooks.transparent(HOVER_COLOR));
+                row.inlineStyle("button-hover-color: 0x33000000;");
                 container.addChild(row);
                 if (isOpen && !hasCycle) {
                     visited.put(value, true);

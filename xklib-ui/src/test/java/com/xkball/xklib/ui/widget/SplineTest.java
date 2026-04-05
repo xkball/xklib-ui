@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.DraggableContainer;
@@ -129,7 +128,7 @@ public class SplineTest {
     private static ContainerWidget createLeftPanel(SplineState state) {
         var panel = new ContainerWidget();
         panel.setCSSClassName("spline-left");
-        panel.addDecoration(new Background(0xFF1E293B));
+        panel.inlineStyle("background-color: 0xFF1E293B;");
         var title = new Label("CubicSpline2D 样条曲线测试", TextAlign.CENTER, 0xFFFFFFFF);
         title.setCSSClassName("spline-title");
         panel.addChild(title);
@@ -223,7 +222,7 @@ public class SplineTest {
     private static ContainerWidget createRightPanel(SplineState state) {
         var scalableContainer = new ScalableContainer();
         scalableContainer.setCSSClassName("spline-right");
-        scalableContainer.addDecoration(new Background(0xFF0F172A));
+        scalableContainer.inlineStyle("background-color: 0xFF0F172A;");
 
         var renderer = new SplineRendererWidget(state);
         renderer.setAbsoluteSize(0, 0);
@@ -257,7 +256,7 @@ public class SplineTest {
             this.setAbsoluteSize(x, y);
             this.setCSSClassName("spline-point-container");
 
-            this.addDecoration(new Background(color));
+            this.inlineStyle("background-color: " + color + ";");
 
             var label = new Label(name, TextAlign.CENTER, 0xFFFFFFFF);
             label.setCSSClassName("spline-point-label");

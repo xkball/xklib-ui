@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -17,7 +16,7 @@ public class TabContainerTest {
         try (var frame = new WidgetTestFrame(() -> {
             var root = new ContainerWidget();
             root.asTreeRoot();
-            root.addDecoration(new Background(0xFF0F172A));
+            root.inlineStyle("background-color: 0xFF0F172A;");
             root.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
                 s.justifyContent = AlignContent.CENTER;
@@ -29,7 +28,7 @@ public class TabContainerTest {
             tab.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.8f), TaffyDimension.percent(0.8f)));
 
             var page1 = new ContainerWidget();
-            page1.addDecoration(new Background(0xFF1E3A5F));
+            page1.inlineStyle("background-color: 0xFF1E3A5F;");
             page1.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
                 s.justifyContent = AlignContent.CENTER;
@@ -47,7 +46,7 @@ public class TabContainerTest {
             }
 
             var page2 = new ContainerWidget();
-            page2.addDecoration(new Background(0xFF3A1E5F));
+            page2.inlineStyle("background-color: 0xFF3A1E5F;");
             page2.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
                 s.justifyContent = AlignContent.CENTER;
@@ -59,7 +58,7 @@ public class TabContainerTest {
             page2.addChild(label2);
 
             var page3 = new ContainerWidget();
-            page3.addDecoration(new Background(0xFF1E5F3A));
+            page3.inlineStyle("background-color: 0xFF1E5F3A;");
             page3.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
                 s.justifyContent = AlignContent.CENTER;

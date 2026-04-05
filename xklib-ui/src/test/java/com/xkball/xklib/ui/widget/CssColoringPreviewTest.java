@@ -4,7 +4,6 @@ import com.xkball.xklib.antlr.ColorMapping;
 import com.xkball.xklib.antlr.css.CssParser;
 import com.xkball.xklib.antlr.css.css3Lexer;
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.render.IFont;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
@@ -68,7 +67,7 @@ public class CssColoringPreviewTest {
     private static ContainerWidget createWindow() {
         var root = new ContainerWidget();
         root.asTreeRoot();
-        root.addDecoration(new Background(0xFF111827));
+        root.inlineStyle("background-color: 0xFF111827;");
         root.setStyle(s -> s.size = TaffySize.all(TaffyDimension.percent(1f)));
 
         var preview = new CssColoringWidget(CSS_SAMPLE);

@@ -1,8 +1,6 @@
 package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Label;
@@ -31,7 +29,7 @@ public class GridLayoutTest {
 
     private static ContainerWidget bgContainer(int color) {
         var w = new ContainerWidget();
-        w.addDecoration(new Background(color));
+        w.inlineStyle("background-color: " + color + ";");
         return w;
     }
 
@@ -46,7 +44,7 @@ public class GridLayoutTest {
 
     private static Widget cell(int color, String text) {
         var w = new ContainerWidget();
-        w.addDecoration(new Background(color));
+        w.inlineStyle("background-color: " + color + ";");
         w.setStyle(s -> {
             s.alignItems = AlignItems.CENTER;
             s.justifyContent = AlignContent.CENTER;
@@ -204,7 +202,7 @@ public class GridLayoutTest {
                 for (int c = 0; c < 4; c++) {
                     final int idx = r * 4 + c;
                     var btn = new Button("btn" + idx, () -> System.out.println("clicked " + idx));
-                    btn.addDecoration(ButtonLooks.roundRect());
+                    btn.inlineStyle("button-shape: round_rect; button-bg-color: 0xFF7dd3fc; button-hover-color: 0xFF0c4a6e;");
                     root.addChild(btn);
                 }
             }
@@ -239,7 +237,7 @@ public class GridLayoutTest {
             for (int i = 0; i < labels.length; i++) {
                 var label = new Label(labels[i], TextAlign.CENTER, 0xFFFFFFFF);
                 label.getStyle().size = new TaffySize<>(TaffyDimension.length(120), TaffyDimension.length(60));
-                label.addDecoration(new Background(cellColors[i]));
+                label.inlineStyle("background-color: " + cellColors[i] + ";");
                 root.addChild(label);
             }
             return root;

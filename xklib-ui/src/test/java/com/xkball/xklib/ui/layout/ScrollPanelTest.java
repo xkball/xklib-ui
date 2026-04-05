@@ -1,8 +1,6 @@
 package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Label;
@@ -32,13 +30,13 @@ public class ScrollPanelTest {
 
     private static ContainerWidget bgContainer(int color) {
         var w = new ContainerWidget();
-        w.addDecoration(new Background(color));
+        w.inlineStyle("background-color: " + color + ";");
         return w;
     }
 
     private static Label colorLabel(int color, String text, float h) {
         var label = new Label(text, TextAlign.CENTER, 0xFFFFFFFF);
-        label.addDecoration(new Background(color));
+        label.inlineStyle("background-color: " + color + ";");
         label.getStyle().size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(h));
         label.getStyle().flexShrink = 0;
         return label;
@@ -56,7 +54,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var scrollContainer = new ContainerWidget();
-            scrollContainer.addDecoration(new Background(0xFF2D3748));
+            scrollContainer.inlineStyle("background-color: 0xFF2D3748;");
             var scrollStyle = new TaffyStyle();
             scrollStyle.flexDirection = FlexDirection.COLUMN;
             scrollStyle.justifyContent = AlignContent.START;
@@ -89,7 +87,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var scrollContainer = new ContainerWidget();
-            scrollContainer.addDecoration(new Background(0xFF2D3748));
+            scrollContainer.inlineStyle("background-color: 0xFF2D3748;");
             var scrollStyle = new TaffyStyle();
             scrollStyle.display = TaffyDisplay.GRID;
             scrollStyle.gridTemplateColumns = List.of(
@@ -109,7 +107,7 @@ public class ScrollPanelTest {
                 itemStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(60));
                 itemStyle.flexShrink = 0;
                 var cell = new Label("Grid格 " + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
-                cell.addDecoration(new Background(COLORS[i % COLORS.length]));
+                cell.inlineStyle("background-color: " + COLORS[i % COLORS.length] + ";");
                 cell.setStyle(itemStyle);
                 scrollContainer.addChild(cell);
             }
@@ -129,7 +127,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var outerScroll = new ContainerWidget();
-            outerScroll.addDecoration(new Background(0xFF1A1A2E));
+            outerScroll.inlineStyle("background-color: 0xFF1A1A2E;");
             var outerStyle = new TaffyStyle();
             outerStyle.flexDirection = FlexDirection.ROW;
             outerStyle.justifyContent = AlignContent.START;
@@ -147,7 +145,7 @@ public class ScrollPanelTest {
 
             for (int p = 0; p < 5; p++) {
                 var innerScroll = new ContainerWidget();
-                innerScroll.addDecoration(new Background(panelColors[p]));
+                innerScroll.inlineStyle("background-color: " + panelColors[p] + ";");
                 var innerStyle = new TaffyStyle();
                 innerStyle.flexDirection = FlexDirection.COLUMN;
                 innerStyle.justifyContent = AlignContent.START;
@@ -163,7 +161,7 @@ public class ScrollPanelTest {
 
                 for (int i = 0; i < 15; i++) {
                     var label = new Label("面板" + (p + 1) + "-项目" + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
-                    label.addDecoration(new Background(itemColors[(p + i) % itemColors.length]));
+                    label.inlineStyle("background-color: " + itemColors[(p + i) % itemColors.length] + ";");
                     var itemStyle = new TaffyStyle();
                     itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(44));
                     itemStyle.flexShrink = 0;
@@ -187,7 +185,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var scrollContainer = new ContainerWidget();
-            scrollContainer.addDecoration(new Background(0xFF2D3748));
+            scrollContainer.inlineStyle("background-color: 0xFF2D3748;");
             var scrollStyle = new TaffyStyle();
             scrollStyle.flexDirection = FlexDirection.ROW;
             scrollStyle.justifyContent = AlignContent.START;
@@ -206,7 +204,7 @@ public class ScrollPanelTest {
                 itemStyle.flexShrink = 0;
                 var btn = new Button("按钮 " + (i + 1), () -> System.out.println("clicked"));
                 btn.setStyle(itemStyle);
-                btn.addDecoration(ButtonLooks.roundRect(COLORS[i % COLORS.length], 0xFF0c4a6e));
+                btn.inlineStyle("button-shape: round_rect; button-bg-color: " + COLORS[i % COLORS.length] + "; button-hover-color: 0xFF0c4a6e;");
                 scrollContainer.addChild(btn);
             }
             return root;
@@ -226,7 +224,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var outerFlex = new ContainerWidget();
-            outerFlex.addDecoration(new Background(0xFF1A1A2E));
+            outerFlex.inlineStyle("background-color: 0xFF1A1A2E;");
             var outerFlexStyle = new TaffyStyle();
             outerFlexStyle.flexDirection = FlexDirection.COLUMN;
             outerFlexStyle.justifyContent = AlignContent.START;
@@ -241,7 +239,7 @@ public class ScrollPanelTest {
 
             for (int p = 0; p < 4; p++) {
                 var innerFlex = new ContainerWidget();
-                innerFlex.addDecoration(new Background(0xFF2D3748));
+                innerFlex.inlineStyle("background-color: 0xFF2D3748;");
                 var innerStyle = new TaffyStyle();
                 innerStyle.flexDirection = FlexDirection.COLUMN;
                 innerStyle.justifyContent = AlignContent.START;
@@ -262,7 +260,7 @@ public class ScrollPanelTest {
             }
 
             var outerGrid = new ContainerWidget();
-            outerGrid.addDecoration(new Background(0xFF1A2E1A));
+            outerGrid.inlineStyle("background-color: 0xFF1A2E1A;");
             var outerGridStyle = new TaffyStyle();
             outerGridStyle.flexDirection = FlexDirection.COLUMN;
             outerGridStyle.justifyContent = AlignContent.START;
@@ -277,7 +275,7 @@ public class ScrollPanelTest {
 
             for (int p = 0; p < 4; p++) {
                 var innerGrid = new ContainerWidget();
-                innerGrid.addDecoration(new Background(0xFF2E3D2E));
+                innerGrid.inlineStyle("background-color: 0xFF2E3D2E;");
                 var innerStyle = new TaffyStyle();
                 innerStyle.display = TaffyDisplay.GRID;
                 innerStyle.gridTemplateColumns = List.of(
@@ -297,7 +295,7 @@ public class ScrollPanelTest {
                     itemStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(40));
                     itemStyle.flexShrink = 0;
                     var label = new Label("外" + (p + 1) + "-Grid" + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
-                    label.addDecoration(new Background(COLORS[(p * 4 + i) % COLORS.length]));
+                    label.inlineStyle("background-color: " + COLORS[(p * 4 + i) % COLORS.length] + ";");
                     label.setStyle(itemStyle);
                     innerGrid.addChild(label);
                 }
@@ -330,7 +328,7 @@ public class ScrollPanelTest {
 
             for (int a = 0; a < 3; a++) {
                 var lvl1 = new ContainerWidget();
-                lvl1.addDecoration(new Background(lvl1Colors[a]));
+                lvl1.inlineStyle("background-color: " + lvl1Colors[a] + ";");
                 var lvl1Style = new TaffyStyle();
                 lvl1Style.flexDirection = FlexDirection.ROW;
                 lvl1Style.justifyContent = AlignContent.START;
@@ -346,7 +344,7 @@ public class ScrollPanelTest {
 
                 for (int b = 0; b < 5; b++) {
                     var lvl2 = new ContainerWidget();
-                    lvl2.addDecoration(new Background(lvl2Colors[a]));
+                    lvl2.inlineStyle("background-color: " + lvl2Colors[a] + ";");
                     var lvl2Style = new TaffyStyle();
                     lvl2Style.flexDirection = FlexDirection.COLUMN;
                     lvl2Style.justifyContent = AlignContent.START;
@@ -362,7 +360,7 @@ public class ScrollPanelTest {
 
                     for (int c = 0; c < 8; c++) {
                         var lvl3 = new ContainerWidget();
-                        lvl3.addDecoration(new Background(lvl3Colors[a]));
+                        lvl3.inlineStyle("background-color: " + lvl3Colors[a] + ";");
                         var lvl3Style = new TaffyStyle();
                         lvl3Style.flexDirection = FlexDirection.ROW;
                         lvl3Style.justifyContent = AlignContent.START;
@@ -377,7 +375,7 @@ public class ScrollPanelTest {
 
                         for (int d = 0; d < 6; d++) {
                             var label = new Label(a + "-" + b + "-" + c + "-" + d, TextAlign.CENTER, 0xFFFFFFFF);
-                            label.addDecoration(new Background(COLORS[(a + b + c + d) % COLORS.length]));
+                            label.inlineStyle("background-color: " + COLORS[(a + b + c + d) % COLORS.length] + ";");
                             var lStyle = new TaffyStyle();
                             lStyle.size = new TaffySize<>(TaffyDimension.length(80), TaffyDimension.length(36));
                             lStyle.flexShrink = 0;
@@ -405,7 +403,7 @@ public class ScrollPanelTest {
             root.setStyle(rootStyle);
 
             var biaxial = new ContainerWidget();
-            biaxial.addDecoration(new Background(0xFF1A1A2E));
+            biaxial.inlineStyle("background-color: 0xFF1A1A2E;");
             var biaxialStyle = new TaffyStyle();
             biaxialStyle.flexDirection = FlexDirection.COLUMN;
             biaxialStyle.justifyContent = AlignContent.START;
@@ -423,7 +421,7 @@ public class ScrollPanelTest {
 
             for (int row = 0; row < 8; row++) {
                 var rowContainer = new ContainerWidget();
-                rowContainer.addDecoration(new Background(rowColors[row]));
+                rowContainer.inlineStyle("background-color: " + rowColors[row] + ";");
                 var rowStyle = new TaffyStyle();
                 rowStyle.flexDirection = FlexDirection.ROW;
                 rowStyle.justifyContent = AlignContent.START;
@@ -437,7 +435,7 @@ public class ScrollPanelTest {
 
                 if (row % 3 == 0) {
                     var nestedScroll = new ContainerWidget();
-                    nestedScroll.addDecoration(new Background(0xFF0D0D2E));
+                    nestedScroll.inlineStyle("background-color: 0xFF0D0D2E;");
                     var nestedStyle = new TaffyStyle();
                     nestedStyle.flexDirection = FlexDirection.ROW;
                     nestedStyle.justifyContent = AlignContent.START;
@@ -463,7 +461,7 @@ public class ScrollPanelTest {
                     }
                 } else if (row % 3 == 1) {
                     var nestedGrid = new ContainerWidget();
-                    nestedGrid.addDecoration(new Background(0xFF0D2E0D));
+                    nestedGrid.inlineStyle("background-color: 0xFF0D2E0D;");
                     var nestedGridStyle = new TaffyStyle();
                     nestedGridStyle.display = TaffyDisplay.GRID;
                     nestedGridStyle.gridTemplateColumns = List.of(
@@ -483,7 +481,7 @@ public class ScrollPanelTest {
                         gStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(28));
                         gStyle.flexShrink = 0;
                         var label = new Label("G" + k, TextAlign.CENTER, 0xFFFFFFFF);
-                        label.addDecoration(new Background(COLORS[(row + k) % COLORS.length]));
+                        label.inlineStyle("background-color: " + COLORS[(row + k) % COLORS.length] + ";");
                         label.setStyle(gStyle);
                         nestedGrid.addChild(label);
                     }

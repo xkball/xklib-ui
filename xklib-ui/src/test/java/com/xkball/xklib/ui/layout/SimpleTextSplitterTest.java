@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
@@ -56,7 +55,7 @@ public class SimpleTextSplitterTest {
 
     private static ContainerWidget createTextPanel(String title) {
         var panel = new ContainerWidget();
-        panel.addDecoration(new Background(0xFF1E293B));
+        panel.inlineStyle("background-color: 0xFF1E293B;");
         panel.setStyle(s -> {
             s.flexDirection = FlexDirection.COLUMN;
             s.justifyContent = AlignContent.START;
@@ -65,7 +64,7 @@ public class SimpleTextSplitterTest {
         });
 
         var titleLabel = new Label(title, TextAlign.CENTER, 0xFFE2E8F0);
-        titleLabel.addDecoration(new Background(0xFF334155));
+        titleLabel.inlineStyle("background-color: 0xFF334155;");
         titleLabel.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(30));
             s.flexShrink = 0;

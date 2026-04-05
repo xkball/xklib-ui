@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
@@ -37,12 +36,12 @@ public class TextEditTest {
 
     private static ContainerWidget createEditPanel(String title, boolean multiLine, boolean wrapLine, boolean allowEdit) {
         var panel = new ContainerWidget();
-        panel.addDecoration(new Background(0xFF1E293B));
+        panel.inlineStyle("background-color: 0xFF1E293B;");
         panel.applyStyle(DefaultStyles::fill);
         panel.setStyle(s -> s.flexDirection = FlexDirection.COLUMN);
 
         var titleLabel = new Label(title, TextAlign.CENTER, 0xFFE2E8F0);
-        titleLabel.addDecoration(new Background(0xFF334155));
+        titleLabel.inlineStyle("background-color: 0xFF334155;");
         titleLabel.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(30)));
         panel.addChild(titleLabel);
 
@@ -54,7 +53,7 @@ public class TextEditTest {
                 var l = layout.contentBoxWidth();
             }
         };
-        scrollContainer.addDecoration(new Background(0xFF0F172A));
+        scrollContainer.inlineStyle("background-color: 0xFF0F172A;");
         scrollContainer.setStyle(s -> s.size = TaffySize.all(TaffyDimension.percent(1)));
         scrollContainer.setStyle(s -> s.minSize = TaffySize.of(TaffyDimension.ZERO,TaffyDimension.ZERO));
         if (multiLine) {

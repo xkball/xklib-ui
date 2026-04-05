@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.widget.container;
 
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
@@ -48,7 +47,7 @@ public class TabContainer extends ContainerWidget {
 
         var btn = new Button(title, () -> selected.set(order));
         btn.setTextScale(TextScale.EXPAND_WIDTH);
-        btn.addDecoration(ButtonLooks.transparent());
+        btn.inlineStyle("button-hover-color: 0x33000000;");
         btn.style.margin = TaffyRect.all(LengthPercentageAuto.length(4));
         tabBar.addChild(btn);
         if (tabs.size() > 1) {

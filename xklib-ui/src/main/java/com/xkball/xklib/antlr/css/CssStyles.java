@@ -2,6 +2,9 @@ package com.xkball.xklib.antlr.css;
 
 import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IPropertyFactory;
+import com.xkball.xklib.ui.css.property.BackgroundColorProperty;
+import com.xkball.xklib.ui.css.property.ButtonHoverProperty;
+import com.xkball.xklib.ui.css.property.ButtonShapeProperty;
 import com.xkball.xklib.ui.css.property.FunctionalStyleProperty;
 import com.xkball.xklib.ui.css.property.HeightProperty;
 import com.xkball.xklib.ui.css.property.ScrollbarWidthProperty;
@@ -60,6 +63,11 @@ public class CssStyles {
     public final Map<String, StyleData<?>> styleMap = new HashMap<>();
     
     private CssStyles(){
+        this.register(BackgroundColorProperty.NAME, BackgroundColorProperty::new, Integer.class);
+        this.register("button-shape", ButtonShapeProperty::new, String.class);
+        this.register("button-bg-color", value -> new WidgetIntStyleProperty("button-bg-color", value, (_, _) -> {}), Integer.class);
+        this.register("button-hover-color", ButtonHoverProperty::new, Integer.class);
+
         this.registerField("display", TaffyDisplay.class, (s, v) -> s.display = v);
         this.registerField("direction", TaffyDirection.class, (s, v) -> s.direction = v);
         this.registerField("item-is-table", Boolean.class, (s, v) -> s.itemIsTable = v);

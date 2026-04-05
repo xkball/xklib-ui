@@ -1,9 +1,7 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
-import com.xkball.xklib.ui.layout.LayoutVariable;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
@@ -19,7 +17,7 @@ public class CheckBoxTest {
         try (var frame = new WidgetTestFrame(() -> {
             var root = new ContainerWidget();
             root.asTreeRoot();
-            root.addDecoration(new Background(0xFFFFFFFF));
+            root.inlineStyle("background-color: 0xFFFFFFFF;");
             root.setStyle(s -> {
                 s.flexDirection = FlexDirection.COLUMN;
                 s.justifyContent = AlignContent.CENTER;

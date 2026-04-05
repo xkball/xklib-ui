@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignItems;
@@ -27,7 +26,7 @@ public class LogViewerTest {
     private static ContainerWidget createLogViewerWindow() {
         var root = new ContainerWidget();
         root.asTreeRoot();
-        root.addDecoration(new Background(0xFF0F172A));
+        root.inlineStyle("background-color: 0xFF0F172A;");
         var rootStyle = new dev.vfyjxf.taffy.style.TaffyStyle();
         rootStyle.flexDirection = FlexDirection.COLUMN;
         rootStyle.alignItems = AlignItems.STRETCH;

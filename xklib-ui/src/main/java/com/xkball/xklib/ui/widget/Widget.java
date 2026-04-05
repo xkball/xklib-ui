@@ -10,12 +10,10 @@ import com.xkball.xklib.api.gui.widget.IAbsoluteLayoutElement;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.render.IGUIGraphics;
-import com.xkball.xklib.api.gui.widget.IDecoration;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.css.CascadingStyleSheets;
-import com.xkball.xklib.ui.deco.CombinedDecoration;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.utils.XKLibUtils;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
@@ -46,9 +44,6 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public TaffyTree tree = null;
     public TaffyStyle style = new TaffyStyle();
     public NodeId nodeId = null;
-    @Deprecated
-    //todo 替换为css
-    protected IDecoration decoration;
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;
     private GuiSystem guiSystem;
@@ -389,17 +384,6 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    public void addDecoration(IDecoration deco) {
-        if(this.decoration == null){
-            this.decoration = new CombinedDecoration();
-            ((CombinedDecoration)this.decoration).addDecoration(deco);
-        }
-        else{
-            ((CombinedDecoration)this.decoration).addDecoration(deco);
-        }
-    }
-    
-    @Override
     public ScreenRectangle getRectangle() {
         return IGuiWidget.super.getRectangle();
     }
@@ -434,8 +418,8 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a){
-        if(this.decoration != null){
-            this.decoration.render(this, graphics, mouseX, mouseY, a);
+        for(var p : this.styleSheet.renderableProperty()){
+            p.render(this,graphics,mouseX,mouseY,a);
         }
     }
     

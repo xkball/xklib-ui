@@ -1,8 +1,6 @@
 package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Label;
@@ -29,7 +27,7 @@ public class FlexLayoutTest {
 
     private static ContainerWidget bgContainer(int color) {
         var w = new ContainerWidget();
-        w.addDecoration(new Background(color));
+        w.inlineStyle("background-color: " + color + ";");
         return w;
     }
 
@@ -37,7 +35,7 @@ public class FlexLayoutTest {
         var s = new TaffyStyle();
         s.size = new TaffySize<>(TaffyDimension.length(w), TaffyDimension.length(h));
         var widget = new Widget();
-        widget.addDecoration(new Background(color));
+        widget.inlineStyle("background-color: " + color + ";");
         widget.getStyle().size = s.size;
         return widget;
     }
@@ -153,21 +151,21 @@ public class FlexLayoutTest {
             s1.flexGrow = 1f;
             var w1 = new Widget();
             w1.setStyle(s1);
-            w1.addDecoration(new Background(0xFFE94560));
+            w1.inlineStyle("background-color: 0xFFE94560;");
             root.addChild(w1);
 
             var s2 = new TaffyStyle();
             s2.flexGrow = 2f;
             var w2 = new Widget();
             w2.setStyle(s2);
-            w2.addDecoration(new Background(0xFF0F3460));
+            w2.inlineStyle("background-color: 0xFF0F3460;");
             root.addChild(w2);
 
             var s3 = new TaffyStyle();
             s3.flexGrow = 1f;
             var w3 = new Widget();
             w3.setStyle(s3);
-            w3.addDecoration(new Background(0xFF533483));
+            w3.inlineStyle("background-color: 0xFF533483;");
             root.addChild(w3);
 
             return root;
@@ -196,7 +194,7 @@ public class FlexLayoutTest {
                 itemStyle.size = new TaffySize<>(TaffyDimension.length(300), TaffyDimension.length(40));
                 var btn = new Button("按钮 " + idx, () -> System.out.println("点击了按钮 " + idx));
                 btn.setStyle(itemStyle);
-                btn.addDecoration(ButtonLooks.roundRect());
+                btn.inlineStyle("button-shape: round_rect; button-bg-color: 0xFF7dd3fc; button-hover-color: 0xFF0c4a6e;");
                 root.addChild(btn);
             }
 
@@ -217,7 +215,7 @@ public class FlexLayoutTest {
             for (int i = 0; i < colors.length; i++) {
                 var cell = new ContainerWidget();
                 root.addChild(cell);
-                cell.addDecoration(new Background(colors[i]));
+                cell.inlineStyle("background-color: " + colors[i] + ";");
                 var s = new TaffyStyle();
                 s.size = new TaffySize<>(TaffyDimension.length(60), TaffyDimension.length(60));
                 s.flexDirection = FlexDirection.ROW;

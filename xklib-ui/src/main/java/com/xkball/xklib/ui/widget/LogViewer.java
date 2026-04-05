@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.log.LogCollector;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
@@ -38,7 +37,7 @@ public class LogViewer extends ContainerWidget {
     @Override
     public void init() {
         super.init();
-        this.addDecoration(new Background(0xFF0D1117));
+        this.inlineStyle("background-color: 0xFF0D1117;");
         
         logContainer.setStyle(s -> {
             s.flexDirection = FlexDirection.COLUMN;
@@ -74,7 +73,7 @@ public class LogViewer extends ContainerWidget {
             int bgColor = logContainer.getChildren().size() % 2 == 0 ? 0xFF1C2128 : 0xFF161B22;
             
             var label = new Label(formattedLog, TextAlign.LEFT, color);
-            label.addDecoration(new Background(bgColor));
+            label.inlineStyle("background-color: " + bgColor + ";");
             label.setStyle(s -> {
                 s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(20));
                 s.flexShrink = 0;

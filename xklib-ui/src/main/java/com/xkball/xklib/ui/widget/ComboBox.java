@@ -1,8 +1,7 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
+
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
@@ -83,11 +82,11 @@ public class ComboBox<T> extends ContainerWidget {
         labelStyle.flexGrow = 1f;
         labelStyle.flexShrink = 1f;
         labelStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.percent(1f));
-        this.displayLabel.addDecoration(new Background(BG_COLOR));
+        this.displayLabel.inlineStyle("background-color: " + BG_COLOR + ";");
         this.addChild(this.displayLabel, labelStyle);
 
         var arrowBtn = new ArrowButton();
-        arrowBtn.addDecoration(ButtonLooks.rect(ARROW_BTN_COLOR, ARROW_BTN_HOVER_COLOR));
+        arrowBtn.inlineStyle("button-shape: rect; button-bg-color: " + ARROW_BTN_COLOR + "; button-hover-color: " + ARROW_BTN_HOVER_COLOR + ";");
         var arrowStyle = new TaffyStyle();
         arrowStyle.size = new TaffySize<>(TaffyDimension.length(ARROW_BTN_WIDTH), TaffyDimension.percent(1f));
         arrowStyle.flexShrink = 0f;
@@ -105,11 +104,11 @@ public class ComboBox<T> extends ContainerWidget {
             s.alignItems = AlignItems.STRETCH;
             s.justifyContent = AlignContent.START;
         });
-        overlay.addDecoration(new Background(0xFF0F172A));
+        overlay.inlineStyle("background-color: 0xFF0F172A;");
         
         if (nullable) {
             var nullLabel = new Label("", TextAlign.LEFT, 0xFF94A3B8);
-            nullLabel.addDecoration(ButtonLooks.transparent(0x33FFFFFF));
+            nullLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
             var nullStyle = new TaffyStyle();
             nullStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
             nullStyle.flexShrink = 0f;
@@ -118,7 +117,7 @@ public class ComboBox<T> extends ContainerWidget {
 
         for (T option : options) {
             var itemLabel = new Label(toDisplay.apply(option), TextAlign.LEFT, 0xFFE2E8F0);
-            itemLabel.addDecoration(ButtonLooks.transparent(0x33FFFFFF));
+            itemLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
             var itemStyle = new TaffyStyle();
             itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
             itemStyle.flexShrink = 0f;

@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.SplitContainer;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -89,14 +88,14 @@ public class LineGraphTest {
             outerSplit.asTreeRoot();
 
             var leftPlaceholder = new ContainerWidget();
-            leftPlaceholder.addDecoration(new Background(0xFF0D1117));
+            leftPlaceholder.inlineStyle("background-color: 0xFF0D1117;");
             outerSplit.setPanel(0, leftPlaceholder);
 
             var centerColumn = buildCenterColumn(graphs);
             outerSplit.setPanel(1, centerColumn);
 
             var rightPlaceholder = new ContainerWidget();
-            rightPlaceholder.addDecoration(new Background(0xFF0D1117));
+            rightPlaceholder.inlineStyle("background-color: 0xFF0D1117;");
             outerSplit.setPanel(2, rightPlaceholder);
 
             return outerSplit;

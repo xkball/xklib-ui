@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.screen;
 
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
@@ -89,14 +88,14 @@ public class PerformanceScreen extends SplitContainer {
         super.init();
 
         var left = getPanel(0);
-        left.addDecoration(new Background(PANEL_BG));
+        left.inlineStyle("background-color: " + PANEL_BG + ";");
         left.setStyle(s -> {
             s.flexDirection = FlexDirection.COLUMN;
             s.alignItems = AlignItems.STRETCH;
         });
 
         var leftHeader = new Label("监看项目", TextAlign.CENTER, TEXT_COLOR);
-        leftHeader.addDecoration(new Background(HEADER_BG));
+        leftHeader.inlineStyle("background-color: " + HEADER_BG + ";");
         leftHeader.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(ROW_HEIGHT));
             s.flexShrink = 0;
@@ -119,14 +118,14 @@ public class PerformanceScreen extends SplitContainer {
         leftList.addChild(buildFlameRow());
 
         var right = getPanel(1);
-        right.addDecoration(new Background(PANEL_BG));
+        right.inlineStyle("background-color: " + PANEL_BG + ";");
         right.setStyle(s -> {
             s.flexDirection = FlexDirection.COLUMN;
             s.alignItems = AlignItems.STRETCH;
         });
 
         var rightHeader = new Label("图表", TextAlign.CENTER, TEXT_COLOR);
-        rightHeader.addDecoration(new Background(HEADER_BG));
+        rightHeader.inlineStyle("background-color: " + HEADER_BG + ";");
         rightHeader.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(ROW_HEIGHT));
             s.flexShrink = 0;

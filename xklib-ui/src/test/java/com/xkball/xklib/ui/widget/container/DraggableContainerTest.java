@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.Label;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
@@ -38,7 +37,7 @@ public class DraggableContainerTest {
     private static ContainerWidget createAbsoluteContainerWindow() {
         var root = new ContainerWidget();
         root.asTreeRoot();
-        root.addDecoration(new Background(0xFF1A1A2E));
+        root.inlineStyle("background-color: 0xFF1A1A2E;");
         var rootStyle = new TaffyStyle();
         rootStyle.flexDirection = FlexDirection.COLUMN;
         rootStyle.justifyContent = AlignContent.CENTER;
@@ -59,7 +58,7 @@ public class DraggableContainerTest {
         root.addChild(hint, hintStyle);
 
         var absoluteContainer = new AbsoluteContainer();
-        absoluteContainer.addDecoration(new Background(0xFF0D1117));
+        absoluteContainer.inlineStyle("background-color: 0xFF0D1117;");
         var absStyle = new TaffyStyle();
         absStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.percent(0.85f));
         root.addChild(absoluteContainer, absStyle);
@@ -100,7 +99,7 @@ public class DraggableContainerTest {
     private static ContainerWidget createScalableContainerWindow() {
         var root = new ContainerWidget();
         root.asTreeRoot();
-        root.addDecoration(new Background(0xFF0F172A));
+        root.inlineStyle("background-color: 0xFF0F172A;");
         var rootStyle = new TaffyStyle();
         rootStyle.flexDirection = FlexDirection.COLUMN;
         rootStyle.justifyContent = AlignContent.CENTER;
@@ -121,7 +120,7 @@ public class DraggableContainerTest {
         root.addChild(hint, hintStyle);
 
         var scalableContainer = new ScalableContainer();
-        scalableContainer.addDecoration(new Background(0xFF1E293B));
+        scalableContainer.inlineStyle("background-color: 0xFF1E293B;");
         var scStyle = new TaffyStyle();
         scStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.percent(0.85f));
         root.addChild(scalableContainer, scStyle);
@@ -172,7 +171,7 @@ public class DraggableContainerTest {
         container.setAbsoluteSize(x,y);
         container.setWidth(width);
         container.setHeight(height);
-        container.addDecoration(new Background(color));
+        container.inlineStyle("background-color: " + color + ";");
 
         var containerStyle = new TaffyStyle();
         containerStyle.flexDirection = FlexDirection.COLUMN;

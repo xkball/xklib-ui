@@ -1,8 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
-import com.xkball.xklib.ui.deco.ButtonLooks;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.ScalableContainer;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -22,7 +20,7 @@ public class ScalableContainerTest {
         try (var frame = new WidgetTestFrame(() -> {
             var root = new ContainerWidget();
             root.asTreeRoot();
-            root.addDecoration(new Background(0xFF0F172A));
+            root.inlineStyle("background-color: 0xFF0F172A;");
             var rootStyle = new TaffyStyle();
             rootStyle.flexDirection = FlexDirection.COLUMN;
             rootStyle.justifyContent = AlignContent.CENTER;
@@ -43,7 +41,7 @@ public class ScalableContainerTest {
             root.addChild(hint, hintStyle);
 
             var scalableContainer = new ScalableContainer();
-            scalableContainer.addDecoration(new Background(0xFF1E293B));
+            scalableContainer.inlineStyle("background-color: 0xFF1E293B;");
             var scStyle = new TaffyStyle();
             scStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.percent(0.85f));
             root.addChild(scalableContainer, scStyle);
@@ -59,7 +57,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createComplexContent() {
         var content = new ContainerWidget();
-        content.addDecoration(new Background(0xFF334155));
+        content.inlineStyle("background-color: 0xFF334155;");
         var contentStyle = new TaffyStyle();
         contentStyle.flexDirection = FlexDirection.COLUMN;
         contentStyle.justifyContent = AlignContent.START;
@@ -88,7 +86,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createButtonSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF475569));
+        section.inlineStyle("background-color: 0xFF475569;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -113,7 +111,7 @@ public class ScalableContainerTest {
         for (int i = 1; i <= 5; i++) {
             int idx = i;
             var btn = new Button("按钮 " + i, () -> System.out.println("点击了按钮 " + idx));
-            btn.addDecoration(ButtonLooks.roundRect());
+            btn.inlineStyle("button-shape: round_rect; button-bg-color: 0xFF7dd3fc; button-hover-color: 0xFF0c4a6e;");
             var btnStyle = new TaffyStyle();
             btnStyle.size = new TaffySize<>(TaffyDimension.length(100), TaffyDimension.length(32));
             btnStyle.flexShrink = 0;
@@ -129,7 +127,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createComboBoxSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF475569));
+        section.inlineStyle("background-color: 0xFF475569;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -162,7 +160,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createDragBoxSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF475569));
+        section.inlineStyle("background-color: 0xFF475569;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -194,7 +192,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createTextFieldSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF475569));
+        section.inlineStyle("background-color: 0xFF475569;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -252,7 +250,7 @@ public class ScalableContainerTest {
 
     private static ContainerWidget createGridSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF475569));
+        section.inlineStyle("background-color: 0xFF475569;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -282,7 +280,7 @@ public class ScalableContainerTest {
 
         for (int color : colors) {
             var colorBox = new ContainerWidget();
-            colorBox.addDecoration(new Background(color));
+                colorBox.inlineStyle("background-color: " + color + ";");
             var boxStyle = new TaffyStyle();
             boxStyle.size = new TaffySize<>(TaffyDimension.length(60), TaffyDimension.length(60));
             boxStyle.flexShrink = 0;

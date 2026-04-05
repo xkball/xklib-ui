@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.AlignContent;
@@ -20,7 +19,7 @@ public class ComboBoxAndDragBoxTest {
         try (var frame = new WidgetTestFrame(() -> {
             var root = new ContainerWidget();
             root.asTreeRoot();
-            root.addDecoration(new Background(0xFF1E293B));
+            root.inlineStyle("background-color: 0xFF1E293B;");
             var rootStyle = new TaffyStyle();
             rootStyle.flexDirection = FlexDirection.COLUMN;
             rootStyle.justifyContent = AlignContent.CENTER;
@@ -49,7 +48,7 @@ public class ComboBoxAndDragBoxTest {
 
     private static ContainerWidget createComboBoxSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF0F172A));
+        section.inlineStyle("background-color: 0xFF0F172A;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;
@@ -96,7 +95,7 @@ public class ComboBoxAndDragBoxTest {
 
     private static ContainerWidget createDragBoxSection() {
         var section = new ContainerWidget();
-        section.addDecoration(new Background(0xFF0F172A));
+        section.inlineStyle("background-color: 0xFF0F172A;");
         var sectionStyle = new TaffyStyle();
         sectionStyle.flexDirection = FlexDirection.COLUMN;
         sectionStyle.alignItems = AlignItems.STRETCH;

@@ -97,7 +97,6 @@ public interface IGuiWidget {
 
     TaffyTree getTree();
     
-    void addDecoration(IDecoration deco);
     
     @Nullable
     IGuiWidget getParent();

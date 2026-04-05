@@ -1,7 +1,6 @@
 package com.xkball.xklib.ui.layout;
 
 import com.xkball.xklib.ui.WidgetTestFrame;
-import com.xkball.xklib.ui.deco.Background;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.Label;
@@ -20,13 +19,13 @@ public class SplitContainerTest {
 
     private static ContainerWidget colorPanel(int color) {
         var w = new ContainerWidget();
-        w.addDecoration(new Background(color));
+        w.inlineStyle("background-color: " + color + ";");
         return w;
     }
 
     private static Label label(String text, int bg) {
         var l = new Label(text);
-        l.addDecoration(new Background(bg));
+        l.inlineStyle("background-color: " + bg + ";");
         return l;
     }
 
@@ -87,7 +86,7 @@ public class SplitContainerTest {
 
             for (int i = 0; i < 5; i++) {
                 var item = new Button("左 " + i, () -> {});
-                item.addDecoration(new Background(0xFF2D3748));
+                item.inlineStyle("background-color: 0xFF2D3748;");
                 var itemStyle = new TaffyStyle();
                 itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(40));
                 itemStyle.flexShrink = 0;
@@ -249,7 +248,7 @@ public class SplitContainerTest {
             for (int i = 0; i < 4; i++) {
                 int idx = i;
                 var btn = new Button("左" + i, () -> System.out.println("左 " + idx));
-                btn.addDecoration(new Background(0xFF2D3748));
+                btn.inlineStyle("background-color: 0xFF2D3748;");
                 var btnStyle = new TaffyStyle();
                 btnStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(36));
                 btnStyle.flexShrink = 0;

@@ -70,8 +70,8 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(this.decoration != null){
-            this.decoration.render(this, graphics, mouseX, mouseY, a);
+        for(var p : this.styleSheet.renderableProperty()){
+            p.render(this,graphics,mouseX,mouseY,a);
         }
         var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
