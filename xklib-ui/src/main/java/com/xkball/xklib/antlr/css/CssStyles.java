@@ -11,6 +11,7 @@ import com.xkball.xklib.ui.css.property.ScrollbarWidthProperty;
 import com.xkball.xklib.ui.css.property.SizeProperty;
 import com.xkball.xklib.ui.css.property.WidgetBooleanStyleProperty;
 import com.xkball.xklib.ui.css.property.WidgetIntStyleProperty;
+import com.xkball.xklib.ui.css.property.WidgetStyleProperty;
 import com.xkball.xklib.ui.css.property.WidthProperty;
 import com.xkball.xklib.ui.css.property.value.CssGridLine;
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
@@ -18,6 +19,7 @@ import com.xkball.xklib.ui.css.property.value.CssOverflow;
 import com.xkball.xklib.ui.css.property.value.CssRect;
 import com.xkball.xklib.ui.css.property.value.CssSize;
 import com.xkball.xklib.ui.css.property.value.CssTrackList;
+import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.CheckBox;
 import com.xkball.xklib.ui.widget.DragBox;
@@ -44,6 +46,7 @@ import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDirection;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyPosition;
+import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.style.TextAlign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +91,12 @@ public class CssStyles {
                         label.setColor(color);
                     }
                 }), Integer.class);
+        this.register("label-text-scale", value -> new WidgetStyleProperty<>("label-text-scale", value,
+                (widget, textScale) -> {
+                    if (widget instanceof Label label) {
+                        label.setTextScale(textScale);
+                    }
+                }), TextScale.class);
         this.register("button-text-color", value -> new WidgetIntStyleProperty("button-text-color", value,
                 (widget, color) -> {
                     if (widget instanceof Button button) {
@@ -309,7 +318,7 @@ public class CssStyles {
         return null;
     }
 
-    private <T> void registerField(String name, Class<T> clazz, BiConsumer<dev.vfyjxf.taffy.style.TaffyStyle, T> setter) {
+    private <T> void registerField(String name, Class<T> clazz, BiConsumer<TaffyStyle, T> setter) {
         this.register(name, value -> new FunctionalStyleProperty<>(name, value, setter), clazz);
     }
 

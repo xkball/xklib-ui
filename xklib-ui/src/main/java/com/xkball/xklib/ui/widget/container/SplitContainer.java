@@ -18,7 +18,6 @@ public class SplitContainer extends ContainerWidget {
     private static final float BAR_SIZE = 4f;
     private static final String SELF_CSS = """
             display: grid;
-            size: 100% 100%;
             align-items: stretch;
             justify-content: stretch;
             split-bar-color: 0xFF444444;
@@ -141,11 +140,12 @@ public class SplitContainer extends ContainerWidget {
         return ratios[barIndex];
     }
 
-    public void setRatio(int barIndex, float ratio) {
+    public SplitContainer setRatio(int barIndex, float ratio) {
         float min = barIndex == 0 ? 0.01f : ratios[barIndex - 1] + 0.01f;
         float max = barIndex == ratios.length - 1 ? 0.99f : ratios[barIndex + 1] - 0.01f;
         ratios[barIndex] = Math.clamp(ratio, min, max);
         this.setStyle(this::rebuildGridTemplate);
+        return this;
     }
 
     private int findBarIndex(double mouseX, double mouseY) {

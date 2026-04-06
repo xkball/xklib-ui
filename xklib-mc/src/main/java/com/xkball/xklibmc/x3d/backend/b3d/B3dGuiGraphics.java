@@ -69,11 +69,8 @@ public class B3dGuiGraphics implements IGUIGraphics {
     
     @Override
     public void enableScissor(float x0, float y0, float x1, float y1) {
-        this.getPose().pushMatrix();
-        this.getPose().scale(scaleX,scaleY);
-        ScreenRectangle rectangle = new ScreenRectangle((int) x0 - 1, (int) y0 - 1, (int) x1 + 1, (int) y1 + 1).transformAxisAligned(this.getPose());
+        ScreenRectangle rectangle = new ScreenRectangle((int) (x0 - scaleX), (int) (y0 - scaleY), (int) (x1 + scaleX), (int) (y1 + scaleY)).transformAxisAligned(this.getPose());
         inner.scissorStack.push(rectangle);
-        this.getPose().popMatrix();
     }
     
     @Override

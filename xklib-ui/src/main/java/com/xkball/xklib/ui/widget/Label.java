@@ -87,7 +87,7 @@ public class Label extends Widget {
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         super.doRender(graphics, mouseX, mouseY, a);
         var lineHeight = textScale.getTextHeight(graphics.defaultFont(),text, this.width - 4,this.height * 0.9f);
-        var textY = this.y + (this.height - lineHeight)/2 - 2;
+        var textY = this.y + (this.height - lineHeight)/2 + 2;
         switch (align){
             case LEFT:
                 graphics.drawString(this.text, this.x + 2, textY, this.color, lineHeight);

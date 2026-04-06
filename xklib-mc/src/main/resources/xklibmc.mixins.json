@@ -11,9 +11,15 @@
   },
   "client": [
     "MixinAbstractTexture",
-    "MixinAbstractTexture",
     "MixinFont",
+    "MixinGLCommandEncoder",
+    "MixinGLDevice",
+    "MixinGLProgram",
+    "MixinGlRenderPass",
+    "MixinRenderPass",
     "MixinRenderPipeline",
+    "MixinRenderSystem",
+    "MixinSTD140Builder",
     "MixinTextureAtlasSprite",
     "MixinWindow"
   ]

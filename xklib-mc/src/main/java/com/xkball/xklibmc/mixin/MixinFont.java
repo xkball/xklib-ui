@@ -22,6 +22,6 @@ public abstract class MixinFont implements IFont {
     
     @Override
     public int lineHeight() {
-        return 16;
+        return lineHeight;
     }
 }

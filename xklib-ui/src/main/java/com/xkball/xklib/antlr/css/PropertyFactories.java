@@ -10,6 +10,7 @@ import com.xkball.xklib.antlr.css.parser.RectParser;
 import com.xkball.xklib.antlr.css.parser.SizeParser;
 import com.xkball.xklib.antlr.css.parser.TrackListParser;
 import com.xkball.xklib.api.gui.css.IPropertyFactory;
+import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.css.property.value.CssGridLine;
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.css.property.value.CssOverflow;
@@ -57,6 +58,7 @@ public class PropertyFactories {
         this.register(GridAutoFlow.class, new EnumParser<>(GridAutoFlow.class));
         this.register(TextAlign.class, new EnumParser<>(TextAlign.class));
         this.register(Overflow.class, new EnumParser<>(Overflow.class));
+        this.register(TextScale.class, new EnumParser<>(TextScale.class));
         this.register(Boolean.class, BooleanParser::new);
         this.register(Integer.class, ColorParser::new);
         this.register(Float.class,(expr) -> {

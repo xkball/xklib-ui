@@ -50,7 +50,13 @@ public class ContainerWidget extends Widget {
         super();
         this.inlineStyle(SELF_CSS);
     }
-
+    
+    @Override
+    public ContainerWidget inlineStyle(String style) {
+        super.inlineStyle(style);
+        return this;
+    }
+    
     public void setScrollBarTrackColor(int scrollBarTrackColor) {
         this.scrollBarTrackColor = scrollBarTrackColor;
     }

@@ -1,8 +1,8 @@
-package com.xkball.xklibmc.ui.widget;
+package com.xkball.xklibmc.ui.widget.mc;
 
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.x3d.api.render.IRenderPipeline;
-import com.xkball.xklibmc.annotation.NonnullByDefault;
+import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import net.minecraft.client.Minecraft;
@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-@NonnullByDefault
+@NonNullByDefault
 public class XKLibMultiLineEditBox extends MultiLineEditBox {
     
     public XKLibMultiLineEditBox(Font font, int x, int y, int width, int height, Component placeholder, Component narration, int textColor, boolean textShadow, int cursorColor, boolean showBackground, boolean showDecorations) {

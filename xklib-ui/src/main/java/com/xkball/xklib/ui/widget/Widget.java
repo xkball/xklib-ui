@@ -69,7 +69,8 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.styleSheetAsSelf = new CascadingStyleSheets.Inline();
     }
     
-    public IGuiWidget inlineStyle(String style){
+    @Override
+    public Widget inlineStyle(String style){
         if ((style.isEmpty())) return this;
         style ="* { %s }".formatted(style);
         var sheets = CssParser.parse(style).sheets();
@@ -412,9 +413,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-//        if(this.hovered){
-//            this.renderDebug(graphics, mouseX, mouseY);
-//        }
+        if(this.hovered){
+            this.renderDebug(graphics, mouseX, mouseY);
+        }
     }
     
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a){

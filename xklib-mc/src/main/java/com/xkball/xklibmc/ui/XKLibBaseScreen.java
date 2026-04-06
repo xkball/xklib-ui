@@ -1,12 +1,18 @@
 package com.xkball.xklibmc.ui;
 
 import com.xkball.xklib.XKLib;
-import com.xkball.xklibmc.annotation.NonnullByDefault;
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
+import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.widget.Label;
+import com.xkball.xklib.ui.widget.container.ContainerWidget;
+import com.xkball.xklib.ui.widget.container.SplitContainer;
+import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dRenderContext;
+import dev.vfyjxf.taffy.style.TextAlign;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
@@ -16,7 +22,7 @@ import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
-@NonnullByDefault
+@NonNullByDefault
 public class XKLibBaseScreen extends Screen {
     
     protected GuiSystem guiSystem = new GuiSystem();
@@ -104,6 +110,7 @@ public class XKLibBaseScreen extends Screen {
         this.scaleX = actualW/(float)w;
         this.scaleY = actualH/(float)h;
         guiSystem.resize(actualW, actualH);
+        CssLengthUnit.rpxScaleWorkaround = scaleY;
     }
     
     @Override
@@ -170,6 +177,32 @@ public class XKLibBaseScreen extends Screen {
             return guiGraphics.scaleY;
         }
         return 1;
+    }
+    
+    public static Widget biPanelFrame(IComponent title, Widget left, Widget right){
+        return new ContainerWidget()
+                .inlineStyle("""
+                        display: grid;
+                        size: 100% 100%;
+                        grid-template-columns: 100%;
+                        grid-template-rows: 20rpx 1fr 20rpx;
+                        """)
+                .addChild(
+                        new Label(title, TextAlign.CENTER)
+                                .inlineStyle("""
+                                        background-color: 0xaa111111;
+                                        label-text-color: -2039584;
+                                        label-text-scale: fit-to-max;
+                                        """))
+                .addChild(
+                        new SplitContainer()
+                                .setPanel(0, left)
+                                .setPanel(1,right)
+                                .setRatio(0,0.3f)
+                )
+                .addChild(new Widget().inlineStyle("""
+                        background-color: 0xaa111111;
+                        """));
     }
     
 }

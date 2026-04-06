@@ -25,6 +25,7 @@ public class EnumParser<T extends Enum<T>> implements IPropertyFactory<T> {
     public T parse(css3Parser.ExprContext expr) {
         if(expr.term().size() != 1) return null;
         String raw = expr.term().getFirst().getRuleContext().getText().trim().toLowerCase(Locale.ROOT);
-        return values.get(raw);
+        var result = values.get(raw);
+        return result == null ? clazz.getEnumConstants()[0] : result;
     }
 }

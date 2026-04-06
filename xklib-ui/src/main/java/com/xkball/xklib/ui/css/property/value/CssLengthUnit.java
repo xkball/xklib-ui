@@ -15,6 +15,7 @@ public class CssLengthUnit implements CalcExpression {
     private final Type type;
     private final float value;
     private final CalcExpression expr;
+    public static float rpxScaleWorkaround = 1;
     
     public CssLengthUnit(Type type, float value) {
         this.type = type;
@@ -61,6 +62,15 @@ public class CssLengthUnit implements CalcExpression {
                 throw e;
             }
             return new CssLengthUnit(Type.LENGTH,v);
+        }
+        else if (string.endsWith("rpx")){
+            try {
+                v = Float.parseFloat(string.substring(0, string.length()-3));
+            }catch (NumberFormatException e){
+                LOGGER.warn("Cannot parse number: {}",string,e);
+                throw e;
+            }
+            return new CssLengthUnit(Type.LENGTH,v * rpxScaleWorkaround);
         }
         else {
             try {
