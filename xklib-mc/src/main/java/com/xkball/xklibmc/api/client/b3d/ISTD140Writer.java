@@ -17,6 +17,7 @@ public interface ISTD140Writer {
     default GpuBuffer buildStd140Block(){
       return batchBuildStd140Block(List.of(this));
     }
+    
     static <T extends ISTD140Writer> GpuBuffer batchBuildStd140Block(List<T> list){
         var calculator = new Std140SizeCalculator();
         for(var it :  list){

@@ -35,4 +35,16 @@ public class B3dRenderPipelines {
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(false)
             .build();
+    
+    public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("world_terrain_pip"))
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES)
+            .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip"))
+            .withFragmentShader("core/position_color")
+            .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withSSBO("ABlock")
+            .withDepthStencilState(DepthStencilState.DEFAULT)
+            .withCull(true)
+            .buildExtended();
 }

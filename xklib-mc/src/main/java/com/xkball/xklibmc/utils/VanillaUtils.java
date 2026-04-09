@@ -66,6 +66,18 @@ public class VanillaUtils {
         return a << 24 | r << 16 | g << 8 | b;
     }
     
+    public static int mulColor(int a, int b){
+        var aa = (a >> 24 & 0xff ) / 255f;
+        var ar = (a >> 16 & 0xff) / 255f;
+        var ag = (a >> 8 & 0xff) / 255f;
+        var ab = (a & 0xff) / 255f;
+        var ba = (b >> 24 & 0xff) / 255f;
+        var br = (b >> 16 & 0xff) / 255f;
+        var bg = (b >> 8 & 0xff) / 255f;
+        var bb = (b & 0xff) / 255f;
+        return getColor((int) (ar * br * 255), (int) (ag * bg * 255), (int) (ab * bb * 255), (int) (aa * ba * 255));
+    }
+    
     public static int parseColorHEX(String color) throws IllegalArgumentException {
         if(color.length() == 6){
             return getColor(
