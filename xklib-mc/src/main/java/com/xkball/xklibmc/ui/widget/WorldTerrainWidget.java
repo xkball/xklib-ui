@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.Heightmap;
-import org.joml.Matrix2d;
 import org.joml.Matrix2f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -40,7 +39,7 @@ public class WorldTerrainWidget extends Widget {
         yRot = cam.yRot();
         centerPos = cam.blockPosition();
         this.setCameraY();
-        WorldTerrainPipRenderer.update(level);
+        WorldTerrainPipRenderer.update();
     }
 
     @Override
@@ -107,7 +106,7 @@ public class WorldTerrainWidget extends Widget {
             return true;
         }
         if (event.button() == 1) {
-            this.moveCamera((float) -dx / 100, (float) -dy / 100);
+            this.moveCamera((float) -dx / 100 + cameraLength / 100, (float) -dy / 100 + cameraLength / 100);
             return true;
         }
         return false;

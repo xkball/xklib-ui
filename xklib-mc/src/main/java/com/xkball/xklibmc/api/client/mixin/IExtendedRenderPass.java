@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.api.client.mixin;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.opengl.GlRenderPipeline;
 
@@ -12,6 +13,8 @@ public interface IExtendedRenderPass {
     Map<String, GpuBufferSlice> xklib$getSSBOs();
     
     GlRenderPipeline xklib$getGLRenderPipeline();
+    
+    void xklib$multiDrawElementsIndirect(GpuBuffer command,int drawCount);
     
     static IExtendedRenderPass cast(Object obj){
         return (IExtendedRenderPass)obj;

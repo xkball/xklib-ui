@@ -44,6 +44,13 @@ public class CachedMesh implements ICloseOnExit<CachedMesh> {
     @Nullable
     private GpuBuffer indexBuffer;
     
+    public CachedMesh(String name, RenderPipeline pipeline, Consumer<BufferBuilder> initFunc, boolean immediate ){
+        this(name, pipeline.getVertexFormatMode(), pipeline.getVertexFormat(), initFunc);
+        if(immediate){
+            this.init();
+        }
+    }
+    
     public CachedMesh(String name, VertexFormat.Mode mode, VertexFormat format, Consumer<BufferBuilder> initFunc) {
         this.name = name;
         this.mode = mode;

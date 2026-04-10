@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.mixin;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.opengl.GlRenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -39,5 +40,12 @@ public class MixinRenderPass implements IExtendedRenderPass {
             return ierp.xklib$getGLRenderPipeline();
         }
         return null;
+    }
+    
+    @Override
+    public void xklib$multiDrawElementsIndirect(GpuBuffer command, int drawCount) {
+        if(this.backend instanceof IExtendedRenderPass ierp){
+            ierp.xklib$multiDrawElementsIndirect(command, drawCount);
+        }
     }
 }

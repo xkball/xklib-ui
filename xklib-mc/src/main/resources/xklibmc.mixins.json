@@ -20,6 +20,7 @@
     "MixinRenderPipeline",
     "MixinRenderSystem",
     "MixinSTD140Builder",
+    "MixinSTD140Calculator",
     "MixinTextureAtlasSprite",
     "MixinWindow"
   ]

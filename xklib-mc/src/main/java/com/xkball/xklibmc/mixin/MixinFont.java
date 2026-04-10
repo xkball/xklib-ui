@@ -1,6 +1,5 @@
 package com.xkball.xklibmc.mixin;
 
-import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IFont;
 import net.minecraft.client.gui.Font;

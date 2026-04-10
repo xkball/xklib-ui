@@ -18,6 +18,12 @@ public interface ISTD140Writer {
       return batchBuildStd140Block(List.of(this));
     }
     
+    default int byteSize(){
+        var calculator = new Std140SizeCalculator();
+        this.calculateSize(calculator);
+        return calculator.get();
+    }
+    
     static <T extends ISTD140Writer> GpuBuffer batchBuildStd140Block(List<T> list){
         var calculator = new Std140SizeCalculator();
         for(var it :  list){
@@ -29,7 +35,7 @@ public interface ISTD140Writer {
         for(var it : list){
             it.writeToBuffer(builder);
         }
-        var result = RenderSystem.getDevice().createBuffer(() -> "std140buffer",GpuBuffer.USAGE_UNIFORM,builder.get());
+        var result = RenderSystem.getDevice().createBuffer(() -> "std140buffer",GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_SRC,builder.get());
         MemoryUtil.memFree(buffer);
         return result;
     }

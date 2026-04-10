@@ -44,6 +44,7 @@ public class B3dRenderPipelines {
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withSSBO("ABlock")
+            .withSSBO("ChunkIndex")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(true)
             .buildExtended();
