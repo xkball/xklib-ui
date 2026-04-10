@@ -13,6 +13,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 public class VanillaUtils {
@@ -103,5 +105,26 @@ public class VanillaUtils {
         var g = (color >> 8) & 0xFF;
         var b = color & 0xFF;
         return String.format("%02X%02X%02X%02X", r, g, b, a).toUpperCase();
+    }
+    
+    public static String memSize(long size){
+        if (size == 0) return "0byte";
+        String[] units = {"byte", "kb", "mb", "gb"};
+        int i;
+        long divider = 1;
+        if (size < 1024L) {
+            i = 0;
+        } else if (size < 1024L * 1024L) {
+            i = 1;
+            divider = 1024L;
+        } else if (size < 1024L * 1024L * 1024L) {
+            i = 2;
+            divider = 1024L * 1024L;
+        } else {
+            i = 3;
+            divider = 1024L * 1024L * 1024L;
+        }
+        float value = (float) size / divider;
+        return String.format("%.2f", value) + units[i];
     }
 }

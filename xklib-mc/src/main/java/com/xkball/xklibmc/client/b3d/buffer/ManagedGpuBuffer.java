@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 
 public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     
@@ -78,12 +79,16 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         this.gpuBuffer.close();
     }
     
     public record Chunk(int id, GpuBufferSlice slice) {
     
+    }
+    
+    public long usedSize(){
+        return (long) idToChunkIndex.size() * chunkSize;
     }
 
     private int allocateChunkId() {
@@ -91,8 +96,8 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
 
         Integer chunkIndex = freeChunks.pollLast();
         if (chunkIndex == null) {
-            chunkIndex = capacityChunks;
             growToAtLeast(capacityChunks + 1);
+            chunkIndex = Objects.requireNonNull(freeChunks.pollLast());
         }
         int id = nextId++;
         idToChunkIndex.put(id, (int)chunkIndex);
@@ -106,6 +111,9 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
         nextId = 0;
         capacityChunks = BASE_SIZE;
         gpuBuffer = ClientUtils.getGpuDevice().createBuffer(() -> "managed_gpu_buffer", GpuBuffer.USAGE_COPY_DST | GpuBuffer.USAGE_COPY_SRC, bytesForChunks(capacityChunks));
+        for (int i = 0; i < BASE_SIZE; i++) {
+            freeChunks.addLast(i);
+        }
     }
 
     private void growToAtLeast(int minChunks) {

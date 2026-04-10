@@ -15,8 +15,10 @@ import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.pipeline.ExtendedRenderPipeline;
 import com.xkball.xklibmc.utils.GLUtils;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,7 +64,7 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
             var glprogram = pass.xklib$getGLRenderPipeline().program();
             var program = IExtendedGLProgram.cast(glprogram);
             var pipeline = pass.xklib$getGLRenderPipeline();
-            for(var entry : program.dysonCubeProgram$getSSBOByName().entrySet()){
+            for(var entry : program.xklib$getSSBOByName().entrySet()){
                 if(pass.xklib$getSSBOs().containsKey(entry.getKey())){
                     var index = entry.getValue().binding();
                     var buffer = pass.xklib$getSSBOs().get(entry.getKey());
@@ -109,6 +111,7 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
         if (this.trySetup(renderPass, Collections.emptyList())){
             var pipeline = renderPass.pipeline;
             this.device.vertexArrayCache().bindVertexArray(pipeline.info().getVertexFormat(), (GlBuffer)renderPass.vertexBuffers[0]);
+//            GlStateManager._glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer) renderPass.vertexBuffers[0]).handle);
             GlStateManager._glBindBuffer(34963, ((GlBuffer)renderPass.indexBuffer).handle);
             GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,((GlBuffer) command).handle);
             GL43.glMultiDrawElementsIndirect(
@@ -117,6 +120,7 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
                     0,
                     drawCount,
                     0);
+//            GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,0);
         }
     }
 }

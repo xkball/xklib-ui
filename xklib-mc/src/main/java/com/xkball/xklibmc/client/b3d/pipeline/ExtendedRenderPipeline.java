@@ -12,9 +12,12 @@ import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 
+import com.xkball.xklib.utils.Lazy;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.client.b3d.uniform.UpdatableUBO;
 import net.minecraft.client.renderer.ShaderDefines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jspecify.annotations.Nullable;
@@ -34,6 +37,7 @@ public class ExtendedRenderPipeline extends RenderPipeline {
     public final Map<String, Supplier<Pair<GpuTextureView, GpuSampler>>> samplerBindings;
     public final List<String> SSBOs;
     public final List<Pair<Integer, Supplier<GpuTextureView>>> multiTargetBindings;
+    public final Lazy<RenderType> asRenderType = Lazy.of(this::toRenderType);
     
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public ExtendedRenderPipeline(Identifier location,
@@ -126,6 +130,14 @@ public class ExtendedRenderPipeline extends RenderPipeline {
             builder.withSnippet(snippet);
         }
         return builder;
+    }
+    
+    private RenderType toRenderType(){
+        return RenderType.create(this.getLocation().toString(),RenderSetup.builder(this).createRenderSetup());
+    }
+    
+    public RenderType asRenderType(){
+        return this.asRenderType.get();
     }
     
     public static class Builder extends RenderPipeline.Builder {

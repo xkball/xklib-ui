@@ -8,21 +8,24 @@ import com.xkball.xklibmc.api.client.b3d.ISTD140Writer;
 import com.xkball.xklibmc.client.TextureSpriteAvgColorCache;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
-import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
@@ -31,24 +34,28 @@ import java.util.function.Predicate;
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     private static final TextureSpriteAvgColorCache textureColorCache = new TextureSpriteAvgColorCache();
-    public final Map<ChunkPos, TerrainChunkBuffer> chunkMap = new HashMap<>();
+    private static final Map<Block, Identifier> BLOCK_SPRITE_OVERRIDE = Map.of(
+            Blocks.GRASS_BLOCK, Identifier.parse("block/grass_block_top")
+    );
+    public static final int BLOCK_SIZE = new ABlock().byteSize();
+    public final Map<ChunkPos, TerrainChunkBuffer> chunkMap = new LinkedHashMap<>();
     public final Queue<ChunkPos> updateQueue = new ArrayDeque<>();
     public final ManagedGpuBuffer gpuBuffer;
     
     public TerrainChunkManager() {
-        this.gpuBuffer = new ManagedGpuBuffer(new ABlock().byteSize() * 16 * 16);
+        this.gpuBuffer = new ManagedGpuBuffer(BLOCK_SIZE * 16 * 16);
     }
     
-    public RenderInfo generateRenderOffsetAndInstance(Predicate<ChunkPos> cullFunc, int indexCount){
+    public RenderInfo generateRenderInfo(Predicate<ChunkPos> cullFunc, int indexCount){
         var cmdList = new ArrayList<IndirectDrawCommand>();
         var chunkIndexList = new ArrayList<IntSSBOData>();
         for(var chunkPos : chunkMap.keySet()){
             if(cullFunc.test(chunkPos)){
                 var chunkBuffer =  chunkMap.get(chunkPos);
-                for(var entry : chunkBuffer.chunkMap.int2IntEntrySet()){
+                for(var entry : chunkBuffer.inChunkMap.int2IntEntrySet()){
                     var buffer = gpuBuffer.get(entry.getIntKey()).slice();
                     cmdList.add(new IndirectDrawCommand(indexCount, entry.getIntValue()));
-                    chunkIndexList.add(new IntSSBOData((int) (buffer.offset()/gpuBuffer.chunkSize)));
+                    chunkIndexList.add(new IntSSBOData((int) (buffer.offset()/BLOCK_SIZE)));
                 }
             }
         }
@@ -57,9 +64,23 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return new RenderInfo(cmdList.size(), chunkBuffer, cmdBuffer);
     }
     
+    public Map<Integer, Integer> generateRenderOffsetAndInstance(Predicate<ChunkPos> cullFunc){
+        var result = new HashMap<Integer, Integer>();
+        for(var chunkPos : chunkMap.keySet()){
+            if(cullFunc.test(chunkPos)){
+                var chunkBuffer =  chunkMap.get(chunkPos);
+                for(var entry : chunkBuffer.inChunkMap.int2IntEntrySet()){
+                    var buffer = gpuBuffer.get(entry.getIntKey()).slice();
+                    result.put((int) buffer.offset(),  entry.getIntValue());
+                }
+            }
+        }
+        return result;
+    }
+    
     public void runUpdateFor10ms(ClientLevel level) {
         var time = System.nanoTime();
-        while (!updateQueue.isEmpty() && System.nanoTime() - time < 10_000_000_000L){
+        while (!updateQueue.isEmpty() && System.nanoTime() - time < 10_000_000L){
             this.compileChunk(level, Objects.requireNonNull(updateQueue.poll()));
         }
     }
@@ -84,6 +105,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     }
     
     public void compileChunk(ClientLevel level, ChunkPos chunkPos){
+        level.getBlockState(chunkPos.getBlockAt(0,0,0));
+        if(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,chunkPos.getMinBlockX(),chunkPos.getMinBlockZ()) == level.getMinY()) return;
         var directions = Direction.values();
         var mc = Minecraft.getInstance();
         var modelManager = mc.getModelManager().getBlockStateModelSet();
@@ -121,11 +144,23 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                         continue;
                     }
                     var model = modelManager.get(bs);
-                    var sprite = model.particleMaterial(level, pos, bs).sprite();
+                    TextureAtlasSprite sprite;
+                    var rl = BLOCK_SPRITE_OVERRIDE.get(bs.getBlock());
+                    if(rl != null){
+                        sprite = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getSprite(rl);
+                    }
+                    else{
+                        sprite = model.particleMaterial(level, pos, bs).sprite();
+                    }
                     var color = textureColorCache.getAvgColor(sprite);
                     color = VanillaUtils.mulColor(color, getBlockColor(level, pos, bs));
                     result.add(new ABlock(new BlockPos(px,y, pz), color));
                 }
+            }
+        }
+        if(this.chunkMap.containsKey(chunkPos)){
+            for(var entry : this.chunkMap.get(chunkPos).inChunkMap.int2IntEntrySet()){
+                gpuBuffer.remove(entry.getIntKey());
             }
         }
         this.chunkMap.put(chunkPos, new TerrainChunkBuffer(gpuBuffer, result));
@@ -150,7 +185,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public record RenderInfo(int drawCount, GpuBuffer chunkIndexBuffer, GpuBuffer commandBuffer) implements AutoCloseable{
         
         @Override
-        public void close() throws Exception {
+        public void close() {
             this.chunkIndexBuffer.close();
             this.commandBuffer.close();
         }

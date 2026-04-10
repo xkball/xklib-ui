@@ -12,10 +12,13 @@
   "client": [
     "MixinAbstractTexture",
     "MixinFont",
+    "MixinGameRenderer",
+    "MixinGlBackend",
     "MixinGLCommandEncoder",
     "MixinGLDevice",
     "MixinGLProgram",
     "MixinGlRenderPass",
+    "MixinLevelRenderer",
     "MixinRenderPass",
     "MixinRenderPipeline",
     "MixinRenderSystem",

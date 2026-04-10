@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -50,15 +51,15 @@ public class ClientUtils {
         return result;
     }
     
-    public static void renderAxis(MultiBufferSource bufferSource, PoseStack poseStack) {
+    public static void renderAxis(MultiBufferSource bufferSource, PoseStack poseStack, float lineLength) {
         var buffer = bufferSource.getBuffer(RenderTypes.lines());
         var matrix = poseStack.last();
         buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, -1, 0, 0).setLineWidth(2f).setColor(0xFFFF0000);
-        buffer.addVertex(matrix, 1000, 0, 0).setNormal(matrix, 1, 0, 0).setLineWidth(2f).setColor(0xFFFF0000);
+        buffer.addVertex(matrix, lineLength, 0, 0).setNormal(matrix, 1, 0, 0).setLineWidth(2f).setColor(0xFFFF0000);
         buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, 0, -1, 0).setLineWidth(2f).setColor(0xFF00FF00);
-        buffer.addVertex(matrix, 0, 1000, 0).setNormal(matrix, 0, 1, 0).setLineWidth(2f).setColor(0xFF00FF00);
+        buffer.addVertex(matrix, 0, lineLength, 0).setNormal(matrix, 0, 1, 0).setLineWidth(2f).setColor(0xFF00FF00);
         buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, 0, 0, -1).setLineWidth(2f).setColor(0xFF0000FF);
-        buffer.addVertex(matrix, 0, 0, 1000).setNormal(matrix, 0, 0, 1).setLineWidth(2f).setColor(0xFF0000FF);
+        buffer.addVertex(matrix, 0, 0, lineLength).setNormal(matrix, 0, 0, 1).setLineWidth(2f).setColor(0xFF0000FF);
     }
     
     public static BufferBuilder beginWithRenderPipeline(RenderPipeline pipeline){
@@ -103,5 +104,14 @@ public class ClientUtils {
             return null;
         }
         return result;
+    }
+    
+    public static void getGLError(){
+        int error = GL11.glGetError();
+        while(error != GL11.GL_NO_ERROR){
+            LOGGER.error("GL Error: {}", error);
+            error = GL11.glGetError();
+        }
+       
     }
 }

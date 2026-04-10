@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface IExtendedGLProgram {
     
-    Map<String, SSBOIndexStorage> dysonCubeProgram$getSSBOByName();
+    Map<String, SSBOIndexStorage> xklib$getSSBOByName();
     
     static IExtendedGLProgram cast(Object obj){
         return (IExtendedGLProgram)obj;

@@ -68,6 +68,14 @@ public class UpdatableUBO implements ICloseOnExit<UpdatableUBO>, IEndFrameListen
         this.lastSlice = this.buffer.writeUniform(new BuildUniformBlock(updateFunc));
     }
     
+    public void startOverride(Consumer<Std140Builder> updateFunc){
+        this.updateUnsafe(updateFunc);
+    }
+    
+    public void endOverride(){
+        this.update();
+    }
+    
     @Override
     public void close() {
         this.buffer.close();

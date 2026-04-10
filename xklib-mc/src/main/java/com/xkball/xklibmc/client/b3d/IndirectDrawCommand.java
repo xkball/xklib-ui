@@ -21,6 +21,9 @@ public record IndirectDrawCommand(int count, int instanceCount, int firstIndex, 
     }
     
     public static GpuBuffer buildCommandList(List<IndirectDrawCommand> commands){
+        if(commands.isEmpty()){
+            return ClientUtils.getGpuDevice().createBuffer(() -> "indirect draw command",GpuBuffer.USAGE_MAP_WRITE,5);
+        }
         var byteBuffer = ByteBuffer.allocate(commands.size() * 5 * 4);
         for(var cmd :  commands){
             cmd.write(byteBuffer);

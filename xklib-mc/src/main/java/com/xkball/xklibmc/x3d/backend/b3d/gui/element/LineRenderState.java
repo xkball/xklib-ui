@@ -24,7 +24,7 @@ public record LineRenderState(
         @Nullable ScreenRectangle bounds
 ) implements GuiElementRenderState {
     
-    private static final Matrix3x2fc ROTATE90 = new Matrix3x2f().rotate((float) Math.toRadians(90));
+    public static final Matrix3x2fc ROTATE90 = new Matrix3x2f().rotate((float) Math.toRadians(90));
     public LineRenderState(
             Matrix3x2fc pose,
             float x0,

@@ -25,7 +25,7 @@ public class MixinGLDevice {
         if(pipeline instanceof ExtendedRenderPipeline extendedRenderPipeline){
             for(var ssboName : extendedRenderPipeline.SSBOs){
                 var index = GL43.glGetProgramResourceIndex(glprogram.getProgramId(), GL43.GL_SHADER_STORAGE_BLOCK, ssboName);
-                if(index != -1) IExtendedGLProgram.cast(glprogram).dysonCubeProgram$getSSBOByName().put(ssboName,new SSBOIndexStorage(index));
+                if(index != -1) IExtendedGLProgram.cast(glprogram).xklib$getSSBOByName().put(ssboName,new SSBOIndexStorage(index));
             }
         }
     }

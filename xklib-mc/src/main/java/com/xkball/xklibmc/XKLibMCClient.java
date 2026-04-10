@@ -34,7 +34,7 @@ public class XKLibMCClient {
     
     @SubscribeEvent
     public static void onItemUse(UseItemOnBlockEvent event){
-        if(event.getLevel().isClientSide() && event.getItemStack().getItem() == Items.BONE){
+        if(event.getLevel().isClientSide() && event.getItemStack().getItem() == Items.BONE && Minecraft.getInstance().screen == null){
             var w = createTestWidget();
             var screen = new XKLibBaseScreen();
             screen.addScreenLayer(w);

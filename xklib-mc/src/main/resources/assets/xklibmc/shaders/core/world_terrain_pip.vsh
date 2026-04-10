@@ -7,11 +7,11 @@ struct PosColor{
     int color_ssbo;
 };
 
-layout(std140) buffer ABlock {
+layout(std140, binding = 0) buffer ABlock {
     PosColor posColor[];
 };
 
-layout(std140) buffer ChunkIndex {
+layout(std140, binding = 1) buffer ChunkIndex {
     int offset[];
 };
 
@@ -22,6 +22,7 @@ out vec4 vertexColor;
 
 void main() {
     PosColor pc = posColor[ offset[gl_DrawID] + gl_InstanceID];
+//    PosColor pc = posColor[gl_InstanceID];
     vec3 worldPos = Position + pc.pos_ssbo;
     gl_Position = ProjMat * ModelViewMat * vec4(worldPos, 1.0);
 

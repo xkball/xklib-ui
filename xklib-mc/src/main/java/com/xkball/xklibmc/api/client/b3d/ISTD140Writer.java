@@ -4,6 +4,7 @@ import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.xkball.xklibmc.utils.ClientUtils;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.List;
@@ -25,6 +26,9 @@ public interface ISTD140Writer {
     }
     
     static <T extends ISTD140Writer> GpuBuffer batchBuildStd140Block(List<T> list){
+        if(list.isEmpty()){
+            return ClientUtils.getGpuDevice().createBuffer(() -> "std140buffer",GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_SRC,1);
+        }
         var calculator = new Std140SizeCalculator();
         for(var it :  list){
             it.calculateSize(calculator);
@@ -35,7 +39,7 @@ public interface ISTD140Writer {
         for(var it : list){
             it.writeToBuffer(builder);
         }
-        var result = RenderSystem.getDevice().createBuffer(() -> "std140buffer",GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_SRC,builder.get());
+        var result = ClientUtils.getGpuDevice().createBuffer(() -> "std140buffer",GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_SRC,builder.get());
         MemoryUtil.memFree(buffer);
         return result;
     }

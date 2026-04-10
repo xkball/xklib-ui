@@ -15,26 +15,26 @@ import com.xkball.xklibmc.x3d.backend.b3d.vertex.B3dVertexFormats;
 
 public class B3dRenderPipelines {
     
-    public static final RenderPipeline ROUNDED_RECT = RenderPipeline.builder()
+    public static final ExtendedRenderPipeline ROUNDED_RECT = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("gui_rounded_rect"))
             .withVertexShader(VanillaUtils.modRL("core/gui_rounded_rect"))
             .withFragmentShader(VanillaUtils.modRL("/gui_rounded_rect"))
             .withVertexFormat(B3dVertexFormats.POSITION_TEX_UV2_COLOR_EXTRA, VertexFormat.Mode.QUADS)
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(false)
-            .build();
+            .buildExtended();
     
-    public static final RenderPipeline LINE = ExtendedRenderPipeline.builder()
+    public static final ExtendedRenderPipeline LINE = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("line"))
             .withVertexShader(VanillaUtils.modRL("core/line"))
             .withFragmentShader(VanillaUtils.modRL("core/pos_color"))
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL,VertexFormat.Mode.TRIANGLES)
-            .withUniform("screenSize", UniformType.UNIFORM_BUFFER)
-            .bindUniform("screenSize", XKLibUniforms.SCREEN_SIZE)
+            .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
+            .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(false)
-            .build();
+            .buildExtended();
     
     public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("world_terrain_pip"))

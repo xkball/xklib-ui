@@ -7,6 +7,7 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc.ui.pip.WorldTerrainPipRenderer;
+import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -20,14 +21,14 @@ public class WorldTerrainWidget extends Widget {
 
     private final Vector3f cameraPos = new Vector3f();
     private BlockPos centerPos = BlockPos.ZERO;
-    private float xRot = -89.0f;
+    private float xRot = 89.0f;
     private float cameraLength = 0;
     private float yRot = 0.0f;
     private boolean rotating;
     private float fov = 60;
 
     public WorldTerrainWidget() {
-        untilSetTree(this::initCamera);
+        this.initCamera();
     }
 
     private void initCamera() {
@@ -38,6 +39,7 @@ public class WorldTerrainWidget extends Widget {
         cameraPos.set(0, 0, 0);
         yRot = cam.yRot();
         centerPos = cam.blockPosition();
+        centerPos = centerPos.atY(level.getMinY());
         this.setCameraY();
         WorldTerrainPipRenderer.update();
     }
@@ -51,6 +53,7 @@ public class WorldTerrainWidget extends Widget {
             var scaleY = XKLibBaseScreen.tryGetScaleY();
             var state = new WorldTerrainPipRenderer.WorldTerrainState(
                     new Vector3f(cameraPos),
+                    centerPos,
                     fov,
                     cameraLength,
                     xRot,
@@ -64,23 +67,28 @@ public class WorldTerrainWidget extends Widget {
                     new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
             );
             inner.submitPictureInPictureRenderState(state);
-            b3dGuiGraphics.drawString(String.valueOf(fov),x,y,-1);
-            b3dGuiGraphics.drawString(String.valueOf(xRot),x,y + 10,-1);
-            b3dGuiGraphics.drawString(String.valueOf(yRot),x,y + 20,-1);
-            b3dGuiGraphics.drawString(String.valueOf(cameraLength),x,y + 60,-1);
         }
     }
-
+    
+    @Override
+    public void renderDebug(IGUIGraphics graphics, int mouseX, int mouseY) {
+        super.renderDebug(graphics, mouseX, mouseY);
+        graphics.drawString("fov: " + fov,x,y,-1);
+        graphics.drawString("xRot: " + xRot,x,y + 10,-1);
+        graphics.drawString("yRot: " + yRot,x,y + 20,-1);
+        graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
+        graphics.drawString("queue: " + WorldTerrainPipRenderer.terrainChunkManager.updateQueue.size(),x,y + 40,-1);
+        graphics.drawString("memAlloc: " + VanillaUtils.memSize(WorldTerrainPipRenderer.terrainChunkManager.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
+        graphics.drawString("memUsed: " + VanillaUtils.memSize(WorldTerrainPipRenderer.terrainChunkManager.gpuBuffer.usedSize()),x,y + 60,-1);
+        graphics.drawString("length " + cameraLength,x,y + 70,-1);
+    }
+    
     @Override
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!isMouseOver(event.x(), event.y())) {
-            return false;
-        }
         if (event.button() == 2) {
             rotating = true;
-            return true;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -98,7 +106,7 @@ public class WorldTerrainWidget extends Widget {
             if (!rotating) {
                 return false;
             }
-            float sens = 0.25f * fov/120;
+            float sens = 0.25f * fov/100;
             yRot = yRot - (float) dx * sens;
             xRot = xRot + (float) dy * sens;
             xRot = Math.clamp(xRot, -89.9f, 89.9f);
@@ -106,7 +114,8 @@ public class WorldTerrainWidget extends Widget {
             return true;
         }
         if (event.button() == 1) {
-            this.moveCamera((float) -dx / 100 + cameraLength / 100, (float) -dy / 100 + cameraLength / 100);
+            var speed = 1 + (cameraLength/100);
+            this.moveCamera((float) (-dx / 100) * speed, (float) (-dy / 100) * speed);
             return true;
         }
         return false;
@@ -157,7 +166,7 @@ public class WorldTerrainWidget extends Widget {
     private void setCameraY(){
         var level = Minecraft.getInstance().level;
         if(level != null){
-            var h = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centerPos.getX(), centerPos.getY());
+            var h = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centerPos.getX(), centerPos.getZ());
             cameraPos.y = -level.getSeaLevel() - 200;
             if(h != -64){
                 cameraPos.y = -h;

@@ -9,7 +9,7 @@ import java.util.List;
 public class TerrainChunkBuffer {
     
     public ManagedGpuBuffer gpuBuffer;
-    public Int2IntOpenHashMap chunkMap = new Int2IntOpenHashMap();
+    public Int2IntOpenHashMap inChunkMap = new Int2IntOpenHashMap();
     
     public TerrainChunkBuffer(ManagedGpuBuffer gpuBuffer, List<ABlock> blocks) {
         this.gpuBuffer = gpuBuffer;
@@ -20,7 +20,7 @@ public class TerrainChunkBuffer {
             var actualSize = index2 - index;
             var subList = blocks.subList(index, index2);
             var chunkId = gpuBuffer.put(ISTD140Writer.batchBuildStd140Block(subList));
-            this.chunkMap.put(chunkId, actualSize);
+            this.inChunkMap.put(chunkId, actualSize);
             index += aSize;
         }
     }

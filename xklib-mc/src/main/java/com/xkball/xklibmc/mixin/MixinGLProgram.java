@@ -16,7 +16,7 @@ public class MixinGLProgram implements IExtendedGLProgram {
     public final Map<String, SSBOIndexStorage> xklib$SSBOByName = new LinkedHashMap<>();
     
     @Override
-    public Map<String, SSBOIndexStorage> dysonCubeProgram$getSSBOByName() {
+    public Map<String, SSBOIndexStorage> xklib$getSSBOByName() {
         return xklib$SSBOByName;
     }
     
