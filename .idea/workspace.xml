@@ -5,44 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.github/workflows/build.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExample.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/render/PictureInPictureRenderLayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/GridRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/xklibmc_example.mixins.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/templates/META-INF/neoforge.mods.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinMinecraft.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/XKLibMCClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/XKLibMCClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/ABlock.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ABlock.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkBuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinVertexArrayCache.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/XKLibBaseScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/XKLibBaseScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/pip/WorldTerrainPipRenderer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/pos_color.fsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/pos_color.fsh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +33,7 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="393053" />
+    <option name="totalTimeSeconds" value="400534" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -570,7 +539,7 @@
       <workItem from="1775472974936" duration="68335000" />
       <workItem from="1775826028128" duration="43000" />
       <workItem from="1775826130710" duration="42608000" />
-      <workItem from="1775919043075" duration="15172000" />
+      <workItem from="1775919043075" duration="23408000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -820,7 +789,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775889160862</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1775934676865</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1775934676865</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -843,16 +820,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="refactor" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <condition expression="offset == 0" language="JAVA" />
-          <url>file://$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java</url>
-          <line>85</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="com.xkball.xklib.ui.screen.DebugScreen" memberName="children" />

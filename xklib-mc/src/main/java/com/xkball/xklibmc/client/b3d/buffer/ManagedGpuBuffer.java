@@ -6,6 +6,8 @@ import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.utils.ClientUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -21,8 +23,7 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     public GpuBuffer gpuBuffer;
 
     private final Deque<Integer> freeChunks = new ArrayDeque<>();
-    private final Int2IntLinkedOpenHashMap idToChunkIndex = new Int2IntLinkedOpenHashMap();
-    private int nextId;
+    private final IntSet usedChunks = new IntOpenHashSet();
     private int capacityChunks;
     
     public ManagedGpuBuffer(int chunkSize) {
@@ -61,23 +62,21 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     }
     
     public Chunk get(int id){
-        int chunkIndex = idToChunkIndex.get(id);
-        long offset = (long) chunkIndex * (long) chunkSize;
+        long offset = (long) id * (long) chunkSize;
         return new Chunk(id, gpuBuffer.slice(offset, chunkSize));
     }
     
     public long getOffset(int id){
-        int chunkIndex = idToChunkIndex.get(id);
-        return  (long) chunkIndex * (long) chunkSize;
+        return  (long) id * chunkSize;
     }
     
     public void remove(int id){
-        int chunkIndex = idToChunkIndex.remove(id);
-        freeChunks.addLast(chunkIndex);
+        usedChunks.remove(id);
+        freeChunks.addLast(id);
     }
     
     public void clear(){
-        var iter = idToChunkIndex.keySet().iterator();
+        var iter = usedChunks.iterator();
         while(iter.hasNext()){
             this.remove(iter.nextInt());
         }
@@ -93,7 +92,7 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     }
     
     public long usedSize(){
-        return (long) idToChunkIndex.size() * chunkSize;
+        return (long) usedChunks.size() * chunkSize;
     }
 
     private int allocateChunkId() {
@@ -104,17 +103,14 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
             growToAtLeast(capacityChunks + 1);
             chunkIndex = Objects.requireNonNull(freeChunks.pollLast());
         }
-        int id = nextId;
-        nextId += 1;
-        idToChunkIndex.put(id, (int)chunkIndex);
-        return id;
+        usedChunks.add((int)chunkIndex);
+        return chunkIndex;
     }
 
     private void ensureInitialized() {
         if (gpuBuffer != null) {
             return;
         }
-        nextId = 0;
         capacityChunks = BASE_SIZE;
         gpuBuffer = ClientUtils.getGpuDevice().createBuffer(() -> "managed_gpu_buffer", GpuBuffer.USAGE_COPY_DST | GpuBuffer.USAGE_COPY_SRC, bytesForChunks(capacityChunks));
         for (int i = 0; i < BASE_SIZE; i++) {

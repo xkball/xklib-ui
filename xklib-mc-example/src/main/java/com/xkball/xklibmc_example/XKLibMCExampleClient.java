@@ -5,6 +5,7 @@ import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidget;
+import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidgetInner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
