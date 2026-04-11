@@ -11,8 +11,17 @@ layout(std140, binding = 0) buffer ABlock {
     PosColor posColor[];
 };
 
-layout(std140, binding = 1) buffer ChunkIndex {
-    int offset[];
+struct Command{
+    int count;
+    int instanceCount;
+    int firstIndex;
+    int baseVertex;
+    int baseInstance;
+    int offset;
+};
+
+layout(std140, binding = 1) buffer RenderCommand {
+    Command cmd[];
 };
 
 in vec3 Position;
@@ -21,7 +30,7 @@ in vec4 Color;
 out vec4 vertexColor;
 
 void main() {
-    PosColor pc = posColor[ offset[gl_DrawID] + gl_InstanceID];
+    PosColor pc = posColor[ cmd[gl_DrawID].offset ];
 //    PosColor pc = posColor[gl_InstanceID];
     vec3 worldPos = Position + pc.pos_ssbo;
     gl_Position = ProjMat * ModelViewMat * vec4(worldPos, 1.0);

@@ -25,6 +25,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL43;
 
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -118,26 +120,28 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         var frustum = new Frustum(modelView,projMat);
         var transformUBO = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Vector4f(1,1,1,1), new Vector3f(), new Matrix4f());
         var pipeline = B3dRenderPipelines.WORLD_TERRAIN_PIP;
-        try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering",RenderSystem.outputColorTextureOverride, OptionalInt.empty(), RenderSystem.outputDepthTextureOverride, OptionalDouble.empty());
-             var renderInfo = terrainChunkManager.generateRenderInfo(c -> frustum.isVisible(new AABB(c.getMinBlockX(),-64,c.getMinBlockZ(),c.getMaxBlockX(),384,c.getMaxBlockZ())),CUBE.getIndexCount())
-        ){
-            if(renderInfo.drawCount() != 0){
-                RenderSystem.bindDefaultUniforms(renderpass);
-                renderpass.setPipeline(pipeline);
-                renderpass.setUniform("DynamicTransforms", transformUBO);
-                renderpass.setVertexBuffer(0, CUBE.getVertexBuffer());
-                renderpass.setIndexBuffer(CUBE.getIndexBuffer(),CUBE.getIndexType());
-                IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",terrainChunkManager.gpuBuffer.gpuBuffer.slice());
-                IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ChunkIndex",renderInfo.chunkIndexBuffer().slice());
+        try(var renderInfo = terrainChunkManager.generateRenderInfo(c -> frustum.isVisible(new AABB(c.getMinBlockX(),-64,c.getMinBlockZ(),c.getMaxBlockX(),384,c.getMaxBlockZ())),CUBE.getIndexCount())){
+            
+            try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering",RenderSystem.outputColorTextureOverride, OptionalInt.empty(), RenderSystem.outputDepthTextureOverride, OptionalDouble.empty());){
+                if(renderInfo.drawCount() != 0){
+                    RenderSystem.bindDefaultUniforms(renderpass);
+                    renderpass.setPipeline(pipeline);
+                    renderpass.setUniform("DynamicTransforms", transformUBO);
+                    renderpass.setVertexBuffer(0, CUBE.getVertexBuffer());
+                    renderpass.setIndexBuffer(CUBE.getIndexBuffer(),CUBE.getIndexType());
+                    IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",terrainChunkManager.gpuBuffer.gpuBuffer.slice());
+                    IExtendedRenderPass.cast(renderpass).xklib$setSSBO("RenderCommand",renderInfo.commandBuffer().slice());
 //                for(var entry : terrainChunkManager.generateRenderOffsetAndInstance(c -> frustum.isVisible(new AABB(c.getMinBlockX(),-64,c.getMinBlockZ(),c.getMaxBlockX(),384,c.getMaxBlockZ()))).entrySet()){
 //                    IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",terrainChunkManager.gpuBuffer.gpuBuffer.slice(entry.getKey(), (long) TerrainChunkManager.BLOCK_SIZE * entry.getValue()));
 //                    renderpass.drawIndexed(0,0, CUBE.getIndexCount(), entry.getValue());
 //                }
-                IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(renderInfo.commandBuffer(), renderInfo.drawCount());
+                    IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(renderInfo.commandBuffer(), renderInfo.drawCount());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+        
         RenderSystem.getModelViewStack().popMatrix();
 //        ClientUtils.renderAxis(this.bufferSource,poseStack,10000);
         this.renderGird(renderState, poseStack);

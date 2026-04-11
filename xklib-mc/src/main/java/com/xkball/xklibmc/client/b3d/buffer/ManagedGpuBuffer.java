@@ -5,7 +5,7 @@ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.utils.ClientUtils;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
@@ -21,7 +21,7 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     public GpuBuffer gpuBuffer;
 
     private final Deque<Integer> freeChunks = new ArrayDeque<>();
-    private final Int2IntOpenHashMap idToChunkIndex = new Int2IntOpenHashMap();
+    private final Int2IntLinkedOpenHashMap idToChunkIndex = new Int2IntLinkedOpenHashMap();
     private int nextId;
     private int capacityChunks;
     
@@ -64,6 +64,11 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
         int chunkIndex = idToChunkIndex.get(id);
         long offset = (long) chunkIndex * (long) chunkSize;
         return new Chunk(id, gpuBuffer.slice(offset, chunkSize));
+    }
+    
+    public long getOffset(int id){
+        int chunkIndex = idToChunkIndex.get(id);
+        return  (long) chunkIndex * (long) chunkSize;
     }
     
     public void remove(int id){

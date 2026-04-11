@@ -29,7 +29,7 @@ public class MixinRenderPass implements IExtendedRenderPass {
     @Override
     public Map<String, GpuBufferSlice> xklib$getSSBOs(){
         if(this.backend instanceof IExtendedRenderPass ierp){
-            ierp.xklib$getSSBOs();
+            return ierp.xklib$getSSBOs();
         }
         return Map.of();
     }

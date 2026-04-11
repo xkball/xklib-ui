@@ -48,20 +48,17 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public RenderInfo generateRenderInfo(Predicate<ChunkPos> cullFunc, int indexCount){
         var cmdList = new ArrayList<IndirectDrawCommand>();
-        var chunkIndexList = new ArrayList<IntSSBOData>();
         for(var chunkPos : chunkMap.keySet()){
             if(cullFunc.test(chunkPos)){
                 var chunkBuffer =  chunkMap.get(chunkPos);
                 for(var entry : chunkBuffer.inChunkMap.int2IntEntrySet()){
-                    var buffer = gpuBuffer.get(entry.getIntKey()).slice();
-                    cmdList.add(new IndirectDrawCommand(indexCount, entry.getIntValue()));
-                    chunkIndexList.add(new IntSSBOData((int) (buffer.offset()/BLOCK_SIZE)));
+                    var offset = gpuBuffer.getOffset(entry.getIntKey());
+                    cmdList.add(new IndirectDrawCommand(indexCount, entry.getIntValue(),(int) (offset / BLOCK_SIZE)));
                 }
             }
         }
         var cmdBuffer = IndirectDrawCommand.buildCommandList(cmdList);
-        var chunkBuffer = ISTD140Writer.batchBuildStd140Block(chunkIndexList);
-        return new RenderInfo(cmdList.size(), chunkBuffer, cmdBuffer);
+        return new RenderInfo(cmdList.size(),cmdBuffer);
     }
     
     public Map<Integer, Integer> generateRenderOffsetAndInstance(Predicate<ChunkPos> cullFunc){
@@ -182,11 +179,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         this.gpuBuffer.close();
     }
     
-    public record RenderInfo(int drawCount, GpuBuffer chunkIndexBuffer, GpuBuffer commandBuffer) implements AutoCloseable{
+    public record RenderInfo(int drawCount, GpuBuffer commandBuffer) implements AutoCloseable{
         
         @Override
         public void close() {
-            this.chunkIndexBuffer.close();
             this.commandBuffer.close();
         }
     }

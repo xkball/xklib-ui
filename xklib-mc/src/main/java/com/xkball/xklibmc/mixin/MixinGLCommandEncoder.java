@@ -15,11 +15,10 @@ import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.pipeline.ExtendedRenderPipeline;
 import com.xkball.xklibmc.utils.GLUtils;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -112,14 +111,15 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
             var pipeline = renderPass.pipeline;
             this.device.vertexArrayCache().bindVertexArray(pipeline.info().getVertexFormat(), (GlBuffer)renderPass.vertexBuffers[0]);
 //            GlStateManager._glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer) renderPass.vertexBuffers[0]).handle);
-            GlStateManager._glBindBuffer(34963, ((GlBuffer)renderPass.indexBuffer).handle);
+            GlStateManager._glBindBuffer(GL43.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer)renderPass.indexBuffer).handle);
             GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,((GlBuffer) command).handle);
+//            GL43.glMemoryBarrier(GL43.GL_ALL_BARRIER_BITS);
             GL43.glMultiDrawElementsIndirect(
                     GlConst.toGl(pipeline.info().getVertexFormatMode()),
                     GlConst.toGl(renderPass.indexType),
-                    0,
+                    MemoryUtil.NULL,
                     drawCount,
-                    0);
+                    24);
 //            GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,0);
         }
     }

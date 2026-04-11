@@ -2,14 +2,14 @@ package com.xkball.xklibmc.client.terrain;
 
 import com.xkball.xklibmc.api.client.b3d.ISTD140Writer;
 import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 
 import java.util.List;
 
 public class TerrainChunkBuffer {
     
     public ManagedGpuBuffer gpuBuffer;
-    public Int2IntOpenHashMap inChunkMap = new Int2IntOpenHashMap();
+    public Int2IntLinkedOpenHashMap inChunkMap = new Int2IntLinkedOpenHashMap();
     
     public TerrainChunkBuffer(ManagedGpuBuffer gpuBuffer, List<ABlock> blocks) {
         this.gpuBuffer = gpuBuffer;
