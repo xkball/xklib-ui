@@ -1,4 +1,4 @@
-package com.xkball.xklibmc.client.terrain;
+package com.xkball.xklibmc_example.client.terrain;
 
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;

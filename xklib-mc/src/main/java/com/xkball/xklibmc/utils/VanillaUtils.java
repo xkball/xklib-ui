@@ -3,6 +3,7 @@ package com.xkball.xklibmc.utils;
 import com.xkball.xklibmc.XKLibMC;
 import com.xkball.xklib.resource.ResourceLocation;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class VanillaUtils {
     
     public static final Identifier MISSING_TEXTURE = Identifier.withDefaultNamespace("missingno");
+    public static final Direction[] DIRECTIONS = Direction.values();
     
     public static Identifier convertRL(ResourceLocation rl){
         return Identifier.fromNamespaceAndPath(rl.namespace(),rl.path());

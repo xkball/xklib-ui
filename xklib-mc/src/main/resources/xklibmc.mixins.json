@@ -19,13 +19,13 @@
     "MixinGLProgram",
     "MixinGlRenderPass",
     "MixinLevelRenderer",
+    "MixinMinecraft",
     "MixinRenderPass",
     "MixinRenderPipeline",
     "MixinRenderSystem",
     "MixinSTD140Builder",
     "MixinSTD140Calculator",
     "MixinTextureAtlasSprite",
-    "MixinVertexArrayCache",
     "MixinWindow"
   ]
 }

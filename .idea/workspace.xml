@@ -5,18 +5,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinVertexArrayCache.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.github/workflows/build.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExample.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/render/PictureInPictureRenderLayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/GridRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/xklibmc_example.mixins.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/templates/META-INF/neoforge.mods.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinMinecraft.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/XKLibMCClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/XKLibMCClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkBuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/ABlock.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ABlock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkBuffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinRenderPass.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinRenderPass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/pip/WorldTerrainPipRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/pip/WorldTerrainPipRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinVertexArrayCache.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/XKLibBaseScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/XKLibBaseScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/pip/WorldTerrainPipRenderer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/META-INF/accesstransformer.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/META-INF/accesstransformer.cfg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/pos_color.fsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/pos_color.fsh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,12 +64,12 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="374759" />
+    <option name="totalTimeSeconds" value="393053" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="686" />
+    <option name="cachedIndexableFilesCount" value="1353" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -79,88 +104,20 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d" type="2d1252cf:ModuleNode" />
+                <item name="xklib-mc-example" type="2d1252cf:ModuleNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d" type="2d1252cf:ModuleNode" />
+                <item name="xklib-mc-example" type="2d1252cf:ModuleNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d-gl" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d-gl" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-3d-gl" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-mc" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-mc" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-mc" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-mc" type="2d1252cf:ModuleNode" />
+                <item name="xklib-mc-example" type="2d1252cf:ModuleNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="mod development" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-ui" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-ui" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-ui" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="antlr" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xklib" type="f1a62948:ProjectNode" />
-                <item name="xklib-ui" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -228,6 +185,7 @@
     "Gradle.xklib [:xklib-3d-gl:build].executor": "Run",
     "Gradle.xklib [:xklib-3d:build].executor": "Run",
     "Gradle.xklib [:xklib-3d:com.xkball.xklib.XKLib.main()].executor": "Debug",
+    "Gradle.xklib [:xklib-mc-example:runClient].executor": "Debug",
     "Gradle.xklib [:xklib-mc:build].executor": "Run",
     "Gradle.xklib [:xklib-mc:runClient].executor": "Debug",
     "Gradle.xklib [:xklib-ui:build].executor": "Run",
@@ -275,13 +233,13 @@
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "E:/code/java/others/xklib/xklib-mc/src/main/java/com/xkball/xklibmc/client",
-    "last_opened_file_path": "E:/code/java/others/xklib/xklib-mc/run/saves",
+    "last_opened_file_path": "E:/code/java/others/xklib/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "项目",
+    "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.4668275",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
@@ -298,11 +256,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\code\java\others\xklib\xklib-mc\run\saves" />
-      <recent name="E:\code\java\others\xklib\xklib-mc\src\main\resources\assets\xklibmc\shaders\core" />
-      <recent name="E:\code\java\others\xklib\xklib-mc\lib" />
-      <recent name="E:\code\java\others\xklib\xklib-mc\run\mods" />
-      <recent name="E:\code\java\others\xklib\xklib-mc\src\main\java\com\xkball\xklibmc\client\b3d" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc\shaders\core" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\run\saves" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc_example\shaders\core" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\java\com\xkball\xklib_example" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\code\java\others\xklib\xklib-3d\src\main\resources\assets" />
@@ -328,20 +286,7 @@
       <recent name="com.xkball.xklib.utils.math" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.xklib [:xklib-mc:runClient]">
-    <configuration name="SplineTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.xkball.xklib.ui.widget.SplineTest" />
-      <module name="xklib.xklib-ui.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.xkball.xklib.ui.widget.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Gradle.xklib [:xklib-mc-example:runClient]">
     <configuration name="xklib-mc - Client" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
       <module name="xklib.xklib-mc.main" />
@@ -382,6 +327,46 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="xklib-mc-example - Client" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
+      <module name="xklib.xklib-mc-example.main" />
+      <option name="PROGRAM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\clientRunProgramArgs.txt" />
+      <option name="VM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\clientRunVmArgs.txt -Dfml.modFolders=xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\classes\\java\\main;xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\resources\\main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/xklib-mc-example/run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="xklib-mc-example - Data" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
+      <module name="xklib.xklib-mc-example.main" />
+      <option name="PROGRAM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\dataRunProgramArgs.txt" />
+      <option name="VM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\dataRunVmArgs.txt -Dfml.modFolders=xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\classes\\java\\main;xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\resources\\main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/xklib-mc-example/run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="xklib-mc-example - GameTestServer" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
+      <module name="xklib.xklib-mc-example.main" />
+      <option name="PROGRAM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\gameTestServerRunProgramArgs.txt" />
+      <option name="VM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\gameTestServerRunVmArgs.txt -Dfml.modFolders=xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\classes\\java\\main;xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\resources\\main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/xklib-mc-example/run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="xklib-mc-example - Server" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
+      <module name="xklib.xklib-mc-example.main" />
+      <option name="PROGRAM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\serverRunProgramArgs.txt" />
+      <option name="VM_PARAMETERS" value="@E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\moddev\\serverRunVmArgs.txt -Dfml.modFolders=xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\classes\\java\\main;xklibmc_example%%E:\\code\\java\\others\\xklib\\xklib-mc-example\\build\\resources\\main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/xklib-mc-example/run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="xklib [:xklib-3d-gl:build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -394,6 +379,31 @@
         <option name="taskNames">
           <list>
             <option value=":xklib-3d-gl:build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="xklib [:xklib-mc-example:runClient]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":xklib-mc-example:runClient" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -504,11 +514,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.xklib [:xklib-mc-example:runClient]" />
         <item itemvalue="Gradle.xklib [:xklib-mc:runClient]" />
         <item itemvalue="Gradle.xklib [:xklib-ui:build]" />
         <item itemvalue="Gradle.xklib [:xklib-mc:build]" />
         <item itemvalue="Gradle.xklib [:xklib-3d-gl:build]" />
-        <item itemvalue="应用程序.SplineTest" />
       </list>
     </recent_temporary>
   </component>
@@ -559,7 +569,8 @@
       <workItem from="1775471725397" duration="764000" />
       <workItem from="1775472974936" duration="68335000" />
       <workItem from="1775826028128" duration="43000" />
-      <workItem from="1775826130710" duration="32114000" />
+      <workItem from="1775826130710" duration="42608000" />
+      <workItem from="1775919043075" duration="15172000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -801,7 +812,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775850795386</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1775889160862</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1775889160862</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -824,6 +843,16 @@
     <option name="LAST_COMMIT_MESSAGE" value="refactor" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <condition expression="offset == 0" language="JAVA" />
+          <url>file://$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java</url>
+          <line>85</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="com.xkball.xklib.ui.screen.DebugScreen" memberName="children" />

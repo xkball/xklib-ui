@@ -104,7 +104,8 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
             growToAtLeast(capacityChunks + 1);
             chunkIndex = Objects.requireNonNull(freeChunks.pollLast());
         }
-        int id = nextId++;
+        int id = nextId;
+        nextId += 1;
         idToChunkIndex.put(id, (int)chunkIndex);
         return id;
     }

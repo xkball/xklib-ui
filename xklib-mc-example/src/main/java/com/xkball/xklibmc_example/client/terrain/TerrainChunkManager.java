@@ -1,4 +1,4 @@
-package com.xkball.xklibmc.client.terrain;
+package com.xkball.xklibmc_example.client.terrain;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
@@ -11,6 +11,7 @@ import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,6 +22,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -31,34 +39,74 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.function.Predicate;
 
+@EventBusSubscriber(Dist.CLIENT)
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
+    
+    public static final int BLOCK_SIZE = new ABlock().byteSize();
+    public static final TerrainChunkManager INSTANCE = new TerrainChunkManager();
     
     private static final TextureSpriteAvgColorCache textureColorCache = new TextureSpriteAvgColorCache();
     private static final Map<Block, Identifier> BLOCK_SPRITE_OVERRIDE = Map.of(
             Blocks.GRASS_BLOCK, Identifier.parse("block/grass_block_top")
     );
-    public static final int BLOCK_SIZE = new ABlock().byteSize();
+
     public final Map<ChunkPos, TerrainChunkBuffer> chunkMap = new LinkedHashMap<>();
+    public final Map<ChunkPos, AABB> chunkAABB = new LinkedHashMap<>();
     public final Queue<ChunkPos> updateQueue = new ArrayDeque<>();
     public final ManagedGpuBuffer gpuBuffer;
+    
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Pre event) {
+        if(!Minecraft.getInstance().isPaused() && Minecraft.getInstance().level != null){
+            INSTANCE.runUpdateFor10ms(Minecraft.getInstance().level);
+        }
+    }
+    
+    @SubscribeEvent
+    public static void onClientLoggedOut(ClientPlayerNetworkEvent.LoggingOut event){
+        INSTANCE.clear();
+    }
     
     public TerrainChunkManager() {
         this.gpuBuffer = new ManagedGpuBuffer(BLOCK_SIZE * 16 * 16);
     }
     
-    public RenderInfo generateRenderInfo(Predicate<ChunkPos> cullFunc, int indexCount){
+    public RenderInfo generateRenderInfo(Frustum frustum, Vector3f camPos){
+        boolean[] renderTheDir = new boolean[6];
         var cmdList = new ArrayList<IndirectDrawCommand>();
         for(var chunkPos : chunkMap.keySet()){
-            if(cullFunc.test(chunkPos)){
-                var chunkBuffer =  chunkMap.get(chunkPos);
-                for(var entry : chunkBuffer.inChunkMap.int2IntEntrySet()){
-                    var offset = gpuBuffer.getOffset(entry.getIntKey());
-                    cmdList.add(new IndirectDrawCommand(indexCount, entry.getIntValue(),(int) (offset / BLOCK_SIZE)));
+            var aabb = chunkAABB.get(chunkPos);
+            if(aabb == null || !frustum.isVisible(chunkAABB.get(chunkPos))) continue;
+            var chunkBuffer = chunkMap.get(chunkPos);
+            for (int i = 0; i < 6; i++) {
+                renderTheDir[i] = dirToFace(VanillaUtils.DIRECTIONS[i], aabb, camPos).dot(VanillaUtils.DIRECTIONS[i].getUnitVec3f()) < 0;
+            }
+            for(var entry : chunkBuffer.inChunkMap.int2IntEntrySet()){
+                int offset = (int) gpuBuffer.getOffset(entry.getIntKey()) / BLOCK_SIZE;
+                for (int i = 0; i < 6; i++) {
+                    if(renderTheDir[i]) {
+                        cmdList.add(new IndirectDrawCommand(6, entry.getIntValue(),i*6,0, offset));
+                    }
                 }
             }
         }
         var cmdBuffer = IndirectDrawCommand.buildCommandList(cmdList);
         return new RenderInfo(cmdList.size(),cmdBuffer);
+    }
+    
+    public Vector3f dirToFace(Direction dir, AABB aabb, Vector3f pos){
+        var centerX = (float) (aabb.maxX + aabb.minX) / 2;
+        var centerY = (float) (aabb.maxY + aabb.minY) / 2;
+        var centerZ = (float) (aabb.maxZ + aabb.minZ) / 2;
+        var center =  switch (dir){
+            case DOWN -> new Vector3f(centerX, (float) aabb.maxY, centerZ);
+            case UP -> new Vector3f(centerX, (float) aabb.minY, centerZ);
+            case NORTH -> new Vector3f(centerX, centerY, (float) aabb.maxZ);
+            case SOUTH -> new Vector3f(centerX, centerY, (float) aabb.minZ);
+            case WEST -> new Vector3f((float) aabb.maxX, centerY, centerZ);
+            case EAST -> new Vector3f((float) aabb.minX, centerY, centerZ);
+        };
+        return center.sub(pos,center).normalize();
     }
     
     public Map<Integer, Integer> generateRenderOffsetAndInstance(Predicate<ChunkPos> cullFunc){
@@ -97,6 +145,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public void clear(){
         this.chunkMap.clear();
+        this.chunkAABB.clear();
         this.updateQueue.clear();
         this.gpuBuffer.clear();
     }
@@ -109,6 +158,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var modelManager = mc.getModelManager().getBlockStateModelSet();
         var result = new ArrayList<ABlock>();
         var pos = new BlockPos(0,0,0).mutable();
+        var chunkMinY = level.getMinY();
+        var chunkMaxY = level.getMaxY();
         for (int px = chunkPos.getMinBlockX(); px <= chunkPos.getMaxBlockX(); px++) {
             for (int pz = chunkPos.getMinBlockZ(); pz <= chunkPos.getMaxBlockZ(); pz++) {
                 var hMax = level.getHeight(Heightmap.Types.MOTION_BLOCKING,px,pz);
@@ -122,6 +173,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 var h4 = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,px,pz-1);
                 if(h4 > level.getMinY()) hMin = Math.min(hMin,h4);
                 hMin = Math.clamp(hMin, level.getMinY(), hMax);
+                chunkMinY = Math.min(chunkMinY,hMin);
+                chunkMaxY = Math.max(chunkMaxY,hMax);
                 for (int y = hMin; y < hMax; y++) {
                     pos.set(px, y, pz);
                     var bs = level.getBlockState(pos);
@@ -160,6 +213,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 gpuBuffer.remove(entry.getIntKey());
             }
         }
+        this.chunkAABB.put(chunkPos, new AABB(chunkPos.getMinBlockX(), chunkMinY, chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), chunkMaxY, chunkPos.getMaxBlockZ()));
         this.chunkMap.put(chunkPos, new TerrainChunkBuffer(gpuBuffer, result));
     }
     

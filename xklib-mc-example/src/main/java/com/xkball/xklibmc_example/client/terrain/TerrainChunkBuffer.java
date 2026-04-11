@@ -1,4 +1,4 @@
-package com.xkball.xklibmc.client.terrain;
+package com.xkball.xklibmc_example.client.terrain;
 
 import com.xkball.xklibmc.api.client.b3d.ISTD140Writer;
 import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;

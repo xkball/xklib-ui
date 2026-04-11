@@ -1,14 +1,14 @@
-package com.xkball.xklibmc.ui.widget;
+package com.xkball.xklibmc_example.ui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
-import com.xkball.xklibmc.ui.XKLibBaseScreen;
-import com.xkball.xklibmc.ui.pip.WorldTerrainPipRenderer;
+import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
+import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.core.BlockPos;
@@ -17,9 +17,11 @@ import org.joml.Matrix2f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.List;
+
 public class WorldTerrainWidget extends Widget {
 
-    private final Vector3f cameraPos = new Vector3f();
+    private final Vector3f cameraTarget = new Vector3f();
     private BlockPos centerPos = BlockPos.ZERO;
     private float xRot = 89.0f;
     private float cameraLength = 0;
@@ -36,10 +38,10 @@ public class WorldTerrainWidget extends Widget {
         var level = mc.level;
         if(level == null) return;
         var cam = mc.gameRenderer.getMainCamera();
-        cameraPos.set(0, 0, 0);
         yRot = cam.yRot();
         centerPos = cam.blockPosition();
         centerPos = centerPos.atY(level.getMinY());
+        cameraTarget.set(centerPos.getX(), 0, centerPos.getZ());
         this.setCameraY();
         WorldTerrainPipRenderer.update();
     }
@@ -52,7 +54,8 @@ public class WorldTerrainWidget extends Widget {
             var scaleX = XKLibBaseScreen.tryGetScaleX();
             var scaleY = XKLibBaseScreen.tryGetScaleY();
             var state = new WorldTerrainPipRenderer.WorldTerrainState(
-                    new Vector3f(cameraPos),
+                    List.of("terrain","grid"),
+                    new Vector3f(cameraTarget),
                     centerPos,
                     fov,
                     cameraLength,
@@ -77,10 +80,18 @@ public class WorldTerrainWidget extends Widget {
         graphics.drawString("xRot: " + xRot,x,y + 10,-1);
         graphics.drawString("yRot: " + yRot,x,y + 20,-1);
         graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
-        graphics.drawString("queue: " + WorldTerrainPipRenderer.terrainChunkManager.updateQueue.size(),x,y + 40,-1);
-        graphics.drawString("memAlloc: " + VanillaUtils.memSize(WorldTerrainPipRenderer.terrainChunkManager.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
-        graphics.drawString("memUsed: " + VanillaUtils.memSize(WorldTerrainPipRenderer.terrainChunkManager.gpuBuffer.usedSize()),x,y + 60,-1);
-        graphics.drawString("length " + cameraLength,x,y + 70,-1);
+        graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.updateQueue.size(),x,y + 40,-1);
+        graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
+        graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.usedSize()),x,y + 60,-1);
+        graphics.drawString("length: " + cameraLength,x,y + 70,-1);
+        graphics.drawString("camDir: " + dirVec(), x, y + 80,-1);
+    }
+    
+    private Vector3f dirVec(){
+        var x = (float) (Math.cos(Math.toRadians(xRot)) * Math.sin(Math.toRadians(yRot)));
+        var y = (float) (Math.sin(Math.toRadians(xRot)));
+        var z = (float) (Math.cos(Math.toRadians(xRot)) * Math.cos(Math.toRadians(yRot)));
+        return new Vector3f(x,y,z).normalize();
     }
     
     @Override
@@ -106,7 +117,7 @@ public class WorldTerrainWidget extends Widget {
             if (!rotating) {
                 return false;
             }
-            float sens = 0.25f * fov/100;
+            float sens = 0.25f * Math.max(0.4f,fov/100);
             yRot = yRot - (float) dx * sens;
             xRot = xRot + (float) dy * sens;
             xRot = Math.clamp(xRot, -89.9f, 89.9f);
@@ -159,17 +170,19 @@ public class WorldTerrainWidget extends Widget {
         float speed = 30.0f * fov/120;
         var dir = new  Vector2f(dx,dz).mul(speed);
         dir.mul(new Matrix2f().rotate((float) Math.toRadians(-yRot)));
-        cameraPos.add(dir.x, 0, dir.y);
-//        cameraPos.add(dx*speed,0,dz*speed);
+        cameraTarget.add(dir.x, 0, dir.y);
+//        cameraTarget.add(dx*speed,0,dz*speed);
     }
     
     private void setCameraY(){
         var level = Minecraft.getInstance().level;
         if(level != null){
             var h = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centerPos.getX(), centerPos.getZ());
-            cameraPos.y = -level.getSeaLevel() - 200;
             if(h != -64){
-                cameraPos.y = -h;
+                cameraTarget.y = h;
+            }
+            else{
+                cameraTarget.y = level.getSeaLevel();
             }
         }
     }

@@ -110,17 +110,15 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
         if (this.trySetup(renderPass, Collections.emptyList())){
             var pipeline = renderPass.pipeline;
             this.device.vertexArrayCache().bindVertexArray(pipeline.info().getVertexFormat(), (GlBuffer)renderPass.vertexBuffers[0]);
-//            GlStateManager._glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer) renderPass.vertexBuffers[0]).handle);
             GlStateManager._glBindBuffer(GL43.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer)renderPass.indexBuffer).handle);
             GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,((GlBuffer) command).handle);
-//            GL43.glMemoryBarrier(GL43.GL_ALL_BARRIER_BITS);
             GL43.glMultiDrawElementsIndirect(
                     GlConst.toGl(pipeline.info().getVertexFormatMode()),
                     GlConst.toGl(renderPass.indexType),
                     MemoryUtil.NULL,
                     drawCount,
-                    24);
-//            GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,0);
+                    20);
+            
         }
     }
 }

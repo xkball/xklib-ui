@@ -1,4 +1,5 @@
-#version 460
+#version 460 core
+//#extension  GL_ARB_shader_draw_parameters : require
 #moj_import <minecraft:dynamictransforms.glsl>
 #moj_import <minecraft:projection.glsl>
 
@@ -11,27 +12,14 @@ layout(std140, binding = 0) buffer ABlock {
     PosColor posColor[];
 };
 
-struct Command{
-    int count;
-    int instanceCount;
-    int firstIndex;
-    int baseVertex;
-    int baseInstance;
-    int offset;
-};
-
-layout(std140, binding = 1) buffer RenderCommand {
-    Command cmd[];
-};
-
 in vec3 Position;
 in vec4 Color;
 
 out vec4 vertexColor;
 
 void main() {
-    PosColor pc = posColor[ cmd[gl_DrawID].offset ];
-//    PosColor pc = posColor[gl_InstanceID];
+//   PosColor pc = posColor[ cmd[gl_DrawID].offset ];
+    PosColor pc = posColor[gl_BaseInstance + gl_InstanceID];
     vec3 worldPos = Position + pc.pos_ssbo;
     gl_Position = ProjMat * ModelViewMat * vec4(worldPos, 1.0);
 

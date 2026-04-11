@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/xklib-3d-gl" />
             <option value="$PROJECT_DIR$/xklib-ap" />
             <option value="$PROJECT_DIR$/xklib-mc" />
+            <option value="$PROJECT_DIR$/xklib-mc-example" />
             <option value="$PROJECT_DIR$/xklib-ui" />
           </set>
         </option>

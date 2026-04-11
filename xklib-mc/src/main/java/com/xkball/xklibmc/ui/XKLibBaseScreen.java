@@ -110,7 +110,6 @@ public class XKLibBaseScreen extends Screen {
         this.scaleX = actualW/(float)w;
         this.scaleY = actualH/(float)h;
         guiSystem.resize(actualW, actualH);
-        CssLengthUnit.rpxScaleWorkaround = scaleY;
     }
     
     @Override
