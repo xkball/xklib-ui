@@ -140,12 +140,9 @@ public class DebugScreen extends ContainerWidget {
 
     public DebugScreen(GuiSystem theOtherSystem) {
         this.theOtherSystem = theOtherSystem;
+        this.asRootStyle(ROOT_CSS);
     }
-
-    @Override
-    public String createCSSAsRoot() {
-        return ROOT_CSS;
-    }
+    
 
     @Override
     public void onRemove() {

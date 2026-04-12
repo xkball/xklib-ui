@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.mesh.CachedMesh;
 import com.xkball.xklibmc.utils.ClientUtils;
+import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
 import com.xkball.xklibmc_example.client.b3d.pipeline.XKLibExampleRenderPipelines;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
@@ -35,8 +36,11 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         var frustum = new Frustum(modelView,WorldTerrainPipRenderer.projMatrix);
         var transformUBO = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Vector4f(1,1,1,1), new Vector3f(), new Matrix4f());
         var pipeline = XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP;
+        XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
+                b.putVec3(VanillaUtils.dirVec(45,renderState.yRot()))
+                 .putVec3(renderState.cameraPos()));
         try(var renderInfo = TerrainChunkManager.INSTANCE.generateRenderInfo(frustum,renderState.cameraOffset().add(renderState.cameraTarget()))){
-            try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty());){
+            try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
                 if(renderInfo.drawCount() != 0){
                     RenderSystem.bindDefaultUniforms(renderpass);
                     renderpass.setPipeline(pipeline);
@@ -55,47 +59,47 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
     
     private static void createCubeMesh(BufferBuilder builder){
         //down
-        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1);
+        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, -1, 0);
+        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, -1, 0);
+        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, -1, 0);
+        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, -1, 0);
+        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, -1, 0);
+        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, -1, 0);
         //up
-        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1);
+        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 1, 0);
+        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 1, 0);
+        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 1, 0);
+        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 1, 0);
+        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 1, 0);
+        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 1, 0);
         //north
-        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1);
+        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
+        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
+        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
+        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
+        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
+        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1).setNormal(0, 0, -1);
         //south
-        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1);
+        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
+        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
+        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
+        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
+        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
+        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1).setNormal(0, 0, 1);
         //west
-        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1);
-        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1);
+        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1).setNormal(-1, 0, 0);
+        builder.addVertex(0.0f, 0.0f, 1.0f).setColor(-1).setNormal(-1, 0, 0);
+        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1).setNormal(-1, 0, 0);
+        builder.addVertex(0.0f, 0.0f, 0.0f).setColor(-1).setNormal(-1, 0, 0);
+        builder.addVertex(0.0f, 1.0f, 1.0f).setColor(-1).setNormal(-1, 0, 0);
+        builder.addVertex(0.0f, 1.0f, 0.0f).setColor(-1).setNormal(-1, 0, 0);
         //east
-        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1);
-        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1);
+        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1).setNormal(1, 0, 0);
+        builder.addVertex(1.0f, 0.0f, 0.0f).setColor(-1).setNormal(1, 0, 0);
+        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1).setNormal(1, 0, 0);
+        builder.addVertex(1.0f, 0.0f, 1.0f).setColor(-1).setNormal(1, 0, 0);
+        builder.addVertex(1.0f, 1.0f, 0.0f).setColor(-1).setNormal(1, 0, 0);
+        builder.addVertex(1.0f, 1.0f, 1.0f).setColor(-1).setNormal(1, 0, 0);
         
 
     }

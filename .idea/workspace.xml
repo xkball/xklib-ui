@@ -5,13 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="refactor">
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/debug.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/grid.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/player.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/terrain.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/api/client/mixin/IExtendedBufferBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinBufferBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/gui_rounded_rect.fsh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/assets/xklibmc/shaders/core/gui_rounded_rect.vsh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/property/BorderColorProperty.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/IconCheckBox.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IGUIGraphics.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-3d/src/main/java/com/xkball/xklib/ui/render/IGUIGraphics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/PlayerOnMapRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/buffer/ManagedGpuBuffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.vsh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/utils/VanillaUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/gui/element/RoundedRectangleRenderState.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/gui/element/RoundedRectangleRenderState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/pipeline/B3dRenderPipelines.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/texture/B3dTextureManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/x3d/backend/b3d/texture/B3dTextureManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/resources/xklibmc.mixins.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssStyles.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/antlr/css/CssStyles.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IGuiWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IInputWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/api/gui/widget/IInputWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/css/CascadingStyleSheets.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/screen/DebugScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/system/GuiSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/system/GuiSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/CheckBox.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/CheckBox.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ContainerWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/ContainerWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/SplineTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/test/java/com/xkball/xklib/ui/widget/SplineTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +51,7 @@
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedChatMode">
-    <option name="chatModeId" value="Ask" />
+    <option name="chatModeId" value="Agent" />
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
@@ -33,12 +60,12 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="400534" />
+    <option name="totalTimeSeconds" value="416519" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="1353" />
+    <option name="cachedIndexableFilesCount" value="2104" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -202,7 +229,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "E:/code/java/others/xklib/xklib-mc/src/main/java/com/xkball/xklibmc/client",
-    "last_opened_file_path": "E:/code/java/others/xklib/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core",
+    "last_opened_file_path": "E:/code/java/others/xklib/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -225,13 +252,14 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc\textures\gui\sprites\icon" />
+      <recent name="E:\code\java\others\xklib\xklib-mc\src\main\resources\assets\xklibmc\shaders\core" />
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc\textures\gui\sprites" />
       <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc\shaders\core" />
       <recent name="E:\code\java\others\xklib\xklib-mc-example\run\saves" />
-      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources" />
-      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc_example\shaders\core" />
-      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\java\com\xkball\xklib_example" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\code\java\others\xklib\xklib-mc-example\src\main\resources\assets\xklibmc\textures\gui\sprites\icon" />
       <recent name="E:\code\java\others\xklib\xklib-3d\src\main\resources\assets" />
       <recent name="E:\code\java\others\xklib\xklib-ui\src\main\java\com\xkball\xklib\ui\css" />
       <recent name="E:\code\java\others\xklib\xklib-3d\src\main\resources" />
@@ -539,7 +567,8 @@
       <workItem from="1775472974936" duration="68335000" />
       <workItem from="1775826028128" duration="43000" />
       <workItem from="1775826130710" duration="42608000" />
-      <workItem from="1775919043075" duration="23408000" />
+      <workItem from="1775919043075" duration="28404000" />
+      <workItem from="1775969241604" duration="15384000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -797,7 +826,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775934676865</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1775943789302</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1775943789302</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

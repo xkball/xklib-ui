@@ -38,9 +38,10 @@ public class CheckBox extends Widget implements IInputWidget<Boolean> {
     }
 
     @Override
-    public void bind(ILayoutVariable<Boolean> variable) {
+    public CheckBox bind(ILayoutVariable<Boolean> variable) {
+        this.setValue(variable.get());
         this.bindings.add(variable);
-        variable.set(this.checked);
+        return this;
     }
 
     @Override

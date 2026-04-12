@@ -14,8 +14,11 @@ layout(std140, binding = 0) buffer ABlock {
 
 in vec3 Position;
 in vec4 Color;
+in vec3 Normal;
 
 out vec4 vertexColor;
+out vec3 worldPos;
+out vec3 pNormal;
 
 void main() {
 //   PosColor pc = posColor[ cmd[gl_DrawID].offset ];
@@ -29,4 +32,6 @@ void main() {
     float g = float((c >> 8u) & 255u) / 255.0;
     float b = float(c & 255u) / 255.0;
     vertexColor = Color * vec4(r, g, b, a);
+    worldPos = pc.pos_ssbo;
+    pNormal = Normal;
 }

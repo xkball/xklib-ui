@@ -13,9 +13,8 @@ import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import org.joml.Vector3f;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.UUID;
 
 public class VanillaUtils {
@@ -33,6 +32,10 @@ public class VanillaUtils {
     
     public static Identifier modRL(String path) {
         return resourceLocationOf(XKLibMC.MODID, path);
+    }
+    
+    public static ResourceLocation modrl(String path) {
+        return new ResourceLocation(XKLibMC.MODID, path);
     }
     
     public static Identifier resourceLocationOf(String namespace, String path) {
@@ -128,5 +131,12 @@ public class VanillaUtils {
         }
         float value = (float) size / divider;
         return String.format("%.2f", value) + units[i];
+    }
+    
+    public static Vector3f dirVec(float xRot, float yRot) {
+        var x = (float) (Math.cos(Math.toRadians(xRot)) * Math.sin(Math.toRadians(yRot)));
+        var y = (float) (Math.sin(Math.toRadians(xRot)));
+        var z = (float) (Math.cos(Math.toRadians(xRot)) * Math.cos(Math.toRadians(yRot)));
+        return new Vector3f(x, y, z).normalize();
     }
 }

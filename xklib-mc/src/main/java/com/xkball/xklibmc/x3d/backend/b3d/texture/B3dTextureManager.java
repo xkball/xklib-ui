@@ -7,6 +7,7 @@ import com.xkball.xklib.x3d.api.render.ITextureAtlasSprite;
 import com.xkball.xklib.x3d.api.resource.ITextureManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.sprite.AtlasManager;
+import net.minecraft.data.AtlasIds;
 
 public class B3dTextureManager implements ITextureManager {
     
@@ -20,8 +21,7 @@ public class B3dTextureManager implements ITextureManager {
     
     @Override
     public ITextureAtlasSprite getSprite(ResourceLocation location) {
-        var texture = VanillaUtils.resourceLocationOf(location.namespace(),location.path().substring(0,location.path().lastIndexOf("/")+1));
-        var atlas = innerAtlasManager.getAtlasOrThrow(texture);
+        var atlas = innerAtlasManager.getAtlasOrThrow(AtlasIds.GUI);
         return (ITextureAtlasSprite) atlas.getSprite(VanillaUtils.convertRL(location));
     }
     

@@ -3,6 +3,7 @@ package com.xkball.xklibmc_example.ui.widget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
@@ -13,14 +14,16 @@ import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.joml.Matrix2f;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @NonNullByDefault
 public class WorldTerrainWidgetInner extends Widget {
@@ -33,8 +36,17 @@ public class WorldTerrainWidgetInner extends Widget {
     private boolean rotating;
     private float fov = 60;
     private WorldTerrainPipRenderer.@Nullable WorldTerrainState lastState;
+    
+    private final BooleanLayoutVariable terrain;
+    private final BooleanLayoutVariable grid;
+    private final BooleanLayoutVariable player;
+    private final BooleanLayoutVariable debug;
 
-    public WorldTerrainWidgetInner() {
+    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable debug) {
+        this.terrain = terrain;
+        this.grid = grid;
+        this.player = player;
+        this.debug = debug;
         this.initCamera();
         this.setOverflow(false);
     }
@@ -59,8 +71,12 @@ public class WorldTerrainWidgetInner extends Widget {
             var inner = b3dGuiGraphics.getInner();
             var scaleX = XKLibBaseScreen.tryGetScaleX();
             var scaleY = XKLibBaseScreen.tryGetScaleY();
+            var list = new ArrayList<String>();
+            if(terrain.get()) list.add("terrain");
+            if(grid.get()) list.add("grid");
+            if(player.get()) list.add("player");
             lastState = new WorldTerrainPipRenderer.WorldTerrainState(
-                    List.of("terrain","grid","player"),
+                    list,
                     new Vector3f(cameraTarget),
                     centerPos,
                     fov,
@@ -76,7 +92,19 @@ public class WorldTerrainWidgetInner extends Widget {
                     new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
             );
             inner.submitPictureInPictureRenderState(lastState);
-            this.renderPlayerHead(b3dGuiGraphics);
+            if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
+            if(debug.get()) {
+                graphics.drawString("fov: " + fov,x,y,-1);
+                graphics.drawString("xRot: " + xRot,x,y + 10,-1);
+                graphics.drawString("yRot: " + yRot,x,y + 20,-1);
+                graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
+                graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.updateQueue.size(),x,y + 40,-1);
+                graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
+                graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.usedSize()),x,y + 60,-1);
+                graphics.drawString("length: " + cameraLength,x,y + 70,-1);
+                graphics.drawString("camTar: " + vec3fToString(cameraTarget), x, y + 80,-1);
+                graphics.drawString("camPos: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y + 90,-1);
+            }
         }
     }
     
@@ -84,11 +112,12 @@ public class WorldTerrainWidgetInner extends Widget {
         var level = Minecraft.getInstance().level;
         var player = Minecraft.getInstance().player;
         if(level == null || player == null || lastState == null) return;
+        var frustum = new Frustum(new Matrix4f(),lastState.projMatrix());
         var playInfos = player.connection.getListedOnlinePlayers();
         for(var p : playInfos){
             var uuid = p.getProfile().id();
             var entity = level.getEntity(uuid);
-            if(entity == null) continue;
+            if(entity == null || !frustum.isVisible(entity.getBoundingBox())) continue;
             var pos = lastState.projWorld2Screen(this, entity.position().toVector3f().add(0,2.5f,0));
             var px = pos.x - 8;
             var py = pos.y - 10;
@@ -101,21 +130,6 @@ public class WorldTerrainWidgetInner extends Widget {
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         return super.mouseMoved(mouseX, mouseY);
-    }
-    
-    @Override
-    public void renderDebug(IGUIGraphics graphics, int mouseX, int mouseY) {
-        super.renderDebug(graphics, mouseX, mouseY);
-        graphics.drawString("fov: " + fov,x,y,-1);
-        graphics.drawString("xRot: " + xRot,x,y + 10,-1);
-        graphics.drawString("yRot: " + yRot,x,y + 20,-1);
-        graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
-        graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.updateQueue.size(),x,y + 40,-1);
-        graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
-        graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.usedSize()),x,y + 60,-1);
-        graphics.drawString("length: " + cameraLength,x,y + 70,-1);
-        graphics.drawString("camTar: " + vec3fToString(cameraTarget), x, y + 80,-1);
-        graphics.drawString("camDir: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y + 90,-1);
     }
     
     private String vec3fToString(Vector3f vec) {

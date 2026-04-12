@@ -2,15 +2,18 @@ package com.xkball.xklibmc.x3d.backend.b3d.gui.element;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.xkball.xklibmc.annotation.NonNullByDefault;
+import com.xkball.xklibmc.api.client.mixin.IExtendedBufferBuilder;
 import com.xkball.xklibmc.x3d.backend.b3d.pipeline.B3dRenderPipelines;
 import com.xkball.xklibmc.x3d.backend.b3d.vertex.B3dVertexFormats;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import org.joml.Matrix3x2fc;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.system.MemoryUtil;
 
+@NonNullByDefault
 public record RoundedRectangleRenderState(
     TextureSetup textureSetup,
     Matrix3x2fc pose,
@@ -42,7 +45,7 @@ public record RoundedRectangleRenderState(
     }
     
     @Override
-    public @NonNull RenderPipeline pipeline() {
+    public RenderPipeline pipeline() {
         return B3dRenderPipelines.ROUNDED_RECT;
     }
     
@@ -55,26 +58,41 @@ public record RoundedRectangleRenderState(
 
     @Override
     public void buildVertices(VertexConsumer vertexConsumer) {
-        float width = this.x1() - this.x0();
-        float height = this.y1() - this.y0();
-        int r = Float.floatToRawIntBits(this.radius());
-        int w = Float.floatToRawIntBits(width);
-        int h = Float.floatToRawIntBits(height);
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0())
-                .setUv(0, 0).misc(B3dVertexFormats.EXTRA_UV,w,h).setColor(this.col1())
-                .misc(B3dVertexFormats.EXTRA_FLOAT,r);
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1())
-                .setUv(0, height).misc(B3dVertexFormats.EXTRA_UV,w,h).setColor(this.col2())
-                .misc(B3dVertexFormats.EXTRA_FLOAT,r);
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1())
-                .setUv(width, height).misc(B3dVertexFormats.EXTRA_UV,w,h).setColor(this.col2())
-                .misc(B3dVertexFormats.EXTRA_FLOAT,r);
-        vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0())
-                .setUv(width, 0).misc(B3dVertexFormats.EXTRA_UV,w,h).setColor(this.col1())
-                .misc(B3dVertexFormats.EXTRA_FLOAT,r);
+        float w = this.x1() - this.x0();
+        float h = this.y1() - this.y0();
+        var r = this.radius();
+        if(vertexConsumer instanceof IExtendedBufferBuilder bufferBuilder){
+            vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setUv(0, 0).setColor(this.col1());
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+                MemoryUtil.memPutFloat(ptr,w);
+                MemoryUtil.memPutFloat(ptr + 4,h);
+            });
+            vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setUv(0, h).setColor(this.col2());
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+                MemoryUtil.memPutFloat(ptr,w);
+                MemoryUtil.memPutFloat(ptr + 4,h);
+            });
+            vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setUv(w, h).setColor(this.col2());
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+                MemoryUtil.memPutFloat(ptr,w);
+                MemoryUtil.memPutFloat(ptr + 4,h);
+            });
+            vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setUv(w, 0).setColor(this.col1());
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+                MemoryUtil.memPutFloat(ptr,w);
+                MemoryUtil.memPutFloat(ptr + 4,h);
+            });
+            
+        }
+
     }
     
-    private static ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose, ScreenRectangle scissorArea) {
+    @Nullable
+    private static ScreenRectangle getBounds(float x0, float y0, float x1, float y1, Matrix3x2fc pose,@Nullable ScreenRectangle scissorArea) {
         ScreenRectangle bounds = new ScreenRectangle((int) x0, (int) y0, (int) (x1 - x0), (int) (y1 - y0)).transformMaxBounds(pose);
         return scissorArea != null ? scissorArea.intersection(bounds) : bounds;
     }

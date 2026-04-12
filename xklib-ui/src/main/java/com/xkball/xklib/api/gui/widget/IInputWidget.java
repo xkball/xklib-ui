@@ -6,5 +6,5 @@ public interface IInputWidget<T> {
     
     void setValue(T value);
     
-    void bind(ILayoutVariable<T> variable);
+    IGuiWidget bind(ILayoutVariable<T> variable);
 }

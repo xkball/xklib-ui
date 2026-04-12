@@ -5,6 +5,7 @@ import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IRenderable;
+import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
@@ -54,6 +55,12 @@ public class ContainerWidget extends Widget {
     @Override
     public ContainerWidget inlineStyle(String style) {
         super.inlineStyle(style);
+        return this;
+    }
+    
+    @Override
+    public ContainerWidget asRootStyle(String style) {
+        super.asRootStyle(style);
         return this;
     }
     
@@ -469,7 +476,7 @@ public class ContainerWidget extends Widget {
             this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
             this.setSize(layout.contentBoxWidth(), layout.contentBoxHeight());
             for (Widget child : this.children) {
-                child.resize(this.x - this.xScrollOffset, this.y - this.yScrollOffset);
+                child.resize(this.x - layout.padding().left - layout.border().left - this.xScrollOffset, this.y - layout.padding().top - layout.border().top - this.yScrollOffset);
             }
             this.resizeScrollBar();
         }
@@ -550,6 +557,21 @@ public class ContainerWidget extends Widget {
             child.visitWidgets(widgetVisitor);
         }
         widgetVisitor.accept(this);
+    }
+    
+    @Override
+    public void updateStyle(CascadingStyleSheets sheet) {
+        super.updateStyle(sheet);
+        var asRoot = this.styleSheetAsRoot;
+        var sheet_  = sheet;
+        if(!asRoot.sheets().isEmpty()){
+            sheet_ = new CascadingStyleSheets();
+            sheet_.addAll(sheet);
+            sheet_.addAll(asRoot);
+        }
+        for(var w : this.children){
+            w.updateStyle(sheet_);
+        }
     }
     
     public class ScrollBar implements IGuiEventListener, IRenderable {

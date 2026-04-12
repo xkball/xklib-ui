@@ -3,7 +3,6 @@ package com.xkball.xklibmc.x3d.backend.b3d.pipeline;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -18,9 +17,12 @@ public class B3dRenderPipelines {
     public static final ExtendedRenderPipeline ROUNDED_RECT = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("gui_rounded_rect"))
             .withVertexShader(VanillaUtils.modRL("core/gui_rounded_rect"))
-            .withFragmentShader(VanillaUtils.modRL("/gui_rounded_rect"))
+            .withFragmentShader(VanillaUtils.modRL("core/gui_rounded_rect"))
             .withVertexFormat(B3dVertexFormats.POSITION_TEX_UV2_COLOR_EXTRA, VertexFormat.Mode.QUADS)
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
             .withDepthStencilState(DepthStencilState.DEFAULT)
+            .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withCull(false)
             .buildExtended();
     

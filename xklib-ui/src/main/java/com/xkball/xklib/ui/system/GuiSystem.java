@@ -316,7 +316,7 @@ public class GuiSystem implements AutoCloseable {
         for(var layer : this.screenLayers){
             var widget = layer.getFirst();
             var tree = layer.getSecond();
-            widget.visitWidgets(w -> w.getStyleSheet().update(widget.getStyleSheetAsRoot(), w));
+            widget.updateStyle(widget.getStyleSheetAsRoot());
             tree.computeLayout(widget.getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
             layer.getFirst().resize(0,0);
         }

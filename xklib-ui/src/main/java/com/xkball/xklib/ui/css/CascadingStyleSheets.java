@@ -3,7 +3,6 @@ package com.xkball.xklib.ui.css;
 import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
-import com.xkball.xklib.ui.css.selector.AnySelector;
 import com.xkball.xklib.ui.css.selector.UniversalSelector;
 import org.jspecify.annotations.Nullable;
 
@@ -25,6 +24,10 @@ public class CascadingStyleSheets {
 
     public void add(StyleSheetUnit unit) {
         this.sheets.add(unit);
+    }
+    
+    public void addAll(CascadingStyleSheets sheets) {
+        this.sheets.addAll(sheets.sheets);
     }
 
     public List<StyleSheetUnit> sheets() {

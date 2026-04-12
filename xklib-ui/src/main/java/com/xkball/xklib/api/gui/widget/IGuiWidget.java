@@ -115,11 +115,9 @@ public interface IGuiWidget {
     
     CascadingStyleSheets getStyleSheetAsSelf();
     
-    default String createCSSAsRoot(){
-        return "";
-    }
-    
     IGuiWidget inlineStyle(String style);
+    
+    IGuiWidget asRootStyle(String style);
     
     default List<? extends IGuiWidget> getChildren(){
         return List.of();

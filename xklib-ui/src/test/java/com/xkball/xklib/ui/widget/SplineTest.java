@@ -97,12 +97,8 @@ public class SplineTest {
     }
 
     private static ContainerWidget createSplineWindow() {
-        var root = new SplitContainer(false) {
-            @Override
-            public String createCSSAsRoot() {
-                return ROOT_CSS;
-            }
-        };
+        var root = new SplitContainer(false);
+        root.asRootStyle(ROOT_CSS);
         root.asTreeRoot();
         root.setCSSClassName("spline-root");
 

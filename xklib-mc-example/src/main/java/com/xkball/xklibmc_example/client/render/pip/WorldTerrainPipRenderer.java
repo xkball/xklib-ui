@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklibmc.utils.ClientUtils;
+import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
 import com.xkball.xklibmc_example.client.render.pip.layers.GridRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.PlayerOnMapRenderer;
@@ -152,10 +153,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         }
         
         public Vector3f dirVec() {
-            var x = (float) (Math.cos(Math.toRadians(xRot)) * Math.sin(Math.toRadians(yRot)));
-            var y = (float) (Math.sin(Math.toRadians(xRot)));
-            var z = (float) (Math.cos(Math.toRadians(xRot)) * Math.cos(Math.toRadians(yRot)));
-            return new Vector3f(x, y, z).normalize();
+            return VanillaUtils.dirVec(xRot,yRot);
         }
         
         public Vector3f cameraOffset() {

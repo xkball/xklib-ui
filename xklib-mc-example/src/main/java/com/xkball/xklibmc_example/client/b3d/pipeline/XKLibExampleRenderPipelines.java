@@ -5,20 +5,31 @@ import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.xkball.xklibmc.client.b3d.pipeline.ExtendedRenderPipeline;
+import com.xkball.xklibmc.client.b3d.uniform.UpdatableUBO;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import org.joml.Vector3f;
 
 public class XKLibExampleRenderPipelines {
     
+    public static final UpdatableUBO PHONE_LIGHT = new UpdatableUBO.UBOBuilder("PhongLight")
+            .closeOnExit()
+            .putVec3("lightPos", Vector3f::new)
+            .putVec3("viewPos", Vector3f::new)
+            .build();
+    
     public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("world_terrain_pip"))
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES)
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.TRIANGLES)
             .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip"))
             .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip"))
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
+            .bindUniform("PhongLight", PHONE_LIGHT)
             .withSSBO("ABlock")
-//            .withSSBO("RenderCommand")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(true)
             .buildExtended();
+    
+
 }

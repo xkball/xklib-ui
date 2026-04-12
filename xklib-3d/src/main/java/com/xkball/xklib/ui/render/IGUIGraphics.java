@@ -188,6 +188,11 @@ public interface IGUIGraphics {
         this.drawString(font, text, x, y, color, false);
     }
     
+    default void blitSprite(ResourceLocation location, float x, float y, float width, float height, int color) {
+        ITextureAtlasSprite sprite = this.getSprite(location);
+        this.blitSprite(XKLib.RENDER_CONTEXT.get().getPipelineSource().getGuiTextured(), sprite, x, y, width, height, color);
+    }
+    
     default void blitSprite(IRenderPipeline renderPipeline, ResourceLocation location, float x, float y, float width, float height, int color) {
         ITextureAtlasSprite sprite = this.getSprite(location);
         this.blitSprite(renderPipeline, sprite, x, y, width, height, color);

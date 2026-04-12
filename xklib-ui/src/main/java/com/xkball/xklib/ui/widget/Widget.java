@@ -47,7 +47,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     protected IGuiWidget parent = null;
     protected FocusNode focusNode;
     private GuiSystem guiSystem;
-    protected final CascadingStyleSheets styleSheetAsRoot;
+    protected CascadingStyleSheets styleSheetAsRoot;
     protected final CascadingStyleSheets.Inline styleSheetAsSelf;
     protected IStyleSheet styleSheet = new CascadingStyleSheets.SimpleStyleSheet();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
@@ -64,9 +64,14 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.focusNode = new FocusNode(null);
         this.focusNode.widget = this;
         this.focusNode.setCanTakePrimaryFocus(this.isFocusable());
-        var rootStyle = this.createCSSAsRoot();
-        this.styleSheetAsRoot = rootStyle.isEmpty() ? new CascadingStyleSheets() : CssParser.parse(rootStyle);
+        this.styleSheetAsRoot =  new CascadingStyleSheets();
         this.styleSheetAsSelf = new CascadingStyleSheets.Inline();
+    }
+    
+    @Override
+    public IGuiWidget asRootStyle(String style) {
+        this.styleSheetAsRoot = CssParser.parse(style);
+        return this;
     }
     
     @Override
@@ -464,14 +469,16 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         if (this.styleSheet != styleSheet) {
             this.styleSheet = styleSheet;
             this.onStyleSheetChanged();
-            return;
         }
-        this.styleSheet = styleSheet;
     }
 
     @Override
     public CascadingStyleSheets getStyleSheetAsRoot() {
         return this.styleSheetAsRoot;
+    }
+    
+    public void updateStyle(CascadingStyleSheets sheet){
+        this.getStyleSheet().update(sheet,this);
     }
 
     @Override

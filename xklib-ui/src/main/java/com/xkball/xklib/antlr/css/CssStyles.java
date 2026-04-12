@@ -3,6 +3,7 @@ package com.xkball.xklib.antlr.css;
 import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IPropertyFactory;
 import com.xkball.xklib.ui.css.property.BackgroundColorProperty;
+import com.xkball.xklib.ui.css.property.BorderColorProperty;
 import com.xkball.xklib.ui.css.property.ButtonHoverProperty;
 import com.xkball.xklib.ui.css.property.ButtonShapeProperty;
 import com.xkball.xklib.ui.css.property.FunctionalStyleProperty;
@@ -23,6 +24,7 @@ import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.CheckBox;
 import com.xkball.xklib.ui.widget.DragBox;
+import com.xkball.xklib.ui.widget.IconCheckBox;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.LineGraph;
 import com.xkball.xklib.ui.widget.TextEdit;
@@ -119,6 +121,13 @@ public class CssStyles {
                 (widget, color) -> {
                     if (widget instanceof CheckBox checkBox) {
                         checkBox.setOnOverlayColor(color);
+                    }
+                }), Integer.class);
+
+        this.register("iconcheckbox-bg-color", value -> new WidgetIntStyleProperty("iconcheckbox-bg-color", value,
+                (widget, color) -> {
+                    if (widget instanceof IconCheckBox iconCheckBox) {
+                        iconCheckBox.setBackgroundColor(color);
                     }
                 }), Integer.class);
         this.register("dragbox-track-color", value -> new WidgetIntStyleProperty("dragbox-track-color", value,
@@ -268,6 +277,8 @@ public class CssStyles {
         this.registerField("border-right", CssLengthUnit.class, (s, v) -> s.border.right = v.toLengthPercentage());
         this.registerField("border-top", CssLengthUnit.class, (s, v) -> s.border.top = v.toLengthPercentage());
         this.registerField("border-bottom", CssLengthUnit.class, (s, v) -> s.border.bottom = v.toLengthPercentage());
+
+        this.register(BorderColorProperty.NAME, BorderColorProperty::new, Integer.class);
 
         this.registerField("align-items", AlignItems.class, (s, v) -> s.alignItems = v);
         this.registerField("align-self", AlignItems.class, (s, v) -> s.alignSelf = v);
