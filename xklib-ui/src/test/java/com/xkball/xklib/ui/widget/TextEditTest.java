@@ -40,7 +40,7 @@ public class TextEditTest {
         panel.applyStyle(DefaultStyles::fill);
         panel.setStyle(s -> s.flexDirection = FlexDirection.COLUMN);
 
-        var titleLabel = new Label(title, TextAlign.CENTER, 0xFFE2E8F0);
+        var titleLabel = new Label(title,0xFFE2E8F0);
         titleLabel.inlineStyle("background-color: 0xFF334155;");
         titleLabel.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(30)));
         panel.addChild(titleLabel);

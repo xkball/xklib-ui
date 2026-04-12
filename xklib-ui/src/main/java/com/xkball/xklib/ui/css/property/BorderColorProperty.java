@@ -4,7 +4,6 @@ import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.render.IGUIGraphics;
-import dev.vfyjxf.taffy.geometry.TaffyRect;
 import dev.vfyjxf.taffy.style.LengthPercentage;
 
 public class BorderColorProperty implements IStyleProperty<Integer> {

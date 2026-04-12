@@ -35,7 +35,7 @@ public class ScrollPanelTest {
     }
 
     private static Label colorLabel(int color, String text, float h) {
-        var label = new Label(text, TextAlign.CENTER, 0xFFFFFFFF);
+        var label = new Label(text,0xFFFFFFFF);
         label.inlineStyle("background-color: " + color + ";");
         label.getStyle().size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(h));
         label.getStyle().flexShrink = 0;
@@ -106,7 +106,7 @@ public class ScrollPanelTest {
                 var itemStyle = new TaffyStyle();
                 itemStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(60));
                 itemStyle.flexShrink = 0;
-                var cell = new Label("Grid格 " + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
+                var cell = new Label("Grid格 " + (i + 1),  0xFFFFFFFF);
                 cell.inlineStyle("background-color: " + COLORS[i % COLORS.length] + ";");
                 cell.setStyle(itemStyle);
                 scrollContainer.addChild(cell);
@@ -160,7 +160,7 @@ public class ScrollPanelTest {
                 outerScroll.addChild(innerScroll);
 
                 for (int i = 0; i < 15; i++) {
-                    var label = new Label("面板" + (p + 1) + "-项目" + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
+                    var label = new Label("面板" + (p + 1) + "-项目" + (i + 1),  0xFFFFFFFF);
                     label.inlineStyle("background-color: " + itemColors[(p + i) % itemColors.length] + ";");
                     var itemStyle = new TaffyStyle();
                     itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(44));
@@ -294,7 +294,7 @@ public class ScrollPanelTest {
                     var itemStyle = new TaffyStyle();
                     itemStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(40));
                     itemStyle.flexShrink = 0;
-                    var label = new Label("外" + (p + 1) + "-Grid" + (i + 1), TextAlign.CENTER, 0xFFFFFFFF);
+                    var label = new Label("外" + (p + 1) + "-Grid" + (i + 1), 0xFFFFFFFF);
                     label.inlineStyle("background-color: " + COLORS[(p * 4 + i) % COLORS.length] + ";");
                     label.setStyle(itemStyle);
                     innerGrid.addChild(label);
@@ -374,7 +374,7 @@ public class ScrollPanelTest {
                         lvl2.addChild(lvl3);
 
                         for (int d = 0; d < 6; d++) {
-                            var label = new Label(a + "-" + b + "-" + c + "-" + d, TextAlign.CENTER, 0xFFFFFFFF);
+                            var label = new Label(a + "-" + b + "-" + c + "-" + d, 0xFFFFFFFF);
                             label.inlineStyle("background-color: " + COLORS[(a + b + c + d) % COLORS.length] + ";");
                             var lStyle = new TaffyStyle();
                             lStyle.size = new TaffySize<>(TaffyDimension.length(80), TaffyDimension.length(36));
@@ -480,7 +480,7 @@ public class ScrollPanelTest {
                         var gStyle = new TaffyStyle();
                         gStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.length(28));
                         gStyle.flexShrink = 0;
-                        var label = new Label("G" + k, TextAlign.CENTER, 0xFFFFFFFF);
+                        var label = new Label("G" + k,0xFFFFFFFF);
                         label.inlineStyle("background-color: " + COLORS[(row + k) % COLORS.length] + ";");
                         label.setStyle(gStyle);
                         nestedGrid.addChild(label);

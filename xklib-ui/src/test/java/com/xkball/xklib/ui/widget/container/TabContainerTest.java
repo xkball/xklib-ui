@@ -35,7 +35,7 @@ public class TabContainerTest {
                 s.alignItems = AlignItems.CENTER;
                 s.size = TaffySize.all(TaffyDimension.percent(1f));
             });
-            var label1 = new Label("第一页内容", TextAlign.CENTER, 0xFFE2E8F0);
+            var label1 = new Label("第一页内容", 0xFFE2E8F0);
             label1.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.8f), TaffyDimension.length(40)));
             page1.addChild(label1);
             for (int i = 1; i <= 3; i++) {
@@ -53,7 +53,7 @@ public class TabContainerTest {
                 s.alignItems = AlignItems.CENTER;
                 s.size = TaffySize.all(TaffyDimension.percent(1f));
             });
-            var label2 = new Label("第二页内容", TextAlign.CENTER, 0xFFE2E8F0);
+            var label2 = new Label("第二页内容",  0xFFE2E8F0);
             label2.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.8f), TaffyDimension.length(40)));
             page2.addChild(label2);
 
@@ -65,7 +65,7 @@ public class TabContainerTest {
                 s.alignItems = AlignItems.CENTER;
                 s.size = TaffySize.all(TaffyDimension.percent(1f));
             });
-            var label3 = new Label("第三页内容", TextAlign.CENTER, 0xFFE2E8F0);
+            var label3 = new Label("第三页内容", 0xFFE2E8F0);
             label3.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.8f), TaffyDimension.length(40)));
             page3.addChild(label3);
 

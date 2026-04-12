@@ -49,7 +49,7 @@ public class GridLayoutTest {
             s.alignItems = AlignItems.CENTER;
             s.justifyContent = AlignContent.CENTER;
         });
-        var label = new Label(text, TextAlign.CENTER, 0xFFFFFFFF);
+        var label = new Label(text, 0xFFFFFFFF);
         label.getStyle().size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(20));
         w.addChild(label);
         return w;
@@ -235,7 +235,7 @@ public class GridLayoutTest {
             String[] labels = {"左上", "右上", "左下", "右下"};
             int[] cellColors = {0xFFE94560, 0xFF0F3460, 0xFF533483, 0xFF2EC4B6};
             for (int i = 0; i < labels.length; i++) {
-                var label = new Label(labels[i], TextAlign.CENTER, 0xFFFFFFFF);
+                var label = new Label(labels[i],  0xFFFFFFFF);
                 label.getStyle().size = new TaffySize<>(TaffyDimension.length(120), TaffyDimension.length(60));
                 label.inlineStyle("background-color: " + cellColors[i] + ";");
                 root.addChild(label);

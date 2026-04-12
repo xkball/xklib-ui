@@ -23,7 +23,7 @@ out vec3 pNormal;
 void main() {
 //   PosColor pc = posColor[ cmd[gl_DrawID].offset ];
     PosColor pc = posColor[gl_BaseInstance + gl_InstanceID];
-    vec3 worldPos = Position + pc.pos_ssbo;
+    vec3 worldPos = Position + pc.pos_ssbo - vec3(0.5);
     gl_Position = ProjMat * ModelViewMat * vec4(worldPos, 1.0);
 
     uint c = uint(pc.color_ssbo);

@@ -1,6 +1,7 @@
 package com.xkball.xklibmc_example.ui.widget;
 
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.IconCheckBox;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
@@ -34,10 +35,10 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         border-bottom: 1rpx;
                                         border-color: 0xEEAAAAAA;
                                         """)
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug))
+                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
+                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
+                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
+                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.literal("show debug info")))
                 )
                 .addChild(
                         new ContainerWidget()

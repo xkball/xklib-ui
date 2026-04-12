@@ -94,8 +94,8 @@ public class PerformanceScreen extends SplitContainer {
             s.alignItems = AlignItems.STRETCH;
         });
 
-        var leftHeader = new Label("监看项目", TextAlign.CENTER, TEXT_COLOR);
-        leftHeader.inlineStyle("background-color: " + HEADER_BG + ";");
+        var leftHeader = new Label("监看项目", TEXT_COLOR);
+        leftHeader.inlineStyle("background-color: " + HEADER_BG + ";text-align: center;");
         leftHeader.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(ROW_HEIGHT));
             s.flexShrink = 0;
@@ -124,8 +124,8 @@ public class PerformanceScreen extends SplitContainer {
             s.alignItems = AlignItems.STRETCH;
         });
 
-        var rightHeader = new Label("图表", TextAlign.CENTER, TEXT_COLOR);
-        rightHeader.inlineStyle("background-color: " + HEADER_BG + ";");
+        var rightHeader = new Label("图表", TEXT_COLOR);
+        rightHeader.inlineStyle("background-color: " + HEADER_BG + ";text-align: center;");
         rightHeader.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(ROW_HEIGHT));
             s.flexShrink = 0;
@@ -152,7 +152,8 @@ public class PerformanceScreen extends SplitContainer {
                 s.flexShrink = 0;
             });
 
-            var title = new Label(entry.name, TextAlign.LEFT, TEXT_COLOR);
+            var title = new Label(entry.name, TEXT_COLOR);
+            title.inlineStyle("text-align: center;");
             title.setStyle(s -> {
                 s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(CHART_TITLE_HEIGHT));
                 s.flexShrink = 0;
@@ -179,7 +180,7 @@ public class PerformanceScreen extends SplitContainer {
             s.flexShrink = 0;
         });
 
-        var flameTitle = new Label(flameEntry.name, TextAlign.LEFT, TEXT_COLOR);
+        var flameTitle = new Label(flameEntry.name, TEXT_COLOR);
         flameTitle.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(CHART_TITLE_HEIGHT));
             s.flexShrink = 0;
@@ -230,18 +231,19 @@ public class PerformanceScreen extends SplitContainer {
             s.flexShrink = 0;
         });
 
-        var nameLabel = new Label(entry.name, TextAlign.LEFT, TEXT_COLOR);
+        var nameLabel = new Label(entry.name, TEXT_COLOR);
         nameLabel.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(0.5f), TaffyDimension.percent(1f));
             s.flexShrink = 0;
         });
         row.addChild(nameLabel);
 
-        entry.valueLabel = new Label("--", TextAlign.RIGHT, TEXT_COLOR);
+        entry.valueLabel = new Label("--", TEXT_COLOR);
         entry.valueLabel.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.percent(1f));
             s.flexGrow = 1;
             s.flexShrink = 1;
+            s.textAlign = TextAlign.RIGHT;
         });
         row.addChild(entry.valueLabel);
 
@@ -265,7 +267,7 @@ public class PerformanceScreen extends SplitContainer {
             s.flexShrink = 0;
         });
 
-        var nameLabel = new Label(flameEntry.name, TextAlign.LEFT, TEXT_COLOR);
+        var nameLabel = new Label(flameEntry.name, TEXT_COLOR);
         nameLabel.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.percent(1f));
             s.flexGrow = 1;

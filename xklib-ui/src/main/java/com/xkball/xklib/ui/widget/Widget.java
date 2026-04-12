@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.annotation.OnlyImplInMinecraft;
 import com.xkball.xklib.antlr.css.CssParser;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
@@ -9,21 +10,24 @@ import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.IAbsoluteLayoutElement;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.api.gui.widget.IGuiEventListener;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.IRenderable;
 import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.utils.XKLibUtils;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.function.Supplier;
 
 public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbsoluteLayoutElement {
     
@@ -51,6 +55,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     protected final CascadingStyleSheets.Inline styleSheetAsSelf;
     protected IStyleSheet styleSheet = new CascadingStyleSheets.SimpleStyleSheet();
     protected final Queue<Runnable> untilSetTree = new ArrayDeque<>();
+    protected Supplier<Widget> tooltipFactory = () -> null;
     
     public Widget(){
         this(0, 0, 0, 0);
@@ -98,10 +103,10 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public boolean mouseMoved(double mouseX, double mouseY) {
         boolean wasMouseOver = this.isMouseOver(mouseX, mouseY);
         if (wasMouseOver && this.enabled && this.visible) {
-            this.hovered = true;
+            this.setHovered(true);
             return true;
         }
-        this.hovered = false;
+        this.setHovered(false);
         return false;
     }
     
@@ -298,7 +303,10 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public void setHovered(boolean hovered) {
-        this.hovered = hovered;
+        if(this.hovered != hovered) {
+            this.hovered = hovered;
+            this.onHoverChanged(hovered);
+        }
     }
     
     @Override
@@ -533,5 +541,32 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         this.absoluteY = y;
         this.width = width;
         this.height = height;
+    }
+    
+    @Override
+    public @Nullable IGuiWidget createTooltip() {
+        return this.tooltipFactory.get();
+    }
+    
+    public Widget withTooltip(IComponent text){
+        this.tooltipFactory = () -> {
+            var font =  XKLib.RENDER_CONTEXT.get().getGUIGraphics().defaultFont();
+            var w = font.width(text, 20);
+            return new ContainerWidget()
+                    .addChild(
+                    new Label(text).inlineStyle(String.format("""
+                            size: %spx %spx;
+                            border: 2px;
+                            border-color: -1;
+                            label-text-color: -1;
+                            label-text-height: 20;
+                            text-align: center;
+                            margin-left: 12px;
+                            background-color: 0xdd263136;
+                        """,w+16,30))
+                    );
+
+        };
+        return this;
     }
 }

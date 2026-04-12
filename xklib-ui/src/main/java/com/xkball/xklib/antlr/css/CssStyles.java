@@ -99,6 +99,12 @@ public class CssStyles {
                         label.setTextScale(textScale);
                     }
                 }), TextScale.class);
+        this.register("label-text-height", value -> new WidgetIntStyleProperty("label-text-height", value,
+                (widget, height) -> {
+                    if (widget instanceof Label label) {
+                        label.lineHeight = height;
+                    }
+                }), Integer.class);
         this.register("button-text-color", value -> new WidgetIntStyleProperty("button-text-color", value,
                 (widget, color) -> {
                     if (widget instanceof Button button) {
@@ -299,10 +305,10 @@ public class CssStyles {
         this.registerField("flex-shrink", Float.class, (s, v) -> s.flexShrink = v);
         this.registerField("flex-basis", TaffyDimension.class, (s, v) -> s.flexBasis = v);
 
-        this.registerField("grid-template-rows", CssTrackList.class, (s, v) -> s.gridTemplateRows = List.copyOf(v.values()));
-        this.registerField("grid-template-columns", CssTrackList.class, (s, v) -> s.gridTemplateColumns = List.copyOf(v.values()));
-        this.registerField("grid-auto-rows", CssTrackList.class, (s, v) -> s.gridAutoRows = List.copyOf(v.values()));
-        this.registerField("grid-auto-columns", CssTrackList.class, (s, v) -> s.gridAutoColumns = List.copyOf(v.values()));
+        this.registerField("grid-template-rows", CssTrackList.class, (s, v) -> s.gridTemplateRows = List.copyOf(v.get()));
+        this.registerField("grid-template-columns", CssTrackList.class, (s, v) -> s.gridTemplateColumns = List.copyOf(v.get()));
+        this.registerField("grid-auto-rows", CssTrackList.class, (s, v) -> s.gridAutoRows = List.copyOf(v.get()));
+        this.registerField("grid-auto-columns", CssTrackList.class, (s, v) -> s.gridAutoColumns = List.copyOf(v.get()));
         this.registerField("grid-auto-flow", GridAutoFlow.class, (s, v) -> s.gridAutoFlow = v);
         this.registerField("grid-row", CssGridLine.class, (s, v) -> s.gridRow = new TaffyLine<>(v.start(), v.end()));
         this.registerField("grid-column", CssGridLine.class, (s, v) -> s.gridColumn = new TaffyLine<>(v.start(), v.end()));

@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class CascadingStyleSheets {
 
+    public static boolean resizing = false;
     private static final Comparator<StyleSheetUnit> APPLY_ORDER = Comparator
             .comparingInt(StyleSheetUnit::weight)
             .thenComparingInt(StyleSheetUnit::sourceOrder);
@@ -64,7 +65,7 @@ public class CascadingStyleSheets {
         public void update(CascadingStyleSheets sheets, IGuiWidget widget) {
             var newStaticMatched = this.staticMatched;
             var staticChanged = false;
-            if (widget.isDirty()) {
+            if (widget.isDirty() || resizing) {
                 newStaticMatched = collectMatched(sheets, widget, false);
                 staticChanged = !newStaticMatched.equals(this.staticMatched);
             }
@@ -73,7 +74,7 @@ public class CascadingStyleSheets {
             var dynamicChanged = !newDynamicMatched.equals(this.dynamicMatched);
             this.dynamicMatchedCount = newDynamicMatched.size();
 
-            if (staticChanged || dynamicChanged || this.style.isEmpty()) {
+            if (staticChanged || dynamicChanged || this.style.isEmpty() || resizing) {
                 this.staticMatched = newStaticMatched;
                 this.dynamicMatched = newDynamicMatched;
                 if (rebuild(widget, this.staticMatched, this.dynamicMatched)) {

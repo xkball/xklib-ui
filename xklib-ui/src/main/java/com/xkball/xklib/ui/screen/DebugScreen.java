@@ -82,10 +82,11 @@ public class DebugScreen extends ContainerWidget {
                 align-items: stretch;
                 size: 100% 100%;
             }
-            Label.debug-header {
+            .debug-header {
                 size: 100% 22;
                 flex-shrink: 0;
                 background-color: 0xFFE2E8F0;
+                text-align: center;
             }
             Label.debug-style-title {
                 size: 100% 22;
@@ -128,7 +129,7 @@ public class DebugScreen extends ContainerWidget {
     private final SplitContainer treeView = new SplitContainer(false, 3);
     private final ContainerWidget styleViewContent = new ContainerWidget();
     private final ContainerWidget matchedCssContent = new ContainerWidget();
-    private final Label styleTargetTitle = new Label("未选择组件", TextAlign.LEFT, TEXT_COLOR);
+    private final Label styleTargetTitle = new Label("未选择组件", TEXT_COLOR);
     private final BoxModelPreview boxModelPreview = new BoxModelPreview();
     private final ContainerWidget treeViewContent = new ContainerWidget();
     private final ContainerWidget fieldViewContent = new ContainerWidget();
@@ -197,7 +198,7 @@ public class DebugScreen extends ContainerWidget {
                 .addTabPage(treeView, "查看器")
                 .addTabPage(performanceScreen, "性能监视器"));
 
-        var keepUpdatingLabel = new Label("保持更新", TextAlign.LEFT, TEXT_COLOR);
+        var keepUpdatingLabel = new Label("保持更新", TEXT_COLOR);
         keepUpdatingLabel.setCSSClassName("debug-keep-updating-l");
         keepUpdatingLabel.setTextScale(TextScale.EXPAND_WIDTH);
 
@@ -211,7 +212,7 @@ public class DebugScreen extends ContainerWidget {
     }
 
     private Label makeHeader(String text) {
-        var label = new Label(text, TextAlign.CENTER, TEXT_COLOR);
+        var label = new Label(text, TEXT_COLOR);
         label.setCSSClassName("debug-header");
         label.setTextScale(TextScale.EXPAND_WIDTH);
         return label;
@@ -295,7 +296,7 @@ public class DebugScreen extends ContainerWidget {
     }
 
     private Label createStyleRow(String text, boolean strong) {
-        var label = new Label(text, TextAlign.LEFT, strong ? 0xFF0F172A : TEXT_COLOR);
+        var label = new Label(text, strong ? 0xFF0F172A : TEXT_COLOR);
         label.setCSSClassName("debug-style-row");
         label.setTextScale(TextScale.EXPAND_WIDTH);
         return label;
@@ -452,7 +453,7 @@ public class DebugScreen extends ContainerWidget {
             private final Object fieldValue;
 
             FieldRow(IComponent text, Object fieldValue) {
-                super(text, TextAlign.LEFT, TEXT_COLOR);
+                super(text, TEXT_COLOR);
                 this.fieldValue = fieldValue;
                 this.setCSSClassName("debug-field-row");
             }
@@ -483,7 +484,7 @@ public class DebugScreen extends ContainerWidget {
         private final boolean isSelected;
 
         NodeRow(Widget target, IComponent text, boolean isSelected) {
-            super(text, TextAlign.LEFT, TEXT_COLOR);
+            super(text, TEXT_COLOR);
             this.target = target;
             this.isSelected = isSelected;
             this.setCSSClassName("debug-node-row");

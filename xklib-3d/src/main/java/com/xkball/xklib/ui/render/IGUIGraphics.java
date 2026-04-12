@@ -142,6 +142,12 @@ public interface IGUIGraphics {
         this.drawString(font, text, x - font.width(text) * scale / 2, y, color, height);
     }
     
+    default void drawCenteredString(IComponent text, float x, float y, int color, boolean dropShadow, float height) {
+        var font = this.defaultFont();
+        var scale = height / (float)font.lineHeight();
+        this.drawString(font, text, x - font.width(text) * scale / 2, y, color, dropShadow, height);
+    }
+    
     default void drawString(IFont font, @Nullable IComponent text, float x, float y, int color, float height){
         this.getPose().pushMatrix();
         var scale = height / (float)font.lineHeight();
@@ -150,11 +156,27 @@ public interface IGUIGraphics {
         this.getPose().popMatrix();
     }
     
+    default void drawString(IFont font, @Nullable IComponent text, float x, float y, int color, boolean dropShadow, float height){
+        this.getPose().pushMatrix();
+        var scale = height / (float)font.lineHeight();
+        this.getPose().scale(scale,scale);
+        this.drawString(font, text, x/scale, y/scale, color, dropShadow);
+        this.getPose().popMatrix();
+    }
+    
     default void drawString(IFont font, @Nullable String text, float x, float y, int color, float height){
         this.getPose().pushMatrix();
         var scale = height / (float)font.lineHeight();
         this.getPose().scale(scale,scale);
         this.drawString(font, text, x/scale, y/scale, color);
+        this.getPose().popMatrix();
+    }
+    
+    default void drawString(IFont font, @Nullable String text, float x, float y, int color, boolean dropShadow, float height){
+        this.getPose().pushMatrix();
+        var scale = height / (float)font.lineHeight();
+        this.getPose().scale(scale,scale);
+        this.drawString(font, text, x/scale, y/scale, color,dropShadow);
         this.getPose().popMatrix();
     }
     
@@ -168,6 +190,10 @@ public interface IGUIGraphics {
     
     default void drawString(@Nullable IComponent text, float x, float y, int color, float height){
         this.drawString(this.defaultFont(), text, x, y, color, height);
+    }
+    
+    default void drawString(@Nullable IComponent text, float x, float y, int color, boolean dropShadow, float height){
+        this.drawString(this.defaultFont(), text, x, y, color,dropShadow, height);
     }
     
     default void drawString(@Nullable IComponent text, float x, float y, int color) {

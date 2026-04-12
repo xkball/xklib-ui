@@ -3,19 +3,22 @@ package com.xkball.xklib.ui.layout;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IFont;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.ui.widget.Label;
 import dev.vfyjxf.taffy.geometry.FloatSize;
 import dev.vfyjxf.taffy.util.MeasureFunc;
+
+import java.util.function.IntSupplier;
 
 public enum TextScale {
     FIXED{
         @Override
-        public float getTextHeight(IFont font, IComponent text, float spaceWidth, float spaceHeight) {
-            return Math.min(font.lineHeight(), FIT_TO_MAX.getTextHeight(font, text, spaceWidth, spaceHeight));
+        public float getTextHeight(int lineHeight, IFont font, IComponent text, float spaceWidth, float spaceHeight) {
+            return lineHeight;
         }
     },
     FIT_TO_MAX{
         @Override
-        public float getTextHeight(IFont font, IComponent text, float spaceWidth, float spaceHeight) {
+        public float getTextHeight(int lineHeight, IFont font, IComponent text, float spaceWidth, float spaceHeight) {
             var w = font.width(text);
             var r = spaceWidth/w;
             return Math.min(font.lineHeight() * r,spaceHeight);
@@ -23,8 +26,8 @@ public enum TextScale {
     },
     EXPAND_WIDTH{
         @Override
-        public float getTextHeight(IFont font, IComponent text, float spaceWidth, float spaceHeight) {
-            return FIT_TO_MAX.getTextHeight(font, text, spaceWidth, spaceHeight);
+        public float getTextHeight(int lineHeight, IFont font, IComponent text, float spaceWidth, float spaceHeight) {
+            return FIT_TO_MAX.getTextHeight(lineHeight,font, text, spaceWidth, spaceHeight);
         }
         
         @Override
@@ -38,12 +41,12 @@ public enum TextScale {
         }
     };
     
-    public float getTextHeight(IFont font, IComponent text, float spaceWidth, float spaceHeight) {
+    public float getTextHeight(int lineHeight, IFont font, IComponent text, float spaceWidth, float spaceHeight) {
         return 0;
     }
     
-    public float getTextHeight(IFont font, String text, float spaceWidth, float spaceHeight) {
-        return this.getTextHeight(font, IComponent.literal(text), spaceWidth, spaceHeight);
+    public float getTextHeight(int lineHeight, IFont font, String text, float spaceWidth, float spaceHeight) {
+        return this.getTextHeight(lineHeight, font, IComponent.literal(text), spaceWidth, spaceHeight);
     }
     
     public MeasureFunc getMeasureFunc(IFont font, IComponent text){

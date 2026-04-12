@@ -51,7 +51,7 @@ public class TextDisplay extends ContainerWidget {
             
             for (int i = 0; i < lines.size(); i++) {
                 var line = lines.get(i);
-                var lineLabel = new Label(line, TextAlign.LEFT, 0xFFE2E8F0);
+                var lineLabel = new Label(line, 0xFFE2E8F0);
                 lineLabel.inlineStyle("background-color: " + (i % 2 == 0 ? 0xFF475569 : 0xFF3F4A5B) + ";");
                 lineLabel.setStyle(s -> {
                     s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(32 * (1 / 0.9f)));

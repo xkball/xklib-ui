@@ -4,6 +4,7 @@ import com.xkball.xklib.ap.annotation.RegisterEvent;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.WidgetTestFrame;
+import com.xkball.xklib.ui.css.CascadingStyleSheets;
 import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.input.CharacterEvent;
@@ -36,7 +37,7 @@ public class GuiSystem implements AutoCloseable {
     public static final ThreadLocal<GuiSystem> INSTANCE = new ThreadLocal<>();
     
     public final List<Pair<Widget, TaffyTree>> screenLayers = new ArrayList<>();
-    
+    public TooltipData tooltip = new TooltipData();
     public long windowHandle;
     private double lastMouseX;
     private double lastMouseY;
@@ -87,6 +88,7 @@ public class GuiSystem implements AutoCloseable {
         for(var layer : screenLayers) {
             layer.getFirst().markDirty();
         }
+        CascadingStyleSheets.resizing = true;
     }
     
     public void setGraphics(IGUIGraphics graphics) {
@@ -284,10 +286,12 @@ public class GuiSystem implements AutoCloseable {
         synchronized (this){
             this.processTreeUpdates();
             this.processLayoutUpdates();
+            this.processTooltipUpdates(mouseX, mouseY);
             if(this.debugScreen != null && this.debugScreen.widget instanceof DebugScreen ds){
                 ds.updatePerformanceData(((SimpleProfiler) profiler).getData());
             }
         }
+        CascadingStyleSheets.resizing = false;
         profiler.pushPop("gui render");
         for (var pair : this.screenLayers) {
             var layer = pair.getFirst();
@@ -300,6 +304,13 @@ public class GuiSystem implements AutoCloseable {
                 layer.renderAbove(this.graphics, mouseX, mouseY, partialTicks);
                 this.graphics.layerUp();
             }
+        }
+        if(this.tooltip.widget != null){
+            tooltip.widget.renderBelow(this.graphics, mouseX, mouseY, partialTicks);
+            this.graphics.layerUp();
+            tooltip.widget.render(this.graphics, mouseX, mouseY, partialTicks);
+            this.graphics.layerUp();
+            tooltip.widget.renderAbove(this.graphics, mouseX, mouseY, partialTicks);
         }
         this.graphics.draw();
         profiler.pop();
@@ -319,6 +330,27 @@ public class GuiSystem implements AutoCloseable {
             widget.updateStyle(widget.getStyleSheetAsRoot());
             tree.computeLayout(widget.getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
             layer.getFirst().resize(0,0);
+        }
+    }
+    
+    private void processTooltipUpdates(int mouseX, int mouseY){
+        if(this.tooltip.parent == null || !this.tooltip.parent.isHovered()){
+            tooltip.parent = null;
+            tooltip.widget = null;
+            tooltip.tree = null;
+        }
+        else{
+            tooltip.widget.updateStyle(tooltip.widget.getStyleSheetAsRoot());
+            tooltip.tree.computeLayout(tooltip.widget.getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
+            var w = tooltip.widget.getLayout().contentBoxWidth();
+            var h = tooltip.widget.getLayout().contentBoxHeight();
+            var wLeft = this.screenWidth - mouseX;
+            var hLeft = this.screenHeight - mouseY;
+            var px = mouseX;
+            var py = mouseY;
+            if(w > wLeft) px = (int) (this.screenWidth - w);
+            if(h > hLeft) py = (int) (this.screenHeight - h);
+            tooltip.widget.resize(px, py);
         }
     }
     
@@ -408,5 +440,21 @@ public class GuiSystem implements AutoCloseable {
                 throw new RuntimeException(e);
             }
         }
+    }
+    
+    public void setTooltip(Widget tooltip, Widget parent){
+        this.tooltip.parent = parent;
+        this.tooltip.widget = tooltip;
+        tooltip.asTreeRoot();
+        tooltip.setGuiSystem(this);
+        tooltip.init();
+        tooltip.markDirty();
+        this.tooltip.tree = tooltip.getTree();
+    }
+    
+    public static class TooltipData{
+        Widget widget;
+        TaffyTree tree;
+        Widget parent;
     }
 }

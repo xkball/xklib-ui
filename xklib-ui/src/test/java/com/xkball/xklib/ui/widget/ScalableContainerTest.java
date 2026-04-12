@@ -28,13 +28,13 @@ public class ScalableContainerTest {
             rootStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
             root.setStyle(rootStyle);
 
-            var title = new Label("ScalableContainer 测试", TextAlign.CENTER, 0xFFE2E8F0);
+            var title = new Label("ScalableContainer 测试",  0xFFE2E8F0);
             var titleStyle = new TaffyStyle();
             titleStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(30));
             titleStyle.flexShrink = 0;
             root.addChild(title, titleStyle);
 
-            var hint = new Label("滚轮缩放 | 左键拖动平移 | Shift+滚轮垂直移动 | Ctrl+滚轮水平移动", TextAlign.CENTER, 0xFF94A3B8);
+            var hint = new Label("滚轮缩放 | 左键拖动平移 | Shift+滚轮垂直移动 | Ctrl+滚轮水平移动",  0xFF94A3B8);
             var hintStyle = new TaffyStyle();
             hintStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(20));
             hintStyle.flexShrink = 0;
@@ -94,7 +94,7 @@ public class ScalableContainerTest {
         sectionStyle.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content());
         section.setStyle(sectionStyle);
 
-        var sectionTitle = new Label("按钮组", TextAlign.LEFT, 0xFFFFFFFF);
+        var sectionTitle = new Label("按钮组",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
         titleStyle.flexShrink = 0;
@@ -135,7 +135,7 @@ public class ScalableContainerTest {
         sectionStyle.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content());
         section.setStyle(sectionStyle);
 
-        var sectionTitle = new Label("下拉选择框", TextAlign.LEFT, 0xFFFFFFFF);
+        var sectionTitle = new Label("下拉选择框",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
         titleStyle.flexShrink = 0;
@@ -148,7 +148,7 @@ public class ScalableContainerTest {
         comboStyle.flexShrink = 0;
         section.addChild(comboBox, comboStyle);
 
-        var selectedLabel = new Label("选择: " + comboBox.getSelected(), TextAlign.LEFT, 0xFFE2E8F0);
+        var selectedLabel = new Label("选择: " + comboBox.getSelected(),  0xFFE2E8F0);
         comboBox.setOnChange((String v) -> selectedLabel.setText("选择: " + v));
         var labelStyle = new TaffyStyle();
         labelStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
@@ -168,7 +168,7 @@ public class ScalableContainerTest {
         sectionStyle.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content());
         section.setStyle(sectionStyle);
 
-        var sectionTitle = new Label("拖动滑块", TextAlign.LEFT, 0xFFFFFFFF);
+        var sectionTitle = new Label("拖动滑块",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
         titleStyle.flexShrink = 0;
@@ -180,7 +180,7 @@ public class ScalableContainerTest {
         drag1Style.flexShrink = 0;
         section.addChild(drag1, drag1Style);
 
-        var valueLabel = new Label(String.format("值: %.2f", drag1.getValue()), TextAlign.LEFT, 0xFFE2E8F0);
+        var valueLabel = new Label(String.format("值: %.2f", drag1.getValue()),  0xFFE2E8F0);
         drag1.setOnChange((Double v) -> valueLabel.setText(String.format("值: %.2f", v)));
         var labelStyle = new TaffyStyle();
         labelStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
@@ -200,7 +200,7 @@ public class ScalableContainerTest {
         sectionStyle.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content());
         section.setStyle(sectionStyle);
 
-        var sectionTitle = new Label("更多滑块控制", TextAlign.LEFT, 0xFFFFFFFF);
+        var sectionTitle = new Label("更多滑块控制",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
         titleStyle.flexShrink = 0;
@@ -212,7 +212,7 @@ public class ScalableContainerTest {
         drag1Style.flexShrink = 0;
         section.addChild(drag1, drag1Style);
 
-        var valueLabel1 = new Label(String.format("红色: %d", (int) drag1.getValue()), TextAlign.LEFT, 0xFFE2E8F0);
+        var valueLabel1 = new Label(String.format("红色: %d", (int) drag1.getValue()),  0xFFE2E8F0);
         drag1.setOnChange((Double v) -> valueLabel1.setText(String.format("红色: %d", (int) v.doubleValue())));
         var labelStyle1 = new TaffyStyle();
         labelStyle1.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
@@ -225,7 +225,7 @@ public class ScalableContainerTest {
         drag2Style.flexShrink = 0;
         section.addChild(drag2, drag2Style);
 
-        var valueLabel2 = new Label(String.format("绿色: %d", (int) drag2.getValue()), TextAlign.LEFT, 0xFFE2E8F0);
+        var valueLabel2 = new Label(String.format("绿色: %d", (int) drag2.getValue()),  0xFFE2E8F0);
         drag2.setOnChange((Double v) -> valueLabel2.setText(String.format("绿色: %d", (int) v.doubleValue())));
         var labelStyle2 = new TaffyStyle();
         labelStyle2.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
@@ -238,7 +238,7 @@ public class ScalableContainerTest {
         drag3Style.flexShrink = 0;
         section.addChild(drag3, drag3Style);
 
-        var valueLabel3 = new Label(String.format("蓝色: %d", (int) drag3.getValue()), TextAlign.LEFT, 0xFFE2E8F0);
+        var valueLabel3 = new Label(String.format("蓝色: %d", (int) drag3.getValue()),  0xFFE2E8F0);
         drag3.setOnChange((Double v) -> valueLabel3.setText(String.format("蓝色: %d", (int) v.doubleValue())));
         var labelStyle3 = new TaffyStyle();
         labelStyle3.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
@@ -258,7 +258,7 @@ public class ScalableContainerTest {
         sectionStyle.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content());
         section.setStyle(sectionStyle);
 
-        var sectionTitle = new Label("颜色网格", TextAlign.LEFT, 0xFFFFFFFF);
+        var sectionTitle = new Label("颜色网格",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(24));
         titleStyle.flexShrink = 0;

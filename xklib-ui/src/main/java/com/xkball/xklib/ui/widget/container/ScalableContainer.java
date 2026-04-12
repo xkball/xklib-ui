@@ -153,7 +153,7 @@ public class ScalableContainer extends AbsoluteContainer {
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         if (!this.enabled || !this.visible) {
-            this.hovered = false;
+            this.setHovered(false);
             return false;
         }
         double cx = this.toChildX(mouseX);
@@ -169,14 +169,14 @@ public class ScalableContainer extends AbsoluteContainer {
             if (child instanceof ContainerWidget acw) {
                 acw.clearHoveredRecursive();
             } else {
-                child.hovered = false;
+                child.setHovered(false);
             }
         }
         if(!handled){
-            this.hovered = this.isMouseOver(mouseX, mouseY);
+            this.setHovered(this.isMouseOver(mouseX, mouseY));
             if(this.hovered) return true;
         }
-        else hovered = false;
+        else this.setHovered(false);
         return handled;
     }
     

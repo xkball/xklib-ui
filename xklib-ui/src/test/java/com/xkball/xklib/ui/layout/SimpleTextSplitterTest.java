@@ -63,7 +63,7 @@ public class SimpleTextSplitterTest {
             s.size = TaffySize.all(TaffyDimension.percent(1f));
         });
 
-        var titleLabel = new Label(title, TextAlign.CENTER, 0xFFE2E8F0);
+        var titleLabel = new Label(title,  0xFFE2E8F0);
         titleLabel.inlineStyle("background-color: 0xFF334155;");
         titleLabel.setStyle(s -> {
             s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(30));

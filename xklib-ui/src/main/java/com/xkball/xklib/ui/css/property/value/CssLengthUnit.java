@@ -61,7 +61,7 @@ public class CssLengthUnit implements CalcExpression {
                 LOGGER.warn("Cannot parse number: {}",string,e);
                 throw e;
             }
-            return new CssLengthUnit(Type.LENGTH,v);
+            return new CssLengthUnit(Type.EM,v);
         }
         else if (string.endsWith("rpx")){
             try {
@@ -70,7 +70,16 @@ public class CssLengthUnit implements CalcExpression {
                 LOGGER.warn("Cannot parse number: {}",string,e);
                 throw e;
             }
-            return new CssLengthUnit(Type.LENGTH,v * rpxScaleWorkaround);
+            return new CssLengthUnit(Type.RPX,v);
+        }
+        else if (string.endsWith("px")){
+            try {
+                v = Float.parseFloat(string.substring(0, string.length()-2));
+            }catch (NumberFormatException e){
+                LOGGER.warn("Cannot parse number: {}",string,e);
+                throw e;
+            }
+            return new CssLengthUnit(Type.LENGTH,v);
         }
         else {
             try {
@@ -86,6 +95,7 @@ public class CssLengthUnit implements CalcExpression {
     public TaffyDimension toDimension(){
         return switch (type){
             case LENGTH -> TaffyDimension.length(value);
+            case RPX -> TaffyDimension.length(value * rpxScaleWorkaround);
             case PERCENTAGE -> TaffyDimension.percent(value/100f);
             case EM -> TaffyDimension.length(value * 16f);
             case AUTO -> TaffyDimension.AUTO;
@@ -100,6 +110,12 @@ public class CssLengthUnit implements CalcExpression {
         if(type == Type.PERCENTAGE){
             return LengthPercentage.percent(this.value/100);
         }
+        if(type == Type.RPX){
+            return LengthPercentage.length(this.value * rpxScaleWorkaround);
+        }
+        if(type == Type.EM){
+            return LengthPercentage.length(this.value * 16f);
+        }
         if(type != Type.LENGTH){
             LOGGER.warn("Not a length or percentage: {}",type);
         }
@@ -109,6 +125,7 @@ public class CssLengthUnit implements CalcExpression {
     public LengthPercentageAuto toLengthPercentageAuto(){
         return switch (type){
             case LENGTH -> LengthPercentageAuto.length(this.value);
+            case RPX -> LengthPercentageAuto.length(this.value * rpxScaleWorkaround);
             case PERCENTAGE -> LengthPercentageAuto.percent(this.value/100f);
             case EM -> LengthPercentageAuto.length(value * 16f);
             case AUTO -> LengthPercentageAuto.AUTO;
@@ -122,6 +139,7 @@ public class CssLengthUnit implements CalcExpression {
     public String toString() {
         return switch (type){
             case LENGTH -> value + "px";
+            case RPX -> value + "rpx";
             case PERCENTAGE -> value + "%";
             case EM -> value + "em";
             case AUTO -> "auto";
@@ -136,6 +154,7 @@ public class CssLengthUnit implements CalcExpression {
     public float resolve(float basis) {
         return switch (type){
             case LENGTH -> this.value;
+            case RPX -> this.value * rpxScaleWorkaround;
             case PERCENTAGE -> basis * this.value/100f;
             case EM -> this.value * 16f;
             case AUTO, CONTENT, MIN_CONTENT, MAX_CONTENT -> basis;
@@ -145,6 +164,7 @@ public class CssLengthUnit implements CalcExpression {
     
     public enum Type{
         LENGTH,
+        RPX,
         PERCENTAGE,
         EM,
         AUTO,

@@ -47,7 +47,7 @@ public class ComboBox<T> extends ContainerWidget {
         this.toDisplay = toDisplay;
         this.nullable = nullable;
         this.selected = nullable ? null : (options.isEmpty() ? null : options.getFirst());
-        this.displayLabel = new Label(selectedText(), TextAlign.LEFT, 0xFFE2E8F0);
+        this.displayLabel = new Label(selectedText(),0xFFE2E8F0);
         this.inlineStyle(SELF_CSS);
     }
 
@@ -107,7 +107,7 @@ public class ComboBox<T> extends ContainerWidget {
         overlay.inlineStyle("background-color: 0xFF0F172A;");
         
         if (nullable) {
-            var nullLabel = new Label("", TextAlign.LEFT, 0xFF94A3B8);
+            var nullLabel = new Label("",  0xFF94A3B8);
             nullLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
             var nullStyle = new TaffyStyle();
             nullStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
@@ -116,7 +116,7 @@ public class ComboBox<T> extends ContainerWidget {
         }
 
         for (T option : options) {
-            var itemLabel = new Label(toDisplay.apply(option), TextAlign.LEFT, 0xFFE2E8F0);
+            var itemLabel = new Label(toDisplay.apply(option), 0xFFE2E8F0);
             itemLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
             var itemStyle = new TaffyStyle();
             itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));

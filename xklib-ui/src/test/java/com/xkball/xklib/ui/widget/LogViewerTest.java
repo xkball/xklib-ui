@@ -33,7 +33,7 @@ public class LogViewerTest {
         rootStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
         root.setStyle(rootStyle);
         
-        var title = new Label("日志查看器", TextAlign.CENTER, 0xFFFFFFFF);
+        var title = new Label("日志查看器",0xFFFFFFFF);
         var titleStyle = new dev.vfyjxf.taffy.style.TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(40));
         titleStyle.flexShrink = 0;

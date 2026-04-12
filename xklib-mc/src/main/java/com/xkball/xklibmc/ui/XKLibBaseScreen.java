@@ -12,7 +12,6 @@ import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dRenderContext;
-import dev.vfyjxf.taffy.style.TextAlign;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
@@ -26,8 +25,7 @@ import org.jspecify.annotations.Nullable;
 public class XKLibBaseScreen extends Screen {
     
     protected GuiSystem guiSystem = new GuiSystem();
-    protected float scaleX = 1;
-    protected float scaleY = 1;
+    protected float scale = 1;
     
     public XKLibBaseScreen() {
         super(Component.empty());
@@ -73,18 +71,17 @@ public class XKLibBaseScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         var guiGraphics = (B3dGuiGraphics) XKLib.RENDER_CONTEXT.get().getGUIGraphics();
         guiGraphics.setInner(graphics);
-        guiGraphics.scaleX = this.scaleX;
-        guiGraphics.scaleY = this.scaleY;
+        guiGraphics.scale = this.scale;
         guiSystem.setGraphics(guiGraphics);
         graphics.pose().pushMatrix();
-        graphics.pose().scale(1/scaleX,1/scaleY);
-        guiSystem.render((int) (mouseX * scaleX), (int) (mouseY * scaleY), a);
+        graphics.pose().scale(1/ scale,1/scale);
+        guiSystem.render((int) (mouseX * scale), (int) (mouseY * scale), a);
         graphics.pose().popMatrix();
-        super.extractRenderState(graphics, (int) (mouseX * scaleX), (int) (mouseY * scaleY), a);
+        super.extractRenderState(graphics, (int) (mouseX * scale), (int) (mouseY * scale), a);
     }
     
     public com.xkball.xklib.ui.input.MouseButtonEvent convertMouseButtonEvent(MouseButtonEvent event) {
-        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x() * scaleX,event.y() * scaleY,event.button(),event.modifiers());
+        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x() * scale,event.y() * scale,event.button(),event.modifiers());
     }
     
     public com.xkball.xklib.ui.input.KeyEvent convertKeyEvent(KeyEvent event) {
@@ -106,9 +103,8 @@ public class XKLibBaseScreen extends Screen {
         var actualW = window.getWidth();
         var actualH = window.getHeight();
         var w = this.width;
-        var h = this.height;
-        this.scaleX = actualW/(float)w;
-        this.scaleY = actualH/(float)h;
+        this.scale = actualW/(float)w;
+        CssLengthUnit.rpxScaleWorkaround = this.scale;
         guiSystem.resize(actualW, actualH);
     }
     
@@ -127,12 +123,12 @@ public class XKLibBaseScreen extends Screen {
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         var e = convertMouseButtonEvent(event);
-        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx * scaleX, dy * scaleY));
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx * scale, dy * scale));
     }
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x * scaleX, y * scaleY, scrollX * scaleX, scrollY * scaleY));
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x * scale, y * scale, scrollX * scale, scrollY * scale));
     }
     
     @Override
@@ -156,7 +152,7 @@ public class XKLibBaseScreen extends Screen {
     
     @Override
     public void mouseMoved(double x, double y) {
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * scaleX,y * scaleY));
+        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * scale,y * scale));
     }
     
     @Override
@@ -166,14 +162,14 @@ public class XKLibBaseScreen extends Screen {
     
     public static float tryGetScaleX(){
         if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics){
-            return guiGraphics.scaleX;
+            return guiGraphics.scale;
         }
         return 1;
     }
     
     public static float tryGetScaleY(){
         if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics){
-            return guiGraphics.scaleY;
+            return guiGraphics.scale;
         }
         return 1;
     }
@@ -187,11 +183,12 @@ public class XKLibBaseScreen extends Screen {
                         grid-template-rows: 20rpx 1fr 20rpx;
                         """)
                 .addChild(
-                        new Label(title, TextAlign.CENTER)
+                        new Label(title)
                                 .inlineStyle("""
                                         background-color: 0xaa111111;
                                         label-text-color: -2039584;
                                         label-text-scale: fit-to-max;
+                                        text-align: center;
                                         """))
                 .addChild(
                         new SplitContainer()

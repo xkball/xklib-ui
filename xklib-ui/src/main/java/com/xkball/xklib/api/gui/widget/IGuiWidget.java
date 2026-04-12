@@ -6,6 +6,7 @@ import com.xkball.xklib.ui.layout.FocusNode;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.layout.TaffySizeParser;
 import com.xkball.xklib.ui.system.GuiSystem;
+import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.tree.Layout;
@@ -53,9 +54,6 @@ public interface IGuiWidget {
     
     String getCSSId();
     
-    /*
-    仅供GuiSystem更新, 不应该使用
-     */
     void setHovered(boolean hovered);
     
     boolean isHovered();
@@ -123,6 +121,10 @@ public interface IGuiWidget {
         return List.of();
     }
     
+    default @Nullable IGuiWidget createTooltip(){
+        return null;
+    }
+    
     default void resize(float offsetX, float offsetY){
     
     }
@@ -156,6 +158,15 @@ public interface IGuiWidget {
     
     default void onFocusChanged(boolean focused) {
     
+    }
+    
+    default void onHoverChanged(boolean hovered) {
+        if (hovered ) {
+            var tooltip = this.createTooltip();
+            if(tooltip instanceof Widget && this instanceof Widget ) {
+                GuiSystem.INSTANCE.get().setTooltip((Widget) tooltip, (Widget) this);
+            }
+        }
     }
 
     default void onStyleSheetChanged() {

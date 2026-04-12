@@ -225,7 +225,7 @@ public class FlexLayoutTest {
                 
                 var labelStyle = new TaffyStyle();
                 labelStyle.size = new TaffySize<>(TaffyDimension.stretch(), TaffyDimension.length(50));
-                var label = new Label("" + (i + 1), TextAlign.CENTER);
+                var label = new Label("" + (i + 1));
                 cell.addChild(label,labelStyle);
             }
             return root;

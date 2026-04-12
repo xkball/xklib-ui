@@ -26,7 +26,7 @@ public class CheckBoxTest {
                 s.size = TaffySize.all(TaffyDimension.percent(1f));
             });
 
-            var title = new Label("CheckBox 测试", TextAlign.CENTER, 0xFF1E293B);
+            var title = new Label("CheckBox 测试",  0xFF1E293B);
             title.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.length(300), TaffyDimension.length(24)));
             root.addChild(title);
 
@@ -38,7 +38,7 @@ public class CheckBoxTest {
             cb1.bind(binding);
             root.addChild(cb1);
 
-            var statusLabel = new Label("当前: 关", TextAlign.CENTER, 0xFF1E293B);
+            var statusLabel = new Label("当前: 关", 0xFF1E293B);
             statusLabel.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.length(300), TaffyDimension.length(24)));
             binding.addCallback(v -> statusLabel.setText("当前: " + (v ? "开" : "关")));
             root.addChild(statusLabel);
@@ -48,7 +48,7 @@ public class CheckBoxTest {
             cb2.setValue(true);
             root.addChild(cb2);
 
-            var label2 = new Label("初始为开(无绑定)", TextAlign.CENTER, 0xFF1E293B);
+            var label2 = new Label("初始为开(无绑定)", 0xFF1E293B);
             label2.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.length(300), TaffyDimension.length(24)));
             root.addChild(label2);
 

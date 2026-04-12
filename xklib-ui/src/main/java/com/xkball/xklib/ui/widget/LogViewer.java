@@ -72,7 +72,7 @@ public class LogViewer extends ContainerWidget {
             int color = getColorForLevel(entry.getLevel());
             int bgColor = logContainer.getChildren().size() % 2 == 0 ? 0xFF1C2128 : 0xFF161B22;
             
-            var label = new Label(formattedLog, TextAlign.LEFT, color);
+            var label = new Label(formattedLog, color);
             label.inlineStyle("background-color: " + bgColor + ";");
             label.setStyle(s -> {
                 s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(20));

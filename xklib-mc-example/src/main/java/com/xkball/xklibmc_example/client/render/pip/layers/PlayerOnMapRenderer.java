@@ -27,7 +27,7 @@ public class PlayerOnMapRenderer implements PictureInPictureRenderLayer<WorldTer
                 if(entity == null) continue;
                 var playerState = entityRenderDispatcher.extractEntity(entity,0);
                 var playerPos = entity.position();
-                entityRenderDispatcher.submit(playerState,pip.cameraRenderState,playerPos.x,playerPos.y + 0.5,playerPos.z,poseStack,featureRenderDispatcher.getSubmitNodeStorage());
+                entityRenderDispatcher.submit(playerState,pip.cameraRenderState,playerPos.x,playerPos.y,playerPos.z,poseStack,featureRenderDispatcher.getSubmitNodeStorage());
             }
         }
         featureRenderDispatcher.renderAllFeatures();

@@ -192,7 +192,7 @@ public class ContainerWidget extends Widget {
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         if (!this.enabled || !this.visible) {
-            this.hovered = false;
+            this.setHovered(false);
             return false;
         }
         boolean isMouseOver = this.isMouseOver(mouseX, mouseY);
@@ -207,28 +207,28 @@ public class ContainerWidget extends Widget {
             if (child instanceof ContainerWidget acw) {
                 acw.clearHoveredRecursive();
             } else {
-                child.hovered = false;
+                child.setHovered(false);
             }
         }
         
         if (!handled) {
             if (isMouseOver) {
-                this.hovered = true;
+                this.setHovered(true);
                 return true;
             }
         }
         
-        this.hovered = false;
+        this.setHovered(false);
         return handled;
     }
     
     public void clearHoveredRecursive() {
-        this.hovered = false;
+        this.setHovered(false);
         for (Widget child : this.children) {
             if (child instanceof ContainerWidget acw) {
                 acw.clearHoveredRecursive();
             } else {
-                child.hovered = false;
+                child.setHovered(false);
             }
         }
     }

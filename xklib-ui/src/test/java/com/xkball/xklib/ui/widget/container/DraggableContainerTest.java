@@ -45,13 +45,13 @@ public class DraggableContainerTest {
         rootStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
         root.setStyle(rootStyle);
 
-        var title = new Label("AbsoluteContainer - 拖动测试", TextAlign.CENTER, 0xFFFFFFFF);
+        var title = new Label("AbsoluteContainer - 拖动测试",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(35));
         titleStyle.flexShrink = 0;
         root.addChild(title, titleStyle);
 
-        var hint = new Label("左键拖动可移动容器", TextAlign.CENTER, 0xFFCCCCCC);
+        var hint = new Label("左键拖动可移动容器",  0xFFCCCCCC);
         var hintStyle = new TaffyStyle();
         hintStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(20));
         hintStyle.flexShrink = 0;
@@ -76,17 +76,17 @@ public class DraggableContainerTest {
         absoluteContainer.addChild(box4);
 
         var boxWithChildren = createDraggableBox("包含子组件的盒子", 0xFFF39C12, 100, 520, 300, 200);
-        var childLabel1 = new Label("子标签 - 第一行", TextAlign.LEFT, 0xFF000000);
+        var childLabel1 = new Label("子标签 - 第一行",  0xFF000000);
         var childStyle1 = new TaffyStyle();
         childStyle1.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel1, childStyle1);
 
-        var childLabel2 = new Label("子标签 - 第二行", TextAlign.LEFT, 0xFF000000);
+        var childLabel2 = new Label("子标签 - 第二行",  0xFF000000);
         var childStyle2 = new TaffyStyle();
         childStyle2.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel2, childStyle2);
 
-        var childLabel3 = new Label("拖动外层容器移动", TextAlign.LEFT, 0xFF000000);
+        var childLabel3 = new Label("拖动外层容器移动",  0xFF000000);
         var childStyle3 = new TaffyStyle();
         childStyle3.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel3, childStyle3);
@@ -107,13 +107,13 @@ public class DraggableContainerTest {
         rootStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
         root.setStyle(rootStyle);
 
-        var title = new Label("ScalableContainer - 拖动测试", TextAlign.CENTER, 0xFFFFFFFF);
+        var title = new Label("ScalableContainer - 拖动测试",  0xFFFFFFFF);
         var titleStyle = new TaffyStyle();
         titleStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(35));
         titleStyle.flexShrink = 0;
         root.addChild(title, titleStyle);
 
-        var hint = new Label("滚轮缩放画布 | Shift+滚轮垂直平移 | Ctrl+滚轮水平平移 | 左键拖动盒子移动", TextAlign.CENTER, 0xFFCCCCCC);
+        var hint = new Label("滚轮缩放画布 | Shift+滚轮垂直平移 | Ctrl+滚轮水平平移 | 左键拖动盒子移动",  0xFFCCCCCC);
         var hintStyle = new TaffyStyle();
         hintStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(20));
         hintStyle.flexShrink = 0;
@@ -141,22 +141,22 @@ public class DraggableContainerTest {
         scalableContainer.addChild(box5);
 
         var boxWithChildren = createDraggableBox("复杂盒子", 0xFFFECEA8, 120, 650, 320, 230);
-        var childLabel1 = new Label("这个盒子包含多个子组件", TextAlign.LEFT, 0xFF000000);
+        var childLabel1 = new Label("这个盒子包含多个子组件",  0xFF000000);
         var childStyle1 = new TaffyStyle();
         childStyle1.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel1, childStyle1);
 
-        var childLabel2 = new Label("子组件不响应拖动事件", TextAlign.LEFT, 0xFF000000);
+        var childLabel2 = new Label("子组件不响应拖动事件",  0xFF000000);
         var childStyle2 = new TaffyStyle();
         childStyle2.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel2, childStyle2);
 
-        var childLabel3 = new Label("拖动容器本身可以移动", TextAlign.LEFT, 0xFF000000);
+        var childLabel3 = new Label("拖动容器本身可以移动",  0xFF000000);
         var childStyle3 = new TaffyStyle();
         childStyle3.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel3, childStyle3);
 
-        var childLabel4 = new Label("测试缩放后的拖动行为", TextAlign.LEFT, 0xFF000000);
+        var childLabel4 = new Label("测试缩放后的拖动行为",  0xFF000000);
         var childStyle4 = new TaffyStyle();
         childStyle4.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(22));
         boxWithChildren.addChild(childLabel4, childStyle4);
@@ -181,7 +181,7 @@ public class DraggableContainerTest {
         containerStyle.size = new TaffySize<>(TaffyDimension.length(width), TaffyDimension.length(height));
         container.setStyle(containerStyle);
 
-        var label = new Label(text, TextAlign.CENTER, 0xFFFFFFFF);
+        var label = new Label(text,  0xFFFFFFFF);
         var labelStyle = new TaffyStyle();
         labelStyle.size = new TaffySize<>(TaffyDimension.percent(0.9f), TaffyDimension.length(24));
         container.addChild(label, labelStyle);

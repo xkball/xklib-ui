@@ -31,7 +31,7 @@ public class SectionContainerTest {
             section1.setCSSId("section1");
             section1.setStyle(s -> s.size = TaffySize.of(TaffyDimension.percent(0.5f),TaffyDimension.content()));
             section1.getHeader().inlineStyle("background-color: 0xFF1E293B;");
-            var label1 = new Label("这是第一个分组的内容", TextAlign.CENTER, 0xFFE2E8F0);
+            var label1 = new Label("这是第一个分组的内容",  0xFFE2E8F0);
             label1.inlineStyle("background-color: 0xFF334155;");
             label1.setCSSId("label1");
             label1.style.size = TaffySize.of(TaffyDimension.percent(1),TaffyDimension.length(200));
@@ -73,7 +73,7 @@ public class SectionContainerTest {
             section3.setContent(content3);
             root.addChild(section3);
 
-            var hint = new Label("提示：点击分组标题可以展开/折叠内容", TextAlign.CENTER, 0xFF94A3B8);
+            var hint = new Label("提示：点击分组标题可以展开/折叠内容", 0xFF94A3B8);
             hint.setStyle(s -> {
                 s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(30));
                 s.flexShrink = 0;

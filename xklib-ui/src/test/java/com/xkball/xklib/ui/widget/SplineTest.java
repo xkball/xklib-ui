@@ -125,11 +125,11 @@ public class SplineTest {
         var panel = new ContainerWidget();
         panel.setCSSClassName("spline-left");
         panel.inlineStyle("background-color: 0xFF1E293B;");
-        var title = new Label("CubicSpline2D 样条曲线测试", TextAlign.CENTER, 0xFFFFFFFF);
+        var title = new Label("CubicSpline2D 样条曲线测试", 0xFFFFFFFF);
         title.setCSSClassName("spline-title");
         panel.addChild(title);
 
-        var typeTitle = new Label("样条曲线类型", TextAlign.LEFT, 0xFFE2E8F0);
+        var typeTitle = new Label("样条曲线类型",  0xFFE2E8F0);
         typeTitle.setCSSClassName("spline-subtitle");
         panel.addChild(typeTitle);
 
@@ -152,7 +152,7 @@ public class SplineTest {
         });
         panel.addChild(comboBox);
 
-        var countTitle = new Label("控制点数量", TextAlign.LEFT, 0xFFE2E8F0);
+        var countTitle = new Label("控制点数量",  0xFFE2E8F0);
         countTitle.setCSSClassName("spline-subtitle");
         panel.addChild(countTitle);
 
@@ -160,7 +160,7 @@ public class SplineTest {
         dragBox.setCSSClassName("spline-drag");
         panel.addChild(dragBox);
 
-        var valueLabel = new Label("当前: 4 个控制点", TextAlign.LEFT, 0xFFE2E8F0);
+        var valueLabel = new Label("当前: 4 个控制点",  0xFFE2E8F0);
         valueLabel.setCSSClassName("spline-value");
         panel.addChild(valueLabel);
         state.pointCountLabel = valueLabel;
@@ -254,7 +254,7 @@ public class SplineTest {
 
             this.inlineStyle("background-color: " + color + ";");
 
-            var label = new Label(name, TextAlign.CENTER, 0xFFFFFFFF);
+            var label = new Label(name, 0xFFFFFFFF);
             label.setCSSClassName("spline-point-label");
             this.addChild(label);
         }

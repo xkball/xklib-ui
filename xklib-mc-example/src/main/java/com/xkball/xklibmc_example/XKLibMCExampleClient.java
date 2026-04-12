@@ -1,6 +1,7 @@
 package com.xkball.xklibmc_example;
 
 import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;

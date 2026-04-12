@@ -51,14 +51,14 @@ public class WidgetWrapper extends Widget {
     
     private float rescaleX(float x){
         if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics) {
-            return this.x + (x - this.x) / guiGraphics.scaleX;
+            return this.x + (x - this.x) / guiGraphics.scale;
         }
         return x;
     }
     
     private float rescaleY(float y){
         if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics) {
-            return this.y + (y - this.y) / guiGraphics.scaleY;
+            return this.y + (y - this.y) / guiGraphics.scale;
         }
         return y;
     }
@@ -68,7 +68,7 @@ public class WidgetWrapper extends Widget {
         super.resize(offsetX, offsetY);
         widget.setPosition((int) this.x, (int) this.y);
         if(XKLib.RENDER_CONTEXT.get().getGUIGraphics() instanceof B3dGuiGraphics guiGraphics) {
-            widget.setSize((int) (this.width/guiGraphics.scaleX), (int) (this.height/guiGraphics.scaleY));
+            widget.setSize((int) (this.width/guiGraphics.scale), (int) (this.height/guiGraphics.scale));
         }
         else widget.setSize((int) this.width, (int) this.height);
     }
@@ -79,7 +79,7 @@ public class WidgetWrapper extends Widget {
             var guiGraphics = b3dGraphics.getInner();
             b3dGraphics.getPose().pushMatrix();
             b3dGraphics.getPose().translate(x, y);
-            b3dGraphics.getPose().scale(b3dGraphics.scaleX, b3dGraphics.scaleY);
+            b3dGraphics.getPose().scale(b3dGraphics.scale, b3dGraphics.scale);
             b3dGraphics.getPose().translate(-x, -y);
             widget.extractRenderState(guiGraphics, (int) rescaleX(mouseX), (int) rescaleY(mouseY), a);
             b3dGraphics.getPose().popMatrix();
