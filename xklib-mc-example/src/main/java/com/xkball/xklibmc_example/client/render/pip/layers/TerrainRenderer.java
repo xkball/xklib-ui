@@ -35,23 +35,22 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         var modelView = RenderSystem.getModelViewStack().mul(poseStack.last().pose(), new Matrix4f());
         var frustum = new Frustum(modelView,WorldTerrainPipRenderer.projMatrix);
         var transformUBO = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Vector4f(1,1,1,1), new Vector3f(), new Matrix4f());
-        var pipeline = XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP;
         XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
-                b.putVec3(VanillaUtils.dirVec(45,renderState.yRot()))
+                b.putVec3(VanillaUtils.dirVec(45,renderState.yRot() + 2))
                  .putVec3(renderState.cameraPos()));
-        try(var renderInfo = TerrainChunkManager.INSTANCE.generateRenderInfo(frustum,renderState.cameraOffset().add(renderState.cameraTarget()))){
-            try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
-                if(renderInfo.drawCount() != 0){
+        try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum,renderState.cameraOffset().add(renderState.cameraTarget()))){
+            if(!renderInfo.isEmpty()){
+                try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
                     RenderSystem.bindDefaultUniforms(renderpass);
-                    renderpass.setPipeline(pipeline);
+                    renderpass.setPipeline(XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP);
                     renderpass.setUniform("DynamicTransforms", transformUBO);
                     renderpass.setVertexBuffer(0, CUBE.getVertexBuffer());
                     renderpass.setIndexBuffer(CUBE.getIndexBuffer(),CUBE.getIndexType());
-                    IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",TerrainChunkManager.INSTANCE.gpuBuffer.gpuBuffer.slice());
-                    IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(renderInfo.commandBuffer(), renderInfo.drawCount());
+                    IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",renderInfo.blockBuffer().slice());
+                    IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(renderInfo.commandLod0(), renderInfo.drawCountLod0());
+                    renderpass.setPipeline(XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD1);
+                    IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(renderInfo.commandLod1(), renderInfo.drawCountLod1());
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
         }
         RenderSystem.getModelViewStack().popMatrix();

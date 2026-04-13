@@ -17,7 +17,9 @@ const vec3 lightColor = vec3(1.0, 1.0, 1.0);
 const float specularStrength = 0.4;
 
 void main() {
-    float diff = max(dot(pNormal, lightDir), 0.0);
+    float dot_ = dot(pNormal, lightDir);
+//   dot_ = abs(dot_) < 0.001 ? 1.0 : dot_;
+    float diff = max(dot_, 0.0);
     vec3 viewDir = normalize(viewPos - worldPos);
     vec3 reflectDir = reflect(-lightDir, pNormal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);

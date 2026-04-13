@@ -99,8 +99,8 @@ public class WorldTerrainWidgetInner extends Widget {
                 graphics.drawString("yRot: " + yRot,x,y + 20,-1);
                 graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
                 graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.updateQueue.size(),x,y + 40,-1);
-                graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.gpuBuffer.size()),x,y + 50,-1);
-                graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.gpuBuffer.usedSize()),x,y + 60,-1);
+                graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemAlloc()),x,y + 50,-1);
+                graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemUsed()),x,y + 60,-1);
                 graphics.drawString("length: " + cameraLength,x,y + 70,-1);
                 graphics.drawString("camTar: " + vec3fToString(cameraTarget), x, y + 80,-1);
                 graphics.drawString("camPos: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y + 90,-1);
@@ -118,7 +118,7 @@ public class WorldTerrainWidgetInner extends Widget {
             var uuid = p.getProfile().id();
             var entity = level.getEntity(uuid);
             if(entity == null || !frustum.isVisible(entity.getBoundingBox())) continue;
-            var pos = lastState.projWorld2Screen(this, entity.position().toVector3f().add(0,2.5f,0));
+            var pos = lastState.projWorld2Screen(this, entity.position().toVector3f().add(0,2f,0));
             var px = pos.x - 8;
             var py = pos.y - 10;
             PlayerFaceExtractor.extractRenderState(guiGraphics.getInner(),p.getSkin(), (int) px, (int) py,16);

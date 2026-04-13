@@ -31,5 +31,18 @@ public class XKLibExampleRenderPipelines {
             .withCull(true)
             .buildExtended();
     
+    public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP_LOD1 = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("world_terrain_pip"))
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.TRIANGLES)
+            .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip_lod1"))
+            .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip_lod1"))
+            .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
+            .bindUniform("PhongLight", PHONE_LIGHT)
+            .withSSBO("ABlock")
+            .withDepthStencilState(DepthStencilState.DEFAULT)
+            .withCull(true)
+            .buildExtended();
 
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
@@ -112,6 +113,14 @@ public class ClientUtils {
             LOGGER.error("GL Error: {}", error);
             error = GL11.glGetError();
         }
-       
+    }
+    
+    public static String getSaveOrServerName(){
+        var player = Minecraft.getInstance().player;
+        if(player == null) return "unknown";
+        var serverData = player.connection.getServerData();
+        var dataName = serverData == null ? "unkonwn" : serverData.name;
+        var server = ServerLifecycleHooks.getCurrentServer();
+        return server == null ? dataName : server.getMotd();
     }
 }

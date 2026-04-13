@@ -15,7 +15,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Vector3f;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.UUID;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class VanillaUtils {
     
@@ -65,6 +70,25 @@ public class VanillaUtils {
         var player = server.getPlayerList().getPlayer(playerUUID);
         if(player != null){
             server.getCommands().performPrefixedCommand(player.createCommandSourceStack().withPermission(LevelBasedPermissionSet.GAMEMASTER),command);
+        }
+    }
+    
+    public static byte[] gzip(byte[] bytes,int off, int len){
+        try(var byteOut = new ByteArrayOutputStream()){
+            try(GZIPOutputStream gzip = new GZIPOutputStream(byteOut)) {
+                gzip.write(bytes, off, len);
+            }
+            return byteOut.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static byte[] unGzip(byte[] bytes) {
+        try(GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
+            return gzip.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
     

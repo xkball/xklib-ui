@@ -52,7 +52,8 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
     
     public static void update(){
         var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        TerrainChunkManager.INSTANCE.submitUpdate(camera.blockPosition(),32);
+        var viewDistance = Minecraft.getInstance().options.renderDistance().get();
+        TerrainChunkManager.INSTANCE.submitUpdate(camera.blockPosition(),viewDistance - 1, false);
     }
     
     public static void regRenderLayers(PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState> renderLayer) {
