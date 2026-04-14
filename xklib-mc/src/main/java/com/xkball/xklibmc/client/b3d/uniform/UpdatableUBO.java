@@ -187,6 +187,11 @@ public class UpdatableUBO implements ICloseOnExit<UpdatableUBO>, IEndFrameListen
             return this;
         }
         
+        public UBOBuilder putCustom(Consumer<UBOBuilder> func){
+            func.accept(this);
+            return this;
+        }
+        
         public UpdatableUBO build(){
             Consumer<Std140Builder> updateFunc = b -> {
                 for(var builder : builders) {

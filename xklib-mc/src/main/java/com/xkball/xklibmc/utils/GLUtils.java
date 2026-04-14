@@ -36,6 +36,10 @@ public class GLUtils {
             RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(Objects.requireNonNull(from.getColorTexture()), Objects.requireNonNull(to.getColorTexture()),0, 0, 0, 0, 0, from.width, from.height);
     }
     
+    public static void copyFrameBufferColorTo(GpuTextureView from, GpuTextureView to) {
+        RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(from.texture(), to.texture(),0, 0, 0, 0, 0, from.getWidth(0), from.getHeight(0));
+    }
+    
     public static void copyFrameBufferDepthTo(RenderTarget from, RenderTarget to) {
         to.copyDepthFrom(from);
     }

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.mesh.CachedMesh;
+import com.xkball.xklibmc.client.b3d.postprocess.XKLibPostProcesses;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
@@ -53,6 +54,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                 }
             }
         }
+        XKLibPostProcesses.BLUR.apply(texture,depth);
         RenderSystem.getModelViewStack().popMatrix();
     }
     

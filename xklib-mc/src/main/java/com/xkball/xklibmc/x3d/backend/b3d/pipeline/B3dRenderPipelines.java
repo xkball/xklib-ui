@@ -38,5 +38,13 @@ public class B3dRenderPipelines {
             .withCull(false)
             .buildExtended();
     
-
+    public static final ExtendedRenderPipeline BLUR = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("blur"))
+            .withVertexShader(VanillaUtils.modRL("core/blit"))
+            .withFragmentShader(VanillaUtils.modRL("core/blur"))
+            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+            .withSampler("input")
+            .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
+            .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
+            .buildExtended();
 }
