@@ -80,7 +80,7 @@ public class PostProcess {
         this.apply(color,depth,color,null);
     }
     
-    public void apply(GpuTextureView color, GpuTextureView depth,GpuTextureView target,@Nullable GpuTextureView targetDepth){
+    public void apply(GpuTextureView color, GpuTextureView depth, GpuTextureView target,@Nullable GpuTextureView targetDepth){
         var w = color.getWidth(0);
         var h = color.getHeight(0);
         if(w != this.xSize || h != this.ySize){
@@ -123,7 +123,7 @@ public class PostProcess {
                 getTextureView(drawData.to, true), OptionalDouble.empty())){
             RenderSystem.bindDefaultUniforms(renderpass);
             for(var ts : drawData.textureSetups){
-                renderpass.bindTexture(ts.target,getTextureView(ts.target, ts.depth), ts.sampler);
+                renderpass.bindTexture("input" + ts.binding,getTextureView(ts.target, ts.depth), ts.sampler);
             }
             renderpass.setPipeline(drawData.pipeline);
             renderpass.setVertexBuffer(0, cachedMesh.getVertexBuffer());
@@ -148,11 +148,11 @@ public class PostProcess {
         return new Builder();
     }
     
-    public record DrawData(RenderPipeline pipeline, String to,Runnable uniformSetup, List<TextureSetup> textureSetups, BiConsumer<PostProcess, RenderPass> drawFunc){
+    public record DrawData(RenderPipeline pipeline, String to, Runnable uniformSetup, List<TextureSetup> textureSetups, BiConsumer<PostProcess, RenderPass> drawFunc){
     
     }
     
-    public record TextureSetup(String target, boolean depth, GpuSampler sampler){}
+    public record TextureSetup(String target, boolean depth, GpuSampler sampler, int binding){}
     
     public static class Builder{
         
@@ -161,6 +161,7 @@ public class PostProcess {
         private final List<TextureSetup> textureSetups = new ArrayList<>();
         private final List<DrawData> drawData = new ArrayList<>();
         private boolean swapBack = false;
+        private int textureId = 0;
         
         public Builder(){
             this.regRenderTargets.put("swap",false);
@@ -178,7 +179,8 @@ public class PostProcess {
         
         public Builder withTexture(String target, boolean useDepth, GpuSampler sampler){
             this.checkRenderTargetExist(target);
-            this.textureSetups.add(new TextureSetup(target, useDepth, sampler));
+            this.textureSetups.add(new TextureSetup(target, useDepth, sampler,textureId));
+            this.textureId += 1;
             return this;
         }
         
@@ -187,6 +189,7 @@ public class PostProcess {
             this.drawData.add(new DrawData(pipeline, to, uniformSetup, new ArrayList<>(textureSetups), drawFunc));
             this.uniformSetup = null;
             this.textureSetups.clear();
+            this.textureId = 0;
             return this;
         }
         

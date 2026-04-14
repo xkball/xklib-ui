@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import com.xkball.xklibmc.api.client.b3d.IEndFrameListener;
 import com.xkball.xklibmc.api.client.b3d.IUpdatable;
+import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
@@ -71,6 +72,7 @@ public class ClientRenderObjects {
     
     @SubscribeEvent
     public static void afterReloadFinish(ClientResourceLoadFinishedEvent event){
+        XKLibUniforms.init();
         //在此预先加载材质, 避免在renderPass里面加载导致爆炸
         for(var updatable : INSTANCE.reload) {
             updatable.update();

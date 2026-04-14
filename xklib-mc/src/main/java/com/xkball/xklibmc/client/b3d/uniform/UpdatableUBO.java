@@ -3,6 +3,7 @@ package com.xkball.xklibmc.client.b3d.uniform;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
+import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.api.client.b3d.IEndFrameListener;
@@ -17,6 +18,8 @@ import org.joml.Vector3fc;
 import org.joml.Vector3ic;
 import org.joml.Vector4fc;
 import org.joml.Vector4ic;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -29,12 +32,13 @@ import java.util.function.Supplier;
 @NonNullByDefault
 public class UpdatableUBO implements ICloseOnExit<UpdatableUBO>, IEndFrameListener, IUpdatable {
     
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String name;
     private final int size;
     private final UpdateWhen updateWhen;
     private final DynamicUniformStorage<BuildUniformBlock> buffer;
     private final BuildUniformBlock updateFunc;
-    private GpuBufferSlice lastSlice;
+    private @Nullable GpuBufferSlice lastSlice;
     
     public UpdatableUBO(String name, int size, Consumer<Std140Builder> updateFunc, boolean closeOnExit, UpdateWhen updateWhen) {
         this.name = name;
@@ -91,6 +95,9 @@ public class UpdatableUBO implements ICloseOnExit<UpdatableUBO>, IEndFrameListen
     }
     
     public GpuBufferSlice getBuffer(){
+        if(lastSlice == null) {
+            LOGGER.error("Never updated before get buffer! {}",this.name);
+        }
         return lastSlice;
     }
     

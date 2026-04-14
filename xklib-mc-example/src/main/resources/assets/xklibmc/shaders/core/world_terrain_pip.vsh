@@ -33,7 +33,7 @@ void main() {
 //    worldPos.y -= Position.y < 0.01 ? 10 : 0;
     gl_Position = ProjMat * ModelViewMat * vec4(worldPos, 1.0);
 //    if(gl_VertexID % 36 > 5) gl_Position.z = nextFloat(gl_Position.z,int(1.0/gl_Position.w) + 1);
-    if(gl_VertexID % 36 > 5) gl_Position.z -= 10;
+//    if(gl_VertexID % 36 > 5) gl_Position.z -= 10;
     uint c = uint(pc.color_ssbo);
     float a = float((c >> 24u) & 255u) / 255.0;
     float r = float((c >> 16u) & 255u) / 255.0;

@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.render.pip.layers;
 
+import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -7,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.mesh.CachedMesh;
 import com.xkball.xklibmc.client.b3d.postprocess.XKLibPostProcesses;
+import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
@@ -17,6 +19,8 @@ import net.minecraft.client.renderer.culling.Frustum;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL45;
+import org.lwjgl.opengl.GL46;
 
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -33,6 +37,9 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
     @Override
     public void render(WorldTerrainPipRenderer pip, WorldTerrainPipRenderer.WorldTerrainState renderState, PoseStack poseStack, GpuTextureView texture, GpuTextureView depth) {
         RenderSystem.getModelViewStack().pushMatrix();
+//        GL46.glClipControl(GL45.GL_LOWER_LEFT, GL45.GL_ZERO_TO_ONE);
+//        var revZProj = renderState.calculateProjMatrix(true);
+//        RenderSystem.setProjectionMatrix(WorldTerrainPipRenderer.proj.getBuffer(revZProj), ProjectionType.PERSPECTIVE);
         var modelView = RenderSystem.getModelViewStack().mul(poseStack.last().pose(), new Matrix4f());
         var frustum = new Frustum(modelView,WorldTerrainPipRenderer.projMatrix);
         var transformUBO = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Vector4f(1,1,1,1), new Vector3f(), new Matrix4f());
@@ -54,7 +61,13 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                 }
             }
         }
-        XKLibPostProcesses.BLUR.apply(texture,depth);
+        XKLibUniforms.INVERSE_PROJ_MAT.updateUnsafe(b -> {
+            b.putMat4f(renderState.projMatrix().invert(new Matrix4f()));
+            b.putMat4f(renderState.projMatrix());
+        });
+        XKLibPostProcesses.SSAO.apply(texture, depth);
+//        GL46.glClipControl(GL45.GL_LOWER_LEFT, GL45.GL_NEGATIVE_ONE_TO_ONE);
+//        RenderSystem.setProjectionMatrix(WorldTerrainPipRenderer.projBuffer, ProjectionType.PERSPECTIVE);
         RenderSystem.getModelViewStack().popMatrix();
     }
     

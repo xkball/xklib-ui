@@ -43,8 +43,22 @@ public class B3dRenderPipelines {
             .withVertexShader(VanillaUtils.modRL("core/blit"))
             .withFragmentShader(VanillaUtils.modRL("core/blur"))
             .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
-            .withSampler("input")
+            .withSampler("input0")
             .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
             .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
+            .buildExtended();
+    
+    public static final ExtendedRenderPipeline SSAO = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("ssao"))
+            .withVertexShader(VanillaUtils.modRL("core/blit"))
+            .withFragmentShader(VanillaUtils.modRL("core/ssao"))
+            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+            .withSampler("input0")
+            .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
+            .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
+            .withUniform("SSAOData", UniformType.UNIFORM_BUFFER)
+            .bindUniform("SSAOData", XKLibUniforms.SSAO_DATA)
+            .withUniform("InvProjMat", UniformType.UNIFORM_BUFFER)
+            .bindUniform("InvProjMat", XKLibUniforms.INVERSE_PROJ_MAT)
             .buildExtended();
 }

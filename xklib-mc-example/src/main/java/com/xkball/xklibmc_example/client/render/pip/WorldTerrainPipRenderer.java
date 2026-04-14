@@ -150,7 +150,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             this.scale = scale;
             this.scissorArea = scissorArea;
             this.bounds = bounds;
-            this.projMatrix = this.calculateProjMatrix();
+            this.projMatrix = this.calculateProjMatrix(false);
         }
         
         public Vector3f dirVec() {
@@ -165,10 +165,10 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             return cameraOffset().add(cameraTarget);
         }
         
-        private Matrix4f calculateProjMatrix() {
+        public Matrix4f calculateProjMatrix(boolean revZ) {
             var aspect = (x1 - x0) / ((float) y1 - (float) y0);
             var cameraPos = cameraPos();
-            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, 1, 8000)
+            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, 1, 8000, !revZ)
                     .lookAt(cameraPos.x, cameraPos.y, cameraPos.z,
                             cameraTarget.x, cameraTarget.y, cameraTarget.z,
                             0, 1, 0);

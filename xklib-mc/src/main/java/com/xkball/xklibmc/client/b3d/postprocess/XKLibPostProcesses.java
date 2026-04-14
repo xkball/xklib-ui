@@ -10,5 +10,12 @@ public class XKLibPostProcesses {
             .applyOnce(B3dRenderPipelines.BLUR,"swap", PostProcess::drawcall)
             .swapBack()
             .build("blur");
+    
+    public static final PostProcess SSAO = PostProcess.builder()
+            .withTexture("input",true,SamplerCacheCache.LINEAR_CLAMP)
+            .applyOnce(B3dRenderPipelines.SSAO,"swap", PostProcess::drawcall)
+            .withTexture("swap",false,SamplerCacheCache.LINEAR_CLAMP)
+            .applyOnce(B3dRenderPipelines.BLUR,"output", PostProcess::drawcall)
+            .build("ssao");
 }
 
