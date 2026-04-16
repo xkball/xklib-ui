@@ -88,48 +88,56 @@ public class LevelChunkStorage {
         var files = dir.listFiles();
         if(files == null) return;
         for(var file : files){
-            var name = file.getName();
-            var n = name.split(",");
-            if(n.length != 2) continue;
-            int x;
-            int z;
-            try {
-                x = Integer.parseInt(n[0]);
-                z = Integer.parseInt(n[1]);
-            } catch(NumberFormatException e){
-                continue;
-            }
-            LOGGER.info("Loading map at {}, chunk from ({},{}) to ({},{})",this.dimension,x << 4,z << 4,(x << 4) + 16,(z << 4) + 16);
-            try {
-                var bytes = Files.readAllBytes(file.toPath());
-                bytes = VanillaUtils.unGzip(bytes);
-                var byteBuf = Unpooled.buffer(bytes.length);
-                byteBuf.writeBytes(bytes);
-                var version = byteBuf.readInt();
-                if(version != VERSION){
-                    LOGGER.error("Version mismatch");
-                    continue;
+            Thread.startVirtualThread(() -> {
+                var name = file.getName();
+                var n = name.split(",");
+                if(n.length != 2) return;
+                int x;
+                int z;
+                try {
+                    x = Integer.parseInt(n[0]);
+                    z = Integer.parseInt(n[1]);
+                } catch(NumberFormatException e){
+                    return;
                 }
-                for (int dx = 0; dx < 16; dx++) {
-                    for (int dz = 0; dz < 16; dz++) {
-                        if(byteBuf.readBoolean()){
-                            var chunkPos = new ChunkPos((x << 4) + dx, (z << 4) + dz);
-                            var storage = new ChunkStorage(chunkPos, this);
-                            storage.chunkAABB = CodecUtils.AABB_STREAM_CODEC.decode(byteBuf);
-                            storage.heightMap = ChunkHeightMap.STREAM_CODEC.decode(byteBuf);
-                            var data = ChunkStorage.ChunkStorageData.STREAM_CODEC.decode(byteBuf);
-                            assert data.pos().equals(chunkPos);
-                            storage.onDisk = true;
-                            storage.onMemL1 = true;
-                            storage.writeData(data.data());
-                            this.chunkMap.put(chunkPos, storage);
-                            this.uploadChunk(chunkPos);
+                LOGGER.info("Loading map at {}, chunk from ({},{}) to ({},{})",this.dimension,x << 4,z << 4,(x << 4) + 16,(z << 4) + 16);
+                try {
+                    var bytes = Files.readAllBytes(file.toPath());
+                    bytes = VanillaUtils.unGzip(bytes);
+                    var byteBuf = Unpooled.buffer(bytes.length);
+                    byteBuf.writeBytes(bytes);
+                    var version = byteBuf.readInt();
+                    if(version != VERSION){
+                        LOGGER.error("Version mismatch");
+                        return;
+                    }
+                    for (int dx = 0; dx < 16; dx++) {
+                        for (int dz = 0; dz < 16; dz++) {
+                            if(byteBuf.readBoolean()){
+                                var chunkPos = new ChunkPos((x << 4) + dx, (z << 4) + dz);
+                                var storage = new ChunkStorage(chunkPos, this);
+                                storage.chunkAABB = CodecUtils.AABB_STREAM_CODEC.decode(byteBuf);
+                                storage.heightMap = ChunkHeightMap.STREAM_CODEC.decode(byteBuf);
+                                var data = ChunkStorage.ChunkStorageData.STREAM_CODEC.decode(byteBuf);
+                                assert data.pos().equals(chunkPos);
+                                storage.onDisk = true;
+                                storage.onMemL1 = true;
+                                storage.writeData(data.data());
+                                TerrainChunkManager.INSTANCE.submitTask(
+                                        () -> {
+                                            if(this.chunkMap.containsKey(chunkPos)) return;
+                                            this.chunkMap.put(chunkPos, storage);
+                                            this.uploadChunk(chunkPos);
+                                        }
+                                );
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    LOGGER.error("Failed to load chunk from file.", e);
                 }
-            } catch (Exception e) {
-                LOGGER.error("Failed to load chunk from file.", e);
-            }
+            });
+
         }
     }
     

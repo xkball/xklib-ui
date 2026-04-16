@@ -168,7 +168,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         public Matrix4f calculateProjMatrix(boolean revZ) {
             var aspect = (x1 - x0) / ((float) y1 - (float) y0);
             var cameraPos = cameraPos();
-            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, 1, 8000, !revZ)
+            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, 1, 8000, revZ)
                     .lookAt(cameraPos.x, cameraPos.y, cameraPos.z,
                             cameraTarget.x, cameraTarget.y, cameraTarget.z,
                             0, 1, 0);

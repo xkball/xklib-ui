@@ -12,10 +12,21 @@ public class XKLibPostProcesses {
             .build("blur");
     
     public static final PostProcess SSAO = PostProcess.builder()
+            .regRenderTarget("swap2",false)
             .withTexture("input",true,SamplerCacheCache.LINEAR_CLAMP)
             .applyOnce(B3dRenderPipelines.SSAO,"swap", PostProcess::drawcall)
             .withTexture("swap",false,SamplerCacheCache.LINEAR_CLAMP)
-            .applyOnce(B3dRenderPipelines.BLUR,"output", PostProcess::drawcall)
+            .applyOnce(B3dRenderPipelines.BLUR,"swap2", PostProcess::drawcall)
+            .withTexture("swap2", false, SamplerCacheCache.LINEAR_CLAMP)
+            .withTexture("input", false, SamplerCacheCache.LINEAR_CLAMP)
+            .applyOnce(B3dRenderPipelines.MIX, "swap", PostProcess::drawcall)
+            .swapBack()
             .build("ssao");
+    
+    public static final PostProcess LINEAR_DEPTH = PostProcess.builder()
+            .withTexture("input",true,SamplerCacheCache.LINEAR_CLAMP)
+            .applyOnce(B3dRenderPipelines.LINEAR_DEPTH,"swap", PostProcess::drawcall)
+            .swapBack()
+            .build("linear_depth");
 }
 

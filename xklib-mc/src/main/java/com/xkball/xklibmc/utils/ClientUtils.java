@@ -121,6 +121,6 @@ public class ClientUtils {
         var serverData = player.connection.getServerData();
         var dataName = serverData == null ? "unkonwn" : serverData.name;
         var server = ServerLifecycleHooks.getCurrentServer();
-        return server == null ? dataName : server.getMotd();
+        return server == null ? dataName : server.getWorldData().getLevelName();
     }
 }

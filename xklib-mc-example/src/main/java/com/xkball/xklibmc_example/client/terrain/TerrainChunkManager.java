@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
@@ -34,7 +35,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public static final TerrainChunkManager INSTANCE = new TerrainChunkManager();
     
     public final Map<ResourceKey<Level>, LevelChunkStorage> storageMap = new HashMap<>();
-    public final Queue<Runnable> updateQueue = new ArrayDeque<>();
+    public final Queue<Runnable> updateQueue = new ConcurrentLinkedQueue<>();
     
     
     @SubscribeEvent
@@ -136,6 +137,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 this.submitUpdate(new ChunkPos(centerChunk.x()+dx,centerChunk.z()+dz), force);
             }
         }
+    }
+    
+    public void submitTask(Runnable runnable){
+        this.updateQueue.add(runnable);
     }
     
     public void submitUpdate(ChunkPos chunkPos, boolean force){

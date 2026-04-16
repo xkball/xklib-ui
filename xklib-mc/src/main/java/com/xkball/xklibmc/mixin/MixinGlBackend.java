@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(GlBackend.class)
-public class MixinGlBackend {
+public class MixinGLBackend {
     
 //    @Inject(method = "setWindowHints", at = @At("RETURN"))
 //    public void onCreateWindowTint(CallbackInfo ci){

@@ -12,6 +12,8 @@ layout(std140) uniform ScreenSize {
 layout(std140) uniform InvProjMat {
     mat4 invProjMat;
     mat4 ProjMat_;
+    vec4 camDir;
+    vec4 camPos;
 };
 
 layout(std140) uniform SSAOData {
@@ -19,68 +21,88 @@ layout(std140) uniform SSAOData {
     mat4 trans[16];
 };
 
-vec3 toNDC(float depth){
-    vec2 ndcXY = texCoord * 2.0 - 1.0;
-    float ndcZ0 = depth * 2.0 - 1.0;
-    return vec3(ndcXY, ndcZ0);
+const int   KERNEL_SIZE = 64;
+const float RADIUS      = 0.2;
+const float BIAS        = 0.02;
+const float POWER       = 1;
+
+
+vec3 getViewPos(vec2 uv) {
+    float depth = texture(input0, uv).r * 2 - 1;
+    vec4 ndc = vec4(uv * 2.0 - 1.0, depth, 1.0);
+    vec4 vp = invProjMat * ndc;
+    return vp.xyz / vp.w;
 }
 
-void main(){
 
-    float depth0 = texture(input0, texCoord).r;
-    if (depth0 >= 1.0 - 1e-6) {
-        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+vec3 getViewNormal(vec3 pos, vec2 uv) {
+    vec2 offset = 1.0 / screenSize;
+
+    vec3 p1 = getViewPos(uv + vec2( offset.x, 0.0)) - pos;
+    vec3 p2 = getViewPos(uv + vec2( 0.0,  offset.y)) - pos;
+    vec3 p3 = getViewPos(uv + vec2(-offset.x, 0.0)) - pos;
+    //vec3 p4 = getViewPos(uv + vec2( 0.0, -offset.y)) - pos;
+
+    vec3 v1 = p2-p1;
+    vec3 v2 = p2-p3;
+
+    return normalize(cross(v1, v2));
+}
+
+float linearDepth(vec3 viewPos) {
+    vec3 pos = viewPos + camPos.xyz;
+    float theta = dot(normalize(pos),normalize(camDir.xyz));
+    float l = length(pos);
+    return theta * l;
+}
+
+void main() {
+    float depth = texture(input0, texCoord).r;
+
+    if (depth >= 1.0 - 1e-6) {
+        fragColor = vec4(0,0,0,1.0);
         return;
     }
 
-    vec4 ndc = vec4(toNDC(depth0),1.0);
+    vec3 viewPos = getViewPos(texCoord);
+    float d0 = linearDepth(viewPos);
+    vec3 normal  = getViewNormal(viewPos, texCoord);
 
-    vec4 viewH0 = invProjMat * ndc;
-    vec3 viewPos = viewH0.xyz / viewH0.w;
-    fragColor = vec4(vec3(viewPos.x),1.0);
+    ivec2 scrCoord = ivec2(gl_FragCoord.xy);
+    int   rotIdx   = (scrCoord.x % 4) + (scrCoord.y % 4) * 4;
+    mat4  rotMat   = trans[rotIdx];
 
-    ivec2 pix = ivec2(gl_FragCoord.xy);
-    int idx = (pix.x & 3) + ((pix.y & 3) << 2);
-    float occ = 0;
-    float wsum = 0;
-    float baiz = 0.1;
-//        float ndcZs = sd * 2.0 - 1.0;
-//        vec4 viewHs = invProjMat * vec4(uv * 2.0 - 1.0, ndcZs, 1.0);
-//        float viewZs = (viewHs.z / viewHs.w);
-//        float dz = abs(viewPos.z - viewZs);
-//        float rangeW = 1.0 - smoothstep(0.0, 1.0, dz);
-//        wsum += rangeW;
-//        float blocked = step(viewZs, samplePos.z - bias);
-//        occ += blocked * rangeW;
-////    ao = pow(clamp(ao, 0.0, 1.0), 1.6);
-    for (int i = 0; i < 64; i++) {
-        vec3 dir = (trans[idx] * sample_[i]).xyz;
-        vec3 samplePos = viewPos + dir * 0.6 + baiz;
-        vec4 clip = ProjMat_ * vec4(samplePos, 1.0);
-        if (clip.w <= 0.000001) {
-            continue;
-        }
-        vec3 ndc_ = clip.xyz / clip.w;
-        vec2 uv = ndc_.xy * 0.5 + 0.5;
-        if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+    float occlusion = 0.0;
+
+    for (int i = 0; i < KERNEL_SIZE; ++i) {
+        vec3 sampleDir = sample_[i].xyz;
+        vec3 rotated = (rotMat * vec4(sampleDir, 0.0)).xyz;
+        rotated = normalize(rotated);
+
+        if (dot(rotated, normal) > 0.0)
+        rotated = -rotated;
+
+        vec3 samplePos = viewPos + rotated * RADIUS;
+
+        vec4 proj = ProjMat_ * vec4(samplePos, 1.0);
+        proj.xyz /= proj.w;
+        vec2 sampleUV = proj.xy * 0.5 + 0.5;
+
+        if (sampleUV.x < 0.0 || sampleUV.x > 1.0 ||
+        sampleUV.y < 0.0 || sampleUV.y > 1.0) {
             continue;
         }
 
-        float depth1 = texture(input0, uv).r;
-        if (depth1 >= 1.0) {
-            continue;
-        }
+        vec3 sampleViewPos = getViewPos(sampleUV);
+        float sampleDepth = linearDepth(sampleViewPos);
 
-        float dz = abs(depth0 - depth1);
-        float rangeW = 1.0 - smoothstep(0.0, 1.0, dz);
+        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(d0 - sampleDepth));
 
-        wsum += rangeW;
-        occ += (dz > 0 ? 0 : 1) * rangeW;
+        occlusion += (sampleDepth > d0 + BIAS ? 1 : 0) * rangeCheck;
     }
 
-    float ao = 1.0;
-    if (wsum > 0.0) {
-        ao = clamp(1 - (occ / wsum) ,0.0,1.0);
-    }
-    fragColor = vec4(ao, ao, ao, 1.0);
+    occlusion = 1 - (occlusion / float(KERNEL_SIZE));
+    //occlusion = pow(occlusion, POWER);
+    //if(occlusion > 0.7) occlusion = 1;
+    fragColor = vec4(occlusion, occlusion, occlusion, 1.0);
 }

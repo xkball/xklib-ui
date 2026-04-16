@@ -1,6 +1,5 @@
 package com.xkball.xklibmc_example.client.render.pip.layers;
 
-import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -19,8 +18,6 @@ import net.minecraft.client.renderer.culling.Frustum;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL45;
-import org.lwjgl.opengl.GL46;
 
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -61,9 +58,15 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                 }
             }
         }
+        var cp = renderState.cameraPos();
+        var co = renderState.cameraOffset();
+        var ct = renderState.cameraTarget();
         XKLibUniforms.INVERSE_PROJ_MAT.updateUnsafe(b -> {
             b.putMat4f(renderState.projMatrix().invert(new Matrix4f()));
             b.putMat4f(renderState.projMatrix());
+            b.putVec4(new Vector4f(renderState.dirVec(),1));
+            //传入campos可以获得世界坐标 因此减一次ct等于移动视野位置到0,0, 减两次可以对应上视野位置
+            b.putVec4(new Vector4f(-cp.x,-cp.y,-cp.z,1));
         });
         XKLibPostProcesses.SSAO.apply(texture, depth);
 //        GL46.glClipControl(GL45.GL_LOWER_LEFT, GL45.GL_NEGATIVE_ONE_TO_ONE);

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(GlRenderPass.class)
-public class MixinGlRenderPass implements IExtendedRenderPass {
+public class MixinGLRenderPass implements IExtendedRenderPass {
     
     @Shadow @Nullable protected GlRenderPipeline pipeline;
     @Shadow
