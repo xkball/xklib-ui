@@ -1,6 +1,8 @@
 package com.xkball.xklibmc_example.client.terrain;
 
 import com.xkball.xklibmc.annotation.NonNullByDefault;
+import com.xkball.xklibmc.utils.ClientUtils;
+import com.xkball.xklibmc.utils.VanillaUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -8,6 +10,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,10 +85,25 @@ public class ChunkStorage {
             var x = x0 + (i >> 4);
             var z = z0 + (i & 0xF);
             if((heightMap.color[i] & 0xFF000000) != 0){
-                l2List.add(new ABlock(x, heightMap.heightMap[i],z,heightMap.color[i]));
+                l2List.add(new ABlock(x, heightMap.heightMap[i],z,heightMap.color[i],0x111111));
             }
         }
-        this.bufferL1 = new TerrainChunkBuffer(this.parent.gpuBuffer, l1List);
+//        this.bufferL1 = new TerrainChunkBuffer(this.parent.gpuBuffer, l1List);
+        boolean success = true;
+        for(var dir : VanillaUtils.DIRECTIONS){
+            var list = new ArrayList<>();
+            for (ABlock a : l1List) {
+                if ((a.mask() & (1 << dir.get3DDataValue())) > 0) {
+                    list.add(a);
+                }
+            }
+            var buffer = MemoryUtil.memAlloc(list.size() * 16);
+            success &= this.parent.gpuBufferByFace.get(dir).addAllocation(this.chunkPos,(_) -> {}, buffer);
+            MemoryUtil.memFree(buffer);
+        }
+        if(!success){
+            this.parent.gpuBufferByFace.forEach((d,b) -> b.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder()));
+        }
         this.bufferL2 = new TerrainChunkBuffer(this.parent.gpuBuffer, l2List);
         this.onGpu = true;
     }
@@ -102,6 +120,9 @@ public class ChunkStorage {
             for(var entry : bufferL2.inChunkMap.int2IntEntrySet()) {
                 this.parent.gpuBuffer.remove(entry.getIntKey());
             }
+        }
+        for(var dir : VanillaUtils.DIRECTIONS){
+            this.parent.gpuBufferByFace.get(dir).removeAllocation(this.chunkPos);
         }
     }
     

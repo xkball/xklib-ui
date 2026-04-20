@@ -1,11 +1,14 @@
 package com.xkball.xklibmc_example.client.terrain;
 
+import com.mojang.blaze3d.GraphicsWorkarounds;
+import com.mojang.blaze3d.vertex.UberGpuBuffer;
 import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.utils.CodecUtils;
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -17,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,11 +29,12 @@ public class LevelChunkStorage {
     public static final int VERSION = 1;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final int BLOCK_SIZE = new ABlock().byteSize();
-    public static final ChunkComplier COMPLIER_L1 =  new ChunkComplier();
+    public static final ChunkComplier COMPLIER =  new ChunkComplier();
     
     public final String saveName;
     public final ResourceKey<Level> dimension;
     public @Nullable ManagedGpuBuffer gpuBuffer;
+    public final EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
     public final Map<ChunkPos, ChunkStorage> chunkMap = new LinkedHashMap<>();
     public boolean dirty = false;
     
@@ -37,6 +42,11 @@ public class LevelChunkStorage {
         this.dimension = dimension;
         this.gpuBuffer = createGpuBuffer();
         this.saveName = ClientUtils.getSaveOrServerName();
+        var gpuDevice = ClientUtils.getGpuDevice();
+        var gpuWorkaround = GraphicsWorkarounds.get(gpuDevice);
+        for(var dir : VanillaUtils.DIRECTIONS){
+            gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 134217728, 16, gpuDevice, 33554432, gpuWorkaround));
+        }
     }
     
     public void unloadChunk(ChunkPos chunkPos) {

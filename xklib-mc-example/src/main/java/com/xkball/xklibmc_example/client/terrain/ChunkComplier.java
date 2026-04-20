@@ -73,11 +73,12 @@ public class ChunkComplier {
                         continue;
                     }
                     var allBlock = true;
+                    int mask = 0;
                     for(var dir : directions){
                         var b = pos.move(dir);
                         if(!level.getBlockState(b).isSolidRender()){
                             allBlock = false;
-                            break;
+                            mask = mask | (1 << dir.get3DDataValue());
                         }
                         pos.move(dir,-1);
                     }
@@ -85,7 +86,7 @@ public class ChunkComplier {
                         continue;
                     }
                     var color = processBlockColor(level, bs, pos, modelManager);
-                    result.add(new ABlock.ABlockData(px,y, pz, color));
+                    result.add(new ABlock.ABlockData(px,y, pz, color, mask));
                 }
             }
         }

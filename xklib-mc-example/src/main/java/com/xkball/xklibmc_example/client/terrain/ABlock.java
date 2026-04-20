@@ -7,12 +7,12 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 
-public record ABlock(int x, int y, int z, int color) implements ISTD140Writer {
+public record ABlock(int x, int y, int z, int color, int mask) implements ISTD140Writer {
     
     private static final int PACKED_Y_MASK = (1 << BlockPos.PACKED_Y_LENGTH) - 1;
     
     public ABlock(){
-        this(0,0,0,0);
+        this(0,0,0,0,0b111111);
     }
     
     @Override
@@ -26,7 +26,7 @@ public record ABlock(int x, int y, int z, int color) implements ISTD140Writer {
         builder.putInt(color);
     }
     
-    public record ABlockData(int x, int y, int z, int color){
+    public record ABlockData(int x, int y, int z, int color, int mask){
         
         public static final StreamCodec<ByteBuf, ABlockData> STREAM_CODEC = new StreamCodec<>() {
             @Override
@@ -36,7 +36,8 @@ public record ABlock(int x, int y, int z, int color) implements ISTD140Writer {
                 var z  = p & 0xF;
                 var y = input.readShort() & PACKED_Y_MASK;
                 var c = input.readInt();
-                return new ABlockData(x, y,z,c);
+                var mask = input.readByte();
+                return new ABlockData(x, y,z,c, mask);
             }
             
             @Override
@@ -46,11 +47,12 @@ public record ABlock(int x, int y, int z, int color) implements ISTD140Writer {
                 output.writeByte(p);
                 output.writeShort(value.y & PACKED_Y_MASK);
                 output.writeInt(value.color);
+                output.writeByte(value.mask);
             }
         };
         
         public ABlock toABlock(int px, int pz){
-            return new ABlock((this.x & 0xF) + px,this.y,(this.z & 0xF) + pz,this.color);
+            return new ABlock((this.x & 0xF) + px,this.y,(this.z & 0xF) + pz,this.color, mask & 0b111111);
         }
     }
 }

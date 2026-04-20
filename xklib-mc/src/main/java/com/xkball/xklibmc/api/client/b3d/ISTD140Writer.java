@@ -3,7 +3,6 @@ package com.xkball.xklibmc.api.client.b3d;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.xkball.xklibmc.utils.ClientUtils;
 import org.lwjgl.system.MemoryUtil;
 
