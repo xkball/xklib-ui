@@ -9,7 +9,7 @@ public class DualQueueThreadPool {
     private final BlockingQueue<Runnable> workerQueue = new LinkedBlockingQueue<>();
 
     private final int workerCount;
-    private final ExecutorService workers;
+    public final ExecutorService workers;
 
     public DualQueueThreadPool(){
         this(8);
@@ -31,6 +31,10 @@ public class DualQueueThreadPool {
 
     public void submitWorker(Runnable task) {
         workerQueue.offer(task);
+    }
+    
+    public int taskCount(){
+        return mainQueue.size() + workerQueue.size();
     }
     
     public void runFor10ms() {

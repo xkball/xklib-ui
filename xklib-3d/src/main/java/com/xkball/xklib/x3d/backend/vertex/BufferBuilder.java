@@ -4,18 +4,20 @@ import com.xkball.xklib.x3d.api.render.IGpuBuffer;
 import com.xkball.xklib.x3d.api.render.IBufferSource;
 import org.joml.Matrix3x2fc;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.BitSet;
 import java.util.function.LongConsumer;
 
-public class BufferBuilder {
+public class BufferBuilder implements AutoCloseable{
     
     private static final Logger LOGGER = LoggerFactory.getLogger(BufferBuilder.class);
-    
+    private static final boolean IS_LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
     private long bufferPointer;
     private long vertexPointer;
     private int vertices;
@@ -47,6 +49,10 @@ public class BufferBuilder {
     
     public static BufferBuilder start(VertexFormat.Mode mode, VertexFormat format){
         return new BufferBuilder(mode, format);
+    }
+    
+    public BufferBuilder addVertex(Vector3f pos){
+        return this.addVertex(pos.x, pos.y, pos.z);
     }
     
     public BufferBuilder addVertex(float x, float y, float z){
@@ -148,6 +154,10 @@ public class BufferBuilder {
         return this;
     }
     
+    public BufferBuilder setNormal(Vector3f normal) {
+        return this.setNormal(normal.x, normal.y, normal.z);
+    }
+    
     public BufferBuilder setNormal(float normalX, float normalY, float normalZ){
         if (vertexPointer == -1L) {
             throw new IllegalStateException("Must call addVertex first");
@@ -210,7 +220,7 @@ public class BufferBuilder {
             buffer
         );
         
-        this.free();
+        this.close();
         return gpuBuffer;
     }
     
@@ -227,7 +237,8 @@ public class BufferBuilder {
         }
     }
     
-    public void free() {
+    @Override
+    public void close()  {
         if (bufferPointer != MemoryUtil.NULL) {
             MemoryUtil.nmemFree(bufferPointer);
             bufferPointer = MemoryUtil.NULL;

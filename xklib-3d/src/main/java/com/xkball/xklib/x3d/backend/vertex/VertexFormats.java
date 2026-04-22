@@ -13,10 +13,16 @@ public class VertexFormats {
             .add("Color", VertexFormatElement.COLOR)
             .build();
     
+    public static final VertexFormat POSITION_NORMAL = VertexFormat.builder()
+             .add("Position", VertexFormatElement.POSITION)
+             .add("Normal", VertexFormatElement.NORMAL)
+             .build();
+    
     public static final VertexFormat POSITION_NORMAL_COLOR = VertexFormat.builder()
             .add("Position", VertexFormatElement.POSITION)
-            .add("Normal", VertexFormatElement.NORMAL)
             .add("Color", VertexFormatElement.COLOR)
+            .add("Normal", VertexFormatElement.NORMAL)
+            .padding(1)
             .build();
     
     public static final VertexFormat POSITION_TEX_NORMAL_COLOR = VertexFormat.builder()

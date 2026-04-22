@@ -3,7 +3,6 @@ package com.xkball.xklibmc_example.client.terrain;
 import com.mojang.blaze3d.GraphicsWorkarounds;
 import com.mojang.blaze3d.vertex.UberGpuBuffer;
 import com.mojang.logging.LogUtils;
-import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.utils.CodecUtils;
@@ -13,56 +12,56 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class LevelChunkStorage {
     
     public static final int VERSION = 1;
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final int BLOCK_SIZE = new ABlock().byteSize();
     public static final ChunkComplier COMPLIER =  new ChunkComplier();
     
+    public final int minHeight;
     public final String saveName;
     public final ResourceKey<Level> dimension;
-    public @Nullable ManagedGpuBuffer gpuBuffer;
-    public final EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
+    public EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
+    public UberGpuBuffer<ChunkPosLod> gpuBufferByLod;
+    private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
     public final Map<ChunkPos, ChunkStorage> chunkMap = new LinkedHashMap<>();
     public boolean dirty = false;
     
-    public LevelChunkStorage(ResourceKey<Level> dimension) {
+    public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight) {
         this.dimension = dimension;
-        this.gpuBuffer = createGpuBuffer();
+        this.minHeight = minHeight;
         this.saveName = ClientUtils.getSaveOrServerName();
+        this.createBuffer();
+    }
+    
+    public void createBuffer(){
+        this.unloadGpu();
+        this.gpuBuffers.clear();
         var gpuDevice = ClientUtils.getGpuDevice();
         var gpuWorkaround = GraphicsWorkarounds.get(gpuDevice);
         for(var dir : VanillaUtils.DIRECTIONS){
-            gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 134217728, 16, gpuDevice, 33554432, gpuWorkaround));
+            this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 64 * 1024 * 1024, 16, gpuDevice, 16 * 1024 * 1024, gpuWorkaround));
         }
+        this.gpuBufferByLod = new UberGpuBuffer<>("terrain_lod",64, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 16 * 1024 * 1024, gpuWorkaround);
+        this.gpuBuffers.addAll(gpuBufferByFace.values());
+        this.gpuBuffers.add(gpuBufferByLod);
     }
     
-    public void unloadChunk(ChunkPos chunkPos) {
-        if(gpuBuffer == null) return;
-        var chunkStorage = this.chunkMap.get(chunkPos);
-        if(chunkStorage != null) {
-            chunkStorage.unloadGpu();
-        }
-    }
-    
-    public void uploadChunk(ChunkPos chunkPos) {
-        if(gpuBuffer == null) return;
-        this.unloadChunk(chunkPos);
-        var chunkStorage = this.chunkMap.get(chunkPos);
-        if(chunkStorage == null) return;
-        chunkStorage.uploadGpu();
+    public List<UberGpuBuffer<?>> getGpuBuffers(){
+        return this.gpuBuffers;
     }
     
     public void markDirty(){
@@ -70,13 +69,9 @@ public class LevelChunkStorage {
     }
     
     public void unloadGpu(){
-        if(gpuBuffer != null){
-            this.gpuBuffer.close();
-            this.gpuBuffer = null;
-        }
-        for(var chunkStorage : chunkMap.values()){
-            chunkStorage.bufferL1 = null;
-            chunkStorage.onGpu = false;
+        if(this.gpuBufferByLod != null) this.gpuBufferByLod.close();
+        for(var b :  this.gpuBufferByFace.values()){
+            b.close();
         }
         this.markDirty();
     }
@@ -89,16 +84,28 @@ public class LevelChunkStorage {
         }
     }
     
+    public int getHeight(int x, int z){
+        var chunkPos = new ChunkPos(x >> 4, z >> 4);
+        var chunk = this.chunkMap.get(chunkPos);
+        if(chunk == null) return -64;
+        return chunk.heightMap.get(x,z);
+    }
+    
+    public int getColor(int x, int z){
+        var chunkPos = new ChunkPos(x >> 4, z >> 4);
+        var chunk = this.chunkMap.get(chunkPos);
+        if(chunk == null) return 0;
+        return chunk.heightMap.getColor(x,z);
+    }
+    
     public void loadFile(){
-        if(this.gpuBuffer == null){
-            this.gpuBuffer = createGpuBuffer();
-        }
         var dir = this.getDirectory().toFile();
         if(!dir.exists() ||!dir.isDirectory()) return;
         var files = dir.listFiles();
         if(files == null) return;
+        var taskList = new ArrayList<CompletableFuture<Void>>();
         for(var file : files){
-            Thread.startVirtualThread(() -> {
+            taskList.add(CompletableFuture.runAsync(() -> {
                 var name = file.getName();
                 var n = name.split(",");
                 if(n.length != 2) return;
@@ -130,14 +137,12 @@ public class LevelChunkStorage {
                                 storage.heightMap = ChunkHeightMap.STREAM_CODEC.decode(byteBuf);
                                 var data = ChunkStorage.ChunkStorageData.STREAM_CODEC.decode(byteBuf);
                                 assert data.pos().equals(chunkPos);
-                                storage.onDisk = true;
-                                storage.onMemL1 = true;
                                 storage.writeData(data.data());
-                                TerrainChunkManager.INSTANCE.submitTask(
+                                TerrainChunkManager.INSTANCE.taskQueue.submitMain(
                                         () -> {
                                             if(this.chunkMap.containsKey(chunkPos)) return;
                                             this.chunkMap.put(chunkPos, storage);
-                                            this.uploadChunk(chunkPos);
+                                            storage.uploadGpuLod0();
                                         }
                                 );
                             }
@@ -146,9 +151,20 @@ public class LevelChunkStorage {
                 } catch (Exception e) {
                     LOGGER.error("Failed to load chunk from file.", e);
                 }
-            });
+            }, TerrainChunkManager.INSTANCE.taskQueue.workers));
 
         }
+        var task = CompletableFuture.allOf(taskList.toArray(CompletableFuture[]::new));
+        task.thenRunAsync(() -> {
+            TerrainChunkManager.INSTANCE.taskQueue.submitMain(() -> {
+                for(var chunkStorage : chunkMap.values()){
+                    TerrainChunkManager.INSTANCE.taskQueue.submitMain( () -> {
+                        if(!this.chunkMap.containsKey(chunkStorage.chunkPos)) return;
+                        chunkStorage.uploadGpuLod12();
+                    });
+                }
+            });
+        },TerrainChunkManager.INSTANCE.taskQueue.workers);
     }
     
     public void saveRegion(ChunkPos chunkPos){
@@ -173,7 +189,6 @@ public class LevelChunkStorage {
                     var storage = this.chunkMap.get(pos);
                     if(storage != null){
                         storage.dirty = false;
-                        storage.onDisk = true;
                         byteBuf.writeBoolean(true);
                         CodecUtils.AABB_STREAM_CODEC.encode(byteBuf, storage.chunkAABB);
                         ChunkHeightMap.STREAM_CODEC.encode(byteBuf, storage.heightMap);
@@ -199,7 +214,4 @@ public class LevelChunkStorage {
         return FMLPaths.GAMEDIR.get().resolve("x3dmap").resolve(this.saveName).resolve(dim.getNamespace()).resolve(dim.getPath());
     }
     
-    private ManagedGpuBuffer createGpuBuffer(){
-        return new ManagedGpuBuffer(BLOCK_SIZE * 16 * 16);
-    }
 }

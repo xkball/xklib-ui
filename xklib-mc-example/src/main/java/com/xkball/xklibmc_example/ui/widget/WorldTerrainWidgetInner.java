@@ -94,16 +94,17 @@ public class WorldTerrainWidgetInner extends Widget {
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
             if(debug.get()) {
-                graphics.drawString("fov: " + fov,x,y,-1);
-                graphics.drawString("xRot: " + xRot,x,y + 10,-1);
-                graphics.drawString("yRot: " + yRot,x,y + 20,-1);
-                graphics.drawString("focus: " + this.isPrimaryFocused(),x,y + 30,-1);
-                graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.updateQueue.size(),x,y + 40,-1);
-                graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemAlloc()),x,y + 50,-1);
-                graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemUsed()),x,y + 60,-1);
-                graphics.drawString("length: " + cameraLength,x,y + 70,-1);
-                graphics.drawString("camTar: " + vec3fToString(cameraTarget), x, y + 80,-1);
-                graphics.drawString("camPos: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y + 90,-1);
+                var y_ = y;
+                graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;
+                graphics.drawString("xRot: " + xRot,x,y_,-1); y_ += 10;
+                graphics.drawString("yRot: " + yRot,x,y_,-1); y_ += 10;
+                graphics.drawString("focus: " + this.isPrimaryFocused(),x,y_,-1); y_ += 10;
+                graphics.drawString("queue: " + TerrainChunkManager.INSTANCE.taskQueue.taskCount(),x,y_,-1); y_ += 10;
+                graphics.drawString("memAlloc: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemAlloc()),x,y_,-1); y_ += 10;
+//                graphics.drawString("memUsed: " + VanillaUtils.memSize(TerrainChunkManager.INSTANCE.getMemUsed()),x,y_,-1);
+                graphics.drawString("length: " + cameraLength,x,y_,-1); y_ += 10;
+                graphics.drawString("camTar: " + vec3fToString(cameraTarget), x, y_,-1); y_ += 10;
+                graphics.drawString("camPos: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y_,-1); y_ += 10;
             }
         }
     }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.xkball.xklibmc.XKLibMCClient;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
+import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
@@ -22,14 +23,14 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
-    public static final int BLOCK_SIZE = new ABlock().byteSize();
     public static final TerrainChunkManager INSTANCE = new TerrainChunkManager();
     
     public final Map<ResourceKey<Level>, LevelChunkStorage> storageMap = new ConcurrentHashMap<>();
@@ -40,6 +41,13 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public static void onClientTick(ClientTickEvent.Pre event) {
         if(!Minecraft.getInstance().isPaused() && Minecraft.getInstance().level != null){
             INSTANCE.taskQueue.runFor10ms();
+            for(var s : INSTANCE.storageMap.values()){
+                for(var b : s.getGpuBuffers()){
+                    if(!b.stagedAllocations.isEmpty()) {
+                        b.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
+                    }
+                }
+            }
         }
         if(XKLibMCClient.tickCount % 1200 == 0){
             for(var s : INSTANCE.storageMap.values()){
@@ -54,7 +62,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(level == null) return;
         INSTANCE.setCloseOnExit();
         if(!INSTANCE.storageMap.containsKey(level.dimension())){
-            var s = new LevelChunkStorage(level.dimension());
+            var s = new LevelChunkStorage(level.dimension(),level.getMinY());
             s.loadFile();
             INSTANCE.storageMap.put(level.dimension(), s);
         }
@@ -77,42 +85,36 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var level = Minecraft.getInstance().level;
         if(level == null) return RenderInfo.empty();
         var storage = this.storageMap.get(level.dimension());
-        if(storage == null || storage.gpuBuffer == null) return RenderInfo.empty();
-        boolean[] renderTheDir = new boolean[6];
-        EnumMap<Direction,ArrayList<IndirectDrawCommand>> cmdMap = new EnumMap<>(Direction.class);
-        for(var dir : VanillaUtils.DIRECTIONS){
-            cmdMap.put(dir, new ArrayList<>());
-        }
-        var cmdList2 = new ArrayList<IndirectDrawCommand>();
+        if(storage == null ) return RenderInfo.empty();
+        var gather1 = new RenderInfoBlockGather();
+        var gather2 = new RenderInfoBlockGather();
         for(var chunkStorage : storage.chunkMap.values()){
-            var lod = chunkStorage.getLodLevel(camPos);
-            var chunkBuffer = chunkStorage.getRenderBuffer(lod);
-            if(chunkBuffer == null) continue;
             var aabb = chunkStorage.chunkAABB;
             if(!frustum.isVisible(aabb)) continue;
-            for (int i = 0; i < 6; i++) {
-                renderTheDir[i] = dirToFace(VanillaUtils.DIRECTIONS[i], aabb, camPos).dot(VanillaUtils.DIRECTIONS[i].getUnitVec3f()) < 0;
-            }
-            for(var entry_ : chunkBuffer.inChunkMap.int2IntEntrySet()){
-                int offset = (int) storage.gpuBuffer.getOffset(entry_.getIntKey()) / BLOCK_SIZE;
+            var lod = chunkStorage.getLodLevel(camPos);
+            if(lod == 0){
                 for (int i = 0; i < 6; i++) {
-                    if(renderTheDir[i]) {
-                        var cmd = new IndirectDrawCommand(6, entry_.getIntValue(),i*6,0, offset);
-                        if(lod == 0) cmdMap.get(VanillaUtils.DIRECTIONS[i]).add(cmd);
-                        else if(lod == 1) cmdList2.add(cmd);
-                    }
+                    var dir = VanillaUtils.DIRECTIONS[i];
+                    if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
+                    var gpuBuffer = storage.gpuBufferByFace.get(dir);
+                    var alloc = gpuBuffer.getAllocation(chunkStorage.chunkPos);
+                    if(alloc == null) continue;
+                    var buffer = gpuBuffer.getGpuBuffer(alloc);
+                    var offset = alloc.getOffsetFromHeap() / 16;
+                    var size = alloc.getSize() / 16;
+                    var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
+                    gather1.add(buffer,cmd);
                 }
             }
+            else {
+                var alloc = chunkStorage.getRenderBuffer(lod);
+                if(alloc == null) continue;
+                var buffer = storage.gpuBufferByLod.getGpuBuffer(alloc);
+                var cmd = new IndirectDrawCommand(6 * chunkStorage.facesCountByLod(lod), 1, (int) (alloc.getOffsetFromHeap() / 20),0, 0);
+                gather2.add(buffer,cmd);
+            }
         }
-//        var cmdBuffer1 = IndirectDrawCommand.buildCommandList(cmdList1);
-        var cmdBuffer2 = IndirectDrawCommand.buildCommandList(cmdList2);
-        EnumMap<Direction,RenderInfoBlock> renderInfoMap = new EnumMap<>(Direction.class);
-        for(var dir : VanillaUtils.DIRECTIONS){
-            var cmdList = cmdMap.get(dir);
-            var uberBuffer = storage.gpuBufferByFace.get(dir);
-            renderInfoMap.put(dir, new RenderInfoBlock(uberBuffer.getGpuBuffer(uberBuffer.getAllocation()),cmdList.size(),IndirectDrawCommand.buildCommandList(cmdList)))
-        }
-        return new RenderInfo(renderInfoMap,new RenderInfoBlock(storage.gpuBuffer.gpuBuffer, cmdList2.size(), cmdBuffer2));
+        return new RenderInfo(gather1.finishGather(), gather2.finishGather());
     }
     
     Vector3f dirToFace(Direction dir, AABB aabb, Vector3f pos){
@@ -154,17 +156,25 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             if(dimNew != dim) return;
             var storage = this.storageMap.get(dimNew);
             if(storage == null){
-                storage = new LevelChunkStorage(dimNew);
+                storage = new LevelChunkStorage(dimNew,level_.getMinY());
                 this.storageMap.put(dimNew, storage);
             }
             var chunkOld = storage.chunkMap.get(chunkPos);
-            if(chunkOld != null && chunkOld.onMemL1 && !force) return;
-            var chunk = LevelChunkStorage.COMPLIER.compile(storage,level_,chunkPos);
-            if(chunk != null) {
+            if(chunkOld != null && !force) return;
+            var chunkStorage = LevelChunkStorage.COMPLIER.compile(storage,level_,chunkPos);
+            if(chunkStorage != null) {
                 LevelChunkStorage finalStorage = storage;
                 this.taskQueue.submitMain(() -> {
-                    finalStorage.chunkMap.put(chunkPos,chunk);
-                    finalStorage.uploadChunk(chunkPos);
+                    finalStorage.chunkMap.put(chunkPos,chunkStorage);
+                    chunkStorage.uploadGpuLod0();
+                    var p1 = new ChunkPos(chunkPos.x() - 1, chunkPos.z());
+                    var p2 = new ChunkPos(chunkPos.x(), chunkPos.z() - 1);
+                    var p3 = new ChunkPos(chunkPos.x() - 1, chunkPos.z() - 1);
+                    for (var p : List.of(p1, p2, p3)) {
+                        var cp = finalStorage.chunkMap.get(p);
+                        if(cp == null) continue;
+                        cp.uploadGpuLod12();
+                    }
                 });
             }
         };
@@ -195,8 +205,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public long getMemAlloc(){
         var result = 0L;
         for(var storage : this.storageMap.values()){
-            if(storage.gpuBuffer != null){
-                result += storage.gpuBuffer.gpuBuffer.size();
+            for(var b : storage.getGpuBuffers()){
+                for(var p : b.nodes){
+                    result += p.getFirst().totalMemorySize;
+                }
             }
         }
         return result;
@@ -204,15 +216,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public long getMemUsed(){
         var result = 0L;
-        for(var storage : this.storageMap.values()){
-            if(storage.gpuBuffer != null){
-                result += storage.gpuBuffer.usedSize();
-            }
-        }
         return result;
     }
     
-    public record RenderInfo(EnumMap<Direction, RenderInfoBlock> lod0ByFace, RenderInfoBlock lod1) implements AutoCloseable{
+    public record RenderInfo(List<RenderInfoBlock> lod0, List<RenderInfoBlock> lod1) implements AutoCloseable{
         
         public static RenderInfo empty(){
             return new RenderInfo(null, null);
@@ -220,23 +227,49 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         
         @Override
         public void close() {
-            if(lod0ByFace != null){
-                for(var v : lod0ByFace.values()){
+            if(lod0 != null){
+                for(var v : lod0) {
                     v.commandBuffer.close();
                 }
             }
             if(lod1 != null){
-                lod1.commandBuffer.close();
+                for(var v : lod1) {
+                    v.commandBuffer.close();
+                }
             }
         }
         
         public boolean isEmpty(){
-            return lod0ByFace == null && lod1 == null;
+            return lod0 == null || lod1 == null;
         }
     }
     
     public record RenderInfoBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
     
+    }
+    
+    public static class RenderInfoBlockGather{
+        public Map<GpuBuffer,ArrayList<IndirectDrawCommand>> cmdMap = new IdentityHashMap<>();
+        
+        public void add(GpuBuffer buffer, IndirectDrawCommand command){
+            cmdMap.compute(buffer, (_,v) -> {
+                if(v == null){
+                    v = new ArrayList<>();
+                }
+                v.add(command);
+                return v;
+            });
+        }
+        
+        public List<RenderInfoBlock> finishGather(){
+            var renderInfoList = new ArrayList<RenderInfoBlock>();
+            for(var entry :  cmdMap.entrySet()){
+                var buffer = entry.getKey();
+                var list = entry.getValue();
+                renderInfoList.add(new RenderInfoBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+            }
+            return renderInfoList;
+        }
     }
     
 }

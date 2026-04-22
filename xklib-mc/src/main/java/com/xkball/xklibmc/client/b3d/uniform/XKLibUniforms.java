@@ -24,7 +24,7 @@ public class XKLibUniforms {
             .putVec4("camPos",Vector4f::new)
             .build();
     
-    //并不需要向球心聚拢: 采样范围在单位方块内
+    
     public static final UpdatableUBO SSAO_DATA = new UpdatableUBO.UBOBuilder("ssao_samplers")
             .closeOnExit()
             .updateWhen(UpdateWhen.Reload)
