@@ -10,6 +10,12 @@ public class ColorParser implements IPropertyFactory<Integer> {
     @Override
     public Integer parse(css3Parser.ExprContext expr) {
         var text = expr.getText().trim().toLowerCase(Locale.ROOT);
+        if (text.startsWith("rgb(")) {
+            return parseRgb(text);
+        }
+        if (text.startsWith("argb(")) {
+            return parseArgb(text);
+        }
         if (text.startsWith("#")) {
             return parseHash(text.substring(1));
         }
@@ -17,6 +23,72 @@ public class ColorParser implements IPropertyFactory<Integer> {
             return (int) Long.parseLong(text.substring(2), 16);
         }
         return Integer.decode(text);
+    }
+
+    private static int parseRgb(String text) {
+        int left = text.indexOf('(');
+        int right = text.lastIndexOf(')');
+        if (left < 0 || right != text.length() - 1) {
+            throw new IllegalArgumentException("Invalid color: " + text);
+        }
+        String inner = text.substring(left + 1, right).trim();
+        String[] parts = splitArgs(inner);
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid color: " + text);
+        }
+        int r = parseChannel(parts[0], text);
+        int g = parseChannel(parts[1], text);
+        int b = parseChannel(parts[2], text);
+        return (0xFF << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    private static int parseArgb(String text) {
+        int left = text.indexOf('(');
+        int right = text.lastIndexOf(')');
+        if (left < 0 || right != text.length() - 1) {
+            throw new IllegalArgumentException("Invalid color: " + text);
+        }
+        String inner = text.substring(left + 1, right).trim();
+        String[] parts = splitArgs(inner);
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Invalid color: " + text);
+        }
+        int a = parseChannel(parts[0], text);
+        int r = parseChannel(parts[1], text);
+        int g = parseChannel(parts[2], text);
+        int b = parseChannel(parts[3], text);
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    private static String[] splitArgs(String inner) {
+        if (inner.isEmpty()) {
+            return new String[0];
+        }
+        String[] raw = inner.split(",");
+        for (int i = 0; i < raw.length; i++) {
+            raw[i] = raw[i].trim();
+        }
+        return raw;
+    }
+
+    private static int parseChannel(String value, String full) {
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("Invalid color: " + full);
+        }
+        int v;
+        try {
+            if (value.startsWith("0x")) {
+                v = (int) Long.parseLong(value.substring(2), 16);
+            } else {
+                v = Integer.parseInt(value);
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid color: " + full, e);
+        }
+        if (v < 0 || v > 255) {
+            throw new IllegalArgumentException("Invalid color: " + full);
+        }
+        return v;
     }
 
     private static int parseHash(String text) {

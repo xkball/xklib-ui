@@ -514,13 +514,15 @@ public class ContainerWidget extends Widget {
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         super.doRender(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
-        this.renderInScissor(graphics, () -> {
-            for (Widget child : this.children.reversed()) {
-                if (child.visible && child.getRectangle().intersects(selfRect)) {
-                    child.render(graphics, mouseX, mouseY, a);
+        if(!this.children.isEmpty()){
+            this.renderInScissor(graphics, () -> {
+                for (Widget child : this.children.reversed()) {
+                    if (child.visible && child.getRectangle().intersects(selfRect)) {
+                        child.render(graphics, mouseX, mouseY, a);
+                    }
                 }
-            }
-        });
+            });
+        }
         this.scrollBarX.render(graphics, mouseX, mouseY, a);
         this.scrollBarY.render(graphics, mouseX, mouseY, a);
     }

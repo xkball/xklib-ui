@@ -6,6 +6,7 @@ import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -21,6 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -35,7 +37,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public final Map<ResourceKey<Level>, LevelChunkStorage> storageMap = new ConcurrentHashMap<>();
     public final DualQueueThreadPool taskQueue = new DualQueueThreadPool();
-    
+    public boolean compatibleMode = false;
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -62,7 +64,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(level == null) return;
         INSTANCE.setCloseOnExit();
         if(!INSTANCE.storageMap.containsKey(level.dimension())){
-            var s = new LevelChunkStorage(level.dimension(),level.getMinY());
+            var s = new LevelChunkStorage(level.dimension(),level.getMinY(), INSTANCE.compatibleMode);
             s.loadFile();
             INSTANCE.storageMap.put(level.dimension(), s);
         }
@@ -88,11 +90,12 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(storage == null ) return RenderInfo.empty();
         var gather1 = new RenderInfoBlockGather();
         var gather2 = new RenderInfoBlockGather();
+        var gatherLod = new RenderInfoBlockGather[]{new RenderInfoBlockGather(), new RenderInfoBlockGather(), new RenderInfoBlockGather()};
         for(var chunkStorage : storage.chunkMap.values()){
             var aabb = chunkStorage.chunkAABB;
             if(!frustum.isVisible(aabb)) continue;
             var lod = chunkStorage.getLodLevel(camPos);
-            if(lod == 0){
+            if(lod == 0 && !compatibleMode){
                 for (int i = 0; i < 6; i++) {
                     var dir = VanillaUtils.DIRECTIONS[i];
                     if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
@@ -106,15 +109,20 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                     gather1.add(buffer,cmd);
                 }
             }
+//            else if(this.compatibleMode){
             else {
-                var alloc = chunkStorage.getRenderBuffer(lod);
+                var alloc = chunkStorage.getLodBufferFullMesh(lod);
                 if(alloc == null) continue;
-                var buffer = storage.gpuBufferByLod.getGpuBuffer(alloc);
-                var cmd = new IndirectDrawCommand(6 * chunkStorage.facesCountByLod(lod), 1, (int) (alloc.getOffsetFromHeap() / 20),0, 0);
+                var buffer = storage.gpuBufferByLodFullMesh.getGpuBuffer(alloc);
+                var cmd = new IndirectDrawCommand(6 * chunkStorage.facesCountByLodFullMesh(lod), 1, (int) (alloc.getOffsetFromHeap() / 20),0, 0);
                 gather2.add(buffer,cmd);
             }
+//            else {
+//                var cmd = new IndirectDrawCommand(TerrainRenderer.LODS[lod-1].getIndexCount(), 1, 0,0, chunkStorage.lodDataId);
+//                gatherLod[lod-1].add(storage.gpuBufferLod.gpuBuffer, cmd);
+//            }
         }
-        return new RenderInfo(gather1.finishGather(), gather2.finishGather());
+        return new RenderInfo(gather1.finishGather(), gather2.finishGather(), gatherLod[0].finishGatherFirstBuffer(), gatherLod[1].finishGatherFirstBuffer(), gatherLod[2].finishGatherFirstBuffer());
     }
     
     Vector3f dirToFace(Direction dir, AABB aabb, Vector3f pos){
@@ -156,7 +164,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             if(dimNew != dim) return;
             var storage = this.storageMap.get(dimNew);
             if(storage == null){
-                storage = new LevelChunkStorage(dimNew,level_.getMinY());
+                storage = new LevelChunkStorage(dimNew,level_.getMinY(), INSTANCE.compatibleMode);
                 this.storageMap.put(dimNew, storage);
             }
             var chunkOld = storage.chunkMap.get(chunkPos);
@@ -166,14 +174,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 LevelChunkStorage finalStorage = storage;
                 this.taskQueue.submitMain(() -> {
                     finalStorage.chunkMap.put(chunkPos,chunkStorage);
-                    chunkStorage.uploadGpuLod0();
-                    var p1 = new ChunkPos(chunkPos.x() - 1, chunkPos.z());
-                    var p2 = new ChunkPos(chunkPos.x(), chunkPos.z() - 1);
-                    var p3 = new ChunkPos(chunkPos.x() - 1, chunkPos.z() - 1);
-                    for (var p : List.of(p1, p2, p3)) {
-                        var cp = finalStorage.chunkMap.get(p);
-                        if(cp == null) continue;
-                        cp.uploadGpuLod12();
+                    chunkStorage.uploadGpu0();
+                    for (int dx = 0; dx < 2; dx++) {
+                        for (int dz = 0; dz < 2; dz++) {
+                            var cp = finalStorage.chunkMap.get(new ChunkPos(chunkPos.x()-dx,chunkPos.z()-dz));
+                            if(cp == null) continue;
+                            cp.uploadGpuLodFullMesh();
+//                            cp.uploadGpuLod();
+                        }
                     }
                 });
             }
@@ -210,6 +218,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                     result += p.getFirst().totalMemorySize;
                 }
             }
+            result += storage.gpuBufferLod.gpuBuffer.size();
         }
         return result;
     }
@@ -219,10 +228,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return result;
     }
     
-    public record RenderInfo(List<RenderInfoBlock> lod0, List<RenderInfoBlock> lod1) implements AutoCloseable{
+    public record RenderInfo(List<RenderInfoBlock> lod0, List<RenderInfoBlock> lodFullMesh,@Nullable RenderInfoBlock lod1,@Nullable RenderInfoBlock lod2,@Nullable RenderInfoBlock lod3) implements AutoCloseable{
         
         public static RenderInfo empty(){
-            return new RenderInfo(null, null);
+            return new RenderInfo(null, null, null, null, null);
         }
         
         @Override
@@ -232,15 +241,20 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                     v.commandBuffer.close();
                 }
             }
-            if(lod1 != null){
-                for(var v : lod1) {
+            if(lodFullMesh != null){
+                for(var v : lodFullMesh) {
                     v.commandBuffer.close();
                 }
             }
-        }
-        
-        public boolean isEmpty(){
-            return lod0 == null || lod1 == null;
+            if(lod1 != null){
+                lod1.commandBuffer.close();
+            }
+            if(lod2 != null){
+                lod2.commandBuffer.close();
+            }
+            if(lod3 != null){
+                lod3.commandBuffer.close();
+            }
         }
     }
     
@@ -269,6 +283,11 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 renderInfoList.add(new RenderInfoBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
             }
             return renderInfoList;
+        }
+        
+        public @Nullable RenderInfoBlock finishGatherFirstBuffer(){
+            var list = finishGather();
+            return list.isEmpty() ? null : list.getFirst();
         }
     }
     

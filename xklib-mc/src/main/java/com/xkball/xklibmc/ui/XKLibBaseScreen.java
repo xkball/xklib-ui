@@ -186,8 +186,8 @@ public class XKLibBaseScreen extends Screen {
                         new Label(title)
                                 .inlineStyle("""
                                         background-color: 0xaa111111;
-                                        label-text-color: -2039584;
-                                        label-text-scale: fit-to-max;
+                                        text-color: -2039584;
+                                        text-scale: fit-to-max;
                                         text-align: center;
                                         """))
                 .addChild(

@@ -2,6 +2,7 @@ package com.xkball.xklib.antlr.css;
 
 import com.xkball.xklib.api.gui.css.IStyleProperty;
 import com.xkball.xklib.api.gui.css.IPropertyFactory;
+import com.xkball.xklib.api.gui.widget.ITextDisplayWidget;
 import com.xkball.xklib.ui.css.property.BackgroundColorProperty;
 import com.xkball.xklib.ui.css.property.BorderColorProperty;
 import com.xkball.xklib.ui.css.property.ButtonHoverProperty;
@@ -87,30 +88,30 @@ public class CssStyles {
         this.register(SizeProperty.NAME, SizeProperty::new, CssSize.class);
         this.register(ScrollbarWidthProperty.NAME, ScrollbarWidthProperty::new, Float.class);
 
-        this.register("label-text-color", value -> new WidgetIntStyleProperty("label-text-color", value,
+        this.register("text-color", value -> new WidgetIntStyleProperty("text-color", value,
                 (widget, color) -> {
-                    if (widget instanceof Label label) {
-                        label.setColor(color);
+                    if (widget instanceof ITextDisplayWidget label) {
+                        label.setTextColor(color);
                     }
                 }), Integer.class);
-        this.register("label-text-scale", value -> new WidgetStyleProperty<>("label-text-scale", value,
+        this.register("text-scale", value -> new WidgetStyleProperty<>("text-scale", value,
                 (widget, textScale) -> {
-                    if (widget instanceof Label label) {
+                    if (widget instanceof ITextDisplayWidget label) {
                         label.setTextScale(textScale);
                     }
                 }), TextScale.class);
-        this.register("label-text-height", value -> new WidgetIntStyleProperty("label-text-height", value,
+        this.register("text-height", value -> new WidgetIntStyleProperty("text-height", value,
                 (widget, height) -> {
-                    if (widget instanceof Label label) {
-                        label.lineHeight = height;
+                    if (widget instanceof ITextDisplayWidget label) {
+                        label.setLineHeight(height);
                     }
                 }), Integer.class);
-        this.register("button-text-color", value -> new WidgetIntStyleProperty("button-text-color", value,
-                (widget, color) -> {
-                    if (widget instanceof Button button) {
-                        button.setColor(color);
+        this.register("text-drop-shadow", value -> new WidgetBooleanStyleProperty("text-height", value,
+                (widget, aBoolean) -> {
+                    if (widget instanceof ITextDisplayWidget label) {
+                        label.setDropShadow(aBoolean);
                     }
-                }), Integer.class);
+                }), Boolean.class);
         this.register("checkbox-track-color", value -> new WidgetIntStyleProperty("checkbox-track-color", value,
                 (widget, color) -> {
                     if (widget instanceof CheckBox checkBox) {

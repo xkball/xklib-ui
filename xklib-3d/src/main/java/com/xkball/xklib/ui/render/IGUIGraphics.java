@@ -136,6 +136,12 @@ public interface IGUIGraphics {
         this.drawString(font, text, x - font.width(text) * scale / 2, y, color, height);
     }
     
+    default void drawCenteredString(String text, float x, float y, int color, boolean dropShadow, float height) {
+        var font = this.defaultFont();
+        var scale = height / (float)font.lineHeight();
+        this.drawString(font, text, x - font.width(text) * scale / 2, y, color, dropShadow, height);
+    }
+    
     default void drawCenteredString(IComponent text, float x, float y, int color, float height) {
         var font = this.defaultFont();
         var scale = height / (float)font.lineHeight();

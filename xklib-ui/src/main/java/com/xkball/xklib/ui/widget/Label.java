@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.api.gui.widget.ITextDisplayWidget;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -7,12 +8,13 @@ import com.xkball.xklib.ui.system.GuiSystem;
 import dev.vfyjxf.taffy.style.TextAlign;
 
 @SuppressWarnings("unused")
-public class Label extends Widget {
+public class Label extends Widget implements ITextDisplayWidget {
     
     private IComponent text = IComponent.literal("");
     private int color = 0xFF000000;
     public int lineHeight = 16;
     private TextScale textScale = TextScale.FIXED;
+    private boolean dropShadow = true;
 
     public Label(){
     
@@ -48,7 +50,7 @@ public class Label extends Widget {
     public void onTextChanged(){
         this.submitTreeUpdate(() -> {
             var font = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont();
-            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(font,text));
+            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(this.lineHeight,font,text));
         });
     }
     
@@ -59,14 +61,14 @@ public class Label extends Widget {
         var textY = this.y + (this.height - lineHeight)/2 + lineHeight * 0.1f;
         switch (style.textAlign){
             case LEFT:
-                graphics.drawString(this.text, this.x + 2, textY, this.color, true, lineHeight);
+                graphics.drawString(this.text, this.x + 2, textY, this.color, dropShadow, lineHeight);
                 break;
             case CENTER:
-                graphics.drawCenteredString(this.text, this.x + this.width/2f, textY, this.color, true, lineHeight);
+                graphics.drawCenteredString(this.text, this.x + this.width/2f, textY, this.color, dropShadow, lineHeight);
                 break;
             case RIGHT:
                 var length = graphics.defaultFont().width(this.text);
-                graphics.drawString(this.text, this.x + this.width - length - 2, textY, this.color,true, lineHeight);
+                graphics.drawString(this.text, this.x + this.width - length - 2, textY, this.color,dropShadow, lineHeight);
                 break;
         }
         
@@ -93,8 +95,24 @@ public class Label extends Widget {
         return textScale;
     }
     
+    @Override
+    public void setLineHeight(float height) {
+        this.lineHeight = (int) height;
+        this.onTextChanged();
+    }
+    
+    @Override
+    public void setTextColor(int color) {
+        this.color = color;
+    }
+    
     public void setTextScale(TextScale textScale) {
         this.textScale = textScale;
         this.onTextChanged();
+    }
+    
+    @Override
+    public void setDropShadow(boolean dropShadow) {
+        this.dropShadow = dropShadow;
     }
 }

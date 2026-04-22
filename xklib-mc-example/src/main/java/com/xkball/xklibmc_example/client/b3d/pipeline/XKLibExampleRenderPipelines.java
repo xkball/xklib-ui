@@ -1,7 +1,6 @@
 package com.xkball.xklibmc_example.client.b3d.pipeline;
 
 import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -32,16 +31,29 @@ public class XKLibExampleRenderPipelines {
             .withCull(true)
             .buildExtended();
     
-    public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP_LOD1 = ExtendedRenderPipeline.builder()
-            .withLocation(VanillaUtils.modRL("world_terrain_pip"))
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.TRIANGLES)
-            .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip_lod1"))
-            .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip_lod1"))
+    public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP_FULL_MESH = ExtendedRenderPipeline.builder()
+           .withLocation(VanillaUtils.modRL("world_terrain_pip_full_mesh"))
+           .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.TRIANGLES)
+           .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip_full_mesh"))
+           .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip_full_mesh"))
+           .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+           .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+           .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
+           .bindUniform("PhongLight", PHONE_LIGHT)
+           .withDepthStencilState(DepthStencilState.DEFAULT)
+           .withCull(true)
+           .buildExtended();
+    
+    public static final ExtendedRenderPipeline WORLD_TERRAIN_PIP_LOD = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("world_terrain_pip_lod"))
+            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.TRIANGLES)
+            .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip_lod"))
+            .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip_full_mesh"))
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
             .bindUniform("PhongLight", PHONE_LIGHT)
-            .withSSBO("ABlock")
+            .withSSBO("Chunks")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(true)
             .buildExtended();

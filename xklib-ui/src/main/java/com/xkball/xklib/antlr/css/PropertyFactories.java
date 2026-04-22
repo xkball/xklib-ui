@@ -69,6 +69,7 @@ public class PropertyFactories {
             }
             return Float.parseFloat(text);
         });
+        this.register(String.class, (expr -> expr.getText().trim()));
         this.register(TaffyDimension.class, expr -> LengthUnitParser.parseInner(expr.term()).toDimension());
         this.register(LengthPercentage.class, expr -> LengthUnitParser.parseInner(expr.term()).toLengthPercentage());
         this.register(LengthPercentageAuto.class, expr -> LengthUnitParser.parseInner(expr.term()).toLengthPercentageAuto());

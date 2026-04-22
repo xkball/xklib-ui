@@ -14,7 +14,7 @@ out vec4 fragColor;
 
 const float ambient = 0.3;
 const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-const float specularStrength = 0.4;
+const float specularStrength = 0.2;
 
 void main() {
     float diff = max(dot(pNormal, lightDir), 0.0);

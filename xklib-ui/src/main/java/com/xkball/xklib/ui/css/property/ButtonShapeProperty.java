@@ -77,7 +77,7 @@ public class ButtonShapeProperty implements IStyleProperty<String> {
                 graphics.fill(x, y, maxX, maxY, color);
                 break;
             case ROUND_RECT:
-                float radius = Math.max(widget.getWidth(),widget.getHeight()) * 0.2f;
+                float radius = Math.min(widget.getWidth(),widget.getHeight()) * 0.4f;
                 if (widget.isHovered()) {
                     graphics.fillRounded(x - 2, y - 2, maxX + 2, maxY + 2, hoverColor, radius);
                 }

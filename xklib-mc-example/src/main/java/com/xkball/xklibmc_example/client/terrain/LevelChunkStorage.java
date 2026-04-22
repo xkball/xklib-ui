@@ -3,6 +3,7 @@ package com.xkball.xklibmc_example.client.terrain;
 import com.mojang.blaze3d.GraphicsWorkarounds;
 import com.mojang.blaze3d.vertex.UberGpuBuffer;
 import com.mojang.logging.LogUtils;
+import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.utils.CodecUtils;
@@ -33,16 +34,19 @@ public class LevelChunkStorage {
     
     public final int minHeight;
     public final String saveName;
+    public final boolean compatibleMode;
     public final ResourceKey<Level> dimension;
     public EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
-    public UberGpuBuffer<ChunkPosLod> gpuBufferByLod;
+    public UberGpuBuffer<ChunkPosLod> gpuBufferByLodFullMesh;
+    public ManagedGpuBuffer gpuBufferLod;
     private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
     public final Map<ChunkPos, ChunkStorage> chunkMap = new LinkedHashMap<>();
     public boolean dirty = false;
     
-    public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight) {
+    public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight, boolean compatibleMode) {
         this.dimension = dimension;
         this.minHeight = minHeight;
+        this.compatibleMode = compatibleMode;
         this.saveName = ClientUtils.getSaveOrServerName();
         this.createBuffer();
     }
@@ -53,11 +57,13 @@ public class LevelChunkStorage {
         var gpuDevice = ClientUtils.getGpuDevice();
         var gpuWorkaround = GraphicsWorkarounds.get(gpuDevice);
         for(var dir : VanillaUtils.DIRECTIONS){
-            this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 64 * 1024 * 1024, 16, gpuDevice, 16 * 1024 * 1024, gpuWorkaround));
+            this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 64 * 1024 * 1024, 16, gpuDevice, 8 * 1024 * 1024, gpuWorkaround));
         }
-        this.gpuBufferByLod = new UberGpuBuffer<>("terrain_lod",64, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 16 * 1024 * 1024, gpuWorkaround);
+        this.gpuBufferByLodFullMesh = new UberGpuBuffer<>("terrain_lod",64, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 8 * 1024 * 1024, gpuWorkaround);
         this.gpuBuffers.addAll(gpuBufferByFace.values());
-        this.gpuBuffers.add(gpuBufferByLod);
+        this.gpuBuffers.add(gpuBufferByLodFullMesh);
+
+        this.gpuBufferLod = new ManagedGpuBuffer(ChunkStorage.CHUNK_DATA_SSBO_SIZE);
     }
     
     public List<UberGpuBuffer<?>> getGpuBuffers(){
@@ -69,10 +75,10 @@ public class LevelChunkStorage {
     }
     
     public void unloadGpu(){
-        if(this.gpuBufferByLod != null) this.gpuBufferByLod.close();
-        for(var b :  this.gpuBufferByFace.values()){
+        for(var b : this.gpuBuffers){
             b.close();
         }
+        if(this.gpuBufferLod != null) this.gpuBufferLod.close();
         this.markDirty();
     }
     
@@ -142,7 +148,7 @@ public class LevelChunkStorage {
                                         () -> {
                                             if(this.chunkMap.containsKey(chunkPos)) return;
                                             this.chunkMap.put(chunkPos, storage);
-                                            storage.uploadGpuLod0();
+                                            storage.uploadGpu0();
                                         }
                                 );
                             }
@@ -160,7 +166,8 @@ public class LevelChunkStorage {
                 for(var chunkStorage : chunkMap.values()){
                     TerrainChunkManager.INSTANCE.taskQueue.submitMain( () -> {
                         if(!this.chunkMap.containsKey(chunkStorage.chunkPos)) return;
-                        chunkStorage.uploadGpuLod12();
+                        chunkStorage.uploadGpuLodFullMesh();
+//                        chunkStorage.uploadGpuLod();
                     });
                 }
             });

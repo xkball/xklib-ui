@@ -63,7 +63,15 @@ public class WorldTerrainWidgetInner extends Widget {
         this.setCameraY();
         WorldTerrainPipRenderer.update();
     }
-
+    
+    @Override
+    public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
+        if (!this.enabled || !this.visible) {
+            return false;
+        }
+        return this.onMouseDragged(event, dx, dy);
+    }
+    
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         super.doRender(graphics, mouseX, mouseY, a);

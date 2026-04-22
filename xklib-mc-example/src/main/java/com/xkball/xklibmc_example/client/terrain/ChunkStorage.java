@@ -24,6 +24,16 @@ import java.util.List;
 @NonNullByDefault
 public class ChunkStorage {
     
+    /*
+    struct ChunkData {
+        int x0;
+        int z0;
+        int heightMap[17*17];
+        int colorMap[17*17];
+    };
+    */
+    public static int CHUNK_DATA_SSBO_SIZE = 2320;
+    
     public final ChunkPos chunkPos;
     public final LevelChunkStorage parent;
     public final ChunkStorageData data;
@@ -34,6 +44,7 @@ public class ChunkStorage {
     public AABB chunkAABB;
     @SuppressWarnings("NotNullFieldNotInitialized")
     public ChunkHeightMap heightMap;
+    public int lodDataId = -1;
     public boolean dirty = false;
     
     public ChunkStorage(ChunkPos chunkPos, LevelChunkStorage parent) {
@@ -50,17 +61,21 @@ public class ChunkStorage {
         else if(lenSqr < 1000 * 1000){
             return 1;
         }
-        return 2;
+        else if(lenSqr < 2000 * 2000){
+            return 2;
+        }
+        return 3;
     }
     
-    public int facesCountByLod(int lodLevel){
+    public int facesCountByLodFullMesh(int lodLevel){
         if(lodLevel == 1) return 64;
         if(lodLevel == 2) return 16;
+        if(lodLevel == 3) return 4;
         return 0;
     }
     
-    public TlsfAllocator.@Nullable Allocation getRenderBuffer(int lodLevel){
-        if(lodLevel <= 2) return this.parent.gpuBufferByLod.getAllocation(new ChunkPosLod(this.chunkPos, lodLevel));
+    public TlsfAllocator.@Nullable Allocation getLodBufferFullMesh(int lodLevel){
+        if(lodLevel <= 3) return this.parent.gpuBufferByLodFullMesh.getAllocation(new ChunkPosLod(this.chunkPos, lodLevel));
         return null;
     }
     
@@ -78,14 +93,46 @@ public class ChunkStorage {
         this.data.data.clear();
     }
     
-    public void uploadGpuLod12(){
-        removeFromUberBuffer(this.parent.gpuBufferByLod, new ChunkPosLod(this.chunkPos,1));
-        removeFromUberBuffer(this.parent.gpuBufferByLod, new ChunkPosLod(this.chunkPos,2));
-        this.uploadGpuLod(1,2);
-        this.uploadGpuLod(2,4);
+    public void uploadGpuLod(){
+        if(this.lodDataId != -1){
+            this.parent.gpuBufferLod.remove(this.lodDataId);
+        }
+        var buffer = MemoryUtil.memAlloc(CHUNK_DATA_SSBO_SIZE);
+        var x0 = chunkPos.getMinBlockX();
+        var z0 = chunkPos.getMinBlockZ();
+        buffer.putInt(x0);
+        buffer.putInt(z0);
+        for (int dz = 0; dz < 17; dz++) {
+            for (int dx = 0; dx < 17; dx++) {
+                if(dx == 16 || dz == 16){
+                    buffer.putInt(this.parent.getHeight(x0 + dx, z0 + dz));
+                }
+                else buffer.putInt(this.heightMap.get(dx, dz));
+            }
+        }
+        for (int dz = 0; dz < 17; dz++) {
+            for (int dx = 0; dx < 17; dx++) {
+                if(dx == 16 || dz == 16){
+                    buffer.putInt(this.parent.getColor(x0 + dx, z0 + dz));
+                }
+                else buffer.putInt(this.heightMap.getColor(dx, dz));
+            }
+        }
+        buffer.flip();
+        this.lodDataId = this.parent.gpuBufferLod.put(buffer);
+        MemoryUtil.memFree(buffer);
     }
     
-    private void uploadGpuLod(int lodLevel, int step){
+    public void uploadGpuLodFullMesh(){
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
+        this.uploadGpuLodFullMesh(1,2);
+        this.uploadGpuLodFullMesh(2,4);
+        this.uploadGpuLodFullMesh(3,8);
+    }
+    
+    private void uploadGpuLodFullMesh(int lodLevel, int step){
         var x0 = chunkPos.getMinBlockX();
         var z0 = chunkPos.getMinBlockZ();
         var minY = this.parent.minHeight;
@@ -133,7 +180,7 @@ public class ChunkStorage {
                 }
             }
             var buffer = builder.build();
-            var gpuBuffer = this.parent.gpuBufferByLod;
+            var gpuBuffer = this.parent.gpuBufferByLodFullMesh;
             var success = gpuBuffer.addAllocation(new ChunkPosLod(this.chunkPos,lodLevel),(_) -> {}, buffer);
             if(!success){
                 gpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
@@ -142,7 +189,7 @@ public class ChunkStorage {
         }
     }
     
-    public void uploadGpuLod0(){
+    public void uploadGpu0(){
         for(var b : this.parent.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
@@ -182,8 +229,10 @@ public class ChunkStorage {
         for(var b : this.parent.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
-        removeFromUberBuffer(this.parent.gpuBufferByLod, new ChunkPosLod(this.chunkPos,1));
-        removeFromUberBuffer(this.parent.gpuBufferByLod, new ChunkPosLod(this.chunkPos,2));
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
+        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
+        if(this.lodDataId != -1) this.parent.gpuBufferLod.remove(this.lodDataId);
     }
     
     private static <T> void removeFromUberBuffer(UberGpuBuffer<T> buffer, T key){

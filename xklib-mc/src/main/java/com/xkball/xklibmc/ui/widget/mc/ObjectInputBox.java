@@ -136,33 +136,37 @@ public class ObjectInputBox<T> extends EditBox implements Renderable {
         return null;
     }
     
+    public boolean isValid(){
+        return validator.test(getValue());
+    }
+    
     @Override
     public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, a);
         var font = Minecraft.getInstance().font;
-        var rec = guiGraphics.scissorStack.stack.isEmpty() ? null : guiGraphics.scissorStack.stack.peekLast();
-        if(rec != null){
-            guiGraphics.disableScissor();
-            guiGraphics.enableScissor(rec.position().x()-100, rec.position().y(), rec.position().x()+rec.width(), rec.position().y()+rec.height());
-        }
+//        var rec = guiGraphics.scissorStack.stack.isEmpty() ? null : guiGraphics.scissorStack.stack.peekLast();
+//        if(rec != null){
+//            guiGraphics.disableScissor();
+//            guiGraphics.enableScissor(rec.position().x()-100, rec.position().y(), rec.position().x()+rec.width(), rec.position().y()+rec.height());
+//        }
         if (this.visible) {
-            if(renderState){
-                if(validator.test(getValue())) {
-                    guiGraphics.fill(getX()-10,getY(),getX(),getY()+getHeight(), VanillaUtils.getColor(0,255,0,255));
-                }
-                else {
-                    guiGraphics.fill(getX()-10,getY(),getX(),getY()+getHeight(), VanillaUtils.getColor(255,0,0,255));
-                }
-            }
+//            if(renderState){
+//                if(validator.test(getValue())) {
+//                    guiGraphics.fill(getX()-6,getY(),getX(),getY()+getHeight(), VanillaUtils.getColor(0,255,0,255));
+//                }
+//                else {
+//                    guiGraphics.fill(getX()-6,getY(),getX(),getY()+getHeight(), VanillaUtils.getColor(255,0,0,255));
+//                }
+//            }
             var title = this.getMessage().getString();
             if(!title.isEmpty()){
                 guiGraphics.text(font,title,getX()-font.width(title)-(renderState?12:2),getY()+2,0xFFFFFF);
             }
         }
-        if(rec != null){
-            guiGraphics.disableScissor();
-            guiGraphics.enableScissor(rec.position().x(), rec.position().y(), rec.position().x()+rec.width(), rec.position().y()+rec.height());
-        }
+//        if(rec != null){
+//            guiGraphics.disableScissor();
+//            guiGraphics.enableScissor(rec.position().x(), rec.position().y(), rec.position().x()+rec.width(), rec.position().y()+rec.height());
+//        }
     }
     
     public boolean isRenderState() {

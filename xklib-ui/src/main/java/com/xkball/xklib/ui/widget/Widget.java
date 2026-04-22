@@ -138,7 +138,10 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         if (!this.enabled || !this.visible) {
             return false;
         }
-        return this.onMouseDragged(event, dx, dy);
+        if(this.isMouseOver(event.x(),event.y())){
+            return this.onMouseDragged(event, dx, dy);
+        }
+        return false;
     }
     
     @Override
@@ -220,7 +223,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    public IGuiWidget setCSSClassName(String name) {
+    public Widget setCSSClassName(String name) {
         this.cssClass = name;
         return this;
     }
@@ -558,8 +561,8 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
                             size: %spx %spx;
                             border: 2px;
                             border-color: -1;
-                            label-text-color: -1;
-                            label-text-height: 20;
+                            text-color: -1;
+                            text-height: 20;
                             text-align: center;
                             margin-left: 12px;
                             background-color: 0xdd263136;

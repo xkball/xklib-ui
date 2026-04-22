@@ -49,13 +49,10 @@ public class DualQueueThreadPool {
             workers.submit(() -> {
                 try {
                     while (running.get()) {
-
                         if (System.nanoTime() - startTime > duration) {
                             break;
                         }
-
                         Runnable task = workerQueue.poll();
-
                         if (task != null) {
                             task.run();
                         } else {
@@ -72,12 +69,10 @@ public class DualQueueThreadPool {
             if (System.nanoTime() - startTime > duration) {
                 break;
             }
-
             Runnable task = mainQueue.poll();
             if (task == null) {
                 task = workerQueue.poll();
             }
-
             if (task != null) {
                 task.run();
             } else {

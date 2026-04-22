@@ -6,5 +6,6 @@ public interface IInputWidget<T> {
     
     void setValue(T value);
     
+    //绑定时应该读取初始值
     IGuiWidget bind(ILayoutVariable<T> variable);
 }

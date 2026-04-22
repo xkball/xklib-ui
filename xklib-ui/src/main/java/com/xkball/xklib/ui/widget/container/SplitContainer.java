@@ -215,6 +215,14 @@ public class SplitContainer extends ContainerWidget {
         public void onFocusChanged(boolean focused) {
             if (!focused && draggingBarIndex == barIndex) draggingBarIndex = -1;
         }
+        
+        @Override
+        public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
+            if (!this.enabled || !this.visible) {
+                return false;
+            }
+            return this.onMouseDragged(event, dx, dy);
+        }
     }
 
     public void setBarColor(int barColor) {

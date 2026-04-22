@@ -5,7 +5,6 @@ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.utils.ClientUtils;
-import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.slf4j.Logger;
@@ -28,6 +27,7 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     
     public ManagedGpuBuffer(int chunkSize) {
         this.chunkSize = chunkSize;
+        this.createBuffer();
     }
     
     public int put(GpuBuffer buffer){
@@ -96,8 +96,6 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
     }
 
     private int allocateChunkId() {
-        ensureInitialized();
-
         Integer chunkIndex = freeChunks.pollLast();
         if (chunkIndex == null) {
             growToAtLeast(capacityChunks + 1);
@@ -107,7 +105,7 @@ public class ManagedGpuBuffer implements ICloseOnExit<ManagedGpuBuffer> {
         return chunkIndex;
     }
 
-    private void ensureInitialized() {
+    private void createBuffer() {
         if (gpuBuffer != null) {
             return;
         }
