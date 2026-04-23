@@ -1,4 +1,6 @@
 .gradle
+.cursor
+libsrc
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

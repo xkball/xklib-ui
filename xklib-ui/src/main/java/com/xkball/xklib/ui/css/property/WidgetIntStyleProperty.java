@@ -6,15 +6,17 @@ import com.xkball.xklib.api.gui.widget.IGuiWidget;
 
 import java.util.function.BiConsumer;
 
-public class WidgetIntStyleProperty implements IStyleProperty<Integer> {
+public class WidgetIntStyleProperty<W> implements IStyleProperty<Integer> {
 
     private final String name;
-    private final BiConsumer<IGuiWidget, Integer> setter;
+    private final Class<W> widgetType;
+    private final BiConsumer<W, Integer> setter;
     private int value;
 
-    public WidgetIntStyleProperty(String name, Integer value, BiConsumer<IGuiWidget, Integer> setter) {
+    public WidgetIntStyleProperty(String name, Integer value, Class<W> widgetType, BiConsumer<W, Integer> setter) {
         this.name = name;
         this.value = value;
+        this.widgetType = widgetType;
         this.setter = setter;
     }
 
@@ -40,7 +42,10 @@ public class WidgetIntStyleProperty implements IStyleProperty<Integer> {
 
     @Override
     public void apply(IStyleSheet sheet, IGuiWidget widget) {
-        this.setter.accept(widget, this.value);
+        if (!this.widgetType.isInstance(widget)) {
+            return;
+        }
+        this.setter.accept(this.widgetType.cast(widget), this.value);
     }
 }
 

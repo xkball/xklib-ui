@@ -26,30 +26,23 @@ import java.util.function.Supplier;
 public class ContainerWidget extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
-    private static final String SELF_CSS = """
-            container-scrollbar-track-color: 0xFF2D2D2D;
-            container-scrollbar-thumb-color: 0xFF888888;
-            container-scrollbar-thumb-hover-color: 0xFFAAAAAA;
-            """;
     
     protected final List<Widget> children = new ArrayList<>();
     protected float xScrollOffset = 0;
     protected float yScrollOffset = 0;
     protected ScrollBar scrollBarX = new ScrollBar(false);
     protected ScrollBar scrollBarY = new ScrollBar(true);
-    protected int scrollBarTrackColor;
-    protected int scrollBarThumbColor;
-    protected int scrollBarThumbHoverColor;
+    protected int scrollBarTrackColor = 0xFF2D2D2D;
+    protected int scrollBarThumbColor = 0xFF888888;
+    protected int scrollBarThumbHoverColor = 0xFFAAAAAA;
     
     
     public ContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.inlineStyle(SELF_CSS);
     }
     
     public ContainerWidget() {
         super();
-        this.inlineStyle(SELF_CSS);
     }
     
     @Override
@@ -79,8 +72,7 @@ public class ContainerWidget extends Widget {
     /**
      * 会覆盖组件原有的样式, 外部不要调用
      */
-    @Deprecated
-    public ContainerWidget addChild(Widget widget, TaffyStyle style){
+    protected ContainerWidget addChild(Widget widget, TaffyStyle style){
         untilSetTree(() -> {
             if(this.children.contains(widget)) return;
             widget.setParent(this);
@@ -96,11 +88,6 @@ public class ContainerWidget extends Widget {
             this.markDirty();
         });
         return this;
-    }
-    
-
-    public ContainerWidget addChild(Supplier<Widget> widget, TaffyStyle style){
-        return this.addChild(widget.get(), style);
     }
     
     public ContainerWidget addChild(Supplier<Widget> widgetSupplier){

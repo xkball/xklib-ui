@@ -6,13 +6,13 @@ import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
-import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -21,6 +21,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
@@ -83,7 +84,12 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     }
     
-    public RenderInfo gatherRenderInfo(Frustum frustum, Vector3f camPos){
+    public @Nullable LevelChunkStorage getCurrentLevelChunkStorage(){
+        if(Minecraft.getInstance().level == null) return null;
+        return this.storageMap.get(Minecraft.getInstance().level.dimension());
+    }
+    
+    public RenderInfo gatherRenderInfo(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
         var level = Minecraft.getInstance().level;
         if(level == null) return RenderInfo.empty();
         var storage = this.storageMap.get(level.dimension());
@@ -94,7 +100,9 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         for(var chunkStorage : storage.chunkMap.values()){
             var aabb = chunkStorage.chunkAABB;
             if(!frustum.isVisible(aabb)) continue;
-            var lod = chunkStorage.getLodLevel(camPos);
+            if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
+            var lod = chunkStorage.getLodLevel(baseLodDistance, camPos);
+            if(lod < 0) continue;
             if(lod == 0 && !compatibleMode){
                 for (int i = 0; i < 6; i++) {
                     var dir = VanillaUtils.DIRECTIONS[i];

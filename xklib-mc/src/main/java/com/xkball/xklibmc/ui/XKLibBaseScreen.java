@@ -180,7 +180,7 @@ public class XKLibBaseScreen extends Screen {
                         display: grid;
                         size: 100% 100%;
                         grid-template-columns: 100%;
-                        grid-template-rows: 20rpx 1fr 20rpx;
+                        grid-template-rows: 20rpx 1fr 10rpx;
                         """)
                 .addChild(
                         new Label(title)

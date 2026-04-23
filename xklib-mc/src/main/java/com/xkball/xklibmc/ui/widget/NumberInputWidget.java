@@ -1,6 +1,5 @@
 package com.xkball.xklibmc.ui.widget;
 
-import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.IInputWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -29,10 +28,10 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
                 size: 2rpx 100%;
             }
             .number_input_mid {
-                size: 70%-3rpx 100%;
+                size: 70%-1rpx 100%;
             }
             .number_input_buttons {
-                size: 30%-3rpx 100%;
+                size: 30%-1rpx 100%;
                 flex-direction: column;
             }
             .number_input_btn {
@@ -59,7 +58,6 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
     private final ObjectInputBox<T> inputBox;
     
     private final List<ILayoutVariable<T>> bindings = new ArrayList<>();
-    private boolean updatingFromInside;
     private T value;
 
     public NumberInputWidget(
@@ -77,11 +75,8 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         this.parser = Objects.requireNonNull(parser);
         this.formatter = Objects.requireNonNull(formatter);
 
-        this.inlineStyle("display: flex; size: 100% 14rpx;")
-                .asRootStyle(ROOT_STYLE);
-
+        this.asRootStyle(ROOT_STYLE);
         
-
         this.inputBox = new ObjectInputBox<>(
                 Minecraft.getInstance().font,
                 0,
@@ -160,25 +155,15 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         var v = clamp(value);
         this.value = v;
         updateTextFromValue(v);
-        if (!updatingFromInside) {
-            for (var bind : bindings) {
-                bind.set(v);
-            }
+        for (var bind : bindings) {
+            bind.set(v);
         }
     }
     
     @Override
-    public IGuiWidget bind(ILayoutVariable<T> variable) {
+    public NumberInputWidget<T> bind(ILayoutVariable<T> variable) {
         this.setValue(variable.get());
         this.bindings.add(variable);
-        variable.addCallback(v -> {
-            updatingFromInside = true;
-            try {
-                setValue(v);
-            } finally {
-                updatingFromInside = false;
-            }
-        });
         return this;
     }
 
@@ -275,13 +260,8 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
     }
 
     private void updateTextFromValue(T v) {
-        updatingFromInside = true;
-        try {
-            this.inputBox.setValue(this.formatter.apply(v));
-        } catch (Exception e) {
-        } finally {
-            updatingFromInside = false;
-        }
+        this.inputBox.setValue(this.formatter.apply(v));
+        this.inputBox.displayPos = 0;
     }
 
     public static NumberInputWidget<Integer> ofInt(int min, int max, int step) {

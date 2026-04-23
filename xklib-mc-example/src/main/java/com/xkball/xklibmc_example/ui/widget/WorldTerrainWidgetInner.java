@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
+import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
@@ -16,7 +17,6 @@ import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.levelgen.Heightmap;
 import org.joml.Matrix2f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -40,13 +40,25 @@ public class WorldTerrainWidgetInner extends Widget {
     private final BooleanLayoutVariable terrain;
     private final BooleanLayoutVariable grid;
     private final BooleanLayoutVariable player;
+    private final BooleanLayoutVariable cameraTarget_;
+    private final BooleanLayoutVariable depress_sphere;
     private final BooleanLayoutVariable debug;
+    private final IntLayoutVariable yMode;
+    private final IntLayoutVariable fixY;
+    private final IntLayoutVariable lodDistance;
+    private final IntLayoutVariable viewDistance;
 
-    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable debug) {
+    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable cameraTarget, BooleanLayoutVariable depress_sphere, BooleanLayoutVariable debug, IntLayoutVariable yMode, IntLayoutVariable fixY, IntLayoutVariable lodDistance, IntLayoutVariable viewDistance) {
         this.terrain = terrain;
         this.grid = grid;
         this.player = player;
+        this.cameraTarget_ = cameraTarget;
+        this.depress_sphere = depress_sphere;
         this.debug = debug;
+        this.yMode = yMode;
+        this.fixY = fixY;
+        this.lodDistance = lodDistance;
+        this.viewDistance = viewDistance;
         this.initCamera();
         this.setOverflow(false);
     }
@@ -55,13 +67,22 @@ public class WorldTerrainWidgetInner extends Widget {
         var mc = Minecraft.getInstance();
         var level = mc.level;
         if(level == null) return;
+        var player = mc.player;
+        if(player == null) return;
         var cam = mc.gameRenderer.getMainCamera();
         yRot = cam.yRot();
-        centerPos = cam.blockPosition();
+        centerPos = player.blockPosition();
         centerPos = centerPos.atY(level.getMinY());
         cameraTarget.set(centerPos.getX(), 0, centerPos.getZ());
         this.setCameraY();
         WorldTerrainPipRenderer.update();
+    }
+    
+    public void reLocateCamera(){
+        var player = Minecraft.getInstance().player;
+        if(player == null) return;
+        this.cameraTarget.x = player.blockPosition().getX();
+        this.cameraTarget.z = player.blockPosition().getZ();
     }
     
     @Override
@@ -83,6 +104,7 @@ public class WorldTerrainWidgetInner extends Widget {
             if(terrain.get()) list.add("terrain");
             if(grid.get()) list.add("grid");
             if(player.get()) list.add("player");
+            if(cameraTarget_.get()) list.add("cameraTarget");
             lastState = new WorldTerrainPipRenderer.WorldTerrainState(
                     list,
                     new Vector3f(cameraTarget),
@@ -96,6 +118,8 @@ public class WorldTerrainWidgetInner extends Widget {
                     (int) (y/scaleY),
                     (int) ((y + height)/scaleY),
                     1.0f,
+                    depress_sphere.get(),
+                    lodDistance.get(),
                     null,
                     new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
             );
@@ -180,6 +204,7 @@ public class WorldTerrainWidgetInner extends Widget {
             xRot = xRot + (float) dy * sens;
             xRot = Math.clamp(xRot, -89.9f, 89.9f);
             yRot = (yRot + 360) % 360;
+            this.setCameraY();
             return true;
         }
         if (event.button() == 1) {
@@ -220,7 +245,6 @@ public class WorldTerrainWidgetInner extends Widget {
             return false;
         }
         this.moveCamera(dx,dz);
-        this.setCameraY();
         return true;
     }
     
@@ -230,17 +254,24 @@ public class WorldTerrainWidgetInner extends Widget {
         dir.mul(new Matrix2f().rotate((float) Math.toRadians(-yRot)));
         cameraTarget.add(dir.x, 0, dir.y);
 //        cameraTarget.add(dx*speed,0,dz*speed);
+        this.setCameraY();
     }
     
     private void setCameraY(){
         var level = Minecraft.getInstance().level;
         if(level != null){
-            var h = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centerPos.getX(), centerPos.getZ());
-            if(h != -64){
-                cameraTarget.y = h;
+            if(yMode.get() == 0){
+                cameraTarget.y = level.getSeaLevel();
+                var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
+                if (storage != null) {
+                    var h = storage.getHeight((int) cameraTarget.x, (int) cameraTarget.z);
+                    if(h != level.getMinY()){
+                        cameraTarget.y = h;
+                    }
+                }
             }
             else{
-                cameraTarget.y = level.getSeaLevel();
+                cameraTarget.y = fixY.get();
             }
         }
     }

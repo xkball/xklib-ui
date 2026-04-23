@@ -11,10 +11,9 @@ import java.util.List;
 
 public class IconCheckBox extends Widget implements IInputWidget<Boolean> {
 	
-
 	private final ResourceLocation sprite;
 	private final List<ILayoutVariable<Boolean>> bindings = new ArrayList<>();
-
+	public Runnable onChange = () -> {};
 	private boolean checked;
 	private int backgroundColor;
     
@@ -29,7 +28,12 @@ public class IconCheckBox extends Widget implements IInputWidget<Boolean> {
 
 	@Override
 	public void setValue(Boolean value) {
-		this.checked = value != null && value;
+		if(this.checked == value) return;
+		this.checked = value;
+		this.onChange.run();
+		for (var bind : this.bindings) {
+			bind.set(this.checked);
+		}
 	}
 
 	@Override
@@ -38,13 +42,20 @@ public class IconCheckBox extends Widget implements IInputWidget<Boolean> {
 		this.bindings.add(variable);
 		return this;
 	}
+	
+	public IconCheckBox bindInGroup(int index, ILayoutVariable<Integer> variable) {
+		if(variable.get() == index) this.setValue(true);
+		this.onChange = () -> {
+			if(checked) variable.set(index);
+			if(!checked && variable.get() == index) this.setValue(true);
+		};
+		variable.addCallback(i -> this.setValue(i == index));
+		return this;
+	}
 
 	@Override
 	protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-		this.checked = !this.checked;
-		for (var bind : this.bindings) {
-			bind.set(this.checked);
-		}
+		this.setValue(!this.checked);
 		return true;
 	}
 

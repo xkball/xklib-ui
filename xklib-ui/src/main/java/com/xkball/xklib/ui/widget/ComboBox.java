@@ -11,21 +11,14 @@ import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.Overflow;
 import dev.vfyjxf.taffy.geometry.TaffyPoint;
+import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyDimension;
-import dev.vfyjxf.taffy.style.TaffyStyle;
-import dev.vfyjxf.taffy.style.TextAlign;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ComboBox<T> extends ContainerWidget {
-
-    private static final String SELF_CSS = """
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            """;
 
     private static final float ARROW_BTN_WIDTH = 24f;
     private static final int BORDER_COLOR = 0xFF94A3B8;
@@ -48,7 +41,34 @@ public class ComboBox<T> extends ContainerWidget {
         this.nullable = nullable;
         this.selected = nullable ? null : (options.isEmpty() ? null : options.getFirst());
         this.displayLabel = new Label(selectedText(),0xFFE2E8F0);
-        this.inlineStyle(SELF_CSS);
+        this.displayLabel.setCSSClassName("combo_display");
+        this.setStyle(s -> {
+            s.display = TaffyDisplay.FLEX;
+            s.flexDirection = FlexDirection.ROW;
+            s.alignItems = AlignItems.STRETCH;
+        });
+        this.asRootStyle("""
+                .combo_display {
+                    background-color: 0xFF1E293B;
+                    flex-grow: 1;
+                    flex-shink: 1;
+                    size: auto 100%;
+                }
+                .combo_arrow {
+                    button-shape: rect;
+                    button-bg-color: 0xFF334155;
+                    button-hover-color: 0xFF475569;
+                    flex-shink: 0;
+                    size: 24 100%;
+                }
+                .combo_overlay {
+                    background-color: 0xFF0F172A;
+                }
+                .combo_item_label {
+                    button-hover-color: 0x33FFFFFF;
+                    flex-shink: 0;
+                }
+                """);
     }
 
     public ComboBox(List<T> options, Function<T, String> toDisplay) {
@@ -76,21 +96,11 @@ public class ComboBox<T> extends ContainerWidget {
     @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
-
-
-        var labelStyle = new TaffyStyle();
-        labelStyle.flexGrow = 1f;
-        labelStyle.flexShrink = 1f;
-        labelStyle.size = new TaffySize<>(TaffyDimension.auto(), TaffyDimension.percent(1f));
-        this.displayLabel.inlineStyle("background-color: " + BG_COLOR + ";");
-        this.addChild(this.displayLabel, labelStyle);
+        this.addChild(this.displayLabel);
 
         var arrowBtn = new ArrowButton();
-        arrowBtn.inlineStyle("button-shape: rect; button-bg-color: " + ARROW_BTN_COLOR + "; button-hover-color: " + ARROW_BTN_HOVER_COLOR + ";");
-        var arrowStyle = new TaffyStyle();
-        arrowStyle.size = new TaffySize<>(TaffyDimension.length(ARROW_BTN_WIDTH), TaffyDimension.percent(1f));
-        arrowStyle.flexShrink = 0f;
-        this.addChild(arrowBtn, arrowStyle);
+        arrowBtn.setCSSClassName("combo_arrow");
+        this.addChild(arrowBtn);
     }
 
     private void openOverlay() {
@@ -99,29 +109,25 @@ public class ComboBox<T> extends ContainerWidget {
         var guiSystem = GuiSystem.INSTANCE.get();
         float itemHeight = Math.max(this.height, 24f);
         overlay.asTreeRoot();
+        overlay.setCSSClassName("combo_overlay");
         overlay.setStyle(s -> {
             s.flexDirection = FlexDirection.COLUMN;
             s.alignItems = AlignItems.STRETCH;
             s.justifyContent = AlignContent.START;
         });
-        overlay.inlineStyle("background-color: 0xFF0F172A;");
         
         if (nullable) {
             var nullLabel = new Label("",  0xFF94A3B8);
-            nullLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
-            var nullStyle = new TaffyStyle();
-            nullStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
-            nullStyle.flexShrink = 0f;
-            overlay.addOptionItem(nullLabel, nullStyle, null);
+            nullLabel.setCSSClassName("combo_item_label");
+            nullLabel.style.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
+            overlay.addOptionItem(nullLabel, null);
         }
 
         for (T option : options) {
             var itemLabel = new Label(toDisplay.apply(option), 0xFFE2E8F0);
-            itemLabel.inlineStyle("button-hover-color: 0x33FFFFFF;");
-            var itemStyle = new TaffyStyle();
-            itemStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
-            itemStyle.flexShrink = 0f;
-            overlay.addOptionItem(itemLabel, itemStyle, option);
+            itemLabel.setCSSClassName("combo_item_label");
+            itemLabel.style.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.length(itemHeight));
+            overlay.addOptionItem(itemLabel, option);
         }
 
         guiSystem.insertLayerAfter(overlay, this.getRoot());
@@ -173,9 +179,9 @@ public class ComboBox<T> extends ContainerWidget {
 
     public class ComboBoxOverlay extends ContainerWidget {
 
-        void addOptionItem(Label label, TaffyStyle style, T option) {
+        void addOptionItem(Label label, T option) {
             var item = new OptionItem(label, option);
-            this.addChild(item, style);
+            this.addChild(item);
         }
 
         @Override
@@ -236,9 +242,8 @@ public class ComboBox<T> extends ContainerWidget {
         @Override
         public void afterTreeAndNodeSet() {
             super.afterTreeAndNodeSet();
-            var lStyle = new TaffyStyle();
-            lStyle.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f));
-            this.addChild(label, lStyle);
+            label.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.percent(1f), TaffyDimension.percent(1f)));
+            this.addChild(label);
         }
 
         @Override

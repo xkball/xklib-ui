@@ -53,15 +53,15 @@ public class ChunkStorage {
         this.data = new ChunkStorageData(chunkPos, new ArrayList<>());
     }
     
-    public int getLodLevel(Vector3f camPos){
-        var lenSqr = camPos.distanceSquared(chunkAABB.getCenter().toVector3f());
-        if(lenSqr < 500 * 500){
+    public int getLodLevel(int baseLodDistance, Vector3f camPos){
+        var len = camPos.distance(chunkAABB.getCenter().toVector3f());
+        if(len < baseLodDistance){
             return 0;
         }
-        else if(lenSqr < 1000 * 1000){
+        else if(len < baseLodDistance * 2){
             return 1;
         }
-        else if(lenSqr < 2000 * 2000){
+        else if(len < baseLodDistance * 4){
             return 2;
         }
         return 3;

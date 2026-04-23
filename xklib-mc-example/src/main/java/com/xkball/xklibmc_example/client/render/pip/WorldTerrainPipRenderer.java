@@ -8,6 +8,7 @@ import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
+import com.xkball.xklibmc_example.client.render.pip.layers.CameraTargetRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.GridRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.PlayerOnMapRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
@@ -31,7 +32,6 @@ import org.jspecify.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @NonNullByDefault
 public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerrainPipRenderer.WorldTerrainState> {
@@ -48,6 +48,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         regRenderLayers(new TerrainRenderer());
         regRenderLayers(new GridRenderer());
         regRenderLayers(new PlayerOnMapRenderer());
+        regRenderLayers(new CameraTargetRenderer());
     }
     
     public static void update(){
@@ -84,6 +85,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         this.cameraRenderState.xRot = renderState.xRot;
         this.cameraRenderState.pos = new Vec3(cameraPos);
         this.cameraRenderState.blockPos = new BlockPos((int) cameraPos.x, (int) cameraPos.y, (int) cameraPos.z);
+        this.cameraRenderState.projectionMatrix = projMatrix;
         for(var layer : renderState.enabledLayers){
             var renderer = renderLayers.get(layer);
             if(renderer != null){
@@ -118,6 +120,8 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         private final int y0;
         private final int y1;
         private final float scale;
+        private final boolean cullNear;
+        private final int lodDistance;
         private final @Nullable ScreenRectangle scissorArea;
         private final @Nullable ScreenRectangle bounds;
         private final Matrix4f projMatrix;
@@ -134,6 +138,8 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
                                  int y0,
                                  int y1,
                                  float scale,
+                                 boolean cullNear,
+                                 int lodDistance,
                                  @Nullable ScreenRectangle scissorArea,
                                  @Nullable ScreenRectangle bounds) {
             this.enabledLayers = enabledLayers;
@@ -148,6 +154,8 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             this.y0 = y0;
             this.y1 = y1;
             this.scale = scale;
+            this.cullNear = cullNear;
+            this.lodDistance = lodDistance;
             this.scissorArea = scissorArea;
             this.bounds = bounds;
             this.projMatrix = this.calculateProjMatrix(false);
@@ -168,7 +176,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         public Matrix4f calculateProjMatrix(boolean revZ) {
             var aspect = (x1 - x0) / ((float) y1 - (float) y0);
             var cameraPos = cameraPos();
-            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, Math.max(1,cameraPos.y-1000), Math.max(cameraLength, 8000), revZ)
+            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, Math.max(1,cameraPos.y-1000), Math.max(cameraLength * 2, 8000), revZ)
                     .lookAt(cameraPos.x, cameraPos.y, cameraPos.z,
                             cameraTarget.x, cameraTarget.y, cameraTarget.z,
                             0, 1, 0);
@@ -234,6 +242,14 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             return scale;
         }
         
+        public boolean cullNear() {
+            return this.cullNear;
+        }
+        
+        public int lodDistance() {
+            return lodDistance;
+        }
+        
         @Override
         public @Nullable ScreenRectangle scissorArea() {
             return scissorArea;
@@ -246,51 +262,6 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         
         public Matrix4f projMatrix() {
             return projMatrix;
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (WorldTerrainState) obj;
-            return Objects.equals(this.enabledLayers, that.enabledLayers) &&
-                    Objects.equals(this.cameraTarget, that.cameraTarget) &&
-                    Objects.equals(this.centerPos, that.centerPos) &&
-                    Float.floatToIntBits(this.fov) == Float.floatToIntBits(that.fov) &&
-                    Float.floatToIntBits(this.cameraLength) == Float.floatToIntBits(that.cameraLength) &&
-                    Float.floatToIntBits(this.xRot) == Float.floatToIntBits(that.xRot) &&
-                    Float.floatToIntBits(this.yRot) == Float.floatToIntBits(that.yRot) &&
-                    this.x0 == that.x0 &&
-                    this.x1 == that.x1 &&
-                    this.y0 == that.y0 &&
-                    this.y1 == that.y1 &&
-                    Float.floatToIntBits(this.scale) == Float.floatToIntBits(that.scale) &&
-                    Objects.equals(this.scissorArea, that.scissorArea) &&
-                    Objects.equals(this.bounds, that.bounds);
-        }
-        
-        @Override
-        public int hashCode() {
-            return Objects.hash(enabledLayers, cameraTarget, centerPos, fov, cameraLength, xRot, yRot, x0, x1, y0, y1, scale, scissorArea, bounds);
-        }
-        
-        @Override
-        public String toString() {
-            return "WorldTerrainState[" +
-                    "enabledLayers=" + enabledLayers + ", " +
-                    "cameraTarget=" + cameraTarget + ", " +
-                    "centerPos=" + centerPos + ", " +
-                    "fov=" + fov + ", " +
-                    "cameraLength=" + cameraLength + ", " +
-                    "xRot=" + xRot + ", " +
-                    "yRot=" + yRot + ", " +
-                    "x0=" + x0 + ", " +
-                    "x1=" + x1 + ", " +
-                    "y0=" + y0 + ", " +
-                    "y1=" + y1 + ", " +
-                    "scale=" + scale + ", " +
-                    "scissorArea=" + scissorArea + ", " +
-                    "bounds=" + bounds + ']';
         }
         
     }

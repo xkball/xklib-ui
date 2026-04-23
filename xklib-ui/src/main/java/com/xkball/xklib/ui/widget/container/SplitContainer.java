@@ -4,9 +4,12 @@ import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
+import dev.vfyjxf.taffy.style.AlignContent;
+import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.CalcExpression;
 import dev.vfyjxf.taffy.style.LengthPercentage;
 import dev.vfyjxf.taffy.style.TaffyDimension;
+import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TaffyStyle;
 import dev.vfyjxf.taffy.style.TrackSizingFunction;
 
@@ -16,13 +19,6 @@ import java.util.List;
 public class SplitContainer extends ContainerWidget {
 
     private static final float BAR_SIZE = 4f;
-    private static final String SELF_CSS = """
-            display: grid;
-            align-items: stretch;
-            justify-content: stretch;
-            split-bar-color: 0xFF444444;
-            split-bar-hover-color: 0xFF888888;
-            """;
 
     protected boolean vertical;
     private final int count;
@@ -32,8 +28,8 @@ public class SplitContainer extends ContainerWidget {
     private int draggingBarIndex = -1;
     private float barDragStartMouse = 0f;
     private float barDragStartRatio = 0f;
-    private int barColor;
-    private int barHoverColor;
+    private int barColor = 0xFF444444;
+    private int barHoverColor = 0xFF888888;
 
     public SplitContainer(boolean vertical, int count) {
         if (count < 2) throw new IllegalArgumentException("count must >= 2");
@@ -46,8 +42,10 @@ public class SplitContainer extends ContainerWidget {
         for (int i = 0; i < count; i++) {
             panels.add(new ContainerWidget());
         }
+        this.style.display = TaffyDisplay.GRID;
+        this.style.alignItems = AlignItems.STRETCH;
+        this.style.justifyContent = AlignContent.STRETCH;
         applyContainerStyle();
-        this.inlineStyle(SELF_CSS);
     }
 
     public SplitContainer(boolean vertical) {
@@ -78,10 +76,8 @@ public class SplitContainer extends ContainerWidget {
         float totalBars = (count - 1) * BAR_SIZE;
         for (int i = 0; i < count; i++) {
             float panelPercent = panelPercent(i);
-            tracks.add(TrackSizingFunction.minmax(
-                    TrackSizingFunction.fixed(0),
-                    TrackSizingFunction.fixed(LengthPercentage.calc(
-                    CalcExpression.percentMinusLength(panelPercent, totalBars * panelPercent)))));
+            tracks.add(TrackSizingFunction.fixed(LengthPercentage.calc(
+                    CalcExpression.percentMinusLength(panelPercent, totalBars * panelPercent))));
             if (i < count - 1) {
                 tracks.add(TrackSizingFunction.fixed(LengthPercentage.length(BAR_SIZE)));
             }
@@ -120,7 +116,8 @@ public class SplitContainer extends ContainerWidget {
 
     public SplitContainer setPanel(int index, Widget widget, TaffyStyle style) {
         style.size = TaffySize.all(TaffyDimension.percent(1f));
-        panels.get(index).addChild(widget, style);
+        widget.setStyle(style);
+        panels.get(index).addChild(widget);
         return this;
     }
 

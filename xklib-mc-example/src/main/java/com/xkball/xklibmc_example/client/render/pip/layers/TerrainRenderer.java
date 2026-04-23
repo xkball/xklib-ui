@@ -7,8 +7,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.mesh.CachedMesh;
-import com.xkball.xklibmc.client.b3d.postprocess.XKLibPostProcesses;
-import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
@@ -45,7 +43,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
                 b.putVec3(VanillaUtils.dirVec(Mth.clamp(renderState.xRot(),45,90),renderState.yRot() + 2))
                  .putVec3(renderState.cameraPos()));
-        try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum,renderState.cameraOffset().add(renderState.cameraTarget()))){
+        try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance())){
             if(!renderInfo.lod0().isEmpty()){
                 try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
                     RenderSystem.bindDefaultUniforms(renderpass);

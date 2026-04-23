@@ -17,7 +17,7 @@ public class AbsoluteContainer extends ContainerWidget {
     public boolean clampWidget = true;
     
     @Override
-    public ContainerWidget addChild(Widget widget, TaffyStyle style) {
+    protected ContainerWidget addChild(Widget widget, TaffyStyle style) {
         if(this.children.contains(widget)) return this;
         widget.setParent(this);
         widget.asTreeRoot();

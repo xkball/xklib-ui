@@ -34,6 +34,7 @@ public class IntLayoutVariable implements ILayoutVariable<Integer> {
     
     @Override
     public void triggerCallbacks() {
+        if(GuiSystem.INSTANCE.get() == null) return;
         GuiSystem.INSTANCE.get().submitTreeUpdate(() -> callbacks.forEach(c -> c.accept(value)));
     }
     

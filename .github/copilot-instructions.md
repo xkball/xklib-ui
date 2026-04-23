@@ -13,3 +13,7 @@
 7.为widget写测试时, 创建一个新类和主方法,使用WidgetTestFrame, 不需要添加test注解 
 
 8.不要在方法上throws任何unchecked的异常, 如果没有好的处理手段则catch, logger记录并throw
+
+9.logger输出的内容总是用英文
+
+10.找不到类代码时, 尝试在/libsrc文件夹下找
