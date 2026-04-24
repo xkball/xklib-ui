@@ -32,13 +32,13 @@ public enum TextScale {
         }
         
         @Override
-        public MeasureFunc getMeasureFunc(int lineHeight, IFont font, IComponent text) {
+        public MeasureFunc getMeasureFunc(int lineHeight, float extraWidth, IFont font, IComponent text) {
             return (kn,av) -> {
                 var h = Float.isNaN(kn.height) ? av.getHeight().getValue() : kn.height;
                 if(h == 0) h = font.lineHeight();
                 var lh = h-4;
                 if(lineHeight != -1) lh = lineHeight;
-                var w = font.width(text, (int) lh) + 10;
+                var w = font.width(text, (int) lh) + 10 + extraWidth;
                 return FloatSize.of(w,h);
             };
         }
@@ -52,11 +52,11 @@ public enum TextScale {
         return this.getTextHeight(lineHeight, font, IComponent.literal(text), spaceWidth, spaceHeight);
     }
     
-    public MeasureFunc getMeasureFunc(int lineHeight, IFont font, IComponent text){
+    public MeasureFunc getMeasureFunc(int lineHeight, float extraWidth, IFont font, IComponent text){
         return null;
     }
     
-    public MeasureFunc getMeasureFunc(int lineHeight, IFont font, String text){
-        return this.getMeasureFunc(lineHeight, font, IComponent.literal(text));
+    public MeasureFunc getMeasureFunc(int lineHeight, float extraWidth, IFont font, String text){
+        return this.getMeasureFunc(lineHeight, extraWidth, font, IComponent.literal(text));
     }
 }

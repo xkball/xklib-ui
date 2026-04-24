@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.layout.ScreenRectangle;
 import com.xkball.xklib.ui.widget.Widget;
@@ -9,6 +10,7 @@ import dev.vfyjxf.taffy.style.TaffyStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@GuiWidgetClass
 public class AbsoluteContainer extends ContainerWidget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AbsoluteContainer.class);

@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@GuiWidgetClass
 public class ComboBox<T> extends ContainerWidget {
 
     private static final float ARROW_BTN_WIDTH = 24f;

@@ -147,7 +147,7 @@ public class CascadingStyleSheets {
             this.style.clear();
             for (var unit : ordered) {
                 for (var property : unit.properties()) {
-                    this.style.put(property.propertyName(), property);
+                    this.style.put(property.propertyName(), property.gatherInStyleSheet());
                 }
             }
             this.renderable = this.style.values().stream().filter(IStyleProperty::renderable).toList();

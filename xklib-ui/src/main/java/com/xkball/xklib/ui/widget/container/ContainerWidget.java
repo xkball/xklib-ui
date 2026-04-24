@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@GuiWidgetClass
 public class ContainerWidget extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerWidget.class);
@@ -35,7 +37,7 @@ public class ContainerWidget extends Widget {
     protected int scrollBarTrackColor = 0xFF2D2D2D;
     protected int scrollBarThumbColor = 0xFF888888;
     protected int scrollBarThumbHoverColor = 0xFFAAAAAA;
-    
+    protected Consumer<ContainerWidget> dynamicContent = null;
     
     public ContainerWidget(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -124,10 +126,8 @@ public class ContainerWidget extends Widget {
     @Override
     public void afterTreeAndNodeSet() {
         super.afterTreeAndNodeSet();
-        
+        this.updateDynamicContent();
     }
-    
-    
     
     @Override
     public List<Widget> getChildren() {
@@ -561,6 +561,21 @@ public class ContainerWidget extends Widget {
         for(var w : this.children){
             w.updateStyle(sheet_);
         }
+    }
+    
+    /**
+     *  不与静态元素共存, 换言之一个Container要么全动态内容要么全静态
+     */
+    public ContainerWidget addDynamicContent(Consumer<ContainerWidget> consumer) {
+        this.dynamicContent = consumer;
+        return this;
+    }
+    
+    public void updateDynamicContent(){
+        if(this.dynamicContent == null) return;
+        this.clearChildren();
+        this.dynamicContent.accept(this);
+        this.markDirty();
     }
     
     public class ScrollBar implements IGuiEventListener, IRenderable {

@@ -3,10 +3,12 @@ package com.xkball.xklibmc_example.ui.widget;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.IconCheckBox;
 import com.xkball.xklib.ui.widget.Label;
+import com.xkball.xklib.ui.widget.WarningDialog;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
@@ -55,6 +57,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                             button-shape: round-rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
+                            text-extra-width: 2rpx;
                         }
                         .property_label {
                             size: content 14rpx;
@@ -101,6 +104,14 @@ public class WorldTerrainWidget extends ContainerWidget {
                                 .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))
                                 .addChild(new Label("View Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
                                 .addChild(NumberInputWidget.ofInt(256,1145141919,16).bind(viewDistance))
+                                .addChild(new Button("Delete",() -> new WarningDialog(IComponent.literal("Delete All map? You cannot restore this operation."),() -> {}, () -> {}).display())
+                                        .setCSSClassName("update_button")
+                                        .inlineStyle("""
+                                            button-bg-color: rgb(221,0,27);
+                                            margin-left: auto;
+                                            margin-right: 5rpx;
+                                            text-color: -1;
+                                        """))
                 )
                 .addChild(
                         new ContainerWidget()

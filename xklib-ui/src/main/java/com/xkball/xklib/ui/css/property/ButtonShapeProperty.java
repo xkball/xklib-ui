@@ -50,12 +50,20 @@ public class ButtonShapeProperty implements IStyleProperty<String> {
     
     @Override
     public void apply(IStyleSheet sheet, IGuiWidget widget) {
-        if(sheet.getProperty("button-bg-color") instanceof WidgetIntStyleProperty p){
+        if(sheet.getProperty("button-bg-color") instanceof WidgetIntStyleProperty<?> p){
             this.color = p.value();
         }
         if(sheet.getProperty("button-hover-color") instanceof ButtonHoverProperty p){
             this.hoverColor = p.value();
         }
+    }
+    
+    @Override
+    public IStyleProperty<String> gatherInStyleSheet() {
+        var result = new ButtonShapeProperty(shape);
+        result.color = color;
+        result.hoverColor = hoverColor;
+        return result;
     }
     
     @Override

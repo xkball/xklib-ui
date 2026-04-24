@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.input.MouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -11,6 +12,7 @@ import org.joml.Vector2f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@GuiWidgetClass
 public class ScalableContainer extends AbsoluteContainer {
     
     public static final Logger LOGGER = LoggerFactory.getLogger(ScalableContainer.class);

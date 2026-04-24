@@ -49,7 +49,7 @@ public class ChunkComplier {
         for (int px = chunkPos.getMinBlockX(); px <= chunkPos.getMaxBlockX(); px++) {
             for (int pz = chunkPos.getMinBlockZ(); pz <= chunkPos.getMaxBlockZ(); pz++) {
                 var hMax = level.getHeight(Heightmap.Types.WORLD_SURFACE,px,pz);
-                var hMin = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,px,pz) - 2;
+                var hMin = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,px,pz) - 1;
                 var hm = hMax - 1;
                 heightMap.set(px,pz,hm);
                 pos.set(px,hm,pz);
@@ -76,7 +76,7 @@ public class ChunkComplier {
                     int mask = 0;
                     for(var dir : directions){
                         var b = pos.move(dir);
-                        if(!level.getBlockState(b).isSolidRender()){
+                        if(level.getBlockState(b).isAir()){
                             allBlock = false;
                             mask = mask | (1 << dir.get3DDataValue());
                         }

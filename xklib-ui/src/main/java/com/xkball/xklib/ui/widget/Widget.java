@@ -3,6 +3,7 @@ package com.xkball.xklib.ui.widget;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.annotation.OnlyImplInMinecraft;
 import com.xkball.xklib.antlr.css.CssParser;
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
@@ -29,6 +30,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.function.Supplier;
 
+@GuiWidgetClass
 public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbsoluteLayoutElement {
     
     protected float x;
@@ -429,9 +431,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(this.hovered){
-            this.renderDebug(graphics, mouseX, mouseY);
-        }
+//        if(this.hovered){
+//            this.renderDebug(graphics, mouseX, mouseY);
+//        }
     }
     
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a){

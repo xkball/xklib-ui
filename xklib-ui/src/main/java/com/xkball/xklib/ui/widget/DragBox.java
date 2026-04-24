@@ -1,10 +1,12 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 
 import java.util.function.Consumer;
 
+@GuiWidgetClass
 public class DragBox extends Widget{
     private static final int THUMB_WIDTH = 10;
     private static final String SELF_CSS = """

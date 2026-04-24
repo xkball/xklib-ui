@@ -97,6 +97,7 @@ public class CssStyles {
         this.registerWidgetStyle("text-scale", ITextDisplayWidget.class, TextScale.class, ITextDisplayWidget::setTextScale);
         this.registerWidgetInt("text-height", ITextDisplayWidget.class, ITextDisplayWidget::setLineHeight);
         this.registerWidgetBoolean("text-drop-shadow", ITextDisplayWidget.class, ITextDisplayWidget::setDropShadow);
+        this.registerWidgetStyle("text-extra-width", ITextDisplayWidget.class, CssLengthUnit.class, ITextDisplayWidget::setExtraWidth);
         this.registerWidgetInt("checkbox-track-color", CheckBox.class, CheckBox::setTrackColor, 0xFFCBD5E1);
         this.registerWidgetInt("checkbox-thumb-color", CheckBox.class, CheckBox::setThumbColor, 0xFFFFFFFF);
         this.registerWidgetInt("checkbox-on-color", CheckBox.class, CheckBox::setOnOverlayColor, 0x8022C55E);

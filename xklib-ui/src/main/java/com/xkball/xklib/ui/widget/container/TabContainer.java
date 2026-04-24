@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.ui.layout.DefaultStyles;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.layout.TextScale;
@@ -17,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+@GuiWidgetClass
 public class TabContainer extends ContainerWidget {
 
     private static final int TAB_BAR_HEIGHT = 32;

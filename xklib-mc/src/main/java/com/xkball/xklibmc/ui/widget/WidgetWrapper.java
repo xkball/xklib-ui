@@ -1,6 +1,7 @@
 package com.xkball.xklibmc.ui.widget;
 
 import com.xkball.xklib.XKLib;
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -23,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+@GuiWidgetClass
 public class WidgetWrapper extends Widget {
     
     private final AbstractWidget widget;

@@ -61,6 +61,8 @@ public class WorldTerrainWidgetInner extends Widget {
         this.viewDistance = viewDistance;
         this.initCamera();
         this.setOverflow(false);
+        this.fixY.addCallback(_ -> this.setCameraY());
+        this.yMode.addCallback(_ -> this.setCameraY());
     }
 
     private void initCamera() {

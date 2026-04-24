@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.widget.IInputWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
+@GuiWidgetClass
 public class NumberInputWidget<T extends Number> extends ContainerWidget implements IInputWidget<T> {
 
     private static final Logger LOGGER = Logger.getLogger(NumberInputWidget.class.getName());

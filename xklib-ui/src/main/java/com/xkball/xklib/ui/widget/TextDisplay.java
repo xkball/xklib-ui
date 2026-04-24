@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.ui.layout.SimpleTextSplitter;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
@@ -7,6 +8,7 @@ import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TextAlign;
 
+@GuiWidgetClass
 public class TextDisplay extends ContainerWidget {
     private static final String SELF_CSS = """
             display: flex;

@@ -1,6 +1,7 @@
 package com.xkball.xklib.ui.widget;
 
 import com.xkball.xklib.XKLib;
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@GuiWidgetClass
 public class TextEdit extends Widget {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(TextEdit.class);

@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.IInputWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
@@ -8,6 +9,7 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import java.util.ArrayList;
 import java.util.List;
 
+@GuiWidgetClass
 public class CheckBox extends Widget implements IInputWidget<Boolean> {
 
     private static final int THUMB_MARGIN = 2;

@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.widget.ITextDisplayWidget;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IComponent;
@@ -7,6 +8,7 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 import dev.vfyjxf.taffy.style.TextAlign;
 
+@GuiWidgetClass
 @SuppressWarnings("unused")
 public class Label extends Widget implements ITextDisplayWidget {
     
@@ -15,6 +17,7 @@ public class Label extends Widget implements ITextDisplayWidget {
     public int lineHeight = 16;
     private TextScale textScale = TextScale.FIXED;
     private boolean dropShadow = true;
+    private float inlinePadding;
 
     public Label(){
     
@@ -50,7 +53,7 @@ public class Label extends Widget implements ITextDisplayWidget {
     public void onTextChanged(){
         this.submitTreeUpdate(() -> {
             var font = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont();
-            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(this.lineHeight,font,text));
+            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(this.lineHeight, this.inlinePadding, font, text));
         });
     }
     
@@ -114,5 +117,11 @@ public class Label extends Widget implements ITextDisplayWidget {
     @Override
     public void setDropShadow(boolean dropShadow) {
         this.dropShadow = dropShadow;
+    }
+    
+    @Override
+    public void setExtraWidth(float width) {
+        this.inlinePadding = width;
+        this.onTextChanged();
     }
 }

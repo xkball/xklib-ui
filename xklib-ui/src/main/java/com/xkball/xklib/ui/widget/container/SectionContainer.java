@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -7,6 +8,7 @@ import dev.vfyjxf.taffy.style.TaffyDimension;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
 import dev.vfyjxf.taffy.style.TextAlign;
 
+@GuiWidgetClass
 public class SectionContainer extends ContainerWidget {
 
     private static final String SELF_CSS = """

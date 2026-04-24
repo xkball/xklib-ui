@@ -1,11 +1,13 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.ITextDisplayWidget;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.system.GuiSystem;
 
+@GuiWidgetClass
 public class Button extends Widget implements ITextDisplayWidget {
     
     private TextScale textScale = TextScale.FIXED;
@@ -14,6 +16,7 @@ public class Button extends Widget implements ITextDisplayWidget {
     public int lineHeight = 16;
     private Runnable callback = () -> {};
     private boolean dropShadow = true;
+    private float inlinePadding;
     
     public Button(String text, Runnable callback){
         this.text = text;
@@ -26,7 +29,7 @@ public class Button extends Widget implements ITextDisplayWidget {
     public void onTextChanged(){
         this.submitTreeUpdate(() -> {
             var font = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont();
-            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(this.lineHeight,font,text));
+            this.tree.setMeasureFunc(this.nodeId,this.textScale.getMeasureFunc(this.lineHeight,this.inlinePadding, font,text));
         });
     }
     
@@ -91,5 +94,11 @@ public class Button extends Widget implements ITextDisplayWidget {
     @Override
     public void setDropShadow(boolean dropShadow) {
         this.dropShadow = dropShadow;
+    }
+    
+    @Override
+    public void setExtraWidth(float width) {
+        this.inlinePadding = width;
+        this.onTextChanged();
     }
 }

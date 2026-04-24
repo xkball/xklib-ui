@@ -1,7 +1,9 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 
+@GuiWidgetClass
 public class DraggableContainer extends ContainerWidget{
 
     private boolean dragging = false;

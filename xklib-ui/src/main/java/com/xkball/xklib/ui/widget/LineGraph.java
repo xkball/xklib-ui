@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
@@ -8,6 +9,7 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
+@GuiWidgetClass
 public class LineGraph extends Widget {
 
     private static final String SELF_CSS = """

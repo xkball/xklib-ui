@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.widget.container;
 
+import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
@@ -16,6 +17,7 @@ import dev.vfyjxf.taffy.style.TrackSizingFunction;
 import java.util.ArrayList;
 import java.util.List;
 
+@GuiWidgetClass
 public class SplitContainer extends ContainerWidget {
 
     private static final float BAR_SIZE = 4f;
