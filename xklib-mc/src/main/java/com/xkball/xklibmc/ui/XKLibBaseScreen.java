@@ -174,6 +174,29 @@ public class XKLibBaseScreen extends Screen {
         return 1;
     }
     
+    
+    public static Widget frame(IComponent title, Widget content){
+        return new ContainerWidget()
+                .inlineStyle("""
+                        flex-direction: column;
+                        size: 100% 100%;
+                        """)
+                .addChild(
+                        new Label(title)
+                                .inlineStyle("""
+                                        background-color: 0xaa111111;
+                                        text-color: -2039584;
+                                        text-scale: fit-to-max;
+                                        text-align: center;
+                                        height: 20rpx;
+                                        """))
+                .addChild(content.inlineStyle("height: 100%-30rpx"))
+                .addChild(new Widget().inlineStyle("""
+                        background-color: 0xaa111111;
+                        height: 10rpx;
+                        """));
+    }
+    
     public static Widget biPanelFrame(IComponent title, Widget left, Widget right){
         return new ContainerWidget()
                 .inlineStyle("""

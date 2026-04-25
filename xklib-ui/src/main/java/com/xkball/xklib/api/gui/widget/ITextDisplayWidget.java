@@ -11,6 +11,10 @@ public interface ITextDisplayWidget {
     void setDropShadow(boolean dropShadow);
     void setExtraWidth(float width);
     
+    default void setLineHeight(CssLengthUnit l) {
+        this.setLineHeight(l.resolve(0));
+    }
+    
     default void setExtraWidth(CssLengthUnit l){
         this.setExtraWidth(l.resolve(0));
     }

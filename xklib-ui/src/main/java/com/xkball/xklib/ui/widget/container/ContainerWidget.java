@@ -134,14 +134,18 @@ public class ContainerWidget extends Widget {
         return this.children;
     }
     
+    //用css设置样式
+    @Deprecated
     public void setXScrollEnable(){
         this.setXScrollEnable(true);
     }
     
+    @Deprecated
     public void setYScrollEnable(){
         this.setYScrollEnable(true);
     }
     
+    @Deprecated
     public void setXScrollEnable(boolean xScroll) {
         this.setStyle(s -> {
             if(xScroll) {
@@ -154,7 +158,7 @@ public class ContainerWidget extends Widget {
             }
         });
     }
-    
+    @Deprecated
     public void setYScrollEnable(boolean yScroll) {
         this.setStyle(s -> {
             if(yScroll) {
@@ -174,6 +178,12 @@ public class ContainerWidget extends Widget {
     
     public boolean scrollY(){
         return this.style.overflow.y == Overflow.SCROLL;
+    }
+    
+    @Override
+    public ContainerWidget setCSSClassName(String name) {
+        this.cssClass = name;
+        return this;
     }
     
     @Override
@@ -439,12 +449,8 @@ public class ContainerWidget extends Widget {
     @Override
     protected boolean onMouseReleased(IMouseButtonEvent event) {
         var flag = false;
-        if(this.scrollBarX.getRectangle().containsPoint((int) event.x(), (int) event.y())){
-            flag |= scrollBarX.mouseReleased(event);
-        }
-        if(this.scrollBarY.getRectangle().containsPoint((int) event.x(), (int) event.y())){
-            flag |= scrollBarY.mouseReleased(event);
-        }
+        flag |= scrollBarX.mouseReleased(event);
+        flag |= scrollBarY.mouseReleased(event);
         return flag;
     }
     
@@ -477,7 +483,7 @@ public class ContainerWidget extends Widget {
             this.scrollBarX.width = this.width;
             this.scrollBarX.height = layout.scrollbarSize().height;
             this.scrollBarX.maxScroll = layout.scrollWidth();
-            this.scrollBarX.scroll = this.xScrollOffset;
+            this.scrollBarX.scroll = Math.min(this.scrollBarX.maxScroll,this.xScrollOffset);
         }
         else{
             this.scrollBarX.clear();
@@ -489,7 +495,7 @@ public class ContainerWidget extends Widget {
             this.scrollBarY.width = layout.scrollbarSize().width;
             this.scrollBarY.height = this.height;
             this.scrollBarY.maxScroll = layout.scrollHeight();
-            this.scrollBarY.scroll = this.yScrollOffset;
+            this.scrollBarY.scroll = Math.min(this.scrollBarY.maxScroll,this.yScrollOffset);
         }
         else {
             this.scrollBarY.clear();

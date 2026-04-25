@@ -12,12 +12,12 @@ import dev.vfyjxf.taffy.style.TextAlign;
 @SuppressWarnings("unused")
 public class Label extends Widget implements ITextDisplayWidget {
     
-    private IComponent text = IComponent.literal("");
-    private int color = 0xFF000000;
+    protected IComponent text = IComponent.literal("");
+    protected int color = 0xFF000000;
     public int lineHeight = 16;
-    private TextScale textScale = TextScale.FIXED;
-    private boolean dropShadow = true;
-    private float inlinePadding;
+    protected TextScale textScale = TextScale.FIXED;
+    protected boolean dropShadow = true;
+    protected float inlinePadding;
 
     public Label(){
     
@@ -123,5 +123,11 @@ public class Label extends Widget implements ITextDisplayWidget {
     public void setExtraWidth(float width) {
         this.inlinePadding = width;
         this.onTextChanged();
+    }
+    
+    @Override
+    public Label setCSSClassName(String name) {
+        super.setCSSClassName(name);
+        return this;
     }
 }

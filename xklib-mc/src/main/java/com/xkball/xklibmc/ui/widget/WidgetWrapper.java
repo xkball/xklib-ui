@@ -163,6 +163,12 @@ public class WidgetWrapper extends Widget {
         else widget.setFocused(focused);
     }
     
+    @Override
+    public WidgetWrapper inlineStyle(String style) {
+        super.inlineStyle(style);
+        return this;
+    }
+    
     public static WidgetWrapper button(String text, Consumer<Button> onPress) {
         var btn = Button.builder(Component.literal(text), onPress::accept)
                 .bounds(0, 0, 0, 0)
