@@ -14,6 +14,10 @@ public interface IComponent {
     static IComponent translatable(String key) {
         return new TranslatableComponent(key, ComponentStyle.EMPTY);
     }
+    
+    static IComponent translatable(String key, Object... args) {
+        return new TranslatableComponent(key, ComponentStyle.EMPTY, args);
+    }
 
     static IComponent sequence(IComponent... parts) {
         return new SequenceComponent(List.of(parts), ComponentStyle.EMPTY);

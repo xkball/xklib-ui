@@ -68,11 +68,15 @@ repositories {
 }
 
 dependencies {
-    jarJar("dev.vfyjxf:taffy:1.1.4")
-    jarJar("org.antlr:antlr4-runtime:4.13.2")
-    jarJar("net.lenni0451:LambdaEvents:2.4.2")
-    jarJar(implementation project(":xklib-3d"))
-    jarJar(implementation project(':xklib-ui'))
+//    jarJar("dev.vfyjxf:taffy:1.1.4")
+//    jarJar("org.antlr:antlr4-runtime:4.13.2")
+//    jarJar("net.lenni0451:LambdaEvents:2.4.2")
+//    jarJar(implementation project(":xklib-3d"))
+//    jarJar(implementation project(':xklib-ui'))
+//    jarJar(implementation project(':xklib-ap'))
+    implementation project(":xklib-3d")
+    implementation project(':xklib-ui')
+    implementation project(':xklib-ap')
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

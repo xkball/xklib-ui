@@ -82,7 +82,11 @@ public class Label extends Widget implements ITextDisplayWidget {
     }
 
     public void setText(String text) {
-        this.text = IComponent.literal(text);
+        this.setText(IComponent.literal(text));
+    }
+    
+    public void setText(IComponent text) {
+        this.text = text;
         this.onTextChanged();
     }
     

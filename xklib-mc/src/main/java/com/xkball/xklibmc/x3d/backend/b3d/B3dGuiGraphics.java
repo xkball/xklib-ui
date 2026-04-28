@@ -36,8 +36,9 @@ public class B3dGuiGraphics implements IGUIGraphics {
     
     private static final Logger LOGGER = LogUtils.getLogger();
     private GuiGraphicsExtractor inner;
-    private ITextureManager textureManager;
+    private final ITextureManager textureManager;
     public float scale = 1;
+    
     public B3dGuiGraphics(ITextureManager textureManager){
         this.textureManager = textureManager;
     }
@@ -67,7 +68,7 @@ public class B3dGuiGraphics implements IGUIGraphics {
     
     @Override
     public void enableScissor(float x0, float y0, float x1, float y1) {
-        ScreenRectangle rectangle = new ScreenRectangle((int) (x0 - scale), (int) (y0 - scale), (int) (x1 - x0 + scale), (int) (y1 - y0 + scale)).transformAxisAligned(this.getPose());
+        ScreenRectangle rectangle = new ScreenRectangle((int) (x0 - scale), (int) (y0 - scale), (int) (x1 - x0 + scale * 2), (int) (y1 - y0 + scale * 2)).transformAxisAligned(this.getPose());
         inner.scissorStack.push(rectangle);
     }
     

@@ -1,7 +1,17 @@
 package com.xkball.xklib.ui.render;
 
-public record TranslatableComponent(String key, ComponentStyle style) implements IComponent {
+import java.util.List;
 
+public record TranslatableComponent(String key, ComponentStyle style, List<Object> args) implements IComponent {
+
+    public TranslatableComponent(String key, ComponentStyle style){
+        this(key,style,List.of());
+    }
+    
+    public TranslatableComponent(String key, ComponentStyle style, Object[] args){
+        this(key,style,List.of(args));
+    }
+    
     @Override
     public ComponentStyle style() {
         return style;

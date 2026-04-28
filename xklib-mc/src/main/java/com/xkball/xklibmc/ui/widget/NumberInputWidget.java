@@ -4,27 +4,27 @@ import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.widget.IInputWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
-import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklibmc.ui.widget.mc.ObjectInputBox;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 @GuiWidgetClass
 public class NumberInputWidget<T extends Number> extends ContainerWidget implements IInputWidget<T> {
-
+    
     private static final Logger LOGGER = Logger.getLogger(NumberInputWidget.class.getName());
-
+    
     private static final String ROOT_STYLE = """
             .number_input_spacer {
                 size: 2rpx 100%;
@@ -48,20 +48,20 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
                 border-color: rgb(100,105,112);
             }
             """;
-
+    
     private final T min;
     private final T max;
     private final T step;
-
+    
     private final Predicate<String> validator;
     private final Function<String, T> parser;
     private final Function<T, String> formatter;
-    
     private final ObjectInputBox<T> inputBox;
     
     private final List<ILayoutVariable<T>> bindings = new ArrayList<>();
+    private Consumer<NumberInputWidget<T>> callback;
     private T value;
-
+    
     public NumberInputWidget(
             T min,
             T max,
@@ -73,18 +73,15 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         this.min = min;
         this.max = max;
         this.step = step;
-        this.validator = Objects.requireNonNull(validator);
-        this.parser = Objects.requireNonNull(parser);
-        this.formatter = Objects.requireNonNull(formatter);
-
+        this.validator = validator;
+        this.parser = parser;
+        this.formatter = formatter;
+        
         this.asRootStyle(ROOT_STYLE);
         
         this.inputBox = new ObjectInputBox<>(
                 Minecraft.getInstance().font,
-                0,
-                0,
-                0,
-                0,
+                0, 0, 0, 0,
                 Component.literal(""),
                 str -> {
                     if (str == null) {
@@ -109,16 +106,15 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
                 },
                 str -> this.parser.apply(str.trim())
         );
-        
-        this.addChild(new Widget(){
+        this.inputBox.setResponder(_ -> this.setValue(getParsedIfValid()));
+        this.addChild(new Widget() {
             @Override
             public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
                 super.doRender(graphics, mouseX, mouseY, a);
-                if(inputBox.isValid()){
-                    graphics.fill(getX(),getY(),getMaxX(),getMaxY(), VanillaUtils.getColor(0,200,0,255));
-                }
-                else {
-                    graphics.fill(getX(),getY(),getMaxX(),getMaxY(), VanillaUtils.getColor(200,0,0,255));
+                if (inputBox.isValid()) {
+                    graphics.fill(getX(), getY(), getMaxX(), getMaxY(), VanillaUtils.getColor(0, 200, 0, 255));
+                } else {
+                    graphics.fill(getX(), getY(), getMaxX(), getMaxY(), VanillaUtils.getColor(200, 0, 0, 255));
                 }
             }
         }.setCSSClassName("number_input_spacer"));
@@ -133,14 +129,31 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         
         Button upButton = new Button("+", this::stepUp);
         upButton.setCSSClassName("number_input_btn");
-
+        
         var btnContainer = new ContainerWidget();
         btnContainer.setCSSClassName("number_input_buttons");
         btnContainer.addChild(upButton);
         btnContainer.addChild(downButton);
         this.addChild(btnContainer);
-
+        
         this.setValue(clamp(min));
+    }
+    
+    public static NumberInputWidget<Integer> ofInt(int min, int max, int step) {
+        return new NumberInputWidget<>(
+                min,
+                max,
+                step,
+                ObjectInputBox.INT_VALIDATOR,
+                ObjectInputBox.INT_RESPONDER,
+                String::valueOf
+        );
+    }
+    
+    public static NumberInputWidget<Float> ofFloat(float min, float max, float step) {
+        return new NumberInputWidget<>(
+                min, max, step, ObjectInputBox.FLOAT_VALIDATOR, ObjectInputBox.FLOAT_RESPONDER, String::valueOf
+        );
     }
     
     @Override
@@ -154,12 +167,22 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
     
     @Override
     public void setValue(T value) {
+        if (value == null) return;
+        if (value.equals(this.value)) return;
         var v = clamp(value);
         this.value = v;
         updateTextFromValue(v);
         for (var bind : bindings) {
             bind.set(v);
         }
+        if (this.callback != null) {
+            this.callback.accept(this);
+        }
+    }
+    
+    public NumberInputWidget<T> setCallback(Consumer<NumberInputWidget<T>> callback) {
+        this.callback = callback;
+        return this;
     }
     
     @Override
@@ -168,15 +191,15 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         this.bindings.add(variable);
         return this;
     }
-
+    
     public void stepUp() {
         applyStep(true);
     }
-
+    
     public void stepDown() {
         applyStep(false);
     }
-
+    
     private void applyStep(boolean positive) {
         var base = getParsedIfValid();
         if (base == null) {
@@ -191,7 +214,7 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         } catch (Exception _) {
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private T addStep(T base, boolean positive) {
         if (base instanceof Integer b && step instanceof Integer s) {
@@ -218,14 +241,14 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
             default -> (T) Double.valueOf(n);
         };
     }
-
+    
     private boolean inRange(T v) {
         if (v == null) {
             return false;
         }
         return toDouble(v) >= toDouble(min) && toDouble(v) <= toDouble(max);
     }
-
+    
     private T clamp(T v) {
         if (v == null) {
             return min;
@@ -241,11 +264,11 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
         }
         return v;
     }
-
+    
     private double toDouble(T v) {
         return v.doubleValue();
     }
-
+    
     private T getParsedIfValid() {
         try {
             var v = this.inputBox.get();
@@ -260,20 +283,9 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
             return null;
         }
     }
-
+    
     private void updateTextFromValue(T v) {
         this.inputBox.setValue(this.formatter.apply(v));
         this.inputBox.displayPos = 0;
-    }
-
-    public static NumberInputWidget<Integer> ofInt(int min, int max, int step) {
-        return new NumberInputWidget<>(
-                min,
-                max,
-                step,
-                ObjectInputBox.INT_VALIDATOR,
-                ObjectInputBox.INT_RESPONDER,
-                String::valueOf
-        );
     }
 }

@@ -37,7 +37,15 @@ public interface IGuiEventListener {
     default boolean charTyped(ICharEvent event) {
         return false;
     }
-
+    
+    default boolean widgetDropped(IMouseButtonEvent mousePos, IGuiWidget widget){
+        return false;
+    }
+    
+    default boolean widgetDraggingHovered(IMouseButtonEvent mousePos, IGuiWidget widget){
+        return false;
+    }
+    
     default boolean isMouseOver(double mouseX, double mouseY) {
         return false;
     }

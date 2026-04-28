@@ -25,10 +25,14 @@ import org.jspecify.annotations.Nullable;
 public class XKLibBaseScreen extends Screen {
     
     protected GuiSystem guiSystem = new GuiSystem();
-    protected float scale = 1;
+    protected float guiScale = 1;
     
-    public XKLibBaseScreen() {
-        super(Component.empty());
+    public XKLibBaseScreen(){
+        this(Component.empty());
+    }
+    
+    public XKLibBaseScreen(Component component) {
+        super(component);
         GuiSystem.INSTANCE.set(guiSystem);
     }
     
@@ -69,19 +73,22 @@ public class XKLibBaseScreen extends Screen {
     
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        if(XKLib.RENDER_CONTEXT.get() == null){
+            return;
+        }
         var guiGraphics = (B3dGuiGraphics) XKLib.RENDER_CONTEXT.get().getGUIGraphics();
         guiGraphics.setInner(graphics);
-        guiGraphics.scale = this.scale;
+        guiGraphics.scale = this.guiScale;
         guiSystem.setGraphics(guiGraphics);
         graphics.pose().pushMatrix();
-        graphics.pose().scale(1/ scale,1/scale);
-        guiSystem.render((int) (mouseX * scale), (int) (mouseY * scale), a);
+        graphics.pose().scale(1/ guiScale,1/ guiScale);
+        guiSystem.render((int) (mouseX * guiScale), (int) (mouseY * guiScale), a);
         graphics.pose().popMatrix();
-        super.extractRenderState(graphics, (int) (mouseX * scale), (int) (mouseY * scale), a);
+        super.extractRenderState(graphics, (int) (mouseX * guiScale), (int) (mouseY * guiScale), a);
     }
     
     public com.xkball.xklib.ui.input.MouseButtonEvent convertMouseButtonEvent(MouseButtonEvent event) {
-        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x() * scale,event.y() * scale,event.button(),event.modifiers());
+        return new com.xkball.xklib.ui.input.MouseButtonEvent(event.x() * guiScale,event.y() * guiScale,event.button(),event.modifiers());
     }
     
     public com.xkball.xklib.ui.input.KeyEvent convertKeyEvent(KeyEvent event) {
@@ -103,8 +110,8 @@ public class XKLibBaseScreen extends Screen {
         var actualW = window.getWidth();
         var actualH = window.getHeight();
         var w = this.width;
-        this.scale = actualW/(float)w;
-        CssLengthUnit.rpxScaleWorkaround = this.scale;
+        this.guiScale = actualW/(float)w;
+        CssLengthUnit.rpxScaleWorkaround = this.guiScale;
         guiSystem.resize(actualW, actualH);
     }
     
@@ -117,18 +124,26 @@ public class XKLibBaseScreen extends Screen {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         var e = convertMouseButtonEvent(event);
-        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseReleased(e));
+        var consumed = this.guiSystem.dispatchEventReversed(widget -> widget.mouseReleased(e));
+        if(this.guiSystem.haveDraggingWidget()){
+            consumed |= this.guiSystem.dispatchEventReversed(widget -> widget.widgetDropped(e,this.guiSystem.draggingWidget.widget()));
+        }
+        return consumed;
     }
     
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         var e = convertMouseButtonEvent(event);
-        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx * scale, dy * scale));
+        var consumed = this.guiSystem.dispatchEventReversed(widget -> widget.mouseDragged(e,dx * guiScale, dy * guiScale));
+        if(this.guiSystem.haveDraggingWidget()){
+            consumed |= this.guiSystem.dispatchEventReversed(widget -> widget.widgetDraggingHovered(e,this.guiSystem.draggingWidget.widget()));
+        }
+        return consumed;
     }
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x * scale, y * scale, scrollX * scale, scrollY * scale));
+        return this.guiSystem.dispatchEventReversed(widget -> widget.mouseScrolled(x * guiScale, y * guiScale, scrollX * guiScale, scrollY * guiScale));
     }
     
     @Override
@@ -152,7 +167,7 @@ public class XKLibBaseScreen extends Screen {
     
     @Override
     public void mouseMoved(double x, double y) {
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * scale,y * scale));
+        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * guiScale,y * guiScale));
     }
     
     @Override
@@ -200,14 +215,13 @@ public class XKLibBaseScreen extends Screen {
     public static Widget biPanelFrame(IComponent title, Widget left, Widget right){
         return new ContainerWidget()
                 .inlineStyle("""
-                        display: grid;
+                        flex-direction: column;
                         size: 100% 100%;
-                        grid-template-columns: 100%;
-                        grid-template-rows: 20rpx 1fr 10rpx;
                         """)
                 .addChild(
                         new Label(title)
                                 .inlineStyle("""
+                                        height: 20rpx;
                                         background-color: 0xaa111111;
                                         text-color: -2039584;
                                         text-scale: fit-to-max;
@@ -218,9 +232,11 @@ public class XKLibBaseScreen extends Screen {
                                 .setPanel(0, left)
                                 .setPanel(1,right)
                                 .setRatio(0,0.3f)
+                                .inlineStyle("height: 100%-30rpx;")
                 )
                 .addChild(new Widget().inlineStyle("""
                         background-color: 0xaa111111;
+                        height: 10rpx;
                         """));
     }
     

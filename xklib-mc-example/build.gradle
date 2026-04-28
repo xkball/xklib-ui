@@ -73,7 +73,8 @@ dependencies {
     jarJar("net.lenni0451:LambdaEvents:2.4.2")
     jarJar(implementation project(":xklib-3d"))
     jarJar(implementation project(':xklib-ui'))
-    implementation project(':xklib-mc')
+    jarJar(implementation project(':xklib-ap'))
+    jarJar(implementation project(':xklib-mc'))
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

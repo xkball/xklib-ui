@@ -170,15 +170,20 @@ public class WidgetWrapper extends Widget {
     }
     
     public static WidgetWrapper button(String text, Consumer<Button> onPress) {
-        var btn = Button.builder(Component.literal(text), onPress::accept)
+        return button(Component.literal(text),  onPress);
+    }
+    
+    public static WidgetWrapper button(Component text, Consumer<Button> onPress) {
+        var btn = Button.builder(text, onPress::accept)
                 .bounds(0, 0, 0, 0)
                 .build();
         return new WidgetWrapper(btn);
     }
     
-    public static WidgetWrapper editBox(String placeholder, int maxLength) {
+    public static WidgetWrapper editBox(String placeholder, int maxLength, Consumer<String> callback) {
         var editBox = new EditBox(Minecraft.getInstance().font, 0, 0, 0,0, Component.literal(placeholder));
         editBox.setMaxLength(maxLength);
+        editBox.setResponder(callback);
         var result = new WidgetWrapper(editBox);
         result.setUserInput(true);
         return result;

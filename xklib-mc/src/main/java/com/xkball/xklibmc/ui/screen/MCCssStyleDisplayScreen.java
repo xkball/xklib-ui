@@ -12,14 +12,10 @@ public class MCCssStyleDisplayScreen extends CSSStyleDisplayScreen {
     protected SearchInput createSearchInput(String cssClassName, SearchTextListener listener) {
         return new SearchInput() {
             
-            private WidgetWrapper editBox = WidgetWrapper.editBox("", 100).inlineStyle("""
+            private final WidgetWrapper editBox = WidgetWrapper.editBox("", 100,listener::onSearchTextChanged).inlineStyle("""
                     height: 20rpx;
                     flex-shrink: 0;
                     """);
-            
-            {
-                ((EditBox)editBox.getWidget()).setResponder(listener::onSearchTextChanged);
-            }
             
             @Override
             public Widget widget() {

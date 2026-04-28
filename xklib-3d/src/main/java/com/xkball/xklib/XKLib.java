@@ -14,7 +14,8 @@ public class XKLib {
     public static final LambdaManager EVENT_BUS = LambdaManager.threadSafe(new LambdaMetaFactoryGenerator())
             .setEventFilter((clazz, _) -> IEvent.class.isAssignableFrom(clazz));
     public static final boolean ON_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
-    
+    public static final boolean IS_RUNNING_WITH_JDWP = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream().anyMatch(str -> str.startsWith("-agentlib:jdwp"));
+    public static final boolean IS_DEBUG = IS_RUNNING_WITH_JDWP;
     static {
         RegisterEventHandler.runRegisterEvent();
     }

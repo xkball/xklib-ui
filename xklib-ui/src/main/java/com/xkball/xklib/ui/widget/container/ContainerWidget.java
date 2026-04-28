@@ -372,6 +372,36 @@ public class ContainerWidget extends Widget {
         return super.preeditUpdated(event);
     }
     
+    @Override
+    public boolean widgetDropped(IMouseButtonEvent mousePos, IGuiWidget widget) {
+        if (!this.enabled || !this.visible) {
+            return false;
+        }
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.widgetDropped(mousePos, widget)) {
+                    return true;
+                }
+            }
+        }
+        return super.widgetDropped(mousePos, widget);
+    }
+    
+    @Override
+    public boolean widgetDraggingHovered(IMouseButtonEvent mousePos, IGuiWidget widget) {
+        if (!this.enabled || !this.visible) {
+            return false;
+        }
+        for (Widget child : this.children) {
+            if (child.visible && child.enabled) {
+                if (child.widgetDraggingHovered(mousePos, widget)) {
+                    return true;
+                }
+            }
+        }
+        return super.widgetDraggingHovered(mousePos, widget);
+    }
+    
     public void scrollToX(float x){
         var layout = this.getLayout();
         this.xScrollOffset = Math.clamp(x, 0, layout.scrollWidth());

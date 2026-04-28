@@ -16,8 +16,9 @@ public class ComponentConverter {
         if(component instanceof LiteralComponent(String text, ComponentStyle style)){
             return Component.literal(text).withStyle(toStyle(style));
         }
-        if(component instanceof TranslatableComponent(String key, ComponentStyle style)){
-            return Component.translatable(key, style).withStyle(toStyle(style));
+        if(component instanceof TranslatableComponent(String key, ComponentStyle style, List<Object> args)){
+            if(args.isEmpty()) return Component.translatable(key).withStyle(toStyle(style));
+            return Component.translatable(key, args).withStyle(toStyle(style));
         }
         if(component instanceof SequenceComponent(List<IComponent> parts, ComponentStyle style)){
             var result = Component.empty();

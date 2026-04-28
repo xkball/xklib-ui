@@ -431,9 +431,9 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-//        if(this.hovered){
-//            this.renderDebug(graphics, mouseX, mouseY);
-//        }
+        if(this.hovered && XKLib.IS_DEBUG){
+            this.renderDebug(graphics, mouseX, mouseY);
+        }
     }
     
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a){

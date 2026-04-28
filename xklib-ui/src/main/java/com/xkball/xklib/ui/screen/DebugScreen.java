@@ -306,7 +306,7 @@ public class DebugScreen extends ContainerWidget {
         openNodes.removeIf(ref -> ref.get() == null);
         treeViewContent.clearChildren();
         for (var pair : theOtherSystem.screenLayers) {
-            var root = pair.getFirst();
+            var root = pair.widget();
             if (root == this) continue;
             if (openNodes.stream().noneMatch(r -> r.get() == root)) {
                 openNodes.add(new WeakReference<>(root));
