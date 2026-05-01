@@ -4,6 +4,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.utils.CodecUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -20,11 +21,15 @@ public class RegionStorage {
     public static final int REGION_SHIFT = 5;
     public static final int REGION_SIZE = 1 << REGION_SHIFT;
     
+    public final AABB aabb;
     public final RegionPos regionPos;
     private final Map<ChunkPos, ChunkStorage> chunkMap = new LinkedHashMap<>();
     
-    public RegionStorage(RegionPos regionPos) {
+    public RegionStorage(RegionPos regionPos, int minHeight, int maxHeight) {
         this.regionPos = regionPos;
+        var minX = regionPos.getMinX();
+        var minZ = regionPos.getMinZ();
+        this.aabb = new AABB(minX, minHeight, minZ, minX + 512, maxHeight, minZ + 512);
     }
     
     public static RegionPos toRegionPos(ChunkPos chunkPos){
@@ -125,7 +130,7 @@ public class RegionStorage {
                 logger.error("Version mismatch");
                 return null;
             }
-            var regionStorage = new RegionStorage(new RegionPos(x, z));
+            var regionStorage = new RegionStorage(new RegionPos(x, z), levelStorage.minHeight,  levelStorage.maxHeight);
             for (int dx = 0; dx < REGION_SIZE; dx++) {
                 for (int dz = 0; dz < REGION_SIZE; dz++) {
                     if(byteBuf.readBoolean()){

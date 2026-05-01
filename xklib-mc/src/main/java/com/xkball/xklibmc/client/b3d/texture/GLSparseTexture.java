@@ -2,18 +2,16 @@ package com.xkball.xklibmc.client.b3d.texture;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.opengl.GlTexture;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.TextureFormat;
+import com.xkball.xklibmc.utils.ClientUtils;
 import org.lwjgl.opengl.ARBSparseTexture;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
 
-public class GLSparseTexture extends GpuTexture {
-    
-    public final int id;
-    private int views;
-    protected boolean closed;
+public class GLSparseTexture extends GlTexture {
     
     private final int pageSizeX;
     private final int pageSizeY;
@@ -25,8 +23,7 @@ public class GLSparseTexture extends GpuTexture {
     
     
     public GLSparseTexture(@Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, int pageSizeX, int pageSizeY) {
-        super(usage, label, format, width, height, depthOrLayers, mipLevels);
-        this.id = id;
+        super(usage, label, format, width, height, depthOrLayers, mipLevels, id);
         this.pageSizeX = pageSizeX;
         this.pageSizeY = pageSizeY;
         this.pagesX = (int)Math.ceil((double)width / pageSizeX);
@@ -42,7 +39,7 @@ public class GLSparseTexture extends GpuTexture {
         committed[px][py] = true;
     }
     
-    public void upload(int x, int y, int w, int h, int component, ByteBuffer data) {
+    public void upload(int x, int y, int w, int h, NativeImage.Format format, ByteBuffer data) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
         
         int startPageX = x / pageSizeX;
@@ -57,51 +54,18 @@ public class GLSparseTexture extends GpuTexture {
             }
         }
         
-        GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, width);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, 0);
         GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_ROWS, 0);
         GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_PIXELS, 0);
-        GlStateManager._pixelStore(GL11.GL_UNPACK_ALIGNMENT, component);
-        
-        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ALIGNMENT, format.components());
         
         GL11.glTexSubImage2D(
                 GL11.GL_TEXTURE_2D, 0, x, y, w, h,
-                GlConst.toGlInternalId(this.getFormat()),
+                GlConst.toGl(format),
                 GL11.GL_UNSIGNED_BYTE, data
         );
+        
+        ClientUtils.getGLError();
     }
     
-    @Override
-    public void close() {
-        if (!this.closed) {
-            this.closed = true;
-            if (this.views == 0) {
-                this.destroyImmediately();
-            }
-        }
-    }
-    
-    @Override
-    public boolean isClosed() {
-        return closed;
-    }
-    
-    public int glId() {
-        return this.id;
-    }
-    
-    public void addViews() {
-        this.views++;
-    }
-    
-    public void removeViews() {
-        this.views--;
-        if (this.closed && this.views == 0) {
-            this.destroyImmediately();
-        }
-    }
-    
-    private void destroyImmediately() {
-        GlStateManager._deleteTexture(this.id);
-    }
 }

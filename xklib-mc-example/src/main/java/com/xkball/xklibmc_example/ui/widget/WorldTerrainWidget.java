@@ -110,7 +110,9 @@ public class WorldTerrainWidget extends ContainerWidget {
                                     var list = new ArrayList<ChunkPos>();
                                     for(var dx = -range; dx <= range; dx++){
                                         for(var dz = -range; dz <= range; dz++){
-                                            list.add(new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz));
+                                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
+                                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
+                                            list.add(p);
                                         }
                                     }
                                     ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));

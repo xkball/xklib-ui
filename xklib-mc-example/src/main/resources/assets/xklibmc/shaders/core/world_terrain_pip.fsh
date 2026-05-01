@@ -25,4 +25,7 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     float specular = specularStrength * spec;
     fragColor = vertexColor * ColorModulator * vec4((ambient + diff + specular) * lightColor,1.0);
+    if(fragColor.a < 1e-6){
+        discard;
+    }
 }

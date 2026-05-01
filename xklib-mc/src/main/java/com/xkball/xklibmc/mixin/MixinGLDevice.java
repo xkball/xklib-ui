@@ -58,12 +58,12 @@ public abstract class MixinGLDevice implements IExtendedGpuDevice {
         GlStateManager._texParameter(GL11.GL_TEXTURE_2D, ARBSparseTexture.GL_TEXTURE_SPARSE_ARB, 1);
         var pageSizeX = GL42.glGetInternalformati(GL11.GL_TEXTURE_2D, GlConst.toGlInternalId(format), ARBSparseTexture.GL_VIRTUAL_PAGE_SIZE_X_ARB);
         var pageSizeY = GL42.glGetInternalformati(GL11.GL_TEXTURE_2D, GlConst.toGlInternalId(format), ARBSparseTexture.GL_VIRTUAL_PAGE_SIZE_Y_ARB);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL , 0);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_LOD   , 0);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 0);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MIN_LOD, 0);
         GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LOD, 0);
-        if (format.hasDepthAspect()) {
-            GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_COMPARE_MODE, 0);
-        }
+//        if (format.hasDepthAspect()) {
+//            GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_COMPARE_MODE, 0);
+//        }
         GL42.glTexStorage2D(GL11.GL_TEXTURE_2D, 1, GlConst.toGlInternalId(format), width, height);
         
         int error = GlStateManager._getError();

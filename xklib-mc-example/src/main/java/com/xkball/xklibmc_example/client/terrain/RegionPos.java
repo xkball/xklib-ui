@@ -8,4 +8,15 @@ public record RegionPos(int x, int z) {
         return new RegionPos(chunkPos.x() >> RegionStorage.REGION_SHIFT, chunkPos.z() >> RegionStorage.REGION_SHIFT);
     }
     
+    public ChunkPos toChunkPos(){
+        return new ChunkPos(x <<  RegionStorage.REGION_SHIFT, z << RegionStorage.REGION_SHIFT);
+    }
+    
+    public int getMinX(){
+        return toChunkPos().getMinBlockX();
+    }
+    
+    public int getMinZ(){
+        return toChunkPos().getMinBlockZ();
+    }
 }

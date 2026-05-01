@@ -130,6 +130,9 @@ public class ChunkStorage {
         this.uploadGpuLodFullMesh(1,2);
         this.uploadGpuLodFullMesh(2,4);
         this.uploadGpuLodFullMesh(3,8);
+    }
+    
+    public void uploadToTexture(){
         this.parent.terrainTextureManager.uploadChunk(this);
     }
     

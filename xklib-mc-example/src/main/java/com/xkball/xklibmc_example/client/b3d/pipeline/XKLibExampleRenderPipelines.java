@@ -49,11 +49,12 @@ public class XKLibExampleRenderPipelines {
             .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.TRIANGLES)
             .withVertexShader(VanillaUtils.modRL("core/world_terrain_pip_lod"))
             .withFragmentShader(VanillaUtils.modRL("core/world_terrain_pip_full_mesh"))
+            .withSampler("colorTexture")
+            .withSampler("heightTexture")
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
             .bindUniform("PhongLight", PHONE_LIGHT)
-            .withSSBO("Chunks")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(true)
             .buildExtended();

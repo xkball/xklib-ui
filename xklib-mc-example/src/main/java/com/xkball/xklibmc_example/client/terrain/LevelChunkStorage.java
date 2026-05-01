@@ -29,6 +29,7 @@ public class LevelChunkStorage {
     public static final ChunkComplier COMPLIER =  new ChunkComplier();
     
     public final int minHeight;
+    public final int maxHeight;
     public final String saveName;
     public final boolean compatibleMode;
     public final ResourceKey<Level> dimension;
@@ -40,9 +41,10 @@ public class LevelChunkStorage {
     public final Map<RegionPos, RegionStorage> regionMap = new LinkedHashMap<>();
     public boolean dirty = false;
     
-    public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight, boolean compatibleMode) {
+    public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight, int maxHeight, boolean compatibleMode) {
         this.dimension = dimension;
         this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
         this.compatibleMode = compatibleMode;
         this.saveName = ClientUtils.getSaveOrServerName();
         this.createBuffer();
@@ -134,7 +136,10 @@ public class LevelChunkStorage {
                 for(var chunkStorage : this.getChunks()){
                     TerrainChunkManager.INSTANCE.taskQueue.submitMain( () -> {
                         if(!this.containsChunk(chunkStorage.chunkPos)) return;
-                        chunkStorage.uploadGpuLodFullMesh();
+                        if(compatibleMode){
+                            chunkStorage.uploadGpuLodFullMesh();
+                        }
+                        else chunkStorage.uploadToTexture();
                     });
                 }
             });
@@ -150,7 +155,7 @@ public class LevelChunkStorage {
     }
     
     public RegionStorage getOrCreateRegion(RegionPos regionPos){
-        return this.regionMap.computeIfAbsent(regionPos, RegionStorage::new);
+        return this.regionMap.computeIfAbsent(regionPos, rp -> new RegionStorage(rp, this.minHeight, this.maxHeight));
     }
     
     public RegionStorage getRegion(RegionPos regionPos){

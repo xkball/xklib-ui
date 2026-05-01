@@ -69,7 +69,7 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
             if(mipLevel != 0 || depthOrLayer != 0){
                 throw new IllegalArgumentException("Invalid mip level or depth or layer");
             }
-            texture.upload(destX,destY,width,height,format.components(), source);
+            texture.upload(destX,destY,width,height,format, source);
             ci.cancel();
         }
     }

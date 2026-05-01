@@ -1,12 +1,12 @@
 package com.xkball.xklibmc_example.client.terrain;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.xkball.xklibmc.XKLibMCClient;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
-import com.xkball.xklibmc.utils.VanillaUtils;
-import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
+import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -23,7 +23,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -32,9 +31,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
@@ -70,7 +67,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(level == null) return;
         INSTANCE.setCloseOnExit();
         if(!INSTANCE.storageMap.containsKey(level.dimension())){
-            var s = new LevelChunkStorage(level.dimension(),level.getMinY(), INSTANCE.compatibleMode);
+            var s = new LevelChunkStorage(level.dimension(),level.getMinY(), level.getMaxY(), INSTANCE.compatibleMode);
             s.loadFile();
             INSTANCE.storageMap.put(level.dimension(), s);
         }
@@ -94,43 +91,58 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return this.storageMap.get(Minecraft.getInstance().level.dimension());
     }
     
-    public RenderInfo gatherRenderInfo(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
+    public List<RenderInfoBlock> gatherRenderInfo(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
         var level = Minecraft.getInstance().level;
-        if(level == null) return RenderInfo.empty();
+        if(level == null) return List.of();
         var storage = this.storageMap.get(level.dimension());
-        if(storage == null ) return RenderInfo.empty();
-        var gather1 = new RenderInfoBlockGather();
-        var gather2 = new RenderInfoBlockGather();
-        var gatherLod = new RenderInfoBlockGather[]{new RenderInfoBlockGather(), new RenderInfoBlockGather(), new RenderInfoBlockGather()};
+        if(storage == null ) return List.of();
+        var gather = new RenderInfoBlockGather();
+        for(var region : storage.regionMap.values()){
+            if(!frustum.isVisible(region.aabb)) continue;
+            var info = storage.terrainTextureManager.getUploadInfo(region.regionPos.toChunkPos());
+            var texture = storage.terrainTextureManager.getTextures(info.texturePos());
+            var p = ((region.regionPos.x() & 0xff) << 24) | (region.regionPos.z() & 0xff);
+            gather.add(texture, new IndirectDrawCommand(TerrainRenderer.REGION1.getIndexCount(), 1,0,0,p));
+        }
+        return gather.finishGather();
+    }
+    
+    //todo 不用mdi
+    public RenderInfoCompatible gatherRenderInfoCompatibleMode(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
+        var level = Minecraft.getInstance().level;
+        if(level == null) return RenderInfoCompatible.empty();
+        var storage = this.storageMap.get(level.dimension());
+        if(storage == null ) return RenderInfoCompatible.empty();
+        var gather2 = new RenderInfoCompatibleBlockGather();
         for(var chunkStorage : storage.getChunks()){
             var aabb = chunkStorage.chunkAABB;
             if(!frustum.isVisible(aabb)) continue;
             if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
             var lod = chunkStorage.getLodLevel(baseLodDistance, camPos);
             if(lod < 0) continue;
-            if(lod == 0 && !compatibleMode){
-                for (int i = 0; i < 6; i++) {
-                    var dir = VanillaUtils.DIRECTIONS[i];
-                    if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
-                    var gpuBuffer = storage.gpuBufferByFace.get(dir);
-                    var alloc = gpuBuffer.getAllocation(chunkStorage.chunkPos);
-                    if(alloc == null) continue;
-                    var buffer = gpuBuffer.getGpuBuffer(alloc);
-                    var offset = alloc.getOffsetFromHeap() / 16;
-                    var size = alloc.getSize() / 16;
-                    var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
-                    gather1.add(buffer,cmd);
-                }
+            if(lod == 0){
+//                for (int i = 0; i < 6; i++) {
+//                    var dir = VanillaUtils.DIRECTIONS[i];
+//                    if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
+//                    var gpuBuffer = storage.gpuBufferByFace.get(dir);
+//                    var alloc = gpuBuffer.getAllocation(chunkStorage.chunkPos);
+//                    if(alloc == null) continue;
+//                    var buffer = gpuBuffer.getGpuBuffer(alloc);
+//                    var offset = alloc.getOffsetFromHeap() / 16;
+//                    var size = alloc.getSize() / 16;
+//                    var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
+//                    gather1.add(buffer,cmd);
+//                }
+                lod = 1;
             }
-            else {
-                var alloc = chunkStorage.getLodBufferFullMesh(lod);
-                if(alloc == null) continue;
-                var buffer = storage.gpuBufferByLodFullMesh.getGpuBuffer(alloc);
-                var cmd = new IndirectDrawCommand(6 * chunkStorage.facesCountByLodFullMesh(lod), 1, (int) (alloc.getOffsetFromHeap() / 20),0, 0);
-                gather2.add(buffer,cmd);
-            }
+            var alloc = chunkStorage.getLodBufferFullMesh(lod);
+            if(alloc == null) continue;
+            var buffer = storage.gpuBufferByLodFullMesh.getGpuBuffer(alloc);
+            var cmd = new IndirectDrawCommand(6 * chunkStorage.facesCountByLodFullMesh(lod), 1, (int) (alloc.getOffsetFromHeap() / 20),0, 0);
+            gather2.add(buffer,cmd);
+           
         }
-        return new RenderInfo(gather1.finishGather(), gather2.finishGather(), gatherLod[0].finishGatherFirstBuffer(), gatherLod[1].finishGatherFirstBuffer(), gatherLod[2].finishGatherFirstBuffer());
+        return new RenderInfoCompatible(gather2.finishGather());
     }
     
     Vector3f dirToFace(Direction dir, AABB aabb, Vector3f pos){
@@ -176,7 +188,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             if(dimNew != dim) return;
             var storage = this.storageMap.get(dimNew);
             if(storage == null){
-                storage = new LevelChunkStorage(dimNew,level_.getMinY(), INSTANCE.compatibleMode);
+                storage = new LevelChunkStorage(dimNew,level_.getMinY(), level_.getMaxY(), INSTANCE.compatibleMode);
                 this.storageMap.put(dimNew, storage);
             }
             var chunkOld = storage.getChunk(chunkPos);
@@ -193,7 +205,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                         for (int dz = 0; dz < 2; dz++) {
                             var cp = finalStorage.getChunk(new ChunkPos(chunkPos.x()-dx,chunkPos.z()-dz));
                             if(cp == null) continue;
-                            cp.uploadGpuLodFullMesh();
+                            if(compatibleMode){
+                                cp.uploadGpuLodFullMesh();
+                            }
+                            else cp.uploadToTexture();
                         }
                     }
                 });
@@ -241,44 +256,63 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return result;
     }
     
-    public record RenderInfo(List<RenderInfoBlock> lod0, List<RenderInfoBlock> lodFullMesh,@Nullable RenderInfoBlock lod1,@Nullable RenderInfoBlock lod2,@Nullable RenderInfoBlock lod3) implements AutoCloseable{
+    public record RenderInfoCompatible(List<RenderInfoCompatibleBlock> lodFullMesh) implements AutoCloseable{
         
-        public static RenderInfo empty(){
-            return new RenderInfo(null, null, null, null, null);
+        public static RenderInfoCompatible empty(){
+            return new RenderInfoCompatible(null);
         }
         
         @Override
         public void close() {
-            if(lod0 != null){
-                for(var v : lod0) {
-                    v.commandBuffer.close();
-                }
-            }
             if(lodFullMesh != null){
                 for(var v : lodFullMesh) {
                     v.commandBuffer.close();
                 }
             }
-            if(lod1 != null){
-                lod1.commandBuffer.close();
-            }
-            if(lod2 != null){
-                lod2.commandBuffer.close();
-            }
-            if(lod3 != null){
-                lod3.commandBuffer.close();
-            }
         }
     }
     
-    public record RenderInfoBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
+    public record RenderInfoCompatibleBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
     
     }
     
-    public static class RenderInfoBlockGather{
+    public record RenderInfoBlock(TerrainTextureManager.VirtualTextures texture, int drawCount, GpuBuffer commandBuffer){
+    
+    }
+    
+    public static class RenderInfoCompatibleBlockGather {
         public Map<GpuBuffer,ArrayList<IndirectDrawCommand>> cmdMap = new IdentityHashMap<>();
         
         public void add(GpuBuffer buffer, IndirectDrawCommand command){
+            cmdMap.compute(buffer, (_,v) -> {
+                if(v == null){
+                    v = new ArrayList<>();
+                }
+                v.add(command);
+                return v;
+            });
+        }
+        
+        public List<RenderInfoCompatibleBlock> finishGather(){
+            var renderInfoList = new ArrayList<RenderInfoCompatibleBlock>();
+            for(var entry :  cmdMap.entrySet()){
+                var buffer = entry.getKey();
+                var list = entry.getValue();
+                renderInfoList.add(new RenderInfoCompatibleBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+            }
+            return renderInfoList;
+        }
+        
+        public TerrainChunkManager.@Nullable RenderInfoCompatibleBlock finishGatherFirstBuffer(){
+            var list = finishGather();
+            return list.isEmpty() ? null : list.getFirst();
+        }
+    }
+    
+    public static class RenderInfoBlockGather{
+        public Map<TerrainTextureManager.VirtualTextures,ArrayList<IndirectDrawCommand>> cmdMap = new IdentityHashMap<>();
+        
+        public void add(TerrainTextureManager.VirtualTextures buffer, IndirectDrawCommand command){
             cmdMap.compute(buffer, (_,v) -> {
                 if(v == null){
                     v = new ArrayList<>();
@@ -297,11 +331,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             }
             return renderInfoList;
         }
-        
-        public @Nullable RenderInfoBlock finishGatherFirstBuffer(){
-            var list = finishGather();
-            return list.isEmpty() ? null : list.getFirst();
-        }
+    
     }
     
 }
