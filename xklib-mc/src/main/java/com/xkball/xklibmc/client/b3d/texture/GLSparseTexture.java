@@ -42,7 +42,7 @@ public class GLSparseTexture extends GpuTexture {
         committed[px][py] = true;
     }
     
-    public void upload(int x, int y, int w, int h, ByteBuffer data) {
+    public void upload(int x, int y, int w, int h, int component, ByteBuffer data) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
         
         int startPageX = x / pageSizeX;
@@ -56,6 +56,11 @@ public class GLSparseTexture extends GpuTexture {
                 commitPage(px, py);
             }
         }
+        
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, width);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_ROWS, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_PIXELS, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ALIGNMENT, component);
         
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
         

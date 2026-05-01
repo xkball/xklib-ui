@@ -4,15 +4,12 @@ import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.network.s2c.SentChunkToClient;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -44,7 +41,7 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
             context.enqueueWork(() -> {
                 //TODO 想办法加载区块但是不生成新区块
                 var chunk = level.getChunk(p.x(), p.z());
-                Thread.startVirtualThread(() -> PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(level, p, chunk)));
+                Thread.startVirtualThread(() -> PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, chunk)));
             });
            
         }

@@ -8,7 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -38,7 +37,7 @@ public record SentChunkToClient(ChunkPos chunkPos, ClientboundLevelChunkPacketDa
         }
     };
     
-    public SentChunkToClient(ServerLevel level,ChunkPos chunkPos, LevelChunk chunk){
+    public SentChunkToClient(ChunkPos chunkPos, LevelChunk chunk){
         this(chunkPos, new ClientboundLevelChunkPacketData(chunk), ClientboundChunksBiomesPacket.forChunks(List.of(chunk)));
     }
     

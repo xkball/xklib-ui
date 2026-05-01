@@ -6,18 +6,14 @@ import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
-import com.xkball.xklibmc_example.utils.CodecUtils;
-import io.netty.buffer.Unpooled;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.loading.FMLPaths;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -39,8 +35,9 @@ public class LevelChunkStorage {
     public EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
     public UberGpuBuffer<ChunkPosLod> gpuBufferByLodFullMesh;
     public ManagedGpuBuffer gpuBufferLod;
+    public TerrainTextureManager terrainTextureManager = new TerrainTextureManager();
     private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
-    public final Map<ChunkPos, ChunkStorage> chunkMap = new LinkedHashMap<>();
+    public final Map<RegionPos, RegionStorage> regionMap = new LinkedHashMap<>();
     public boolean dirty = false;
     
     public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight, boolean compatibleMode) {
@@ -79,27 +76,30 @@ public class LevelChunkStorage {
             b.close();
         }
         if(this.gpuBufferLod != null) this.gpuBufferLod.close();
+        this.terrainTextureManager.close();
         this.markDirty();
     }
     
     public void saveFile(){
         if(!this.dirty) return;
         this.dirty = false;
-        for(var entry : chunkMap.entrySet()){
-            if(entry.getValue().dirty) this.saveRegion(entry.getKey());
+        for(var entry : this.regionMap.entrySet()){
+            if(entry.getValue().hasDirtyChunk()){
+                this.saveRegion(entry.getKey());
+            }
         }
     }
     
     public int getHeight(int x, int z){
         var chunkPos = new ChunkPos(x >> 4, z >> 4);
-        var chunk = this.chunkMap.get(chunkPos);
+        var chunk = this.getChunk(chunkPos);
         if(chunk == null) return -64;
         return chunk.heightMap.get(x,z);
     }
     
     public int getColor(int x, int z){
         var chunkPos = new ChunkPos(x >> 4, z >> 4);
-        var chunk = this.chunkMap.get(chunkPos);
+        var chunk = this.getChunk(chunkPos);
         if(chunk == null) return 0;
         return chunk.heightMap.getColor(x,z);
     }
@@ -112,108 +112,73 @@ public class LevelChunkStorage {
         var taskList = new ArrayList<CompletableFuture<Void>>();
         for(var file : files){
             taskList.add(CompletableFuture.runAsync(() -> {
-                var name = file.getName();
-                var n = name.split(",");
-                if(n.length != 2) return;
-                int x;
-                int z;
-                try {
-                    x = Integer.parseInt(n[0]);
-                    z = Integer.parseInt(n[1]);
-                } catch(NumberFormatException e){
+                var regionStorage = RegionStorage.loadFromFile(file.toPath(), this, LOGGER);
+                if(regionStorage == null){
                     return;
                 }
-                LOGGER.info("Loading map at {}, chunk from ({},{}) to ({},{})",this.dimension,x << 4,z << 4,(x << 4) + 16,(z << 4) + 16);
-                try {
-                    var bytes = Files.readAllBytes(file.toPath());
-                    bytes = VanillaUtils.unGzip(bytes);
-                    var byteBuf = Unpooled.buffer(bytes.length);
-                    byteBuf.writeBytes(bytes);
-                    var version = byteBuf.readInt();
-                    if(version != VERSION){
-                        LOGGER.error("Version mismatch");
-                        return;
-                    }
-                    for (int dx = 0; dx < 16; dx++) {
-                        for (int dz = 0; dz < 16; dz++) {
-                            if(byteBuf.readBoolean()){
-                                var chunkPos = new ChunkPos((x << 4) + dx, (z << 4) + dz);
-                                var storage = new ChunkStorage(chunkPos, this);
-                                storage.chunkAABB = CodecUtils.AABB_STREAM_CODEC.decode(byteBuf);
-                                storage.heightMap = ChunkHeightMap.STREAM_CODEC.decode(byteBuf);
-                                var data = ChunkStorage.ChunkStorageData.STREAM_CODEC.decode(byteBuf);
-                                assert data.pos().equals(chunkPos);
-                                storage.writeData(data.data());
-                                TerrainChunkManager.INSTANCE.taskQueue.submitMain(
-                                        () -> {
-                                            if(this.chunkMap.containsKey(chunkPos)) return;
-                                            this.chunkMap.put(chunkPos, storage);
-                                            storage.uploadGpu0();
-                                        }
-                                );
-                            }
+                TerrainChunkManager.INSTANCE.taskQueue.submitMain(() -> {
+                    for(var chunkStorage : regionStorage.chunks()){
+                        if(this.containsChunk(chunkStorage.chunkPos)){
+                            continue;
                         }
+                        this.putChunk(chunkStorage);
+                        chunkStorage.uploadGpu0();
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Failed to load chunk from file.", e);
-                }
+                });
             }, TerrainChunkManager.INSTANCE.taskQueue.workers));
 
         }
         var task = CompletableFuture.allOf(taskList.toArray(CompletableFuture[]::new));
         task.thenRunAsync(() -> {
             TerrainChunkManager.INSTANCE.taskQueue.submitMain(() -> {
-                for(var chunkStorage : chunkMap.values()){
+                for(var chunkStorage : this.getChunks()){
                     TerrainChunkManager.INSTANCE.taskQueue.submitMain( () -> {
-                        if(!this.chunkMap.containsKey(chunkStorage.chunkPos)) return;
+                        if(!this.containsChunk(chunkStorage.chunkPos)) return;
                         chunkStorage.uploadGpuLodFullMesh();
-//                        chunkStorage.uploadGpuLod();
                     });
                 }
             });
         },TerrainChunkManager.INSTANCE.taskQueue.workers);
     }
     
-    public void saveRegion(ChunkPos chunkPos){
-        var x0 = chunkPos.x() >> 4;
-        var z0 = chunkPos.z() >> 4;
-        var file = this.getFile(chunkPos).toFile();
-        if(!file.exists()){
-            file.getParentFile().mkdirs();
-            try {
-                file.createNewFile();
-            }catch (IOException e){
-                throw new RuntimeException(e);
-            }
+    public void saveRegion(RegionPos regionPos){
+        var regionStorage = this.regionMap.get(regionPos);
+        if(regionStorage == null){
+            return;
         }
-        LOGGER.info("Saving map at {}, chunk from ({},{}) to ({},{})",this.dimension,x0 << 4,z0 << 4,(x0 << 4) + 16,(z0 << 4) + 16);
-        try (var output = new FileOutputStream(file)){
-            var byteBuf = Unpooled.buffer();
-            byteBuf.writeInt(1);
-            for (int dx = 0; dx < 16; dx++) {
-                for (int dz = 0; dz < 16; dz++) {
-                    var pos = new ChunkPos((x0 << 4) + dx, (z0 << 4) + dz);
-                    var storage = this.chunkMap.get(pos);
-                    if(storage != null){
-                        storage.dirty = false;
-                        byteBuf.writeBoolean(true);
-                        CodecUtils.AABB_STREAM_CODEC.encode(byteBuf, storage.chunkAABB);
-                        ChunkHeightMap.STREAM_CODEC.encode(byteBuf, storage.heightMap);
-                        ChunkStorage.ChunkStorageData.STREAM_CODEC.encode(byteBuf,storage.data);
-                    }
-                    else byteBuf.writeBoolean(false);
-                }
-            }
-            output.write(VanillaUtils.gzip(byteBuf.array(), 0,  byteBuf.readableBytes()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        regionStorage.saveToFile(this.getDirectory(), this, LOGGER);
     }
     
-    public Path getFile(ChunkPos chunkPos){
-        var x0 = chunkPos.x() >> 4;
-        var z0 = chunkPos.z() >> 4;
-        return getDirectory().resolve(x0+","+z0);
+    public RegionStorage getOrCreateRegion(RegionPos regionPos){
+        return this.regionMap.computeIfAbsent(regionPos, RegionStorage::new);
+    }
+    
+    public RegionStorage getRegion(RegionPos regionPos){
+        return this.regionMap.get(regionPos);
+    }
+    
+    public @Nullable ChunkStorage getChunk(ChunkPos chunkPos){
+        var region = this.getRegion(RegionStorage.toRegionPos(chunkPos));
+        if(region == null){
+            return null;
+        }
+        return region.getChunk(chunkPos);
+    }
+    
+    public boolean containsChunk(ChunkPos chunkPos){
+        return this.getChunk(chunkPos) != null;
+    }
+    
+    public void putChunk(ChunkStorage chunkStorage){
+        this.getOrCreateRegion(RegionStorage.toRegionPos(chunkStorage.chunkPos)).putChunk(chunkStorage);
+    }
+    
+    public List<ChunkStorage> getChunks(){
+        var list = new ArrayList<ChunkStorage>();
+        for(var regionStorage : this.regionMap.values()){
+            list.addAll(regionStorage.chunks());
+        }
+        return list;
     }
     
     public Path getDirectory(){
