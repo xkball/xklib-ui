@@ -14,7 +14,12 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
+import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.ChunkPos;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
+import java.util.ArrayList;
 
 public class WorldTerrainWidget extends ContainerWidget {
     
@@ -98,7 +103,17 @@ public class WorldTerrainWidget extends ContainerWidget {
                                     TerrainChunkManager.INSTANCE.submitUpdate(player.blockPosition(),viewDistance - 1, true);
                                 }).setCSSClassName("update_button").withTooltip(IComponent.literal("Update chunks in view distance.")))
                                 .addChild(new Button("Request Geomatics",() -> {
-                                    //TODO
+                                    var player = Minecraft.getInstance().player;
+                                    if(player == null) return;
+                                    var centerChunk = ChunkPos.containing(player.blockPosition());
+                                    var range = 128;
+                                    var list = new ArrayList<ChunkPos>();
+                                    for(var dx = -range; dx <= range; dx++){
+                                        for(var dz = -range; dz <= range; dz++){
+                                            list.add(new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz));
+                                        }
+                                    }
+                                    ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
                                 }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
                                 .addChild(new Label("LOD Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
                                 .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))

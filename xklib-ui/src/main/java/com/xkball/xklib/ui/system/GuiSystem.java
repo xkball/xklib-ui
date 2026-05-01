@@ -463,6 +463,8 @@ public class GuiSystem implements AutoCloseable {
     }
     
     public void setDraggingWidget(Widget widget) {
+        widget.setTree(null);
+        widget.setNodeId(null);
         widget.asTreeRoot();
         widget.setGuiSystem(this);
         widget.markDirty();

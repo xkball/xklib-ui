@@ -1,0 +1,57 @@
+tasks.register('buildAllAndCollectJars') {
+    group = 'build'
+
+    dependsOn subprojects.collect { it.tasks.named('build') }
+
+    doLast {
+        def outputDir = file("$rootDir/libs")
+        outputDir.mkdirs()
+
+        subprojects.each { proj ->
+
+            def jarTask = proj.tasks.findByName('jar')
+            if (jarTask != null) {
+                def jarFile = jarTask.archiveFile.get().asFile
+                if (jarFile.exists()) {
+                    copy {
+                        from jarFile
+                        into outputDir
+                    }
+                }
+            }
+
+            def sourcesTask = proj.tasks.findByName('sourcesJar')
+            if (sourcesTask != null) {
+                def srcFile = sourcesTask.archiveFile.get().asFile
+                if (srcFile.exists()) {
+                    copy {
+                        from srcFile
+                        into outputDir
+                    }
+                }
+            }
+        }
+
+        copy {
+            from "$rootDir/libs"
+            into "E:\\code\\java\\mcmod\\1.21\\PowerTool\\libs"
+
+            include "xklib-3d-0.0.1.jar"
+            include "xklib-3d-0.0.1-sources.jar"
+            include "xklib-ap-0.0.1.jar"
+            include "xklib-ap-0.0.1-sources.jar"
+            include "xklib-ui-0.0.1.jar"
+            include "xklib-ui-0.0.1-sources.jar"
+            include "xklibmc-1.0.0.jar"
+            include "xklibmc-1.0.0-sources.jar"
+        }
+    }
+}
+
+subprojects {
+    plugins.withType(JavaPlugin) {
+        java {
+            withSourcesJar()
+        }
+    }
+}

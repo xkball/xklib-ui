@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.mesh.CachedMesh;
+import com.xkball.xklibmc.client.b3d.postprocess.XKLibPostProcesses;
+import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
@@ -57,15 +59,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                     }
                 }
             }
-//                var cp = renderState.cameraPos();
-//                XKLibUniforms.INVERSE_PROJ_MAT.updateUnsafe(b -> {
-//                    b.putMat4f(renderState.projMatrix().invert(new Matrix4f()));
-//                    b.putMat4f(renderState.projMatrix());
-//                    b.putVec4(new Vector4f(renderState.dirVec(),1));
-//                    //传入campos可以获得世界坐标 因此减一次ct等于移动视野位置到0,0, 减两次可以对应上视野位置
-//                    b.putVec4(new Vector4f(-cp.x,-cp.y,-cp.z,1));
-//                });
-//                XKLibPostProcesses.SSAO.apply(texture, depth);
+
             if(!renderInfo.lodFullMesh().isEmpty()){
                 try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering lod full mesh", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
                     RenderSystem.bindDefaultUniforms(renderpass);
@@ -79,6 +73,15 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                     }
                 }
             }
+            var cp = renderState.cameraPos();
+            XKLibUniforms.INVERSE_PROJ_MAT.updateUnsafe(b -> {
+                b.putMat4f(renderState.projMatrix().invert(new Matrix4f()));
+                b.putMat4f(renderState.projMatrix());
+                b.putVec4(new Vector4f(renderState.dirVec(),1));
+                b.putVec4(new Vector4f(-cp.x,-cp.y,-cp.z,1));
+            });
+//            XKLibPostProcesses.SSAO.apply(texture, depth);
+            XKLibPostProcesses.SSR.apply(texture, depth);
 //            if(renderInfo.lod1() != null ||  renderInfo.lod2() != null || renderInfo.lod3() != null){
 //                try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering lod", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
 //                    RenderSystem.bindDefaultUniforms(renderpass);

@@ -174,6 +174,8 @@ public interface IGuiWidget {
     }
     
     default void onRemove(){
+        this.setTree(null);
+        this.setNodeId(null);
         for(var child : this.getChildren()){
             child.onRemove();
         }
@@ -217,8 +219,8 @@ public interface IGuiWidget {
     default void asTreeRoot(){
         var tree = new TaffyTree();
         var id = tree.newLeaf(this.getStyle());
-        this.setTree(tree);
         this.setNodeId(id);
+        this.setTree(tree);
     }
     
     default IGuiWidget setStyle(Consumer<TaffyStyle> styleUpdate){

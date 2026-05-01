@@ -50,7 +50,9 @@ public class ObjectInputWidget<T> extends ContainerWidget implements IInputWidge
                 Component.literal(""),
                 validator, parser
         );
-        this.inputBox.setResponder(_ -> this.setValue(this.getParsed()));
+        this.inputBox.setResponder(_ -> {
+            if(this.callback != null) this.callback.accept(this);
+        });
         
         this.addChild(new Widget() {
             @Override
@@ -79,6 +81,11 @@ public class ObjectInputWidget<T> extends ContainerWidget implements IInputWidge
     
     public String getAsString(){
         return this.inputBox.getValue();
+    }
+    
+    public void setAsString(String value){
+        this.inputBox.setValue(value);
+        this.inputBox.displayPos = 0;
     }
     
     @Override

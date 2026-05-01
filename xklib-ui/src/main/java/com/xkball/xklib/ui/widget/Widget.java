@@ -327,7 +327,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     @Override
     public void setNodeId(NodeId nodeId) {
         this.nodeId = nodeId;
-        if(this.tree != null) {
+        if(this.tree != null && this.nodeId != null) {
             this.afterTreeAndNodeSet();
         }
     }
@@ -392,7 +392,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     @Override
     public void setTree(TaffyTree tree) {
         this.tree = tree;
-        if(this.nodeId != null) {
+        if(this.tree !=null && this.nodeId != null) {
             this.afterTreeAndNodeSet();
         }
     }

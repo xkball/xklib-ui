@@ -63,6 +63,20 @@ public class B3dRenderPipelines {
             .bindUniform("InvProjMat", XKLibUniforms.INVERSE_PROJ_MAT)
             .buildExtended();
     
+    public static final ExtendedRenderPipeline SSR = ExtendedRenderPipeline.builder()
+            .withLocation(VanillaUtils.modRL("ssr"))
+            .withVertexShader(VanillaUtils.modRL("core/blit"))
+            .withFragmentShader(VanillaUtils.modRL("core/ssr"))
+            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+            .withSampler("input0")
+            .withSampler("input1")
+            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
+            .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
+            .withUniform("InvProjMat", UniformType.UNIFORM_BUFFER)
+            .bindUniform("InvProjMat", XKLibUniforms.INVERSE_PROJ_MAT)
+            .buildExtended();
+    
     public static final ExtendedRenderPipeline MIX = ExtendedRenderPipeline.builder()
             .withLocation(VanillaUtils.modRL("mix"))
             .withVertexShader(VanillaUtils.modRL("core/blit"))

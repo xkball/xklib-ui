@@ -22,8 +22,8 @@ layout(std140) uniform SSAOData {
 };
 
 const int   KERNEL_SIZE = 64;
-const float RADIUS      = 0.2;
-const float BIAS        = 0.02;
+const float RADIUS      = 0.25;
+const float BIAS        = 0.01;
 const float POWER       = 1;
 
 
@@ -35,23 +35,29 @@ vec3 getViewPos(vec2 uv) {
 }
 
 
-vec3 getViewNormal(vec3 pos, vec2 uv) {
-    vec2 offset = 1.0 / screenSize;
+//vec3 getViewNormal(vec3 pos, vec2 uv) {
+//    vec2 offset = 1.0 / screenSize;
+//
+//    vec3 p1 = getViewPos(uv + vec2( offset.x, 0.0)) - pos;
+//    vec3 p2 = getViewPos(uv + vec2( 0.0,  offset.y)) - pos;
+//    vec3 p3 = getViewPos(uv + vec2(-offset.x, 0.0)) - pos;
+//    //vec3 p4 = getViewPos(uv + vec2( 0.0, -offset.y)) - pos;
+//
+//    vec3 v1 = p1-p2;
+//    vec3 v2 = p3-p2;
+//
+//    return -normalize(cross(v1, v2));
+//}
 
-    vec3 p1 = getViewPos(uv + vec2( offset.x, 0.0)) - pos;
-    vec3 p2 = getViewPos(uv + vec2( 0.0,  offset.y)) - pos;
-    vec3 p3 = getViewPos(uv + vec2(-offset.x, 0.0)) - pos;
-    //vec3 p4 = getViewPos(uv + vec2( 0.0, -offset.y)) - pos;
-
-    vec3 v1 = p2-p1;
-    vec3 v2 = p2-p3;
-
-    return normalize(cross(v1, v2));
+vec3 getNormal(vec3 pos){
+    vec3 dx = dFdx(pos);
+    vec3 dy = dFdy(pos);
+    return normalize(cross(dx, dy));
 }
 
 float linearDepth(vec3 viewPos) {
     vec3 pos = viewPos + camPos.xyz;
-    float theta = dot(normalize(pos),normalize(camDir.xyz));
+    float theta = dot(normalize(pos),normalize(-camDir.xyz));
     float l = length(pos);
     return theta * l;
 }
@@ -66,7 +72,7 @@ void main() {
 
     vec3 viewPos = getViewPos(texCoord);
     float d0 = linearDepth(viewPos);
-    vec3 normal  = getViewNormal(viewPos, texCoord);
+    vec3 normal  = getNormal(viewPos);
 
     ivec2 scrCoord = ivec2(gl_FragCoord.xy);
     int   rotIdx   = (scrCoord.x % 4) + (scrCoord.y % 4) * 4;
@@ -77,11 +83,8 @@ void main() {
     for (int i = 0; i < KERNEL_SIZE; ++i) {
         vec3 sampleDir = sample_[i].xyz;
         vec3 rotated = (rotMat * vec4(sampleDir, 0.0)).xyz;
-        rotated = normalize(rotated);
-
-        if (dot(rotated, normal) > 0.0)
-        rotated = -rotated;
-
+        if (dot(rotated, normal) < 0.0) rotated = -rotated;
+        //if (dot(rotated, normal) > 0.0) continue;
         vec3 samplePos = viewPos + rotated * RADIUS;
 
         vec4 proj = ProjMat_ * vec4(samplePos, 1.0);
@@ -95,14 +98,16 @@ void main() {
 
         vec3 sampleViewPos = getViewPos(sampleUV);
         float sampleDepth = linearDepth(sampleViewPos);
-
-        float rangeCheck = smoothstep(0.0, 1.0, RADIUS / abs(d0 - sampleDepth));
-
-        occlusion += (sampleDepth > d0 + BIAS ? 1 : 0) * rangeCheck;
+        float pd = linearDepth(samplePos);
+        float diff = abs(pd - sampleDepth);
+        float rangeCheck = smoothstep(0.0, RADIUS, diff);
+        occlusion += (pd > sampleDepth + BIAS ? 1 : 0) * rangeCheck;
     }
 
     occlusion = 1 - (occlusion / float(KERNEL_SIZE));
-    //occlusion = pow(occlusion, POWER);
     //if(occlusion > 0.7) occlusion = 1;
+    //occlusion = pow(occlusion, POWER);
+//    fragColor = vec4(abs(normal),1);
+    //fragColor = vec4(vec3(linearDepth(viewPos)/500),1);
     fragColor = vec4(occlusion, occlusion, occlusion, 1.0);
 }

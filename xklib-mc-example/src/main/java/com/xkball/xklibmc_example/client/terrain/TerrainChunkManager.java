@@ -6,6 +6,7 @@ import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -15,12 +16,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +32,9 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
@@ -162,6 +167,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     }
     
     public void submitUpdate(ChunkPos chunkPos, boolean force){
+        this.submitUpdate(null, chunkPos, force);
+    }
+    
+    public void submitUpdate(@Nullable LevelChunk chunk, ChunkPos chunkPos, boolean force){
         var level = Minecraft.getInstance().level;
         if(level == null) return;
         var dim = level.dimension();
@@ -177,7 +186,9 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             }
             var chunkOld = storage.chunkMap.get(chunkPos);
             if(chunkOld != null && !force) return;
-            var chunkStorage = LevelChunkStorage.COMPLIER.compile(storage,level_,chunkPos);
+            ChunkStorage chunkStorage;
+            if(chunk == null) chunkStorage = LevelChunkStorage.COMPLIER.compile(storage,level_,chunkPos);
+            else chunkStorage = LevelChunkStorage.COMPLIER.compile(storage, level_, chunk, chunkPos, true);
             if(chunkStorage != null) {
                 LevelChunkStorage finalStorage = storage;
                 this.taskQueue.submitMain(() -> {

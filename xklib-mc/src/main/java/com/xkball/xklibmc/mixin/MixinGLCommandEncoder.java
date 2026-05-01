@@ -7,13 +7,17 @@ import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlRenderPass;
 import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.xkball.xklibmc.api.client.mixin.IExtendedCommandEncoder;
 import com.xkball.xklibmc.api.client.mixin.IExtendedGLProgram;
 import com.xkball.xklibmc.api.client.mixin.IExtendedRenderPass;
 import com.xkball.xklibmc.client.b3d.pipeline.ExtendedRenderPipeline;
+import com.xkball.xklibmc.client.b3d.texture.GLSparseTexture;
 import com.xkball.xklibmc.utils.GLUtils;
+import net.minecraft.server.packs.repository.Pack;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
@@ -28,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +59,19 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
     @Inject(method = "createRenderPass(Ljava/util/function/Supplier;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalInt;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalDouble;)Lcom/mojang/blaze3d/systems/RenderPassBackend;",at = @At("HEAD"))
     public void onCreateRenderPass(Supplier<String> p_419957_, GpuTextureView color, OptionalInt p_410460_, @Nullable GpuTextureView p_423565_, OptionalDouble p_423486_, CallbackInfoReturnable<RenderPass> cir){
         this.dysonCubeProgram$fboColor = color;
+    }
+    
+    @Inject(method = "writeToTexture(Lcom/mojang/blaze3d/textures/GpuTexture;Ljava/nio/ByteBuffer;Lcom/mojang/blaze3d/platform/NativeImage$Format;IIIIII)V",
+            at = @At("HEAD"),
+            cancellable = true)
+    public void onWriteToTexture(GpuTexture destination, ByteBuffer source, NativeImage.Format format, int mipLevel, int depthOrLayer, int destX, int destY, int width, int height, CallbackInfo ci){
+        if(destination instanceof GLSparseTexture texture){
+            if(mipLevel != 0 || depthOrLayer != 0){
+                throw new IllegalArgumentException("Invalid mip level or depth or layer");
+            }
+            texture.upload(destX,destY,width,height,source);
+            ci.cancel();
+        }
     }
     
     @Inject(method = "trySetup",at = @At("RETURN"))

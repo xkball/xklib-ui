@@ -23,8 +23,8 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
     private final Supplier<T> inputFactory;
     private final BiFunction<IComponent, Runnable, Widget> buttonFactory;
     private final List<ILayoutVariable<List<V>>> bindings = new ArrayList<>();
-    private final Map<Integer, V> valuesById = new HashMap<>();
     private final Map<Integer, ListRowWidget> rowWidgetsById = new HashMap<>();
+    private final List<Integer> rowOrder = new ArrayList<>();
     private final ContainerWidget rowsContainer = new ContainerWidget().setCSSClassName("list_input_rows");
     private int nextId = 0;
     private Integer previewInsertIndex;
@@ -35,28 +35,20 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         this.inputFactory = inputFactory;
         this.buttonFactory = buttonFactory;
         Widget addButton = this.buttonFactory.apply(IComponent.literal("+"), this::addNextInput);
-        addButton.setCSSClassName("list_input_add_btn");
-        ContainerWidget addButtonRow = new ContainerWidget().setCSSClassName("list_input_add_row");
-        addButtonRow.addChild(addButton);
-        this.addChild(addButtonRow);
+        addButton.setCSSClassName("list_input_btn");
+        this.addChild(addButton.inlineStyle("margin-left: 95%-24rpx;"));
         this.addChild(this.rowsContainer);
         this.inlineStyle("flex-direction: column;").asRootStyle("""
-                .list_input_add_row {
-                    flex-direction: row;
-                    align-items: stretch;
-                    justify-content: end;
-                    size: 100% 20rpx;
-                    flex-shrink: 0;
-                }
                 .list_input_rows {
                     flex-direction: column;
-                    align-items: stretch;
+                    align-items: center;
                     justify-content: start;
                     overflow-y: scroll;
                     scrollbar-width: 8;
                     flex-grow: 1;
+                    margin-top: 2rpx;
                 }
-                .list_input_add_btn {
+                .list_input_btn {
                     size: 20rpx 20rpx;
                     flex-shrink: 0;
                 }
@@ -80,10 +72,6 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
                     size: 100%-24rpx 100%;
                     flex-shrink: 0;
                 }
-                .list_input_row_remove {
-                    size: 20rpx 20rpx;
-                    flex-shrink: 0;
-                }
                 .list_input_dragging_row {
                     size: 100% 20rpx;
                     background-color: 0x5500AAFF;
@@ -93,27 +81,41 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
 
     @Override
     public List<V> getValue() {
-        this.snapshotValuesFromRows();
-        return this.sortedValues();
+        List<V> values = new ArrayList<>();
+        for (Integer id : this.rowOrder) {
+            ListRowWidget row = this.rowWidgetsById.get(id);
+            if (row == null) {
+                continue;
+            }
+            values.add(row.input.getValue());
+        }
+        return values;
     }
     
     public List<T> getInputWidgets(){
-        return this.rowWidgetsById.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(e -> e.getValue().input)
-                .toList();
+        List<T> widgets = new ArrayList<>();
+        for (Integer id : this.rowOrder) {
+            ListRowWidget row = this.rowWidgetsById.get(id);
+            if (row == null) {
+                continue;
+            }
+            widgets.add(row.input);
+        }
+        return widgets;
     }
 
     @Override
     public void setValue(List<V> value) {
-        this.valuesById.clear();
+        this.rowWidgetsById.clear();
+        this.rowOrder.clear();
         if (value != null) {
-            for (int i = 0; i < value.size(); i++) {
-                this.valuesById.put(i, value.get(i));
+            for (V v : value) {
+                int rowId = this.nextId++;
+                ListRowWidget row = new ListRowWidget(rowId, v);
+                this.rowWidgetsById.put(rowId, row);
+                this.rowOrder.add(rowId);
             }
         }
-        this.nextId = this.valuesById.size();
         this.previewInsertIndex = null;
         this.draggingRowId = null;
         this.refreshRows();
@@ -134,9 +136,10 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
     }
 
     public void addNextInput() {
-        this.snapshotValuesFromRows();
-        this.valuesById.put(this.nextId, this.createDefaultValue());
-        this.nextId++;
+        int rowId = this.nextId++;
+        ListRowWidget row = new ListRowWidget(rowId, this.createDefaultValue());
+        this.rowWidgetsById.put(rowId, row);
+        this.rowOrder.add(rowId);
         this.refreshRows();
         this.pushBindings();
     }
@@ -167,32 +170,18 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         if (!(widget instanceof DraggingRowWidget dragging) || dragging.owner != this) {
             return false;
         }
-        this.snapshotValuesFromRows();
-        V draggingValue = this.valuesById.remove(dragging.rowId);
-        if (draggingValue == null) {
+        if (!this.rowOrder.remove(Integer.valueOf(dragging.rowId))) {
             this.previewInsertIndex = null;
             this.draggingRowId = null;
             GuiSystem.INSTANCE.get().removeDraggingWidget();
             this.refreshRows();
             return true;
         }
-        List<Integer> ids = this.sortedIds();
         int insertIndex = this.previewInsertIndex == null
                 ? this.computeInsertIndex((float) mousePos.y(), dragging.rowId)
                 : this.previewInsertIndex;
-        insertIndex = Math.clamp(insertIndex, 0, ids.size());
-        List<V> reorderedValues = new ArrayList<>();
-        for (Integer id : ids) {
-            reorderedValues.add(this.valuesById.get(id));
-        }
-        reorderedValues.add(insertIndex, draggingValue);
-        Map<Integer, V> reordered = new HashMap<>();
-        for (int i = 0; i < reorderedValues.size(); i++) {
-            reordered.put(i, reorderedValues.get(i));
-        }
-        this.valuesById.clear();
-        this.valuesById.putAll(reordered);
-        this.nextId = this.valuesById.size();
+        insertIndex = Math.clamp(insertIndex, 0, this.rowOrder.size());
+        this.rowOrder.add(insertIndex, dragging.rowId);
         this.previewInsertIndex = null;
         this.draggingRowId = null;
         GuiSystem.INSTANCE.get().removeDraggingWidget();
@@ -206,46 +195,28 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         return input.getValue();
     }
 
-    private List<Integer> sortedIds() {
-        return this.valuesById.keySet().stream().sorted().toList();
-    }
-
-    private List<V> sortedValues() {
-        List<V> values = new ArrayList<>();
-        for (Integer id : this.sortedIds()) {
-            values.add(this.valuesById.get(id));
-        }
-        return values;
-    }
-
     private void pushBindings() {
         this.syncingBinding = true;
-        List<V> values = this.sortedValues();
+        List<V> values = this.getValue();
         for (ILayoutVariable<List<V>> binding : this.bindings) {
             binding.set(new ArrayList<>(values));
         }
         this.syncingBinding = false;
     }
 
-    private void snapshotValuesFromRows() {
-        for (Map.Entry<Integer, ListRowWidget> entry : this.rowWidgetsById.entrySet()) {
-            this.valuesById.put(entry.getKey(), entry.getValue().input.getValue());
-        }
-    }
-
     private void refreshRows() {
         this.rowsContainer.clearChildren();
-        this.rowWidgetsById.clear();
-        List<Integer> ids = this.sortedIds();
         Integer dragging = this.draggingRowId;
-        List<Integer> renderingIds = ids.stream().filter(id -> !id.equals(dragging)).toList();
+        List<Integer> renderingIds = this.rowOrder.stream().filter(id -> !id.equals(dragging)).toList();
         for (int i = 0; i < renderingIds.size(); i++) {
             if (this.previewInsertIndex != null && this.previewInsertIndex == i) {
                 this.rowsContainer.addChild(new PreviewRowWidget());
             }
             Integer id = renderingIds.get(i);
-            ListRowWidget row = new ListRowWidget(id, this.valuesById.get(id));
-            this.rowWidgetsById.put(id, row);
+            ListRowWidget row = this.rowWidgetsById.get(id);
+            if (row == null) {
+                continue;
+            }
             this.rowsContainer.addChild(row);
         }
         if (this.previewInsertIndex != null && this.previewInsertIndex == renderingIds.size()) {
@@ -272,19 +243,11 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
     }
 
     private void removeRow(int rowId) {
-        this.snapshotValuesFromRows();
-        V removed = this.valuesById.remove(rowId);
+        ListRowWidget removed = this.rowWidgetsById.remove(rowId);
         if (removed == null) {
             return;
         }
-        List<Integer> ids = this.sortedIds();
-        Map<Integer, V> reordered = new HashMap<>();
-        for (int i = 0; i < ids.size(); i++) {
-            reordered.put(i, this.valuesById.get(ids.get(i)));
-        }
-        this.valuesById.clear();
-        this.valuesById.putAll(reordered);
-        this.nextId = this.valuesById.size();
+        this.rowOrder.remove(Integer.valueOf(rowId));
         this.previewInsertIndex = null;
         this.draggingRowId = null;
         this.refreshRows();
@@ -305,7 +268,7 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
             Widget removeButton = ListInputWidget.this.buttonFactory.apply(IComponent.literal("-"), () -> ListInputWidget.this.removeRow(this.rowId));
             this.setCSSClassName("list_input_row");
             this.input.setCSSClassName("list_input_row_input");
-            removeButton.setCSSClassName("list_input_row_remove");
+            removeButton.setCSSClassName("list_input_btn");
             this.addChild(this.input);
             this.addChild(removeButton);
         }
@@ -328,7 +291,6 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
             if (guiSystem.haveDraggingWidget()) {
                 return false;
             }
-            ListInputWidget.this.snapshotValuesFromRows();
             ListInputWidget.this.draggingRowId = this.rowId;
             ListInputWidget.this.previewInsertIndex = ListInputWidget.this.computeInsertIndex((float) event.y(), this.rowId);
             ListInputWidget.this.refreshRows();

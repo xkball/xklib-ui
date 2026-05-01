@@ -20,15 +20,16 @@
     "MixinGLDevice",
     "MixinGLProgram",
     "MixinGLRenderPass",
+    "MixinGpuDeviceBackend",
     "MixinLevelRenderer",
     "MixinMinecraft",
+    "MixinPIPRenderer",
     "MixinRenderPass",
     "MixinRenderPipeline",
     "MixinRenderSystem",
     "MixinSTD140Builder",
     "MixinSTD140Calculator",
     "MixinTextureAtlasSprite",
-    "MixinWindow",
-    "MixinPIPRenderer"
+    "MixinWindow"
   ]
 }

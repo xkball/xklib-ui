@@ -28,5 +28,12 @@ public class XKLibPostProcesses {
             .applyOnce(B3dRenderPipelines.LINEAR_DEPTH,"swap", PostProcess::drawcall)
             .swapBack()
             .build("linear_depth");
+    
+    public static final PostProcess SSR = PostProcess.builder()
+            .withTexture("input",true,SamplerCacheCache.LINEAR_CLAMP)
+            .withTexture("input",false,SamplerCacheCache.LINEAR_CLAMP)
+            .applyOnce(B3dRenderPipelines.SSR,"swap", PostProcess::drawcall)
+            .swapBack()
+            .build("ssr");
 }
 
