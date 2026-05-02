@@ -89,7 +89,7 @@ public class RegionStorage {
                     if(storage != null){
                         storage.dirty = false;
                         byteBuf.writeBoolean(true);
-                        CodecUtils.AABB_STREAM_CODEC.encode(byteBuf, storage.chunkAABB);
+                        CodecUtils.AABB_STREAM_CODEC.encode(byteBuf, storage.aabb);
                         ChunkHeightMap.STREAM_CODEC.encode(byteBuf, storage.heightMap);
                         ChunkStorage.ChunkStorageData.STREAM_CODEC.encode(byteBuf,storage.data);
                     }
@@ -136,7 +136,7 @@ public class RegionStorage {
                     if(byteBuf.readBoolean()){
                         var chunkPos = new ChunkPos((x << REGION_SHIFT) + dx, (z << REGION_SHIFT) + dz);
                         var storage = new ChunkStorage(chunkPos, levelStorage);
-                        storage.chunkAABB = CodecUtils.AABB_STREAM_CODEC.decode(byteBuf);
+                        storage.aabb = CodecUtils.AABB_STREAM_CODEC.decode(byteBuf);
                         storage.heightMap = ChunkHeightMap.STREAM_CODEC.decode(byteBuf);
                         var data = ChunkStorage.ChunkStorageData.STREAM_CODEC.decode(byteBuf);
                         assert data.pos().equals(chunkPos);

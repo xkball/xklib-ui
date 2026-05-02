@@ -55,6 +55,7 @@ public class XKLibExampleRenderPipelines {
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withUniform("PhongLight", UniformType.UNIFORM_BUFFER)
             .bindUniform("PhongLight", PHONE_LIGHT)
+            .withSSBO("cmd")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withCull(true)
             .buildExtended();

@@ -42,7 +42,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         fixY.set(level == null ? 64 : level.getSeaLevel());
         this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
         this.inlineStyle("""
-                        flex-direction: column;
+                        flex-direction: row;
                         size: 100% 100%;
                         """)
                 .asRootStyle("""
@@ -86,9 +86,55 @@ public class WorldTerrainWidget extends ContainerWidget {
                             flex-shrink: 0;
                         }
                         """)
-                .addChild(
-                        new ContainerWidget()
-                                .inlineStyle("""
+                .addChild(this.createToolbarLeft())
+                .addChild(new ContainerWidget()
+                        .inlineStyle("""
+                                flex-direction: column;
+                                size: 100%-18rpx 100%;
+                                """)
+                        .addChild(this.createToolbarTop1(minY, maxY))
+                        .addChild(this.createToolbarTop2())
+                        .addChild(inner.inlineStyle("height: 100%-35rpx;"))
+                );
+    }
+    
+    public Widget createToolbarLeft(){
+        return new ContainerWidget()
+                .inlineStyle("""
+                        flex-direction: column;
+                        size: 18rpx 100%;
+                        border-left: 1rpx;
+                        border-right: 1rpx;
+                        border-color: 0xEEAAAAAA;
+                        scrollbar-width: 0;
+                        overflow-y: scroll;
+                        """)
+                .asRootStyle("""
+                        .splitter_y{
+                                size: 100% 1rpx;
+                                background-color: 0xEEAAAAAA;
+                        }
+                        """)
+                .addChild(new Widget().setCSSClassName("splitter_y"))
+                .addChild(new IconButton(VanillaUtils.modrl("icon/locate"), inner::reLocateCamera)
+                        .inlineStyle("""
+                               size: 14rpx 14rpx;
+                               margin: 1rpx;
+                               flex-shrink: 0;
+                               """)
+                        .withTooltip(IComponent.literal("Focus camera on yourself.")))
+                .addChild(new Widget().setCSSClassName("splitter_y"))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.literal("show camera target")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/depress_sphere")).bind(depress_sphere).withTooltip(IComponent.literal("cull too near chunks")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.literal("show debug info")));
+    }
+    
+    public Widget createToolbarTop1(int minY, int maxY){
+        return new ContainerWidget()
+                .inlineStyle("""
                                         height: 18rpx;
                                         border-top: 1rpx;
                                         border-bottom: 1rpx;
@@ -96,70 +142,56 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         scrollbar-width: 0;
                                         overflow-x: scroll;
                                         """)
-                                .addChild(new Button("Force Update",() -> {
-                                    var player = Minecraft.getInstance().player;
-                                    var viewDistance = Minecraft.getInstance().options.renderDistance().get();
-                                    if(player == null) return;
-                                    TerrainChunkManager.INSTANCE.submitUpdate(player.blockPosition(),viewDistance - 1, true);
-                                }).setCSSClassName("update_button").withTooltip(IComponent.literal("Update chunks in view distance.")))
-                                .addChild(new Button("Request Geomatics",() -> {
-                                    var player = Minecraft.getInstance().player;
-                                    if(player == null) return;
-                                    var centerChunk = ChunkPos.containing(player.blockPosition());
-                                    var range = 128;
-                                    var list = new ArrayList<ChunkPos>();
-                                    for(var dx = -range; dx <= range; dx++){
-                                        for(var dz = -range; dz <= range; dz++){
-                                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
-                                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
-                                            list.add(p);
-                                        }
-                                    }
-                                    ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
-                                }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
-                                .addChild(new Label("LOD Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
-                                .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))
-                                .addChild(new Label("View Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
-                                .addChild(NumberInputWidget.ofInt(256,1145141919,16).bind(viewDistance))
-                                .addChild(new Button("Delete",() -> new WarningDialog(IComponent.literal("Delete All map? You cannot restore this operation."),() -> {}, () -> {}).display())
-                                        .setCSSClassName("update_button")
-                                        .inlineStyle("""
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/tracked_y")).bindInGroup(0,yMode).withTooltip(IComponent.literal("camera target y tracks to terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/fixed_y")).bindInGroup(1,yMode).withTooltip(IComponent.literal("camera target y is fixed")))
+                .addChild(NumberInputWidget.ofInt(minY, maxY,1).bind(fixY))
+                .addChild(new Widget().setCSSClassName("splitter"))
+                .addChild(new Label("LOD Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
+                .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))
+                .addChild(new Label("View Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
+                .addChild(NumberInputWidget.ofInt(256,1145141919,16).bind(viewDistance))
+                .addChild(new Button("Force Update",() -> {
+                    var player = Minecraft.getInstance().player;
+                    var viewDistance = Minecraft.getInstance().options.renderDistance().get();
+                    if(player == null) return;
+                    TerrainChunkManager.INSTANCE.submitUpdate(player.blockPosition(),viewDistance - 1, true);
+                    })
+                        .setCSSClassName("update_button")
+                        .withTooltip(IComponent.literal("Update chunks in view distance."))
+                        .inlineStyle("margin-left: auto;"))
+                .addChild(new Button("Request Geomatics",() -> {
+                    var player = Minecraft.getInstance().player;
+                    if(player == null) return;
+                    var centerChunk = ChunkPos.containing(player.blockPosition());
+                    var range = 128;
+                    var list = new ArrayList<ChunkPos>();
+                    for(var dx = -range; dx <= range; dx++){
+                        for(var dz = -range; dz <= range; dz++){
+                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
+                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
+                            list.add(p);
+                        }
+                    }
+                    ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
+                }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
+                .addChild(new Button("Delete",() -> new WarningDialog(IComponent.literal("Delete All map? You cannot restore this operation."),() -> {}, () -> {}).display())
+                        .setCSSClassName("update_button")
+                        .inlineStyle("""
                                             button-bg-color: rgb(221,0,27);
-                                            margin-left: auto;
                                             margin-right: 5rpx;
                                             text-color: -1;
-                                        """))
-                )
-                .addChild(
-                        new ContainerWidget()
-                                .inlineStyle("""
+                                        """));
+    }
+    
+    public Widget createToolbarTop2(){
+        return new ContainerWidget()
+                .inlineStyle("""
                                         height: 17rpx;
                                         border-bottom: 1rpx;
                                         border-color: 0xEEAAAAAA;
                                         scrollbar-width: 0;
                                         overflow-x: scroll;
-                                        """)
-                                .addChild(new IconButton(VanillaUtils.modrl("icon/locate"), inner::reLocateCamera)
-                                        .inlineStyle("""
-                                                size: 14rpx 14rpx;
-                                                margin-top: 1rpx;
-                                                margin-left: 1rpx;
-                                                flex-shrink: 0;
-                                                """)
-                                        .withTooltip(IComponent.literal("Focus camera on yourself.")))
-                                .addChild(new Widget().setCSSClassName("splitter"))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/tracked_y")).bindInGroup(0,yMode).withTooltip(IComponent.literal("camera target y tracks to terrain")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/fixed_y")).bindInGroup(1,yMode).withTooltip(IComponent.literal("camera target y is fixed")))
-                                .addChild(NumberInputWidget.ofInt(minY, maxY,1).bind(fixY))
-                                .addChild(new Widget().setCSSClassName("splitter"))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.literal("show camera target")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/depress_sphere")).bind(depress_sphere).withTooltip(IComponent.literal("cull too near chunks")))
-                                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.literal("show debug info")))
-                )
-                .addChild(inner.inlineStyle("height: 100%-35rpx;"));
+                                        """);
     }
     
 }

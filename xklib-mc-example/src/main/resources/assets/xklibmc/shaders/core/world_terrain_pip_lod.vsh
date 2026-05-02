@@ -1,6 +1,36 @@
 #version 460 core
-#moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <minecraft:projection.glsl>
+
+layout(std140) uniform DynamicTransforms {
+    mat4 ModelViewMat;
+    vec4 ColorModulator;
+    vec3 ModelOffset;
+    mat4 TextureMat;
+};
+
+layout(std140) uniform Projection {
+    mat4 ProjMat;
+};
+
+struct cmddata{
+    int indexCount;
+    int instanceCount;
+    int firstIndex;
+    int baseVertex;
+    int baseInstance;
+    int px;
+    int pz;
+};
+
+layout(std430, binding = 0) buffer cmd {
+    cmddata cmd_data[];
+};
+
+vec4 projection_from_position(vec4 position) {
+    vec4 projection = position * 0.5;
+    projection.xy = vec2(projection.x + projection.w, projection.y + projection.w);
+    projection.zw = position.zw;
+    return projection;
+}
 
 uniform sampler2D colorTexture;
 uniform sampler2D heightTexture;
@@ -14,20 +44,12 @@ out vec3 worldPos;
 out vec3 pNormal;
 
 float getHeight(vec2 uv){
-    vec4 data = texture(heightTexture, uv);
-    int result = 0;
-    result |= int(data.r * 255);
-    result |= int(data.g * 255) >> 8;
-    result |= int(data.b * 255) >> 16;
-    result |= int(data.a * 255) >> 24;
-    return float(result);
+    return float(packUnorm4x8(texture(heightTexture, uv)));
 }
 
 void main() {
-    vec2 offset = unpackHalf2x16(gl_BaseInstance);
-    int px = ((gl_BaseInstance >> 24) & 0xff);
-    int pz =  (gl_BaseInstance        & 0xff);
-    worldPos = inPos + vec3(px * 512, 0, pz * 512);
+    cmddata data = cmd_data[gl_DrawID];
+    worldPos = inPos + vec3(data.px, 0, data.pz);
     vec2 uv = worldPos.xz / textureSize_;
     float h00 = getHeight(uv);
     float h10 = getHeight(uv + vec2(textureUnit_, 0));

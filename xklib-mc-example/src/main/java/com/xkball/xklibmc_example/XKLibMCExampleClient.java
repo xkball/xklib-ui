@@ -42,7 +42,7 @@ public class XKLibMCExampleClient {
     }
     
     public static Widget createTestWidget(){
-        return XKLibBaseScreen.biPanelFrame(IComponent.literal("test"),new Widget(),new WorldTerrainWidget());
+        return XKLibBaseScreen.frame(IComponent.literal("x3d map"),new WorldTerrainWidget());
     }
     
     @SubscribeEvent

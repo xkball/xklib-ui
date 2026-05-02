@@ -41,7 +41,7 @@ public class ChunkStorage {
      * 虽然没有初始值, 但是通过文件加载或编译产生的对象, 这两个字段均不为null, 为null则说明产生非法状态
      */
     @SuppressWarnings("NotNullFieldNotInitialized")
-    public AABB chunkAABB;
+    public AABB aabb;
     @SuppressWarnings("NotNullFieldNotInitialized")
     public ChunkHeightMap heightMap;
     public int lodDataId = -1;
@@ -51,20 +51,6 @@ public class ChunkStorage {
         this.chunkPos = chunkPos;
         this.parent = parent;
         this.data = new ChunkStorageData(chunkPos, new ArrayList<>());
-    }
-    
-    public int getLodLevel(int baseLodDistance, Vector3f camPos){
-        var len = camPos.distance(chunkAABB.getCenter().toVector3f());
-        if(len < baseLodDistance){
-            return 0;
-        }
-        else if(len < baseLodDistance * 2){
-            return 1;
-        }
-        else if(len < baseLodDistance * 4){
-            return 2;
-        }
-        return 3;
     }
     
     public int facesCountByLodFullMesh(int lodLevel){

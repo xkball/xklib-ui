@@ -28,11 +28,13 @@ import java.util.OptionalInt;
 public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrainPipRenderer, WorldTerrainPipRenderer.WorldTerrainState> {
     
     private static final CachedMesh CUBE = new CachedMesh("cube", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP,TerrainRenderer::createCubeMesh,true).setCloseOnExit();
-    private static final CachedMesh LOD1 = new CachedMesh("lod1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 16, 1),true).setCloseOnExit();
-    private static final CachedMesh LOD2 = new CachedMesh("lod2", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 16, 2),true).setCloseOnExit();
-    private static final CachedMesh LOD3 = new CachedMesh("lod3", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 16, 4),true).setCloseOnExit();
-    public static final CachedMesh[] LODS = new CachedMesh[]{LOD1, LOD2, LOD3};
+    public static final CachedMesh CHUNK1 = new CachedMesh("lod1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 16, 1),true).setCloseOnExit();
     public static final CachedMesh REGION1 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 1),true).setCloseOnExit();
+    public static final CachedMesh REGION2 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 2),true).setCloseOnExit();
+    public static final CachedMesh REGION3 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 4),true).setCloseOnExit();
+    public static final CachedMesh REGION4 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 8),true).setCloseOnExit();
+    public static final CachedMesh[] LODS = new CachedMesh[]{CHUNK1, REGION1, REGION2, REGION3, REGION4};
+    
     @Override
     public String name() {
         return "terrain";
@@ -65,26 +67,39 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
             }
         }
         else {
-            var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance());
-            if(!renderInfo.isEmpty()){
-                try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering lod", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
-                    RenderSystem.bindDefaultUniforms(renderpass);
-                    renderpass.setPipeline(XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD);
-                    renderpass.setUniform("DynamicTransforms", transformUBO);
-                    renderpass.setVertexBuffer(0, REGION1.getVertexBuffer());
-                    renderpass.setIndexBuffer(REGION1.getIndexBuffer(),REGION1.getIndexType());
-                    for(var infoBlock : renderInfo){
-                        renderpass.bindTexture("colorTexture", infoBlock.texture().colorTextureView(), SamplerCacheCache.NEAREST_CLAMP);
-                        renderpass.bindTexture("heightTexture", infoBlock.texture().depthTextureView(), SamplerCacheCache.NEAREST_CLAMP);
-                        IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
+            try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance())){
+                if(renderInfo.blocks() != null){
+                    try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
+                        RenderSystem.bindDefaultUniforms(renderpass);
+                        renderpass.setPipeline(XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP);
+                        renderpass.setUniform("DynamicTransforms", transformUBO);
+                        renderpass.setVertexBuffer(0, CUBE.getVertexBuffer());
+                        renderpass.setIndexBuffer(CUBE.getIndexBuffer(),CUBE.getIndexType());
+                        for(var infoBlock : renderInfo.blocks()){
+                            IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",infoBlock.drawBuffer().slice());
+                            IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
+                        }
                     }
                 }
-                finally {
-                    for(var infoBlock : renderInfo){
-                        infoBlock.commandBuffer().close();
+                if(renderInfo.lods() != null){
+                    try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering lod", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
+                        RenderSystem.bindDefaultUniforms(renderpass);
+                        renderpass.setPipeline(XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD);
+                        renderpass.setUniform("DynamicTransforms", transformUBO);
+                        for(var infoBlock : renderInfo.lods()){
+//                            if(infoBlock.lod() > 0) continue;
+                            var mesh = LODS[infoBlock.lod()];
+                            renderpass.setVertexBuffer(0, mesh.getVertexBuffer());
+                            renderpass.setIndexBuffer(mesh.getIndexBuffer(),mesh.getIndexType());
+                            renderpass.bindTexture("colorTexture", infoBlock.texture().colorTextureView(), SamplerCacheCache.NEAREST_CLAMP);
+                            renderpass.bindTexture("heightTexture", infoBlock.texture().depthTextureView(), SamplerCacheCache.NEAREST_CLAMP);
+                            IExtendedRenderPass.cast(renderpass).xklib$setSSBO("cmd",infoBlock.commandBuffer().slice());
+                            IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
+                        }
                     }
                 }
-            }
+            };
+
         }
         var cp = renderState.cameraPos();
         XKLibUniforms.INVERSE_PROJ_MAT.updateUnsafe(b -> {

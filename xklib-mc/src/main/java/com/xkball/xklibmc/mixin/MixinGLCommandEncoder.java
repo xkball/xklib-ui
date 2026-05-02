@@ -135,7 +135,7 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
                     GlConst.toGl(renderPass.indexType),
                     MemoryUtil.NULL,
                     drawCount,
-                    20);
+                    28);
             
         }
     }

@@ -1,11 +1,13 @@
 package com.xkball.xklibmc_example.client.terrain;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.xkball.xklibmc.XKLibMCClient;
 import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
+import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
@@ -91,20 +93,69 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return this.storageMap.get(Minecraft.getInstance().level.dimension());
     }
     
-    public List<RenderInfoBlock> gatherRenderInfo(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
+    public int getLodLevel(Vector3f pos, int baseLodDistance, Vector3f camPos){
+        var len = camPos.distance(pos);
+        if(len < baseLodDistance){
+            return 0;
+        }
+        else if(len < baseLodDistance + 1000){
+            return 1;
+        }
+        else if(len < baseLodDistance + 2000){
+            return 2;
+        }
+        else if(len < baseLodDistance + 4000){
+            return 3;
+        }
+        return 4;
+    }
+    
+    public RenderInfo gatherRenderInfo(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
         var level = Minecraft.getInstance().level;
-        if(level == null) return List.of();
+        if(level == null) return RenderInfo.empty();
         var storage = this.storageMap.get(level.dimension());
-        if(storage == null ) return List.of();
+        if(storage == null ) return RenderInfo.empty();
         var gather = new RenderInfoBlockGather();
+        var gather2 = new RenderInfoCompatibleBlockGather();
         for(var region : storage.regionMap.values()){
             if(!frustum.isVisible(region.aabb)) continue;
-            var info = storage.terrainTextureManager.getUploadInfo(region.regionPos.toChunkPos());
-            var texture = storage.terrainTextureManager.getTextures(info.texturePos());
-            var p = ((region.regionPos.x() & 0xff) << 24) | (region.regionPos.z() & 0xff);
-            gather.add(texture, new IndirectDrawCommand(TerrainRenderer.REGION1.getIndexCount(), 1,0,0,p));
+            var lod = this.getLodLevel(region.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
+            if(lod == 0){
+                for(var chunk : region.chunks()){
+                    var chunkLod = this.getLodLevel(chunk.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
+                    var aabb = chunk.aabb;
+                    if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
+                    if(chunkLod == 0){
+                        for (int i = 0; i < 6; i++) {
+                            var dir = VanillaUtils.DIRECTIONS[i];
+                            if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
+                            var gpuBuffer = storage.gpuBufferByFace.get(dir);
+                            var alloc = gpuBuffer.getAllocation(chunk.chunkPos);
+                            if(alloc == null) continue;
+                            var buffer = gpuBuffer.getGpuBuffer(alloc);
+                            var offset = alloc.getOffsetFromHeap() / 16;
+                            var size = alloc.getSize() / 16;
+                            var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
+                            gather2.add(buffer,cmd);
+                        }
+                    }
+                    else {
+                        var chunkPos = chunk.chunkPos;
+                        var info = storage.terrainTextureManager.getUploadInfo(chunkPos);
+                        var texture = storage.terrainTextureManager.getTextures(info.texturePos());
+                        gather.add(texture, 0, new IndirectDrawCommand(TerrainRenderer.LODS[0].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX() % 16384, chunkPos.getMinBlockZ() % 16384));
+                    }
+                }
+            }
+            else {
+                var chunkPos = region.regionPos.toChunkPos();
+                var info = storage.terrainTextureManager.getUploadInfo(chunkPos);
+                var texture = storage.terrainTextureManager.getTextures(info.texturePos());
+                gather.add(texture, lod, new IndirectDrawCommand(TerrainRenderer.LODS[lod].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX() % 16384, chunkPos.getMinBlockZ() % 16384));
+            }
+
         }
-        return gather.finishGather();
+        return new RenderInfo(gather2.finishGather(),gather.finishGather());
     }
     
     //todo 不用mdi
@@ -115,24 +166,13 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(storage == null ) return RenderInfoCompatible.empty();
         var gather2 = new RenderInfoCompatibleBlockGather();
         for(var chunkStorage : storage.getChunks()){
-            var aabb = chunkStorage.chunkAABB;
+            var aabb = chunkStorage.aabb;
             if(!frustum.isVisible(aabb)) continue;
             if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
-            var lod = chunkStorage.getLodLevel(baseLodDistance, camPos);
+            var lod = this.getLodLevel(chunkStorage.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
             if(lod < 0) continue;
             if(lod == 0){
-//                for (int i = 0; i < 6; i++) {
-//                    var dir = VanillaUtils.DIRECTIONS[i];
-//                    if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
-//                    var gpuBuffer = storage.gpuBufferByFace.get(dir);
-//                    var alloc = gpuBuffer.getAllocation(chunkStorage.chunkPos);
-//                    if(alloc == null) continue;
-//                    var buffer = gpuBuffer.getGpuBuffer(alloc);
-//                    var offset = alloc.getOffsetFromHeap() / 16;
-//                    var size = alloc.getSize() / 16;
-//                    var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
-//                    gather1.add(buffer,cmd);
-//                }
+
                 lod = 1;
             }
             var alloc = chunkStorage.getLodBufferFullMesh(lod);
@@ -256,7 +296,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return result;
     }
     
-    public record RenderInfoCompatible(List<RenderInfoCompatibleBlock> lodFullMesh) implements AutoCloseable{
+    public record RenderInfoCompatible(List<RenderInfoWithBufferBlock> lodFullMesh) implements AutoCloseable{
         
         public static RenderInfoCompatible empty(){
             return new RenderInfoCompatible(null);
@@ -272,11 +312,28 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         }
     }
     
-    public record RenderInfoCompatibleBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
+    public record RenderInfoWithBufferBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
     
     }
     
-    public record RenderInfoBlock(TerrainTextureManager.VirtualTextures texture, int drawCount, GpuBuffer commandBuffer){
+    public record RenderInfo(List<RenderInfoWithBufferBlock> blocks, List<RenderInfoWithTextureBlock> lods) implements AutoCloseable {
+        
+        public static RenderInfo empty(){
+            return new RenderInfo(null, null);
+        }
+        
+        @Override
+        public void close() {
+            for(var block : blocks){
+                block.commandBuffer.close();
+            }
+            for(var lod : lods){
+                lod.commandBuffer.close();
+            }
+        }
+    }
+    
+    public record RenderInfoWithTextureBlock(TerrainTextureManager.VirtualTextures texture, int lod, int drawCount, GpuBuffer commandBuffer){
     
     }
     
@@ -293,41 +350,44 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             });
         }
         
-        public List<RenderInfoCompatibleBlock> finishGather(){
-            var renderInfoList = new ArrayList<RenderInfoCompatibleBlock>();
+        public List<RenderInfoWithBufferBlock> finishGather(){
+            var renderInfoList = new ArrayList<RenderInfoWithBufferBlock>();
             for(var entry :  cmdMap.entrySet()){
                 var buffer = entry.getKey();
                 var list = entry.getValue();
-                renderInfoList.add(new RenderInfoCompatibleBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+                renderInfoList.add(new RenderInfoWithBufferBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
             }
             return renderInfoList;
         }
         
-        public TerrainChunkManager.@Nullable RenderInfoCompatibleBlock finishGatherFirstBuffer(){
+        public @Nullable RenderInfoWithBufferBlock finishGatherFirstBuffer(){
             var list = finishGather();
             return list.isEmpty() ? null : list.getFirst();
         }
     }
     
     public static class RenderInfoBlockGather{
-        public Map<TerrainTextureManager.VirtualTextures,ArrayList<IndirectDrawCommand>> cmdMap = new IdentityHashMap<>();
+        public Map<TerrainTextureManager.VirtualTextures, Multimap<Integer,IndirectDrawCommand>> cmdMap = new IdentityHashMap<>();
         
-        public void add(TerrainTextureManager.VirtualTextures buffer, IndirectDrawCommand command){
+        public void add(TerrainTextureManager.VirtualTextures buffer, int lod, IndirectDrawCommand command){
             cmdMap.compute(buffer, (_,v) -> {
                 if(v == null){
-                    v = new ArrayList<>();
+                    v = MultimapBuilder.hashKeys().arrayListValues().build();
                 }
-                v.add(command);
+                v.put(lod, command);
                 return v;
             });
         }
         
-        public List<RenderInfoBlock> finishGather(){
-            var renderInfoList = new ArrayList<RenderInfoBlock>();
+        public List<RenderInfoWithTextureBlock> finishGather(){
+            var renderInfoList = new ArrayList<RenderInfoWithTextureBlock>();
             for(var entry :  cmdMap.entrySet()){
                 var buffer = entry.getKey();
-                var list = entry.getValue();
-                renderInfoList.add(new RenderInfoBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+                var map = entry.getValue();
+                for(var entry_ : map.asMap().entrySet()){
+                    renderInfoList.add(new RenderInfoWithTextureBlock(buffer, entry_.getKey(), entry_.getValue().size(), IndirectDrawCommand.buildCommandList(entry_.getValue())));
+                }
+                
             }
             return renderInfoList;
         }

@@ -17,6 +17,9 @@ const vec3 lightColor = vec3(1.0, 1.0, 1.0);
 const float specularStrength = 0.2;
 
 void main() {
+    if(vertexColor.a < 1e-3){
+        discard;
+    }
     float dot_ = dot(pNormal, lightDir);
 //   dot_ = abs(dot_) < 0.001 ? 1.0 : dot_;
     float diff = max(dot_, 0.0);
@@ -25,7 +28,4 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     float specular = specularStrength * spec;
     fragColor = vertexColor * ColorModulator * vec4((ambient + diff + specular) * lightColor,1.0);
-    if(fragColor.a < 1e-6){
-        discard;
-    }
 }

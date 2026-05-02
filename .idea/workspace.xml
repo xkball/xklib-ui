@@ -4,23 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="sparse texture">
+    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="use sparse texture">
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ChunkComplier.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ChunkComplier.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ChunkStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/ChunkStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/RegionPos.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/RegionPos.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/RegionStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/RegionStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainTextureManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainTextureManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip.fsh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip_lod.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip_lod.vsh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/texture/GLSparseTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/texture/GLSparseTexture.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/IndirectDrawCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLCommandEncoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLDevice.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +40,7 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="646850" />
+    <option name="totalTimeSeconds" value="656760" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -567,7 +565,7 @@
       <workItem from="1777297012412" duration="26788000" />
       <workItem from="1777396251547" duration="8209000" />
       <workItem from="1777465867730" duration="61417000" />
-      <workItem from="1777638198297" duration="6151000" />
+      <workItem from="1777638198297" duration="19048000" />
     </task>
     <task id="LOCAL-00001" summary="refactor">
       <option name="closed" value="true" />
@@ -937,7 +935,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777622637592</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="use sparse texture">
+      <option name="closed" value="true" />
+      <created>1777656031770</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1777656031770</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -968,7 +974,8 @@
     <MESSAGE value="fix, style info gui" />
     <MESSAGE value="gui improve" />
     <MESSAGE value="sparse texture" />
-    <option name="LAST_COMMIT_MESSAGE" value="sparse texture" />
+    <MESSAGE value="use sparse texture" />
+    <option name="LAST_COMMIT_MESSAGE" value="use sparse texture" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
