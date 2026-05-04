@@ -33,9 +33,9 @@ public class LevelChunkStorage {
     public final String saveName;
     public final boolean compatibleMode;
     public final ResourceKey<Level> dimension;
+    public UberGpuBuffer<ChunkPos> gpuBufferBlockData;
     public EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
     public UberGpuBuffer<ChunkPosLod> gpuBufferByLodFullMesh;
-    public ManagedGpuBuffer gpuBufferLod;
     public TerrainTextureManager terrainTextureManager = new TerrainTextureManager();
     private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
     public final Map<RegionPos, RegionStorage> regionMap = new LinkedHashMap<>();
@@ -55,14 +55,14 @@ public class LevelChunkStorage {
         this.gpuBuffers.clear();
         var gpuDevice = ClientUtils.getGpuDevice();
         var gpuWorkaround = GraphicsWorkarounds.get(gpuDevice);
+        this.gpuBufferBlockData = new UberGpuBuffer<>("terrain_block_data", 64, 64 * 1024 * 1024, 16, gpuDevice, 8 * 1024 * 1024, gpuWorkaround);
+        this.gpuBuffers.add(this.gpuBufferBlockData);
         for(var dir : VanillaUtils.DIRECTIONS){
-            this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir,64, 64 * 1024 * 1024, 16, gpuDevice, 8 * 1024 * 1024, gpuWorkaround));
+            this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir+"_index",64, 64 * 1024 * 1024, 4, gpuDevice, 8 * 1024 * 1024, gpuWorkaround));
         }
         this.gpuBufferByLodFullMesh = new UberGpuBuffer<>("terrain_lod",64, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 8 * 1024 * 1024, gpuWorkaround);
         this.gpuBuffers.addAll(gpuBufferByFace.values());
         this.gpuBuffers.add(gpuBufferByLodFullMesh);
-
-        this.gpuBufferLod = new ManagedGpuBuffer(ChunkStorage.CHUNK_DATA_SSBO_SIZE);
     }
     
     public List<UberGpuBuffer<?>> getGpuBuffers(){
@@ -77,7 +77,6 @@ public class LevelChunkStorage {
         for(var b : this.gpuBuffers){
             b.close();
         }
-        if(this.gpuBufferLod != null) this.gpuBufferLod.close();
         this.terrainTextureManager.close();
         this.markDirty();
     }

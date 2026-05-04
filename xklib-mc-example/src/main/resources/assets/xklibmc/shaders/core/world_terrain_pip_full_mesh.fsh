@@ -17,6 +17,9 @@ const vec3 lightColor = vec3(1.0, 1.0, 1.0);
 const float specularStrength = 0.2;
 
 void main() {
+    if(vertexColor.a < 1e-3){
+        discard;
+    }
     float diff = max(dot(pNormal, lightDir), 0.0);
     vec3 viewDir = normalize(viewPos - worldPos);
     vec3 reflectDir = reflect(-lightDir, pNormal);

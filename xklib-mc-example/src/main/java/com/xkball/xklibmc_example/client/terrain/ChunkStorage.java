@@ -20,19 +20,10 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NonNullByDefault
 public class ChunkStorage {
-    
-    /*
-    struct ChunkData {
-        int x0;
-        int z0;
-        int heightMap[17*17];
-        int colorMap[17*17];
-    };
-    */
-    public static int CHUNK_DATA_SSBO_SIZE = 2320;
     
     public final ChunkPos chunkPos;
     public final LevelChunkStorage parent;
@@ -44,7 +35,6 @@ public class ChunkStorage {
     public AABB aabb;
     @SuppressWarnings("NotNullFieldNotInitialized")
     public ChunkHeightMap heightMap;
-    public int lodDataId = -1;
     public boolean dirty = false;
     
     public ChunkStorage(ChunkPos chunkPos, LevelChunkStorage parent) {
@@ -77,36 +67,6 @@ public class ChunkStorage {
     
     public void releaseData(){
         this.data.data.clear();
-    }
-    
-    public void uploadGpuLod(){
-        if(this.lodDataId != -1){
-            this.parent.gpuBufferLod.remove(this.lodDataId);
-        }
-        var buffer = MemoryUtil.memAlloc(CHUNK_DATA_SSBO_SIZE);
-        var x0 = chunkPos.getMinBlockX();
-        var z0 = chunkPos.getMinBlockZ();
-        buffer.putInt(x0);
-        buffer.putInt(z0);
-        for (int dz = 0; dz < 17; dz++) {
-            for (int dx = 0; dx < 17; dx++) {
-                if(dx == 16 || dz == 16){
-                    buffer.putInt(this.parent.getHeight(x0 + dx, z0 + dz));
-                }
-                else buffer.putInt(this.heightMap.get(dx, dz));
-            }
-        }
-        for (int dz = 0; dz < 17; dz++) {
-            for (int dx = 0; dx < 17; dx++) {
-                if(dx == 16 || dz == 16){
-                    buffer.putInt(this.parent.getColor(x0 + dx, z0 + dz));
-                }
-                else buffer.putInt(this.heightMap.getColor(dx, dz));
-            }
-        }
-        buffer.flip();
-        this.lodDataId = this.parent.gpuBufferLod.put(buffer);
-        MemoryUtil.memFree(buffer);
     }
     
     public void uploadGpuLodFullMesh(){
@@ -180,6 +140,7 @@ public class ChunkStorage {
     }
     
     public void uploadGpu0(){
+        removeFromUberBuffer(this.parent.gpuBufferBlockData, this.chunkPos);
         for(var b : this.parent.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
@@ -189,20 +150,33 @@ public class ChunkStorage {
         for(var b : this.data.data()){
             l1List.add(b.toABlock(x0,z0));
         }
+        var blockDataBuffer = MemoryUtil.memAlloc(l1List.size() * 16);
+        for(var ab : l1List){
+            blockDataBuffer.putFloat(ab.x());
+            blockDataBuffer.putFloat(ab.y());
+            blockDataBuffer.putFloat(ab.z());
+            blockDataBuffer.putInt(ab.color());
+        }
+        blockDataBuffer.flip();
+        var blockDataGpuBuffer = this.parent.gpuBufferBlockData;
+        blockDataGpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
+        blockDataGpuBuffer.addAllocation(this.chunkPos, (_) -> {}, blockDataBuffer);
+        blockDataGpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
+        var blockDataAlloc = blockDataGpuBuffer.getAllocation(this.chunkPos);
+        var blockDataBaseIndex = (int) (Objects.requireNonNull(blockDataAlloc).getOffsetFromHeap() / 16);
+        MemoryUtil.memFree(blockDataBuffer);
         for(var dir : VanillaUtils.DIRECTIONS){
-            var list = new ArrayList<ABlock>();
-            for (ABlock a : l1List) {
-                if ((a.mask() & (1 << dir.get3DDataValue())) > 0) {
-                    list.add(a);
+            var list = new ArrayList<Integer>();
+            for (int i = 0; i < l1List.size(); i++) {
+                var a = l1List.get(i);
+                if((a.mask() & (1 << dir.get3DDataValue())) > 0){
+                    list.add(blockDataBaseIndex + i);
                 }
             }
             
-            var buffer = MemoryUtil.memAlloc(list.size() * 16);
-            for(var ab : list){
-                buffer.putFloat(ab.x());
-                buffer.putFloat(ab.y());
-                buffer.putFloat(ab.z());
-                buffer.putInt(ab.color());
+            var buffer = MemoryUtil.memAlloc(list.size() * 4);
+            for(var index : list){
+                buffer.putInt(index);
             }
             buffer.flip();
             var gpuBuffer = this.parent.gpuBufferByFace.get(dir);
@@ -213,16 +187,20 @@ public class ChunkStorage {
             }
             MemoryUtil.memFree(buffer);
         }
+        if(!this.dirty){
+            this.releaseData();
+        }
     }
     
     public void unloadGpu(){
+        removeFromUberBuffer(this.parent.gpuBufferBlockData, this.chunkPos);
         for(var b : this.parent.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
         removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
         removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
         removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
-        if(this.lodDataId != -1) this.parent.gpuBufferLod.remove(this.lodDataId);
+        
     }
     
     private static <T> void removeFromUberBuffer(UberGpuBuffer<T> buffer, T key){

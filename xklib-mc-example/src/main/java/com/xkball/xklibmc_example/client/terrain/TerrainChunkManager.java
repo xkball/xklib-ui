@@ -116,34 +116,37 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var storage = this.storageMap.get(level.dimension());
         if(storage == null ) return RenderInfo.empty();
         var gather = new RenderInfoBlockGather();
-        var gather2 = new RenderInfoCompatibleBlockGather();
+        var gather2 = new RenderInfoWithBufferBlockGather();
         for(var region : storage.regionMap.values()){
             if(!frustum.isVisible(region.aabb)) continue;
             var lod = this.getLodLevel(region.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
             if(lod == 0){
                 for(var chunk : region.chunks()){
-                    var chunkLod = this.getLodLevel(chunk.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
+                    var chunkLod = this.getLodLevel(chunk.aabb.getCenter().toVector3f(), baseLodDistance + 256, camPos);
                     var aabb = chunk.aabb;
                     if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
                     if(chunkLod == 0){
                         for (int i = 0; i < 6; i++) {
                             var dir = VanillaUtils.DIRECTIONS[i];
                             if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
-                            var gpuBuffer = storage.gpuBufferByFace.get(dir);
-                            var alloc = gpuBuffer.getAllocation(chunk.chunkPos);
-                            if(alloc == null) continue;
-                            var buffer = gpuBuffer.getGpuBuffer(alloc);
-                            var offset = alloc.getOffsetFromHeap() / 16;
-                            var size = alloc.getSize() / 16;
+                            var faceIndexGpuBuffer = storage.gpuBufferByFace.get(dir);
+                            var faceIndexAlloc = faceIndexGpuBuffer.getAllocation(chunk.chunkPos);
+                            if(faceIndexAlloc == null) continue;
+                            var blockDataAlloc = storage.gpuBufferBlockData.getAllocation(chunk.chunkPos);
+                            if(blockDataAlloc == null) continue;
+                            var faceIndexBuffer = faceIndexGpuBuffer.getGpuBuffer(faceIndexAlloc);
+                            var blockDataBuffer = storage.gpuBufferBlockData.getGpuBuffer(blockDataAlloc);
+                            var offset = faceIndexAlloc.getOffsetFromHeap() / 4;
+                            var size = faceIndexAlloc.getSize() / 4;
                             var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
-                            gather2.add(buffer,cmd);
+                            gather2.add(blockDataBuffer, faceIndexBuffer, cmd);
                         }
                     }
                     else {
                         var chunkPos = chunk.chunkPos;
                         var info = storage.terrainTextureManager.getUploadInfo(chunkPos);
                         var texture = storage.terrainTextureManager.getTextures(info.texturePos());
-                        gather.add(texture, 0, new IndirectDrawCommand(TerrainRenderer.LODS[0].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX() % 16384, chunkPos.getMinBlockZ() % 16384));
+                        gather.add(texture, 0, new IndirectDrawCommand(TerrainRenderer.LODS[0].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ()));
                     }
                 }
             }
@@ -151,7 +154,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 var chunkPos = region.regionPos.toChunkPos();
                 var info = storage.terrainTextureManager.getUploadInfo(chunkPos);
                 var texture = storage.terrainTextureManager.getTextures(info.texturePos());
-                gather.add(texture, lod, new IndirectDrawCommand(TerrainRenderer.LODS[lod].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX() % 16384, chunkPos.getMinBlockZ() % 16384));
+                gather.add(texture, lod, new IndirectDrawCommand(TerrainRenderer.LODS[lod].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ()));
             }
 
         }
@@ -286,13 +289,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                     result += p.getFirst().totalMemorySize;
                 }
             }
-            result += storage.gpuBufferLod.gpuBuffer.size();
+            
         }
-        return result;
-    }
-    
-    public long getMemUsed(){
-        var result = 0L;
         return result;
     }
     
@@ -316,7 +314,11 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     }
     
-    public record RenderInfo(List<RenderInfoWithBufferBlock> blocks, List<RenderInfoWithTextureBlock> lods) implements AutoCloseable {
+    public record RenderInfoWithFaceBlock(GpuBuffer blockDataBuffer, GpuBuffer faceIndexBuffer, int drawCount, GpuBuffer commandBuffer){
+    
+    }
+    
+    public record RenderInfo(List<RenderInfoWithFaceBlock> blocks, List<RenderInfoWithTextureBlock> lods) implements AutoCloseable {
         
         public static RenderInfo empty(){
             return new RenderInfo(null, null);
@@ -361,6 +363,39 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         }
         
         public @Nullable RenderInfoWithBufferBlock finishGatherFirstBuffer(){
+            var list = finishGather();
+            return list.isEmpty() ? null : list.getFirst();
+        }
+    }
+    
+    public static class RenderInfoWithBufferBlockGather {
+        public Map<GpuBuffer, Map<GpuBuffer, ArrayList<IndirectDrawCommand>>> cmdMap = new IdentityHashMap<>();
+        
+        public void add(GpuBuffer blockDataBuffer, GpuBuffer faceIndexBuffer, IndirectDrawCommand command){
+            var map = cmdMap.computeIfAbsent(blockDataBuffer, _ -> new IdentityHashMap<>());
+            map.compute(faceIndexBuffer, (_,v) -> {
+                if(v == null){
+                    v = new ArrayList<>();
+                }
+                v.add(command);
+                return v;
+            });
+        }
+        
+        public List<RenderInfoWithFaceBlock> finishGather(){
+            var renderInfoList = new ArrayList<RenderInfoWithFaceBlock>();
+            for(var entry :  cmdMap.entrySet()){
+                var blockDataBuffer = entry.getKey();
+                for(var entry_ : entry.getValue().entrySet()){
+                    var faceIndexBuffer = entry_.getKey();
+                    var list = entry_.getValue();
+                    renderInfoList.add(new RenderInfoWithFaceBlock(blockDataBuffer, faceIndexBuffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+                }
+            }
+            return renderInfoList;
+        }
+        
+        public @Nullable RenderInfoWithFaceBlock finishGatherFirstBuffer(){
             var list = finishGather();
             return list.isEmpty() ? null : list.getFirst();
         }

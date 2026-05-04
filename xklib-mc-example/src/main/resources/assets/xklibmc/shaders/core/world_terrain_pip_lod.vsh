@@ -44,7 +44,7 @@ out vec3 worldPos;
 out vec3 pNormal;
 
 float getHeight(vec2 uv){
-    return float(packUnorm4x8(texture(heightTexture, uv)));
+    return float(int(packUnorm4x8(texture(heightTexture, uv))));
 }
 
 void main() {

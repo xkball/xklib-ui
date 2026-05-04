@@ -12,6 +12,7 @@ import com.xkball.xklibmc_example.client.render.pip.layers.CameraTargetRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.GridRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.PlayerOnMapRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
+import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
 import net.minecraft.client.Minecraft;
@@ -19,9 +20,11 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -125,6 +128,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         private final @Nullable ScreenRectangle scissorArea;
         private final @Nullable ScreenRectangle bounds;
         private final Matrix4f projMatrix;
+        private final Frustum frustum;
         
         public WorldTerrainState(List<String> enabledLayers,
                                  Vector3f cameraTarget,
@@ -159,6 +163,11 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             this.scissorArea = scissorArea;
             this.bounds = bounds;
             this.projMatrix = this.calculateProjMatrix(false);
+            this.frustum = new Frustum(new Matrix4f(), projMatrix);
+        }
+        
+        public Frustum frustum() {
+            return frustum;
         }
         
         public Vector3f dirVec() {
@@ -187,6 +196,69 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             var x = p.x / p.w;
             var y = p.y / p.w;
             return new Vector2f((1 + x) / 2 * widget.getWidth() + widget.getX(), (1 - y) / 2 * widget.getHeight() + widget.getY());
+        }
+        
+        public @Nullable Vector3f projScreen2World(IGuiWidget widget, LevelChunkStorage storage, float screenX, float screenY) {
+            if(widget.getWidth() <= 0 || widget.getHeight() <= 0) return null;
+            var origin = this.cameraPos();
+            var ray = this.screenRay(widget, screenX, screenY);
+            var baseDistance = Math.max(this.cameraLength + 100, 256);
+            var maxDistance = Math.max(Math.max(this.cameraLength * 2, 8000), baseDistance * 4);
+            var step = Math.max(baseDistance / 8, 16);
+            var prevDistance = 0.0f;
+            var prevDelta = this.rayTerrainDelta(storage, origin);
+            for(var distance = step; distance <= maxDistance; distance += step) {
+                var delta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, distance));
+                if(delta == null) continue;
+                if(prevDelta != null && prevDelta * delta <= 0) {
+                    return this.searchRayTerrainHit(storage, origin, ray, prevDistance, distance);
+                }
+                prevDistance = distance;
+                prevDelta = delta;
+            }
+            return null;
+        }
+        
+        private Vector3f screenRay(IGuiWidget widget, float screenX, float screenY) {
+            var x = (screenX - widget.getX()) / widget.getWidth() * 2 - 1;
+            var y = 1 - (screenY - widget.getY()) / widget.getHeight() * 2;
+            var invMatrix = this.projMatrix.invert(new Matrix4f());
+            var near = invMatrix.transform(new Vector4f(x, y, -1, 1));
+            var far = invMatrix.transform(new Vector4f(x, y, 1, 1));
+            near.div(near.w);
+            far.div(far.w);
+            return new Vector3f(far.x, far.y, far.z).sub(near.x, near.y, near.z).normalize();
+        }
+        
+        private @Nullable Vector3f searchRayTerrainHit(LevelChunkStorage storage, Vector3f origin, Vector3f ray, float nearDistance, float farDistance) {
+            var low = nearDistance;
+            var high = farDistance;
+            var lowDelta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, low));
+            if(lowDelta == null) return null;
+            for(var i = 0; i < 32; i++) {
+                var mid = (low + high) * 0.5f;
+                var midDelta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, mid));
+                if(midDelta == null) return null;
+                if(lowDelta * midDelta <= 0) {
+                    high = mid;
+                }
+                else {
+                    low = mid;
+                    lowDelta = midDelta;
+                }
+            }
+            return this.rayPoint(origin, ray, high);
+        }
+        
+        private Vector3f rayPoint(Vector3f origin, Vector3f ray, float distance) {
+            return new Vector3f(ray).mul(distance).add(origin);
+        }
+        
+        private @Nullable Float rayTerrainDelta(LevelChunkStorage storage, Vector3f point) {
+            var x = (int) Math.floor(point.x);
+            var z = (int) Math.floor(point.z);
+            if(storage.getChunk(new ChunkPos(x >> 4, z >> 4)) == null) return null;
+            return point.y - storage.getHeight(x, z);
         }
         
         public List<String> enabledLayers() {

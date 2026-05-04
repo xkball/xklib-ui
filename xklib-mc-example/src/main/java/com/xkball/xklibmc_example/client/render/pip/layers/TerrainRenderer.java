@@ -76,7 +76,8 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                         renderpass.setVertexBuffer(0, CUBE.getVertexBuffer());
                         renderpass.setIndexBuffer(CUBE.getIndexBuffer(),CUBE.getIndexType());
                         for(var infoBlock : renderInfo.blocks()){
-                            IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",infoBlock.drawBuffer().slice());
+                            IExtendedRenderPass.cast(renderpass).xklib$setSSBO("ABlock",infoBlock.blockDataBuffer().slice());
+                            IExtendedRenderPass.cast(renderpass).xklib$setSSBO("FaceIndex",infoBlock.faceIndexBuffer().slice());
                             IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
                         }
                     }
@@ -91,8 +92,8 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                             var mesh = LODS[infoBlock.lod()];
                             renderpass.setVertexBuffer(0, mesh.getVertexBuffer());
                             renderpass.setIndexBuffer(mesh.getIndexBuffer(),mesh.getIndexType());
-                            renderpass.bindTexture("colorTexture", infoBlock.texture().colorTextureView(), SamplerCacheCache.NEAREST_CLAMP);
-                            renderpass.bindTexture("heightTexture", infoBlock.texture().depthTextureView(), SamplerCacheCache.NEAREST_CLAMP);
+                            renderpass.bindTexture("colorTexture", infoBlock.texture().colorTextureView(), SamplerCacheCache.NEAREST_REPEAT);
+                            renderpass.bindTexture("heightTexture", infoBlock.texture().depthTextureView(), SamplerCacheCache.NEAREST_REPEAT);
                             IExtendedRenderPass.cast(renderpass).xklib$setSSBO("cmd",infoBlock.commandBuffer().slice());
                             IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
                         }

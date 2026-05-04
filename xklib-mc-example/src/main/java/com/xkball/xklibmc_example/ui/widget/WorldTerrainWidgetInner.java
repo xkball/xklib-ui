@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
 import org.joml.Matrix2f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -36,6 +37,7 @@ public class WorldTerrainWidgetInner extends Widget {
     private boolean rotating;
     private float fov = 60;
     private WorldTerrainPipRenderer.@Nullable WorldTerrainState lastState;
+    private @Nullable Vector3f lastClickedWorldPos;
     
     private final BooleanLayoutVariable terrain;
     private final BooleanLayoutVariable grid;
@@ -127,6 +129,10 @@ public class WorldTerrainWidgetInner extends Widget {
             );
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
+            if(lastClickedWorldPos != null && lastState.frustum().isVisible(new AABB(lastClickedWorldPos.x,lastClickedWorldPos.y,lastClickedWorldPos.z,lastClickedWorldPos.x + 1,lastClickedWorldPos.y + 1,lastClickedWorldPos.z + 1))) {
+                var pos = lastState.projWorld2Screen(this, lastClickedWorldPos);
+                graphics.drawString("world: " + vec3fToString(lastClickedWorldPos), pos.x, pos.y, -1);
+            }
             if(debug.get()) {
                 var y_ = y;
                 graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;
@@ -147,12 +153,11 @@ public class WorldTerrainWidgetInner extends Widget {
         var level = Minecraft.getInstance().level;
         var player = Minecraft.getInstance().player;
         if(level == null || player == null || lastState == null) return;
-        var frustum = new Frustum(new Matrix4f(),lastState.projMatrix());
         var playInfos = player.connection.getListedOnlinePlayers();
         for(var p : playInfos){
             var uuid = p.getProfile().id();
             var entity = level.getEntity(uuid);
-            if(entity == null || !frustum.isVisible(entity.getBoundingBox())) continue;
+            if(entity == null || !lastState.frustum().isVisible(entity.getBoundingBox())) continue;
             var pos = lastState.projWorld2Screen(this, entity.position().toVector3f().add(0,2f,0));
             var px = pos.x - 8;
             var py = pos.y - 10;
@@ -160,6 +165,17 @@ public class WorldTerrainWidgetInner extends Widget {
             py -= 10;
             guiGraphics.drawCenteredString(p.getProfile().name(), pos.x, py, -1);
         }
+    }
+    
+    public @Nullable Vector3f projScreen2World(double screenX, double screenY) {
+        return this.projScreen2World((float) screenX, (float) screenY);
+    }
+    
+    public @Nullable Vector3f projScreen2World(float screenX, float screenY) {
+        if(lastState == null) return null;
+        var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
+        if(storage == null) return null;
+        return lastState.projScreen2World(this, storage, screenX, screenY);
     }
     
     @Override
@@ -180,6 +196,12 @@ public class WorldTerrainWidgetInner extends Widget {
     
     @Override
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+        if(event.button() == 0){
+            var worldPos = this.projScreen2World(event.x(), event.y());
+            if(worldPos != null) {
+                lastClickedWorldPos = worldPos;
+            }
+        }
         if (event.button() == 2) {
             rotating = true;
         }
