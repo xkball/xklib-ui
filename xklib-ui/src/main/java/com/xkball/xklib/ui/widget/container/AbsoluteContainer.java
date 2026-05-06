@@ -90,6 +90,6 @@ public class AbsoluteContainer extends ContainerWidget {
             return true;
         }
         
-        return super.mouseClicked(event, doubleClick);
+        return clickedChild != null;
     }
 }

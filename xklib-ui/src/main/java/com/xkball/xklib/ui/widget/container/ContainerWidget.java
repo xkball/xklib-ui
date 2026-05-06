@@ -235,7 +235,7 @@ public class ContainerWidget extends Widget {
         if (!this.enabled || !this.visible) {
             return false;
         }
-        if (!this.isMouseOver(x, y)) return false;
+        if (!this.isMouseOver(event.x(), event.y())) return false;
 
         for (Widget child : this.children) {
             if (child.visible && child.enabled) {
@@ -256,7 +256,7 @@ public class ContainerWidget extends Widget {
         if (!this.enabled || !this.visible) {
             return false;
         }
-        if (!this.isMouseOver(x, y)) return false;
+        if (!this.isMouseOver(event.x(), event.y())) return false;
         
         for (Widget child : this.children) {
             if (child.visible && child.enabled) {
@@ -274,7 +274,7 @@ public class ContainerWidget extends Widget {
         if (!this.enabled || !this.visible) {
             return false;
         }
-        if (!this.isMouseOver(x, y)) return false;
+        if (!this.isMouseOver(event.x(), event.y())) return false;
         
         for (Widget child : this.children) {
             if (child.visible && child.enabled) {
