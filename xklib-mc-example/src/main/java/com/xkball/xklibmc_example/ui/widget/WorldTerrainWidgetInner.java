@@ -7,11 +7,18 @@ import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
+import com.xkball.xklib.ui.widget.container.AbsoluteContainer;
+import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
-import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;import com.xkball.xklibmc.ui.XKLibBaseScreen;
+import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
+import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
+import dev.vfyjxf.taffy.geometry.TaffySize;
+import dev.vfyjxf.taffy.style.TaffyDimension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -25,9 +32,13 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 @NonNullByDefault
-public class WorldTerrainWidgetInner extends Widget {
+public class WorldTerrainWidgetInner extends ContainerWidget {
 
     private final Vector3f cameraTarget = new Vector3f();
     private BlockPos centerPos = BlockPos.ZERO;
@@ -37,7 +48,10 @@ public class WorldTerrainWidgetInner extends Widget {
     private boolean rotating;
     private float fov = 60;
     private WorldTerrainPipRenderer.@Nullable WorldTerrainState lastState;
-    private @Nullable Vector3f lastClickedWorldPos;
+    private @Nullable WorldMapExtensionService extensionService;
+    private final AbsoluteContainer extensionOverlay = new AbsoluteContainer();
+    private final Map<String, Supplier<Widget>> extensionOverlayProviders = new LinkedHashMap<>();
+    private final Map<String, List<String>> extensionEnabledLayers = new LinkedHashMap<>();
     
     private final BooleanLayoutVariable terrain;
     private final BooleanLayoutVariable grid;
@@ -63,8 +77,30 @@ public class WorldTerrainWidgetInner extends Widget {
         this.viewDistance = viewDistance;
         this.initCamera();
         this.setOverflow(false);
+        this.extensionOverlay.inlineStyle("size: 100% 100%;");
+        this.addChild(this.extensionOverlay);
         this.fixY.addCallback(_ -> this.setCameraY());
         this.yMode.addCallback(_ -> this.setCameraY());
+    }
+
+    public void setExtensionService(WorldMapExtensionService extensionService) {
+        this.extensionService = extensionService;
+    }
+
+    public void setExtensionOverlayProvider(String extensionId, Supplier<Widget> provider) {
+        this.extensionOverlayProviders.put(extensionId, provider);
+        this.refreshExtensionOverlay(extensionId);
+    }
+
+    public void refreshExtensionOverlay(String extensionId) {
+        this.extensionOverlay.clearChildren();
+        for (var provider : this.extensionOverlayProviders.values()) {
+            this.extensionOverlay.addChild(provider.get());
+        }
+    }
+
+    public void addExtensionEnabledLayer(String extensionId, String layerName) {
+        this.extensionEnabledLayers.computeIfAbsent(extensionId, _ -> new ArrayList<>()).add(layerName);
     }
 
     private void initCamera() {
@@ -94,12 +130,19 @@ public class WorldTerrainWidgetInner extends Widget {
         if (!this.enabled || !this.visible) {
             return false;
         }
-        return this.onMouseDragged(event, dx, dy);
+        return super.mouseDragged(event, dx, dy);
+    }
+    
+    @Override
+    public void resize(float offsetX, float offsetY) {
+        super.resize(offsetX, offsetY);
+        for(var overlay : this.extensionOverlay.getChildren()){
+            overlay.setStyle(s -> s.size = new TaffySize<>(TaffyDimension.length(this.getWidth()), TaffyDimension.length(this.getHeight())));
+        }
     }
     
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        super.doRender(graphics, mouseX, mouseY, a);
         if(graphics instanceof B3dGuiGraphics b3dGuiGraphics){
             var inner = b3dGuiGraphics.getInner();
             var scaleX = XKLibBaseScreen.tryGetScaleX();
@@ -109,6 +152,9 @@ public class WorldTerrainWidgetInner extends Widget {
             if(grid.get()) list.add("grid");
             if(player.get()) list.add("player");
             if(cameraTarget_.get()) list.add("cameraTarget");
+            for (var layers : this.extensionEnabledLayers.values()) {
+                list.addAll(layers);
+            }
             lastState = new WorldTerrainPipRenderer.WorldTerrainState(
                     list,
                     new Vector3f(cameraTarget),
@@ -129,10 +175,6 @@ public class WorldTerrainWidgetInner extends Widget {
             );
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
-            if(lastClickedWorldPos != null && lastState.frustum().isVisible(new AABB(lastClickedWorldPos.x,lastClickedWorldPos.y,lastClickedWorldPos.z,lastClickedWorldPos.x + 1,lastClickedWorldPos.y + 1,lastClickedWorldPos.z + 1))) {
-                var pos = lastState.projWorld2Screen(this, lastClickedWorldPos);
-                graphics.drawString("world: " + vec3fToString(lastClickedWorldPos), pos.x, pos.y, -1);
-            }
             if(debug.get()) {
                 var y_ = y;
                 graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;
@@ -147,6 +189,7 @@ public class WorldTerrainWidgetInner extends Widget {
                 graphics.drawString("camPos: " + vec3fToString(dirVec().normalize(cameraLength + 100).add(cameraTarget)), x, y_,-1); y_ += 10;
             }
         }
+        super.doRender(graphics, mouseX, mouseY, a);
     }
     
     public void renderPlayerHead(B3dGuiGraphics guiGraphics){
@@ -177,6 +220,16 @@ public class WorldTerrainWidgetInner extends Widget {
         if(storage == null) return null;
         return lastState.projScreen2World(this, storage, screenX, screenY);
     }
+
+    public @Nullable Vector2f projWorld2Screen(Vector3f worldPos) {
+        if (this.lastState == null) {
+            return null;
+        }
+        if (!this.lastState.frustum().isVisible(new AABB(worldPos.x, worldPos.y, worldPos.z, worldPos.x + 1, worldPos.y + 1, worldPos.z + 1))) {
+            return null;
+        }
+        return this.lastState.projWorld2Screen(this, worldPos);
+    }
     
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
@@ -196,11 +249,8 @@ public class WorldTerrainWidgetInner extends Widget {
     
     @Override
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if(event.button() == 0){
-            var worldPos = this.projScreen2World(event.x(), event.y());
-            if(worldPos != null) {
-                lastClickedWorldPos = worldPos;
-            }
+        if (this.dispatchMapEvent(new WorldMapEvent.MouseClicked(event, doubleClick))) {
+            return true;
         }
         if (event.button() == 2) {
             rotating = true;
@@ -210,6 +260,9 @@ public class WorldTerrainWidgetInner extends Widget {
 
     @Override
     protected boolean onMouseReleased(IMouseButtonEvent event) {
+        if (this.dispatchMapEvent(new WorldMapEvent.MouseReleased(event))) {
+            return true;
+        }
         if (event.button() == 2) {
             rotating = false;
             return true;
@@ -219,6 +272,9 @@ public class WorldTerrainWidgetInner extends Widget {
 
     @Override
     protected boolean onMouseDragged(IMouseButtonEvent event, double dx, double dy) {
+        if (this.dispatchMapEvent(new WorldMapEvent.MouseDragged(event, dx, dy))) {
+            return true;
+        }
         if (event.button() == 2) {
             if (!rotating) {
                 return false;
@@ -241,6 +297,9 @@ public class WorldTerrainWidgetInner extends Widget {
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+        if (this.dispatchMapEvent(new WorldMapEvent.MouseScrolled(x, y, scrollX, scrollY))) {
+            return true;
+        }
         if(fov > 90 - 1e-6) {
             cameraLength -= (float) (scrollY * Math.log10(cameraLength + 10f));
             cameraLength = Math.max(cameraLength, 0);
@@ -254,6 +313,9 @@ public class WorldTerrainWidgetInner extends Widget {
     
     @Override
     protected boolean onKeyPressed(IKeyEvent event) {
+        if (this.dispatchMapEvent(new WorldMapEvent.KeyPressed(event))) {
+            return true;
+        }
         int key = event.key();
         float dx = 0;
         float dz = 0;
@@ -308,5 +370,13 @@ public class WorldTerrainWidgetInner extends Widget {
     @Override
     public boolean isFocusable() {
         return true;
+    }
+
+    private boolean dispatchMapEvent(WorldMapEvent.Input event) {
+        if (this.extensionService == null) {
+            return false;
+        }
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapEvent(this.extensionService, event);
+        return event.consumed();
     }
 }

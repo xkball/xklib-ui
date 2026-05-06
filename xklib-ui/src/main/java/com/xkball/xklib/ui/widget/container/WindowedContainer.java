@@ -2,8 +2,10 @@ package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
 import dev.vfyjxf.taffy.style.TaffyDimension;
@@ -34,8 +36,16 @@ public class WindowedContainer extends AbsoluteContainer {
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: end;
+            justify-content: start;
             size: 100% 24px;
+            background-color: 0xCC1E293B;
+            """;
+    private static final String TITLE_CSS = """
+            size: 100%-24px 24px;
+            margin-left: 4px;
+            text-color: 0xFFE2E8F0;
+            text-drop-shadow: false;
+            text-scale: expand-width;
             """;
     private static final String CONTENT_PANEL_CSS = """
             display: flex;
@@ -47,7 +57,6 @@ public class WindowedContainer extends AbsoluteContainer {
     private static final String CLOSE_BUTTON_CSS = """
             size: 20rpx 20rpx;
             margin-right: 2rpx;
-            margin-bottom: 2rpx;
             text-align: center;
             background-color: 0xAA334155;
             text-color: 0xFFE2E8F0;
@@ -164,23 +173,35 @@ public class WindowedContainer extends AbsoluteContainer {
     }
 
     public SubWindow addSubWindow(Widget content, String frameCssStyle) {
-        return this.addSubWindow(content, this.nextWindowX, this.nextWindowY, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, frameCssStyle);
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, frameCssStyle);
     }
 
     public SubWindow addSubWindow(Widget content, float width, float height) {
-        return this.addSubWindow(content, this.nextWindowX, this.nextWindowY, width, height, "");
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, "");
     }
 
     public SubWindow addSubWindow(Widget content, float width, float height, String frameCssStyle) {
-        return this.addSubWindow(content, this.nextWindowX, this.nextWindowY, width, height, frameCssStyle);
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, frameCssStyle);
+    }
+
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+        return this.addSubWindow(content, title, resizable, this.nextWindowX, this.nextWindowY, width, height, "");
     }
 
     public SubWindow addSubWindow(Widget content, float x, float y, float width, float height) {
-        return this.addSubWindow(content, x, y, width, height, "");
+        return this.addSubWindow(content, "", true, x, y, width, height, "");
     }
 
     public SubWindow addSubWindow(Widget content, float x, float y, float width, float height, String frameCssStyle) {
-        var window = new SubWindow(content, frameCssStyle);
+        return this.addSubWindow(content, "", true, x, y, width, height, frameCssStyle);
+    }
+
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+        return this.addSubWindow(content, title, resizable, x, y, width, height, "");
+    }
+
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height, String frameCssStyle) {
+        var window = new SubWindow(content, title, resizable, frameCssStyle);
         window.setAbsoluteSize(x, y);
         window.setWindowSize(width, height);
         this.addChild(window);
@@ -193,7 +214,9 @@ public class WindowedContainer extends AbsoluteContainer {
 
         private final ContainerWidget topBar = new ContainerWidget();
         private final ContainerWidget contentPanel = new ContainerWidget();
+        private final Label titleLabel = new Label();
         private final Button closeButton = new Button("X", this::close);
+        private final boolean resizable;
         private int resizeMode = RESIZE_NONE;
         private boolean moving = false;
         private boolean closed = false;
@@ -202,11 +225,15 @@ public class WindowedContainer extends AbsoluteContainer {
         private float outerWidth;
         private float outerHeight;
 
-        public SubWindow(Widget content, String frameCssStyle) {
+        public SubWindow(Widget content, String title, boolean resizable, String frameCssStyle) {
+            this.resizable = resizable;
             this.inlineStyle(DEFAULT_WINDOW_CSS + frameCssStyle);
             this.topBar.inlineStyle(TOP_BAR_CSS);
             this.contentPanel.inlineStyle(CONTENT_PANEL_CSS);
+            this.titleLabel.setText(IComponent.literal(title));
+            this.titleLabel.inlineStyle(TITLE_CSS);
             this.closeButton.inlineStyle(CLOSE_BUTTON_CSS);
+            this.topBar.addChild(this.titleLabel);
             this.topBar.addChild(this.closeButton);
             this.addChild(this.topBar);
             this.addChild(this.contentPanel);
@@ -255,7 +282,7 @@ public class WindowedContainer extends AbsoluteContainer {
             if (!this.enabled || !this.visible || !this.isMouseOver(event.x(), event.y())) {
                 return false;
             }
-            if (event.button() == 0) {
+            if (event.button() == 0 && this.resizable) {
                 var mode = this.findResizeMode(event.x(), event.y());
                 if (mode != RESIZE_NONE) {
                     this.resizeMode = mode;
@@ -313,6 +340,9 @@ public class WindowedContainer extends AbsoluteContainer {
         }
 
         private int findResizeMode(double mouseX, double mouseY) {
+            if (!this.resizable) {
+                return RESIZE_NONE;
+            }
             var mode = RESIZE_NONE;
             if (mouseX - this.x <= BORDER_HIT_SIZE) {
                 mode |= RESIZE_LEFT;

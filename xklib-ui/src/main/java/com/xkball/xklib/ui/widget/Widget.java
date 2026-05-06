@@ -297,6 +297,8 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
+    @Deprecated
+    //应该从样式读取
     public void setVisible(boolean visible) {
         this.visible = visible;
     }

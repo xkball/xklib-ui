@@ -1,0 +1,101 @@
+package com.xkball.xklibmc_example.client.map.waypoint;
+
+import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
+import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.IconCheckBox;
+import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
+import net.minecraft.core.BlockPos;
+import org.jspecify.annotations.Nullable;
+
+import java.util.UUID;
+
+public class WaypointExtension implements WorldMapExtension {
+
+    private final BooleanLayoutVariable visible = new BooleanLayoutVariable(true);
+    private final WaypointStorage emptyStorage = new WaypointStorage();
+    private @Nullable Waypoint temporaryWaypoint;
+
+    @Override
+    public String id() {
+        return WaypointStorage.EXTENSION_ID;
+    }
+
+    @Override
+    public void onStorageLoaded(LevelChunkStorage storage) {
+        if (storage.getExtensionStorage(WaypointStorage.EXTENSION_ID) == null) {
+            storage.registerExtensionStorage(new WaypointStorage());
+        }
+    }
+
+    @Override
+    public void onStorageClosed(@Nullable LevelChunkStorage storage) {
+        this.temporaryWaypoint = null;
+    }
+
+    @Override
+    public void onMapOpened(WorldMapExtensionService service) {
+        this.visible.addCallback(_ -> service.refreshInnerOverlay());
+        service.addLeftBarWidget(new IconCheckBox(VanillaUtils.modrl("icon/waypoint")).bind(this.visible).withTooltip(IComponent.literal("show waypoints")));
+        service.addTopBar2Widget(new Button("Waypoints", () -> this.openManager(service)).setCSSClassName("update_button").withTooltip(IComponent.literal("Open waypoint manager.")));
+        service.setInnerOverlayProvider(() -> this.createOverlay(service));
+        service.refreshInnerOverlay();
+    }
+
+    @Override
+    public void onMapEvent(WorldMapExtensionService service, WorldMapEvent event) {
+        if (!(event instanceof WorldMapEvent.MouseClicked clicked) || clicked.event().button() != 0) {
+            return;
+        }
+        if (!clicked.doubleClick()) {
+            return;
+        }
+        var worldPos = service.projScreen2World(clicked.event().x(), clicked.event().y());
+        if (worldPos == null) {
+            return;
+        }
+        var pos = new BlockPos((int) Math.floor(worldPos.x), (int) Math.floor(worldPos.y), (int) Math.floor(worldPos.z));
+        this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), "Waypoint", pos, 0xFF66CCFF, false);
+        this.openDetail(service, this.temporaryWaypoint, true, clicked.event().x(), clicked.event().y());
+        service.refreshInnerOverlay();
+        clicked.consume();
+    }
+
+    @Override
+    public void tick(WorldMapExtensionService service) {
+    }
+
+    private WaypointOverlayWidget createOverlay(WorldMapExtensionService service) {
+        return new WaypointOverlayWidget(service, this.visible, () -> this.storage(service), () -> this.temporaryWaypoint, (waypoint, temporary) -> this.openDetail(service, waypoint, temporary));
+    }
+
+    private WaypointStorage storage(WorldMapExtensionService service) {
+        var storage = service.currentStorage();
+        if (storage == null) {
+            return this.emptyStorage;
+        }
+        var extensionStorage = storage.getExtensionStorage(WaypointStorage.EXTENSION_ID);
+        if (extensionStorage instanceof WaypointStorage waypointStorage) {
+            return waypointStorage;
+        }
+        var waypointStorage = new WaypointStorage();
+        storage.registerExtensionStorage(waypointStorage);
+        return waypointStorage;
+    }
+
+    private void openDetail(WorldMapExtensionService service, Waypoint waypoint, boolean temporary) {
+        service.addSubWindow(new WaypointDetailWindow(this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null), temporary ? "Temporary Waypoint" : "Waypoint", false, 360, 260);
+    }
+
+    private void openDetail(WorldMapExtensionService service, Waypoint waypoint, boolean temporary, double x, double y) {
+        service.addSubWindow(new WaypointDetailWindow(this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null), temporary ? "Temporary Waypoint" : "Waypoint", false, (float) x + 8, (float) y + 8, 360, 260);
+    }
+
+    private void openManager(WorldMapExtensionService service) {
+        service.addSubWindow(new WaypointManagerWindow(this.storage(service), waypoint -> this.openDetail(service, waypoint, false), service::refreshInnerOverlay), "Waypoint Manager", false, 560, 340);
+    }
+}

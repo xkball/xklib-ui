@@ -1,10 +1,7 @@
 package com.xkball.xklibmc_example;
 
-import com.xkball.xklib.ui.render.IComponent;
-import com.xkball.xklib.ui.widget.Widget;
-import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
-import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidget;
+import com.xkball.xklibmc_example.ui.WorldTerrainScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -34,15 +31,8 @@ public class XKLibMCExampleClient {
     @SubscribeEvent
     public static void onItemUse(UseItemOnBlockEvent event){
         if(event.getLevel().isClientSide() && event.getItemStack().getItem() == Items.BONE && Minecraft.getInstance().screen == null){
-            var screen = new XKLibBaseScreen();
-            var w = createTestWidget();
-            screen.addScreenLayer(w);
-            Minecraft.getInstance().setScreen(screen);
+            Minecraft.getInstance().setScreen(new WorldTerrainScreen());
         }
-    }
-    
-    public static Widget createTestWidget(){
-        return XKLibBaseScreen.frame(IComponent.literal("x3d map"),new WorldTerrainWidget());
     }
     
     @SubscribeEvent

@@ -8,6 +8,8 @@ import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionRegistry;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
@@ -42,12 +44,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public final Map<ResourceKey<Level>, LevelChunkStorage> storageMap = new ConcurrentHashMap<>();
     public final DualQueueThreadPool taskQueue = new DualQueueThreadPool();
+    public final WorldMapExtensionRegistry worldMapExtensionRegistry = new WorldMapExtensionRegistry();
     public boolean compatibleMode = false;
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
         if(!Minecraft.getInstance().isPaused() && Minecraft.getInstance().level != null){
             INSTANCE.taskQueue.runFor10ms();
+            INSTANCE.worldMapExtensionRegistry.tick();
             for(var s : INSTANCE.storageMap.values()){
                 for(var b : s.getGpuBuffers()){
                     if(!b.stagedAllocations.isEmpty()) {
@@ -58,6 +62,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         }
         if(XKLibMCClient.tickCount % 1200 == 0){
             for(var s : INSTANCE.storageMap.values()){
+                INSTANCE.worldMapExtensionRegistry.onStorageSaving(s);
                 s.saveFile();
             }
         }
@@ -70,11 +75,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         INSTANCE.setCloseOnExit();
         if(!INSTANCE.storageMap.containsKey(level.dimension())){
             var s = new LevelChunkStorage(level.dimension(),level.getMinY(), level.getMaxY(), INSTANCE.compatibleMode);
+            INSTANCE.worldMapExtensionRegistry.onStorageLoaded(s);
             s.loadFile();
             INSTANCE.storageMap.put(level.dimension(), s);
         }
         else{
-            INSTANCE.storageMap.get(level.dimension()).loadFile();
+            var s = INSTANCE.storageMap.get(level.dimension());
+            INSTANCE.worldMapExtensionRegistry.onStorageLoaded(s);
+            s.loadFile();
         }
     }
     
@@ -85,7 +93,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     }
     
     public TerrainChunkManager() {
-    
+        this.worldMapExtensionRegistry.init(new WorldMapExtensionContext(this, this.worldMapExtensionRegistry));
     }
     
     public @Nullable LevelChunkStorage getCurrentLevelChunkStorage(){
@@ -264,6 +272,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         if(level != null){
             var storage = this.storageMap.get(level.dimension());
             if(storage != null){
+                this.worldMapExtensionRegistry.onStorageClosed(storage);
+                this.worldMapExtensionRegistry.onStorageSaving(storage);
                 storage.unloadGpu();
                 storage.saveFile();
             }

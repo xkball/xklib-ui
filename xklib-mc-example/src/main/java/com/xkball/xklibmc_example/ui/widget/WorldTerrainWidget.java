@@ -3,7 +3,6 @@ package com.xkball.xklibmc_example.ui.widget;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
-import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.IconCheckBox;
@@ -11,8 +10,10 @@ import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.WarningDialog;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
+import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
@@ -34,13 +35,27 @@ public class WorldTerrainWidget extends ContainerWidget {
     public final IntLayoutVariable lodDistance = new IntLayoutVariable(500);
     public final IntLayoutVariable viewDistance = new  IntLayoutVariable(4096);
     public final WorldTerrainWidgetInner inner;
+    private final ContainerWidget leftExtensionWidgets = new ContainerWidget();
+    private final ContainerWidget top1ExtensionWidgets = new ContainerWidget();
+    private final ContainerWidget top2ExtensionWidgets = new ContainerWidget();
+    private final WindowedContainer windowLayer;
+    private final WorldMapExtensionServiceImpl extensionService;
     
-    public WorldTerrainWidget() {
+    public WorldTerrainWidget(WindowedContainer windowLayer) {
+        this.windowLayer = windowLayer;
         var level = Minecraft.getInstance().level;
         var minY = level == null ? -64 : level.getMinY();
         var maxY = level == null ? 384 : level.getMaxY();
         fixY.set(level == null ? 64 : level.getSeaLevel());
         this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
+        this.extensionService = new WorldMapExtensionServiceImpl(this, "");
+        this.inner.setExtensionService(this.extensionService);
+        this.leftExtensionWidgets.inlineStyle("""
+                flex-direction: column;
+                flex-shrink: 0;
+                """);
+        this.top1ExtensionWidgets.inlineStyle("flex-direction: row; flex-shrink: 0;");
+        this.top2ExtensionWidgets.inlineStyle("flex-direction: row; flex-shrink: 0;");
         this.inlineStyle("""
                         flex-direction: row;
                         size: 100% 100%;
@@ -96,6 +111,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .addChild(this.createToolbarTop2())
                         .addChild(inner.inlineStyle("height: 100%-35rpx;"))
                 );
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapOpened(this.extensionService);
     }
     
     public Widget createToolbarLeft(){
@@ -129,6 +145,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.literal("show camera target")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/depress_sphere")).bind(depress_sphere).withTooltip(IComponent.literal("cull too near chunks")))
+                .addChild(this.leftExtensionWidgets)
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.literal("show debug info")));
     }
     
@@ -150,6 +167,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                 .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))
                 .addChild(new Label("View Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
                 .addChild(NumberInputWidget.ofInt(256,1145141919,16).bind(viewDistance))
+                .addChild(this.top1ExtensionWidgets)
                 .addChild(new Button("Force Update",() -> {
                     var player = Minecraft.getInstance().player;
                     var viewDistance = Minecraft.getInstance().options.renderDistance().get();
@@ -191,7 +209,40 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         border-color: 0xEEAAAAAA;
                                         scrollbar-width: 0;
                                         overflow-x: scroll;
-                                        """);
+                                        """)
+                .addChild(this.top2ExtensionWidgets);
+    }
+
+    public void addExtensionLeftBarWidget(Widget widget) {
+        this.leftExtensionWidgets.addChild(widget);
+    }
+
+    public void addExtensionTopBar1Widget(Widget widget) {
+        this.top1ExtensionWidgets.addChild(widget);
+    }
+
+    public void addExtensionTopBar2Widget(Widget widget) {
+        this.top2ExtensionWidgets.addChild(widget);
+    }
+
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, float width, float height) {
+        return this.windowLayer.addSubWindow(content, width, height);
+    }
+
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, float x, float y, float width, float height) {
+        return this.windowLayer.addSubWindow(content, x, y, width, height);
+    }
+
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+        return this.windowLayer.addSubWindow(content, title, resizable, width, height);
+    }
+
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+        return this.windowLayer.addSubWindow(content, title, resizable, x, y, width, height);
+    }
+
+    public void closeMapExtensions() {
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapClosed(this.extensionService);
     }
     
 }
