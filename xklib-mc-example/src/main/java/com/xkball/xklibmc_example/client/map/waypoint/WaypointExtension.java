@@ -4,6 +4,7 @@ import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.IconCheckBox;
+import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
@@ -19,6 +20,9 @@ public class WaypointExtension implements WorldMapExtension {
     private final BooleanLayoutVariable visible = new BooleanLayoutVariable(true);
     private final WaypointStorage emptyStorage = new WaypointStorage();
     private @Nullable Waypoint temporaryWaypoint;
+    private WindowedContainer.@Nullable SubWindow managerWindow;
+    private WindowedContainer.@Nullable SubWindow detailWindow;
+    private @Nullable UUID detailWaypointId;
 
     @Override
     public String id() {
@@ -45,7 +49,14 @@ public class WaypointExtension implements WorldMapExtension {
         service.setInnerOverlayProvider(() -> this.createOverlay(service));
         service.refreshInnerOverlay();
     }
-
+    
+    @Override
+    public void onMapClosed(WorldMapExtensionService service) {
+        this.managerWindow = null;
+        this.detailWindow = null;
+        this.detailWaypointId = null;
+    }
+    
     @Override
     public void onMapEvent(WorldMapExtensionService service, WorldMapEvent event) {
         if (!(event instanceof WorldMapEvent.MouseClicked clicked) || clicked.event().button() != 0) {
@@ -56,6 +67,10 @@ public class WaypointExtension implements WorldMapExtension {
         }
         var worldPos = service.projScreen2World(clicked.event().x(), clicked.event().y());
         if (worldPos == null) {
+            return;
+        }
+        if (this.isDetailWindowOpen()) {
+            clicked.consume();
             return;
         }
         var pos = new BlockPos((int) Math.floor(worldPos.x), (int) Math.floor(worldPos.y), (int) Math.floor(worldPos.z));
@@ -88,14 +103,53 @@ public class WaypointExtension implements WorldMapExtension {
     }
 
     private void openDetail(WorldMapExtensionService service, Waypoint waypoint, boolean temporary) {
-        service.addSubWindow(new WaypointDetailWindow(this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null), temporary ? "Temporary Waypoint" : "Waypoint", false, 360, 260);
+        this.openDetail(service, waypoint, temporary, 360, 260);
     }
 
     private void openDetail(WorldMapExtensionService service, Waypoint waypoint, boolean temporary, double x, double y) {
-        service.addSubWindow(new WaypointDetailWindow(this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null), temporary ? "Temporary Waypoint" : "Waypoint", false, (float) x + 8, (float) y + 8, 360, 260);
+        this.closeDetailWindow();
+        var waypointId = waypoint.id();
+        this.detailWaypointId = waypointId;
+        var content = new WaypointDetailWindow(this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null) {
+            @Override
+            public void onRemove() {
+                super.onRemove();
+                WaypointExtension.this.clearDetailWindow(waypointId);
+            }
+        };
+        var title = temporary ? "Temporary Waypoint" : "Waypoint";
+        this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, 260, 560);
     }
 
     private void openManager(WorldMapExtensionService service) {
-        service.addSubWindow(new WaypointManagerWindow(this.storage(service), waypoint -> this.openDetail(service, waypoint, false), service::refreshInnerOverlay), "Waypoint Manager", false, 560, 340);
+        if (this.managerWindow != null && this.managerWindow.visible()) {
+            return;
+        }
+        this.managerWindow = service.addSubWindow(new WaypointManagerWindow(this.storage(service), waypoint -> this.openDetail(service, waypoint, false), service::refreshInnerOverlay) {
+            @Override
+            public void onRemove() {
+                super.onRemove();
+                WaypointExtension.this.managerWindow = null;
+            }
+        }, "Waypoint Manager", false, 560, 800);
+    }
+
+    private boolean isDetailWindowOpen() {
+        return this.detailWindow != null;
+    }
+
+    private void clearDetailWindow(UUID waypointId) {
+        if (waypointId.equals(this.detailWaypointId)) {
+            this.detailWindow = null;
+            this.detailWaypointId = null;
+        }
+    }
+    
+    private void closeDetailWindow() {
+        if (this.detailWindow != null) {
+            this.detailWindow.close();
+        }
+        this.detailWindow = null;
+        this.detailWaypointId = null;
     }
 }

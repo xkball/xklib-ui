@@ -17,25 +17,64 @@ public class WaypointManagerWindow extends ContainerWidget {
         this.storage = storage;
         this.openDetail = openDetail;
         this.changed = changed;
+        this.storage.onMarkDirty = () -> this.submitTreeUpdate(this::rebuild);
         this.inlineStyle("""
                 flex-direction: column;
                 size: 100% 100%;
-                overflow-y: scroll;
                 """)
                 .asRootStyle("""
                         Label {
-                            text-color: -1;
                             flex-shrink: 0;
+                            text-scale: expand-width;
+                            text-drop-shadow: false;
+                            text-align: center;
                         }
                         Button {
-                            height: 16rpx;
-                            margin-right: 1rpx;
+                            width: 30%;
+                            height: 12rpx;
                             text-align: center;
                             text-scale: expand-width;
                             button-shape: round-rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
+                        }
+                        .row {
+                            flex-direction: row;
+                            width: 100%;
+                            height: 16rpx;
+                            flex-shrink: 0;
+                            border-bottom: 1rpx;
+                            border-color: 0xEEAAAAAA;
+                        }
+                        .row_data {
+                            flex-direction: row;
+                            width: 65%;
+                            height: 100%;
+                            flex-shrink: 1;
+                        }
+                        .name_cell {
+                            width: 40%;
+                            height: 100%;
+                            border-left: 1rpx;
+                            border-right: 1rpx;
+                            border-color: 0xEEAAAAAA;
+                        }
+                        .pos_cell {
+                            width: 60%;
+                            height: 100%;
+                            border-right: 1rpx;
+                            border-color: 0xEEAAAAAA;
+                        }
+                        .actions_cell {
+                            flex-direction: row;
+                            width: 35%;
+                            height: 100%;
+                            flex-shrink: 0;
+                            align-items: center;
+                            justify-content: space-around;
+                            border-right: 1rpx;
+                            border-color: 0xEEAAAAAA;
                         }
                         """);
         this.rebuild();
@@ -44,39 +83,77 @@ public class WaypointManagerWindow extends ContainerWidget {
     private void rebuild() {
         this.clearChildren();
         this.addChild(this.header());
+        var rows = new ContainerWidget()
+                .inlineStyle("""
+                        flex-direction: column;
+                        width: 100%;
+                        height: 100%-16rpx;
+                        overflow-y: scroll;
+                        scrollbar-width: 8;
+                        """);
         for (var waypoint : this.storage.waypoints()) {
-            this.addChild(this.row(waypoint));
+            rows.addChild(this.row(waypoint));
         }
+        rows.addChild(this.emptyRow());
+        this.addChild(rows);
     }
 
     private Widget header() {
         return new ContainerWidget()
-                .inlineStyle("flex-direction: row; height: 16rpx; flex-shrink: 0;")
-                .addChild(new Label("Name").inlineStyle("width: 90rpx;"))
-                .addChild(new Label("Pos").inlineStyle("width: 130rpx;"))
-                .addChild(new Label("Color").inlineStyle("width: 70rpx;"))
-                .addChild(new Label("Actions").inlineStyle("width: 130rpx;"));
+                .inlineStyle("""
+                        flex-direction: row;
+                        width: 100%-8px;
+                        height: 16rpx;
+                        flex-shrink: 0;
+                        border-top: 1rpx;
+                        border-bottom: 1rpx;
+                        border-color: 0xEEAAAAAA;
+                        background-color: 0x55334155;
+                        """)
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("row_data")
+                        .addChild(new Label("Name").setCSSClassName("name_cell").inlineStyle("text-color: -1;"))
+                        .addChild(new Label("Pos").setCSSClassName("pos_cell").inlineStyle("text-color: -1;")))
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("actions_cell")
+                        .addChild(new Label("Actions").inlineStyle("width: 100%; height: 100%; text-color: -1;")));
     }
 
     private Widget row(Waypoint waypoint) {
         var teleport = new Button("Tp", () -> WaypointActions.teleport(waypoint));
         teleport.setEnabled(WaypointActions.canTeleport());
+        var name = new Label(waypoint.name(), this.textColor(waypoint));
+        name.setCSSClassName("name_cell");
         return new ContainerWidget()
-                .inlineStyle("flex-direction: row; height: 18rpx; flex-shrink: 0;")
-                .addChild(new Button(waypoint.name(), () -> this.openDetail.accept(waypoint)).inlineStyle("width: 90rpx;"))
-                .addChild(new Label(waypoint.pos().toShortString()).inlineStyle("width: 130rpx;"))
-                .addChild(new Label(String.format("#%06X", waypoint.color() & 0xFFFFFF)).inlineStyle("width: 70rpx;"))
-                .addChild(teleport.inlineStyle("width: 32rpx;"))
-                .addChild(new Button(waypoint.hidden() ? "Show" : "Hide", () -> {
-                    waypoint.setHidden(!waypoint.hidden());
-                    this.storage.markDirty();
-                    this.changed.run();
-                    this.rebuild();
-                }).inlineStyle("width: 50rpx;"))
-                .addChild(new Button("Del", () -> {
-                    this.storage.remove(waypoint);
-                    this.changed.run();
-                    this.rebuild();
-                }).inlineStyle("width: 32rpx;"));
+                .setCSSClassName("row")
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("row_data")
+                        .addChild(name)
+                        .addChild(new Label(waypoint.pos().toShortString()).setCSSClassName("pos_cell").inlineStyle("text-color: -1;")))
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("actions_cell")
+                        .addChild(teleport)
+                        .addChild(new Button(waypoint.hidden() ? "Show" : "Hide", () -> {
+                            waypoint.setHidden(!waypoint.hidden());
+                            this.storage.markDirty();
+                            this.changed.run();
+                            this.rebuild();
+                        }))
+                        .addChild(new Button("Edit", () -> this.openDetail.accept(waypoint)))
+                );
+    }
+
+    private Widget emptyRow() {
+        return new ContainerWidget().inlineStyle("size: 100% 16rpx;");
+    }
+
+    private int textColor(Waypoint waypoint) {
+        return 0xFF000000 | (waypoint.color() & 0xFFFFFF);
+    }
+    
+    @Override
+    public void onRemove() {
+        super.onRemove();
+        this.storage.onMarkDirty = null;
     }
 }

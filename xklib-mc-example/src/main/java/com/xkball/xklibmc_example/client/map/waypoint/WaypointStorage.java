@@ -16,6 +16,7 @@ public class WaypointStorage implements WorldMapExtensionStorage {
     private static final int VERSION = 1;
     private final List<Waypoint> waypoints = new ArrayList<>();
     private boolean dirty;
+    public Runnable onMarkDirty = null;
 
     @Override
     public String extensionId() {
@@ -34,6 +35,9 @@ public class WaypointStorage implements WorldMapExtensionStorage {
 
     public void markDirty() {
         this.dirty = true;
+        if(this.onMarkDirty != null) {
+            this.onMarkDirty.run();
+        }
     }
 
     public List<Waypoint> waypoints() {

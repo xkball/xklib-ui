@@ -21,16 +21,18 @@ public class WaypointDetailWindow extends ContainerWidget {
         this.changed = changed;
         this.removeTemporary = removeTemporary;
         this.inlineStyle("""
-                flex-direction: row;
+                flex-direction: column;
                 size: 100% 100%;
+                overflow-y: scroll;
+                scrollbar-width: 8;
                 """)
                 .asRootStyle("""
                         Label {
                             text-color: -1;
                             flex-shrink: 0;
                         }
-                        Button {
-                            size: 80rpx 16rpx;
+                        .action_btn {
+                            size: 100% 12rpx;
                             margin-bottom: 2rpx;
                             text-align: center;
                             text-scale: expand-width;
@@ -40,12 +42,12 @@ public class WaypointDetailWindow extends ContainerWidget {
                             text-extra-width: 2rpx;
                         }
                         ObjectInputWidget {
-                            size: 100% 16rpx;
+                            size: 100% 12rpx;
                             margin-bottom: 2rpx;
                             flex-shrink: 0;
                         }
                         NumberInputWidget {
-                            size: 100% 16rpx;
+                            size: 100% 12rpx;
                             margin-bottom: 2rpx;
                             flex-shrink: 0;
                         }
@@ -80,28 +82,28 @@ public class WaypointDetailWindow extends ContainerWidget {
             changed.run();
         });
         var editor = new ContainerWidget()
-                .inlineStyle("flex-direction: column; size: 100%-90rpx 100%; margin: 3rpx;")
-                .addChild(new Label("Name").inlineStyle("height: 12rpx;"))
+                .inlineStyle("flex-direction: column; size: 90% auto; margin: 3rpx;")
+                .addChild(new Label("Name").inlineStyle("height: 8rpx;"))
                 .addChild(name)
-                .addChild(new Label("X").inlineStyle("height: 12rpx;"))
+                .addChild(new Label("X").inlineStyle("height: 8rpx;"))
                 .addChild(x)
-                .addChild(new Label("Y").inlineStyle("height: 12rpx;"))
+                .addChild(new Label("Y").inlineStyle("height: 8rpx;"))
                 .addChild(y)
-                .addChild(new Label("Z").inlineStyle("height: 12rpx;"))
+                .addChild(new Label("Z").inlineStyle("height: 8rpx;"))
                 .addChild(z)
-                .addChild(new Label("Color").inlineStyle("height: 12rpx;"))
+                .addChild(new Label("Color").inlineStyle("height: 8rpx;"))
                 .addChild(color);
-        var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 90rpx 100%; margin: 3rpx;");
-        var teleport = new Button("Teleport", () -> WaypointActions.teleport(waypoint));
+        var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 10O% auto; margin: 3rpx;");
+        var teleport = new Button("Teleport", () -> WaypointActions.teleport(waypoint)).setCSSClassName("action_btn");
         teleport.setEnabled(WaypointActions.canTeleport());
         actions.addChild(teleport);
-        actions.addChild(new Button("Share", () -> WaypointActions.share(waypoint)));
+        actions.addChild(new Button("Share", () -> WaypointActions.share(waypoint)).setCSSClassName("action_btn"));
         if (!temporary) {
             actions.addChild(new Button(waypoint.hidden() ? "Show" : "Hide", () -> {
                 waypoint.setHidden(!waypoint.hidden());
                 storage.markDirty();
                 changed.run();
-            }));
+            }).setCSSClassName("action_btn"));
         }
         actions.addChild(new Button("Delete", () -> {
             if (temporary) {
@@ -111,7 +113,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 storage.remove(waypoint);
             }
             changed.run();
-        }));
+        }).setCSSClassName("action_btn"));
         if (temporary) {
             actions.addChild(new Button("Save", () -> {
                 var formal = new Waypoint(UUID.randomUUID(), waypoint.name(), waypoint.pos(), waypoint.color(), false);
@@ -119,7 +121,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 this.temporaryResolved = true;
                 removeTemporary.run();
                 changed.run();
-            }));
+            }).setCSSClassName("action_btn"));
         }
         this.addChild(editor);
         this.addChild(actions);

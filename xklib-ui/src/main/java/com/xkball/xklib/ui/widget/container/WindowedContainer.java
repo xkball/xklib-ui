@@ -28,7 +28,7 @@ public class WindowedContainer extends AbsoluteContainer {
     private static final String DEFAULT_WINDOW_CSS = """
             display: grid;
             grid-template-columns: 1fr;
-            grid-template-rows: 24px 1fr;
+            grid-template-rows: 10rpx 1fr;
             align-items: stretch;
             justify-content: stretch;
             """;
@@ -37,11 +37,11 @@ public class WindowedContainer extends AbsoluteContainer {
             flex-direction: row;
             align-items: center;
             justify-content: start;
-            size: 100% 24px;
-            background-color: 0xCC1E293B;
+            size: 100% 10rpx;
+            background-color: 0xEE1E293B;
             """;
     private static final String TITLE_CSS = """
-            size: 100%-24px 24px;
+            size: 100%-10px 10rpx;
             margin-left: 4px;
             text-color: 0xFFE2E8F0;
             text-drop-shadow: false;
@@ -52,13 +52,13 @@ public class WindowedContainer extends AbsoluteContainer {
             align-items: stretch;
             justify-content: stretch;
             size: 100% 100%;
-            background-color: 0xAA0F172A;
+            background-color: 0xEE0F172A;
             """;
     private static final String CLOSE_BUTTON_CSS = """
-            size: 20rpx 20rpx;
+            size: 10rpx 10rpx;
             margin-right: 2rpx;
             text-align: center;
-            background-color: 0xAA334155;
+            background-color: 0xEE334155;
             text-color: 0xFFE2E8F0;
             """;
 

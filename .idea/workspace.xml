@@ -4,17 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="gitignore">
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/pinned.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/waypoint.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="fix event dispatch">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/Widget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointDetailWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointDetailWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointManagerWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointManagerWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/WindowedContainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-ui/src/main/java/com/xkball/xklib/ui/widget/container/WindowedContainer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,7 +32,7 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="676531" />
+    <option name="totalTimeSeconds" value="682347" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -567,23 +562,7 @@
       <workItem from="1777952253332" duration="5510000" />
       <workItem from="1777968275132" duration="45000" />
       <workItem from="1777968365064" duration="2838000" />
-      <workItem from="1777989617029" duration="22914000" />
-    </task>
-    <task id="LOCAL-00002" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1772470908626</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1772470908626</updated>
-    </task>
-    <task id="LOCAL-00003" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1772470937692</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1772470937692</updated>
+      <workItem from="1777989617029" duration="33630000" />
     </task>
     <task id="LOCAL-00004" summary="refactor">
       <option name="closed" value="true" />
@@ -961,7 +940,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777988017162</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="waypoint">
+      <option name="closed" value="true" />
+      <created>1778085559078</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1778085559079</updated>
+    </task>
+    <task id="LOCAL-00052" summary="fix event dispatch">
+      <option name="closed" value="true" />
+      <created>1778086457976</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1778086457976</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -996,7 +991,9 @@
     <MESSAGE value="gui, performance improve" />
     <MESSAGE value="gui" />
     <MESSAGE value="gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="gitignore" />
+    <MESSAGE value="waypoint" />
+    <MESSAGE value="fix event dispatch" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix event dispatch" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
