@@ -183,13 +183,14 @@ public class WorldTerrainWidget extends ContainerWidget {
                     var centerChunk = ChunkPos.containing(player.blockPosition());
                     var range = 128;
                     var list = new ArrayList<ChunkPos>();
-                    for(var dx = -range; dx <= range; dx++){
-                        for(var dz = -range; dz <= range; dz++){
-                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
-                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
-                            list.add(p);
-                        }
-                    }
+                    list.add(new ChunkPos(356,110));
+//                    for(var dx = -range; dx <= range; dx++){
+//                        for(var dz = -range; dz <= range; dz++){
+//                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
+//                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
+//                            list.add(p);
+//                        }
+//                    }
                     ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
                 }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
                 .addChild(new Button("Delete",() -> new WarningDialog(IComponent.literal("Delete All map? You cannot restore this operation."),() -> {}, () -> {}).display())

@@ -115,10 +115,12 @@ public class ContainerWidget extends Widget {
     }
     
     public void clearChildren() {
-        for(var widget : this.children) {
-            this.tree.removeChild(this.nodeId,widget.nodeId);
-            this.focusNode.removeChild(widget.getFocusNode());
-            widget.setParent(null);
+        if(this.tree != null){
+            for(var widget : this.children) {
+                this.tree.removeChild(this.nodeId,widget.nodeId);
+                this.focusNode.removeChild(widget.getFocusNode());
+                widget.setParent(null);
+            }
         }
         this.children.clear();
     }
