@@ -1,5 +1,6 @@
 package com.xkball.xklib.ui.render;
 
+import java.util.Arrays;
 import java.util.List;
 
 public record TranslatableComponent(String key, ComponentStyle style, List<Object> args) implements IComponent {
@@ -9,7 +10,7 @@ public record TranslatableComponent(String key, ComponentStyle style, List<Objec
     }
     
     public TranslatableComponent(String key, ComponentStyle style, Object[] args){
-        this(key,style,List.of(args));
+        this(key,style,Arrays.asList(args));
     }
     
     @Override

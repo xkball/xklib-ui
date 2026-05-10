@@ -35,6 +35,7 @@ tasks.register('buildAllAndCollectJars') {
         copy {
             from "$rootDir/libs"
             into "E:\\code\\java\\mcmod\\1.21\\PowerTool\\libs"
+            into "E:\\code\\java\\mcmod\\1.21.4\\xkball's Auto Translate\\libs"
 
             include "xklib-3d-0.0.1.jar"
             include "xklib-3d-0.0.1-sources.jar"

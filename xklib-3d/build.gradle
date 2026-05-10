@@ -53,6 +53,14 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'com.xkball.xklib'
+        )
+    }
+}
+
 test {
     useJUnitPlatform()
 }

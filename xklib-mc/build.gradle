@@ -115,6 +115,14 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'com.xkball.xklib.mc'
+        )
+    }
+}
+
 idea {
     module {
         downloadSources = true

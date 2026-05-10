@@ -34,6 +34,14 @@ test {
     useJUnitPlatform()
 }
 
+jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'com.xkball.xklib.ui'
+        )
+    }
+}
+
 generateGrammarSource {
     arguments += ['-package', 'com.xkball.xklib.antlr.css']
     outputDirectory = outputDirectory.toPath().resolve("com/xkball/xklib/antlr/css").toFile()
