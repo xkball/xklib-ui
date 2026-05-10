@@ -84,7 +84,7 @@ public class ScalableContainer extends AbsoluteContainer {
             this.renderGrid(graphics);
         }
         for (Widget child : this.children.reversed()) {
-            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+            if (child.visible() && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
                 child.render(graphics, mouseX, mouseY, a);
             }
         }
@@ -96,7 +96,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public void renderBelow(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if (!this.visible) return;
+        if (!this.visible()) return;
 //        super.renderBelow(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
@@ -104,7 +104,7 @@ public class ScalableContainer extends AbsoluteContainer {
         mat.translate(this.x + this.xOffset, this.y + this.yOffset);
         mat.scale(this.scale, this.scale);
         for (Widget child : this.children.reversed()) {
-            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+            if (child.visible() && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
                 child.renderBelow(graphics, mouseX, mouseY, a);
             }
         }
@@ -114,7 +114,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if (!this.visible) return;
+        if (!this.visible()) return;
 //        super.renderAbove(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
@@ -122,7 +122,7 @@ public class ScalableContainer extends AbsoluteContainer {
         mat.translate(this.x + this.xOffset, this.y + this.yOffset);
         mat.scale(this.scale, this.scale);
         for (Widget child : this.children.reversed()) {
-            if (child.visible && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
+            if (child.visible() && (this.overflow() || child.getRectangle().transformAxisAligned(mat).intersects(selfRect))) {
                 child.renderAbove(graphics, mouseX, mouseY, a);
             }
         }
@@ -154,7 +154,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             this.setHovered(false);
             return false;
         }
@@ -162,7 +162,7 @@ public class ScalableContainer extends AbsoluteContainer {
         double cy = this.toChildY(mouseY);
         boolean handled = false;
         for (var child : this.children) {
-            if (!handled && child.visible) {
+            if (!handled && child.visible()) {
                 if (child.mouseMoved(cx, cy)) {
                     handled = true;
                     continue;
@@ -184,7 +184,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         double mx = event.x();
@@ -195,7 +195,7 @@ public class ScalableContainer extends AbsoluteContainer {
         Widget clickedChild = null;
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(mx), this.toChildY(my), event.button(), event.modifiers());
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseClicked(mapped, doubleClick)) {
                     this.draggingPanel = false;
                     clickedChild = child;
@@ -218,7 +218,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (this.draggingPanel && event.button() == 0) {
@@ -232,7 +232,7 @@ public class ScalableContainer extends AbsoluteContainer {
         }
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(mx), this.toChildY(my), event.button(), event.modifiers());
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseReleased(mapped)) {
                     return true;
                 }
@@ -243,14 +243,14 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         IMouseButtonEvent mapped = new MouseButtonEvent(this.toChildX(event.x()), this.toChildY(event.y()), event.button(), event.modifiers());
         double cdx = dx / this.scale;
         double cdy = dy / this.scale;
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseDragged(mapped, cdx, cdy)) {
                     this.draggingPanel = false;
                     return true;
@@ -268,7 +268,7 @@ public class ScalableContainer extends AbsoluteContainer {
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(x, y)) {
@@ -305,7 +305,7 @@ public class ScalableContainer extends AbsoluteContainer {
         double cx = this.toChildX(x);
         double cy = this.toChildY(y);
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseScrolled(cx, cy, scrollX, scrollY)) {
                     return true;
                 }

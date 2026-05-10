@@ -40,7 +40,6 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public float absoluteX;
     public float absoluteY;
     public boolean enabled = true;
-    public boolean visible = true;
     public boolean hovered = false;
     public String cssId = XKLibUtils.objName(this);
     public String cssType = XKLibUtils.objClassName(this);
@@ -104,7 +103,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
         boolean wasMouseOver = this.isMouseOver(mouseX, mouseY);
-        if (wasMouseOver && this.enabled && this.visible) {
+        if (wasMouseOver && this.enabled && this.visible()) {
             this.setHovered(true);
             return true;
         }
@@ -114,7 +113,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (this.isMouseOver(event.x(), event.y())) {
@@ -126,7 +125,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if(this.isMouseOver(event.x(),event.y())){
@@ -137,7 +136,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if(this.isMouseOver(event.x(),event.y())){
@@ -148,7 +147,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (this.isMouseOver(x, y)) {
@@ -159,7 +158,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean keyPressed(IKeyEvent event) {
-        if (!this.enabled || !this.visible || !this.isPrimaryFocused()) {
+        if (!this.enabled || !this.visible() || !this.isPrimaryFocused()) {
             return false;
         }
         return this.onKeyPressed(event);
@@ -167,7 +166,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean keyReleased(IKeyEvent event) {
-        if (!this.enabled || !this.visible || !this.isPrimaryFocused()) {
+        if (!this.enabled || !this.visible() || !this.isPrimaryFocused()) {
             return false;
         }
         return this.onKeyReleased(event);
@@ -175,7 +174,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean charTyped(ICharEvent event) {
-        if (!this.enabled || !this.visible || !this.isPrimaryFocused()) {
+        if (!this.enabled || !this.visible() || !this.isPrimaryFocused()) {
             return false;
         }
         return this.onCharTyped(event);
@@ -188,7 +187,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.enabled && this.visible && getRectangle().containsPoint((int) mouseX, (int) mouseY);
+        return this.enabled && this.visible() && getRectangle().containsPoint((int) mouseX, (int) mouseY);
     }
     
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
@@ -297,15 +296,8 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     }
     
     @Override
-    @Deprecated
-    //应该从样式读取
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-    
-    @Override
     public boolean visible() {
-        return this.visible;
+        return this.style.display != TaffyDisplay.NONE;
     }
     
     @Override
@@ -411,7 +403,6 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public void resize(float offsetX, float offsetY) {
-        this.setVisible(this.style.display != TaffyDisplay.NONE);
         var layout = this.getLayout();
         if (layout != null) {
             this.setPosition(layout.contentBoxX() + offsetX, layout.contentBoxY() + offsetY);
@@ -421,7 +412,7 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     
     @Override
     public final void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(!this.visible) return;
+        if(!this.visible()) return;
         if (this.overflow()){
             this.doRender(graphics, mouseX, mouseY, a);
         }

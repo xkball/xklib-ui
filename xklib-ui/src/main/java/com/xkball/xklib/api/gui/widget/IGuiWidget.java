@@ -39,8 +39,6 @@ public interface IGuiWidget {
     void setEnabled(boolean enabled);
     
     boolean enabled();
-
-    void setVisible(boolean visible);
     
     boolean visible();
     

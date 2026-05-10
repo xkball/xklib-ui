@@ -66,14 +66,14 @@ public class AbsoluteContainer extends ContainerWidget {
     
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(x, y)) return false;
         
         Widget clickedChild = null;
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) event.x(), (int) event.y())) {
                     if (child.mouseClicked(event, doubleClick)) {

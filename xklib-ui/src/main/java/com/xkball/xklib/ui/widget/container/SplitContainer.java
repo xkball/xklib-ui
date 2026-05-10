@@ -217,7 +217,7 @@ public class SplitContainer extends ContainerWidget {
         
         @Override
         public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-            if (!this.enabled || !this.visible) {
+            if (!this.enabled || !this.visible()) {
                 return false;
             }
             return this.onMouseDragged(event, dx, dy);

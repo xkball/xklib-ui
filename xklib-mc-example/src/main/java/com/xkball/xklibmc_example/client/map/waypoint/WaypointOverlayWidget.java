@@ -49,14 +49,12 @@ public class WaypointOverlayWidget extends AbsoluteContainer {
 
     private void addWaypointIcon(Waypoint waypoint, boolean temporary) {
         var icon = new WaypointIconWidget(waypoint, temporary, () -> this.openHandler.accept(waypoint, temporary));
-        icon.visible = false;
         this.addChild(icon);
     }
 
     private void updateIconPosition(WaypointIconWidget icon) {
         var pos = icon.waypoint().pos();
         var screen = this.service.projWorld2Screen(new Vector3f(pos.getX(), pos.getY(), pos.getZ()));
-        icon.visible = screen != null;
         if (screen != null) {
             icon.setAbsoluteSize(screen.x - this.getX(), screen.y - this.getY() - 16);
         }

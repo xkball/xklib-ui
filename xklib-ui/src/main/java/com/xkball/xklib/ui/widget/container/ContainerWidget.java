@@ -188,14 +188,14 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean mouseMoved(double mouseX, double mouseY) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             this.setHovered(false);
             return false;
         }
         boolean isMouseOver = this.isMouseOver(mouseX, mouseY);
         boolean handled = false;
         for (var child : this.children) {
-            if (!handled && child.visible && isMouseOver) {
+            if (!handled && child.visible() && isMouseOver) {
                 if (child.mouseMoved(mouseX, mouseY)) {
                     handled = true;
                     continue;
@@ -232,13 +232,13 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(event.x(), event.y())) return false;
 
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) event.x(), (int) event.y())) {
                     if (child.mouseClicked(event, doubleClick)) {
@@ -253,13 +253,13 @@ public class ContainerWidget extends Widget {
 
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(event.x(), event.y())) return false;
         
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseReleased(event)) {
                     return true;
                 }
@@ -271,13 +271,13 @@ public class ContainerWidget extends Widget {
 
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(event.x(), event.y())) return false;
         
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.mouseDragged(event, dx, dy)) {
                     return true;
                 }
@@ -289,13 +289,13 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (!this.isMouseOver(x, y)) return false;
         
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 ScreenRectangle rect = child.getRectangle();
                 if (rect.containsPoint((int) x, (int) y)) {
                     if (child.mouseScrolled(x, y, scrollX, scrollY)) {
@@ -310,12 +310,12 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean keyPressed(IKeyEvent event) {
-        if (!this.enabled || !this.visible || !this.isFocused()) {
+        if (!this.enabled || !this.visible() || !this.isFocused()) {
             return false;
         }
         
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.keyPressed(event)) {
                     return true;
                 }
@@ -327,12 +327,12 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean keyReleased(IKeyEvent event) {
-        if (!this.enabled || !this.visible || !this.isFocused()) {
+        if (!this.enabled || !this.visible() || !this.isFocused()) {
             return false;
         }
         
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.keyReleased(event)) {
                     return true;
                 }
@@ -344,7 +344,7 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean charTyped(ICharEvent event) {
-        if (!this.enabled || !this.visible || !this.isFocused()) {
+        if (!this.enabled || !this.visible() || !this.isFocused()) {
             return false;
         }
         
@@ -359,7 +359,7 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean preeditUpdated(@Nullable Object event) {
-        if (!this.enabled || !this.visible || !this.isFocused()) {
+        if (!this.enabled || !this.visible() || !this.isFocused()) {
             return false;
         }
         
@@ -374,11 +374,11 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean widgetDropped(IMouseButtonEvent mousePos, IGuiWidget widget) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.widgetDropped(mousePos, widget)) {
                     return true;
                 }
@@ -389,11 +389,11 @@ public class ContainerWidget extends Widget {
     
     @Override
     public boolean widgetDraggingHovered(IMouseButtonEvent mousePos, IGuiWidget widget) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         for (Widget child : this.children) {
-            if (child.visible && child.enabled) {
+            if (child.visible() && child.enabled) {
                 if (child.widgetDraggingHovered(mousePos, widget)) {
                     return true;
                 }
@@ -540,7 +540,7 @@ public class ContainerWidget extends Widget {
         if(!this.children.isEmpty()){
             this.renderInScissor(graphics, () -> {
                 for (Widget child : this.children.reversed()) {
-                    if (child.visible && child.getRectangle().intersects(selfRect)) {
+                    if (child.visible() && child.getRectangle().intersects(selfRect)) {
                         child.render(graphics, mouseX, mouseY, a);
                     }
                 }
@@ -556,7 +556,7 @@ public class ContainerWidget extends Widget {
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
             for (Widget child : this.children.reversed()) {
-                if (child.visible && child.getRectangle().intersects(selfRect)) {
+                if (child.visible() && child.getRectangle().intersects(selfRect)) {
                     child.renderBelow(graphics, mouseX, mouseY, a);
                 }
             }
@@ -569,7 +569,7 @@ public class ContainerWidget extends Widget {
         var selfRect = this.getRectangle();
         this.renderInScissor(graphics, () -> {
             for (Widget child : this.children.reversed()) {
-                if (child.visible && child.getRectangle().intersects(selfRect)) {
+                if (child.visible() && child.getRectangle().intersects(selfRect)) {
                     child.renderAbove(graphics, mouseX, mouseY, a);
                 }
             }

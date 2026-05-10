@@ -127,7 +127,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         return super.mouseDragged(event, dx, dy);

@@ -83,7 +83,7 @@ public class WindowedContainer extends AbsoluteContainer {
 
     @Override
     public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-        if (!this.enabled || !this.visible || !this.isMouseOver(event.x(), event.y())) {
+        if (!this.enabled || !this.visible() || !this.isMouseOver(event.x(), event.y())) {
             return false;
         }
         Widget clickedChild = null;
@@ -91,7 +91,7 @@ public class WindowedContainer extends AbsoluteContainer {
         this.dispatchingMouseClick = true;
         try {
             for (Widget child : this.children) {
-                if (child.visible && child.enabled && child.getRectangle().containsPoint((int) event.x(), (int) event.y())) {
+                if (child.visible() && child.enabled && child.getRectangle().containsPoint((int) event.x(), (int) event.y())) {
                     if (child.mouseClicked(event, doubleClick)) {
                         clickedChild = child;
                         break;
@@ -119,10 +119,10 @@ public class WindowedContainer extends AbsoluteContainer {
 
     @Override
     public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
-        if (this.activeMouseWindow != null && this.activeMouseWindow.enabled && this.activeMouseWindow.visible) {
+        if (this.activeMouseWindow != null && this.activeMouseWindow.enabled && this.activeMouseWindow.visible()) {
             return this.activeMouseWindow.mouseDragged(event, dx, dy);
         }
         return super.mouseDragged(event, dx, dy);
@@ -130,7 +130,7 @@ public class WindowedContainer extends AbsoluteContainer {
 
     @Override
     public boolean mouseReleased(IMouseButtonEvent event) {
-        if (!this.enabled || !this.visible) {
+        if (!this.enabled || !this.visible()) {
             return false;
         }
         if (this.activeMouseWindow != null) {
@@ -268,7 +268,6 @@ public class WindowedContainer extends AbsoluteContainer {
         public void close() {
             this.closed = true;
             this.enabled = false;
-            this.visible = false;
             if (WindowedContainer.this.activeMouseWindow == this) {
                 WindowedContainer.this.activeMouseWindow = null;
             }
@@ -279,7 +278,7 @@ public class WindowedContainer extends AbsoluteContainer {
 
         @Override
         public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-            if (!this.enabled || !this.visible || !this.isMouseOver(event.x(), event.y())) {
+            if (!this.enabled || !this.visible() || !this.isMouseOver(event.x(), event.y())) {
                 return false;
             }
             if (event.button() == 0 && this.resizable) {
@@ -294,7 +293,7 @@ public class WindowedContainer extends AbsoluteContainer {
 
         @Override
         public boolean mouseDragged(IMouseButtonEvent event, double dx, double dy) {
-            if (!this.enabled || !this.visible) {
+            if (!this.enabled || !this.visible()) {
                 return false;
             }
             if (this.resizeMode != RESIZE_NONE && event.button() == 0) {
