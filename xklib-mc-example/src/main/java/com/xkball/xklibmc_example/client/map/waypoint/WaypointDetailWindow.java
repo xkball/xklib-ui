@@ -1,10 +1,15 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
+import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
+import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
+import com.xkball.xklib.ui.widget.container.WindowedContainer;
+import com.xkball.xklibmc.ui.widget.ColorInputWidget;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.ui.widget.ObjectInputWidget;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import net.minecraft.core.BlockPos;
 
 import java.util.UUID;
@@ -16,7 +21,7 @@ public class WaypointDetailWindow extends ContainerWidget {
     private final Runnable removeTemporary;
     private boolean temporaryResolved;
 
-    public WaypointDetailWindow(WaypointStorage storage, Waypoint waypoint, boolean temporary, Runnable changed, Runnable removeTemporary) {
+    public WaypointDetailWindow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint, boolean temporary, Runnable changed, Runnable removeTemporary) {
         this.temporary = temporary;
         this.changed = changed;
         this.removeTemporary = removeTemporary;
@@ -51,6 +56,26 @@ public class WaypointDetailWindow extends ContainerWidget {
                             margin-bottom: 2rpx;
                             flex-shrink: 0;
                         }
+                        .color_row {
+                            flex-direction: row;
+                            size: 100% 14rpx;
+                            margin-bottom: 2rpx;
+                            flex-shrink: 0;
+                        }
+                        .color_preview {
+                            size: 50% 100%;
+                            border: 1rpx;
+                            border-color: 0xEEAAAAAA;
+                        }
+                        .color_edit_btn {
+                            size: 50% 100%;
+                            text-align: center;
+                            text-scale: expand-width;
+                            button-shape: round-rect;
+                            button-bg-color: rgb(229,233,239);
+                            text-drop-shadow: false;
+                            text-extra-width: 2rpx;
+                        }
                         """);
         var name = ObjectInputWidget.ofString();
         name.setAsString(waypoint.name());
@@ -60,8 +85,6 @@ public class WaypointDetailWindow extends ContainerWidget {
         x.setValue(waypoint.pos().getX());
         y.setValue(waypoint.pos().getY());
         z.setValue(waypoint.pos().getZ());
-        var color = ObjectInputWidget.ofString();
-        color.setAsString(String.format("#%06X", waypoint.color() & 0xFFFFFF));
         name.setCallback(_ -> {
             waypoint.setName(name.getAsString());
             this.markDirtyIfFormal(storage, temporary);
@@ -75,12 +98,7 @@ public class WaypointDetailWindow extends ContainerWidget {
         x.setCallback(_ -> posCallback.run());
         y.setCallback(_ -> posCallback.run());
         z.setCallback(_ -> posCallback.run());
-        color.setCallback(_ -> {
-            var parsed = this.parseColor(color.getAsString(), waypoint.color());
-            waypoint.setColor(parsed);
-            this.markDirtyIfFormal(storage, temporary);
-            changed.run();
-        });
+        var colorRow = this.createColorRow(service, storage, waypoint);
         var editor = new ContainerWidget()
                 .inlineStyle("flex-direction: column; size: 90% auto; margin: 3rpx;")
                 .addChild(new Label("Name").inlineStyle("height: 8rpx;"))
@@ -92,7 +110,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 .addChild(new Label("Z").inlineStyle("height: 8rpx;"))
                 .addChild(z)
                 .addChild(new Label("Color").inlineStyle("height: 8rpx;"))
-                .addChild(color);
+                .addChild(colorRow);
         var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 100% auto; margin: 3rpx;");
         var teleport = new Button("Teleport", () -> WaypointActions.teleport(waypoint)).setCSSClassName("action_btn");
         teleport.setEnabled(WaypointActions.canTeleport());
@@ -143,18 +161,66 @@ public class WaypointDetailWindow extends ContainerWidget {
         }
     }
 
-    private int parseColor(String value, int fallback) {
-        var normalized = value.trim();
-        if (normalized.startsWith("#")) {
-            normalized = normalized.substring(1);
+    private Widget createColorRow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint) {
+        return new ContainerWidget()
+                .setCSSClassName("color_row")
+                .addChild(new ColorPreviewWidget(waypoint).setCSSClassName("color_preview"))
+                .addChild(new Button("Edit", () -> this.openColorWindow(service, storage, waypoint)).setCSSClassName("color_edit_btn"));
+    }
+
+    private void openColorWindow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint) {
+        var colorInput = new ColorInputWidget();
+        colorInput.setValue(waypoint.color());
+        var holder = new WindowedContainer.SubWindow[1];
+        var content = new ContainerWidget()
+                .inlineStyle("""
+                        flex-direction: column;
+                        size: 100% 100%;
+                        padding: 4rpx;
+                        """)
+                .asRootStyle("""
+                        ColorInputWidget {
+                            size: 100% 100%-16rpx;
+                            margin-bottom: 4rpx;
+                        }
+                        .color_actions {
+                            flex-direction: row;
+                            size: 100% 12rpx;
+                        }
+                        .color_action_btn {
+                            size: 50% 100%;
+                            text-align: center;
+                            text-scale: expand-width;
+                            button-shape: round-rect;
+                            text-drop-shadow: false;
+                            text-extra-width: 2rpx;
+                        }
+                        """)
+                .addChild(colorInput)
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("color_actions")
+                        .addChild(new Button("Cancel", () -> holder[0].close()).setCSSClassName("color_action_btn"))
+                        .addChild(new Button("Confirm", () -> {
+                            waypoint.setColor(colorInput.getValue());
+                            this.markDirtyIfFormal(storage, this.temporary);
+                            this.changed.run();
+                            holder[0].close();
+                        }).setCSSClassName("color_action_btn")));
+        holder[0] = service.addBlockingSubWindow(content, "Color", false, 300, 160);
+    }
+
+    private static class ColorPreviewWidget extends Widget {
+
+        private final Waypoint waypoint;
+
+        private ColorPreviewWidget(Waypoint waypoint) {
+            this.waypoint = waypoint;
         }
-        if (normalized.startsWith("0x") || normalized.startsWith("0X")) {
-            normalized = normalized.substring(2);
-        }
-        try {
-            return 0xFF000000 | Integer.parseUnsignedInt(normalized, 16);
-        } catch (NumberFormatException e) {
-            return fallback;
+
+        @Override
+        public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+            super.doRender(graphics, mouseX, mouseY, a);
+            graphics.fill(this.x, this.y, this.x + this.width, this.y + this.height, this.waypoint.color());
         }
     }
 }
