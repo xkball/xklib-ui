@@ -8,6 +8,7 @@ import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
+import com.xkball.xklibmc_example.client.map.uistate.WorldMapUiStateStorage;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidget;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidgetInner;
 import org.joml.Vector2f;
@@ -117,6 +118,76 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     }
 
     @Override
+    public boolean containsState(String key) {
+        var storage = this.uiStateStorage();
+        return storage != null && storage.contains(this.stateKey(key));
+    }
+
+    @Override
+    public void removeState(String key) {
+        var storage = this.uiStateStorage();
+        if (storage != null) {
+            storage.remove(this.stateKey(key));
+        }
+    }
+
+    @Override
+    public boolean getBooleanState(String key, boolean defaultValue) {
+        var storage = this.uiStateStorage();
+        return storage == null ? defaultValue : storage.getBoolean(this.stateKey(key), defaultValue);
+    }
+
+    @Override
+    public void setBooleanState(String key, boolean value) {
+        var storage = this.uiStateStorage();
+        if (storage != null) {
+            storage.setBoolean(this.stateKey(key), value);
+        }
+    }
+
+    @Override
+    public int getIntState(String key, int defaultValue) {
+        var storage = this.uiStateStorage();
+        return storage == null ? defaultValue : storage.getInt(this.stateKey(key), defaultValue);
+    }
+
+    @Override
+    public void setIntState(String key, int value) {
+        var storage = this.uiStateStorage();
+        if (storage != null) {
+            storage.setInt(this.stateKey(key), value);
+        }
+    }
+
+    @Override
+    public float getFloatState(String key, float defaultValue) {
+        var storage = this.uiStateStorage();
+        return storage == null ? defaultValue : storage.getFloat(this.stateKey(key), defaultValue);
+    }
+
+    @Override
+    public void setFloatState(String key, float value) {
+        var storage = this.uiStateStorage();
+        if (storage != null) {
+            storage.setFloat(this.stateKey(key), value);
+        }
+    }
+
+    @Override
+    public String getStringState(String key, String defaultValue) {
+        var storage = this.uiStateStorage();
+        return storage == null ? defaultValue : storage.getString(this.stateKey(key), defaultValue);
+    }
+
+    @Override
+    public void setStringState(String key, String value) {
+        var storage = this.uiStateStorage();
+        if (storage != null) {
+            storage.setString(this.stateKey(key), value);
+        }
+    }
+
+    @Override
     public @Nullable Vector3f projScreen2World(double screenX, double screenY) {
         return this.widget.inner.projScreen2World(screenX, screenY);
     }
@@ -134,5 +205,26 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     @Override
     public WorldTerrainWidgetInner inner() {
         return this.widget.inner;
+    }
+
+    private @Nullable WorldMapUiStateStorage uiStateStorage() {
+        var storage = this.currentStorage();
+        if (storage == null) {
+            return null;
+        }
+        var extensionStorage = storage.getExtensionStorage(WorldMapUiStateStorage.EXTENSION_ID);
+        if (extensionStorage instanceof WorldMapUiStateStorage uiStateStorage) {
+            return uiStateStorage;
+        }
+        var uiStateStorage = new WorldMapUiStateStorage();
+        storage.registerExtensionStorage(uiStateStorage);
+        return uiStateStorage;
+    }
+
+    private String stateKey(String key) {
+        if (this.extensionId == null || this.extensionId.isEmpty()) {
+            return key;
+        }
+        return this.extensionId + ":" + key;
     }
 }

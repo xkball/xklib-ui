@@ -176,16 +176,15 @@ public class WaypointDetailWindow extends ContainerWidget {
                 .inlineStyle("""
                         flex-direction: column;
                         size: 100% 100%;
-                        padding: 4rpx;
                         """)
                 .asRootStyle("""
                         ColorInputWidget {
-                            size: 100% 100%-16rpx;
+                            size: 100% 75%;
                             margin-bottom: 4rpx;
                         }
                         .color_actions {
+                            size: 100% 15%;
                             flex-direction: row;
-                            size: 100% 12rpx;
                         }
                         .color_action_btn {
                             size: 50% 100%;
@@ -206,7 +205,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             this.changed.run();
                             holder[0].close();
                         }).setCSSClassName("color_action_btn")));
-        holder[0] = service.addBlockingSubWindow(content, "Color", false, 300, 160);
+        holder[0] = service.addBlockingSubWindow(content, "Color", false, 400, 240);
     }
 
     private static class ColorPreviewWidget extends Widget {

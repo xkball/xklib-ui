@@ -49,6 +49,8 @@ public class WorldTerrainWidget extends ContainerWidget {
         this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
         this.extensionService = new WorldMapExtensionServiceImpl(this, "");
         this.inner.setExtensionService(this.extensionService);
+        this.loadPersistentUiState();
+        this.bindPersistentUiState();
         this.leftExtensionWidgets.inlineStyle("""
                 flex-direction: column;
                 flex-shrink: 0;
@@ -180,16 +182,15 @@ public class WorldTerrainWidget extends ContainerWidget {
                     var player = Minecraft.getInstance().player;
                     if(player == null) return;
                     var centerChunk = ChunkPos.containing(player.blockPosition());
-                    var range = 128;
+                    var range = 256;
                     var list = new ArrayList<ChunkPos>();
-                    list.add(new ChunkPos(356,110));
-//                    for(var dx = -range; dx <= range; dx++){
-//                        for(var dz = -range; dz <= range; dz++){
-//                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
-//                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
-//                            list.add(p);
-//                        }
-//                    }
+                    for(var dx = -range; dx <= range; dx++){
+                        for(var dz = -range; dz <= range; dz++){
+                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
+                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
+                            list.add(p);
+                        }
+                    }
                     ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
                 }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
                 .addChild(new Button("Delete",() -> {})
@@ -243,6 +244,32 @@ public class WorldTerrainWidget extends ContainerWidget {
 
     public WindowedContainer windowLayer() {
         return this.windowLayer;
+    }
+
+    private void loadPersistentUiState() {
+        this.terrain.set(this.extensionService.getBooleanState("terrain", this.terrain.get()));
+        this.grid.set(this.extensionService.getBooleanState("grid", this.grid.get()));
+        this.player.set(this.extensionService.getBooleanState("player", this.player.get()));
+        this.debug.set(this.extensionService.getBooleanState("debug", this.debug.get()));
+        this.cameraTarget.set(this.extensionService.getBooleanState("camera_target", this.cameraTarget.get()));
+        this.depress_sphere.set(this.extensionService.getBooleanState("depress_sphere", this.depress_sphere.get()));
+        this.yMode.set(this.extensionService.getIntState("y_mode", this.yMode.get()));
+        this.fixY.set(this.extensionService.getIntState("fix_y", this.fixY.get()));
+        this.lodDistance.set(this.extensionService.getIntState("lod_distance", this.lodDistance.get()));
+        this.viewDistance.set(this.extensionService.getIntState("view_distance", this.viewDistance.get()));
+    }
+
+    private void bindPersistentUiState() {
+        this.terrain.addCallback(value -> this.extensionService.setBooleanState("terrain", value));
+        this.grid.addCallback(value -> this.extensionService.setBooleanState("grid", value));
+        this.player.addCallback(value -> this.extensionService.setBooleanState("player", value));
+        this.debug.addCallback(value -> this.extensionService.setBooleanState("debug", value));
+        this.cameraTarget.addCallback(value -> this.extensionService.setBooleanState("camera_target", value));
+        this.depress_sphere.addCallback(value -> this.extensionService.setBooleanState("depress_sphere", value));
+        this.yMode.addCallback(value -> this.extensionService.setIntState("y_mode", value));
+        this.fixY.addCallback(value -> this.extensionService.setIntState("fix_y", value));
+        this.lodDistance.addCallback(value -> this.extensionService.setIntState("lod_distance", value));
+        this.viewDistance.addCallback(value -> this.extensionService.setIntState("view_distance", value));
     }
 
     public void closeMapExtensions() {

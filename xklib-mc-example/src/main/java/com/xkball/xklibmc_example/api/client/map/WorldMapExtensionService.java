@@ -46,6 +46,26 @@ public interface WorldMapExtensionService {
 
     void refreshInnerOverlay();
 
+    boolean containsState(String key);
+
+    void removeState(String key);
+
+    boolean getBooleanState(String key, boolean defaultValue);
+
+    void setBooleanState(String key, boolean value);
+
+    int getIntState(String key, int defaultValue);
+
+    void setIntState(String key, int value);
+
+    float getFloatState(String key, float defaultValue);
+
+    void setFloatState(String key, float value);
+
+    String getStringState(String key, String defaultValue);
+
+    void setStringState(String key, String value);
+
     @Nullable Vector3f projScreen2World(double screenX, double screenY);
 
     @Nullable Vector2f projWorld2Screen(Vector3f worldPos);

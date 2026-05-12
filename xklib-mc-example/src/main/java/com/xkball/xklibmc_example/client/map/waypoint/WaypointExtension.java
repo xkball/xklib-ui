@@ -43,7 +43,9 @@ public class WaypointExtension implements WorldMapExtension {
 
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
+        this.visible.set(service.getBooleanState("visible", this.visible.get()));
         this.visible.addCallback(_ -> service.refreshInnerOverlay());
+        this.visible.addCallback(value -> service.setBooleanState("visible", value));
         service.addLeftBarWidget(new IconCheckBox(VanillaUtils.modrl("icon/waypoint")).bind(this.visible).withTooltip(IComponent.literal("show waypoints")));
         service.addTopBar2Widget(new Button("Waypoints", () -> this.openManager(service)).setCSSClassName("update_button").withTooltip(IComponent.literal("Open waypoint manager.")));
         service.setInnerOverlayProvider(() -> this.createOverlay(service));
