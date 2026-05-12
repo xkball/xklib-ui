@@ -377,6 +377,7 @@ public class GuiSystem implements AutoCloseable {
     
     public void insertLayerAfter(Widget layer, IGuiWidget after) {
         if (layer.getTree() == null) layer.asTreeRoot();
+        layer.setGuiSystem(this);
         layer.init();
         layer.markDirty();
         int idx = -1;

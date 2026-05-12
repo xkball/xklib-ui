@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map;
 
+import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
@@ -68,6 +69,31 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     @Override
     public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
         return this.widget.addMapSubWindow(content, title, resizable, x, y, width, height);
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, float width, float height) {
+        return this.addBlockingSubWindow(content, "", true, width, height);
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+        var parent = this.widget.windowLayer();
+        var x = Math.max(0f, (parent.getWidth() - width) / 2f);
+        var y = Math.max(0f, (parent.getHeight() - height) / 2f);
+        return this.addBlockingSubWindow(content, title, resizable, x, y, width, height);
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+        var layer = new WindowedContainer();
+        layer.setAutoRemoveFromGuiSystemWhenEmpty(true);
+        layer.inlineStyle("size: 100% 100%;");
+        layer.setBlockInput(true);
+        var parent = this.widget.windowLayer();
+        var window = layer.addSubWindow(content, title, resizable, x, y, width, height);
+        GuiSystem.INSTANCE.get().insertLayerAfter(layer, parent);
+        return window;
     }
 
     @Override

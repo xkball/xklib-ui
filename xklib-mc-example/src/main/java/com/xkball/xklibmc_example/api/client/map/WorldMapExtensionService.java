@@ -32,6 +32,12 @@ public interface WorldMapExtensionService {
 
     WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height);
 
+    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, float width, float height);
+
+    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float width, float height);
+
+    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height);
+
     void registerPipLayer(PictureInPictureRenderLayer<WorldTerrainPipRenderer, WorldTerrainPipRenderer.WorldTerrainState> layer);
 
     void addEnabledLayer(String layerName);

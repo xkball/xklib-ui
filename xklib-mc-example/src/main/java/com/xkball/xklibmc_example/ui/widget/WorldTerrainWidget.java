@@ -7,7 +7,6 @@ import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.IconCheckBox;
 import com.xkball.xklib.ui.widget.Label;
-import com.xkball.xklib.ui.widget.WarningDialog;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
@@ -193,7 +192,7 @@ public class WorldTerrainWidget extends ContainerWidget {
 //                    }
                     ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
                 }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
-                .addChild(new Button("Delete",() -> new WarningDialog(IComponent.literal("Delete All map? You cannot restore this operation."),() -> {}, () -> {}).display())
+                .addChild(new Button("Delete",() -> {})
                         .setCSSClassName("update_button")
                         .inlineStyle("""
                                             button-bg-color: rgb(221,0,27);
@@ -240,6 +239,10 @@ public class WorldTerrainWidget extends ContainerWidget {
 
     public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
         return this.windowLayer.addSubWindow(content, title, resizable, x, y, width, height);
+    }
+
+    public WindowedContainer windowLayer() {
+        return this.windowLayer;
     }
 
     public void closeMapExtensions() {

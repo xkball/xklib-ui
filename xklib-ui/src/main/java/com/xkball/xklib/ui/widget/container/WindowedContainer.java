@@ -1,6 +1,8 @@
 package com.xkball.xklib.ui.widget.container;
 
 import com.xkball.xklib.ap.annotation.GuiWidgetClass;
+import com.xkball.xklib.api.gui.input.ICharEvent;
+import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.system.GuiSystem;
@@ -67,6 +69,7 @@ public class WindowedContainer extends AbsoluteContainer {
     private boolean dispatchingMouseClick = false;
     private SubWindow activeMouseWindow = null;
     private boolean autoRemoveFromGuiSystemWhenEmpty = false;
+    private boolean blockInput = false;
 
     public WindowedContainer() {
         this.clampWidget = false;
@@ -79,6 +82,14 @@ public class WindowedContainer extends AbsoluteContainer {
     public WindowedContainer setAutoRemoveFromGuiSystemWhenEmpty(boolean value) {
         this.autoRemoveFromGuiSystemWhenEmpty = value;
         return this;
+    }
+
+    public void setBlockInput(boolean value) {
+        this.blockInput = value;
+    }
+
+    public boolean isBlockInput() {
+        return blockInput;
     }
 
     @Override
@@ -114,7 +125,7 @@ public class WindowedContainer extends AbsoluteContainer {
             this.children.addFirst(clickedChild);
             return true;
         }
-        return clickedChild != null;
+        return clickedChild != null || this.blockInput;
     }
 
     @Override
@@ -123,9 +134,9 @@ public class WindowedContainer extends AbsoluteContainer {
             return false;
         }
         if (this.activeMouseWindow != null && this.activeMouseWindow.enabled && this.activeMouseWindow.visible()) {
-            return this.activeMouseWindow.mouseDragged(event, dx, dy);
+            return this.activeMouseWindow.mouseDragged(event, dx, dy) || this.blockInput;
         }
-        return super.mouseDragged(event, dx, dy);
+        return super.mouseDragged(event, dx, dy) || this.blockInput;
     }
 
     @Override
@@ -136,9 +147,24 @@ public class WindowedContainer extends AbsoluteContainer {
         if (this.activeMouseWindow != null) {
             var window = this.activeMouseWindow;
             this.activeMouseWindow = null;
-            return window.mouseReleased(event);
+            return window.mouseReleased(event) || this.blockInput;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(event) || this.blockInput;
+    }
+
+    @Override
+    public boolean keyPressed(IKeyEvent event) {
+        return super.keyPressed(event) || (this.enabled && this.visible() && this.blockInput);
+    }
+
+    @Override
+    public boolean keyReleased(IKeyEvent event) {
+        return super.keyReleased(event) || (this.enabled && this.visible() && this.blockInput);
+    }
+
+    @Override
+    public boolean charTyped(ICharEvent event) {
+        return super.charTyped(event) || (this.enabled && this.visible() && this.blockInput);
     }
 
     @Override
@@ -208,6 +234,41 @@ public class WindowedContainer extends AbsoluteContainer {
         this.nextWindowX = x + DEFAULT_WINDOW_OFFSET;
         this.nextWindowY = y + DEFAULT_WINDOW_OFFSET;
         return window;
+    }
+
+    @Override
+    protected boolean onMouseScrolled(double x, double y, double scrollX, double scrollY) {
+        return super.onMouseScrolled(x, y, scrollX, scrollY) || blockInput;
+    }
+
+    @Override
+    protected boolean onMouseDragged(IMouseButtonEvent event, double dx, double dy) {
+        return super.onMouseDragged(event, dx, dy) || blockInput;
+    }
+
+    @Override
+    protected boolean onCharTyped(ICharEvent event) {
+        return super.onCharTyped(event) || blockInput;
+    }
+
+    @Override
+    protected boolean onKeyReleased(IKeyEvent event) {
+        return super.onKeyReleased(event) || blockInput;
+    }
+
+    @Override
+    protected boolean onKeyPressed(IKeyEvent event) {
+        return super.onKeyPressed(event) || blockInput;
+    }
+
+    @Override
+    protected boolean onMouseReleased(IMouseButtonEvent event) {
+        return super.onMouseReleased(event) || blockInput;
+    }
+
+    @Override
+    protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+        return super.onMouseClicked(event, doubleClick) || blockInput;
     }
 
     public class SubWindow extends ContainerWidget {
