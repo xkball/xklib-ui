@@ -10,6 +10,7 @@ import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionRegistry;
+import com.xkball.xklibmc_example.client.compatibility.CompatibilityExtension;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,7 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public final DualQueueThreadPool taskQueue = new DualQueueThreadPool();
     public final WorldMapExtensionRegistry worldMapExtensionRegistry = new WorldMapExtensionRegistry();
     public boolean compatibleMode = false;
+    public List<String> compatibilityReasons = Collections.emptyList();
+    public boolean compatibilityWarningSuppressed = false;
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -73,6 +77,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var level = Minecraft.getInstance().level;
         if(level == null) return;
         INSTANCE.setCloseOnExit();
+        CompatibilityExtension.initCompatibilityMode();
         if(!INSTANCE.storageMap.containsKey(level.dimension())){
             var s = new LevelChunkStorage(level.dimension(),level.getMinY(), level.getMaxY(), INSTANCE.compatibleMode);
             INSTANCE.worldMapExtensionRegistry.onStorageLoaded(s);

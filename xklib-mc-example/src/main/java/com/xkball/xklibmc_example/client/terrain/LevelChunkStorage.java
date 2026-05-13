@@ -106,6 +106,9 @@ public class LevelChunkStorage {
             if(entry.getValue().hasDirtyChunk()){
                 this.saveRegion(entry.getKey());
             }
+            else{
+                entry.getValue().releaseData();
+            }
         }
         this.saveExtensionFiles();
     }

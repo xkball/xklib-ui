@@ -36,6 +36,7 @@ public class ChunkStorage {
     @SuppressWarnings("NotNullFieldNotInitialized")
     public ChunkHeightMap heightMap;
     public boolean dirty = false;
+    public boolean onGpuL0 = false;
     
     public ChunkStorage(ChunkPos chunkPos, LevelChunkStorage parent) {
         this.chunkPos = chunkPos;
@@ -187,9 +188,7 @@ public class ChunkStorage {
             }
             MemoryUtil.memFree(buffer);
         }
-        if(!this.dirty){
-            this.releaseData();
-        }
+        this.onGpuL0 = true;
     }
     
     public void unloadGpu(){

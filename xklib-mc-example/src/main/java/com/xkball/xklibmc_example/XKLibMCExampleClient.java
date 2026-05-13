@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example;
 
+import com.xkball.xklibmc_example.client.compatibility.CompatibilityConfig;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.ui.WorldTerrainScreen;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -21,6 +23,7 @@ public class XKLibMCExampleClient {
     
     public XKLibMCExampleClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        container.registerConfig(ModConfig.Type.CLIENT, CompatibilityConfig.SPEC);
     }
 
     @SubscribeEvent

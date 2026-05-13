@@ -1,2 +1,3 @@
 com.xkball.xklibmc_example.client.map.waypoint.WaypointExtension
 com.xkball.xklibmc_example.client.map.uistate.WorldMapUiStateExtension
+com.xkball.xklibmc_example.client.compatibility.CompatibilityExtension

@@ -61,6 +61,14 @@ public class RegionStorage {
         return false;
     }
     
+    public void releaseData(){
+        for(var chunkStorage : this.chunkMap.values()){
+            if (chunkStorage.onGpuL0){
+                chunkStorage.releaseData();
+            }
+        }
+    }
+    
     public Path getFile(Path directory){
         return directory.resolve(this.regionPos.x()+","+this.regionPos.z());
     }

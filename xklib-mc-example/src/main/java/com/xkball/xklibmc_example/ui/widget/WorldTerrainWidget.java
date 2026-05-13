@@ -12,7 +12,7 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
-import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class WorldTerrainWidget extends ContainerWidget {
     private final ContainerWidget top1ExtensionWidgets = new ContainerWidget();
     private final ContainerWidget top2ExtensionWidgets = new ContainerWidget();
     private final WindowedContainer windowLayer;
-    private final WorldMapExtensionServiceImpl extensionService;
+    private WorldMapExtensionService extensionService;
     
     public WorldTerrainWidget(WindowedContainer windowLayer) {
         this.windowLayer = windowLayer;
@@ -47,10 +47,6 @@ public class WorldTerrainWidget extends ContainerWidget {
         var maxY = level == null ? 384 : level.getMaxY();
         fixY.set(level == null ? 64 : level.getSeaLevel());
         this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
-        this.extensionService = new WorldMapExtensionServiceImpl(this, "");
-        this.inner.setExtensionService(this.extensionService);
-        this.loadPersistentUiState();
-        this.bindPersistentUiState();
         this.leftExtensionWidgets.inlineStyle("""
                 flex-direction: column;
                 flex-shrink: 0;
@@ -112,7 +108,14 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .addChild(this.createToolbarTop2())
                         .addChild(inner.inlineStyle("height: 100%-35rpx;"))
                 );
-        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapOpened(this.extensionService);
+    }
+
+    public void initExtensions(WorldMapExtensionService service) {
+        this.extensionService = service;
+        this.inner.setExtensionService(service);
+        this.loadPersistentUiState();
+        this.bindPersistentUiState();
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapOpened(service);
     }
     
     public Widget createToolbarLeft(){
