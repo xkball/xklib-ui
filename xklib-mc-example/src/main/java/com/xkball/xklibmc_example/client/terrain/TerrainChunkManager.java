@@ -310,23 +310,18 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     }
     
     public record RenderInfoCompatible(List<RenderInfoWithBufferBlock> lodFullMesh) implements AutoCloseable{
-        
+
         public static RenderInfoCompatible empty(){
             return new RenderInfoCompatible(null);
         }
-        
+
         @Override
         public void close() {
-            if(lodFullMesh != null){
-                for(var v : lodFullMesh) {
-                    v.commandBuffer.close();
-                }
-            }
         }
     }
-    
-    public record RenderInfoWithBufferBlock(GpuBuffer drawBuffer, int drawCount, GpuBuffer commandBuffer){
-    
+
+    public record RenderInfoWithBufferBlock(GpuBuffer drawBuffer, int drawCount, List<IndirectDrawCommand> drawCommands){
+
     }
     
     public record RenderInfoWithFaceBlock(GpuBuffer blockDataBuffer, GpuBuffer faceIndexBuffer, int drawCount, GpuBuffer commandBuffer){
@@ -372,11 +367,11 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             for(var entry :  cmdMap.entrySet()){
                 var buffer = entry.getKey();
                 var list = entry.getValue();
-                renderInfoList.add(new RenderInfoWithBufferBlock(buffer, list.size(), IndirectDrawCommand.buildCommandList(list)));
+                renderInfoList.add(new RenderInfoWithBufferBlock(buffer, list.size(), list));
             }
             return renderInfoList;
         }
-        
+
         public @Nullable RenderInfoWithBufferBlock finishGatherFirstBuffer(){
             var list = finishGather();
             return list.isEmpty() ? null : list.getFirst();

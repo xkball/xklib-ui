@@ -60,7 +60,9 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                         renderpass.setIndexBuffer(indexBuffer.getBuffer(64 * 1024 * 1024 / 20),indexBuffer.type());
                         for(var infoBlock : renderInfo.lodFullMesh()){
                             renderpass.setVertexBuffer(0, infoBlock.drawBuffer());
-                            IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(infoBlock.commandBuffer(), infoBlock.drawCount());
+                            for(var cmd : infoBlock.drawCommands()){
+                                renderpass.drawIndexed(cmd.baseVertex(), cmd.firstIndex(), cmd.count(), cmd.instanceCount());
+                            }
                         }
                     }
                 }
