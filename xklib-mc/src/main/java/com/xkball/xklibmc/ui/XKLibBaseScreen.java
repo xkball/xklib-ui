@@ -20,6 +20,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @NonNullByDefault
 public class XKLibBaseScreen extends Screen {
@@ -150,6 +151,9 @@ public class XKLibBaseScreen extends Screen {
     public boolean keyPressed(KeyEvent event) {
         var e = convertKeyEvent(event);
         this.guiSystem.dispatchEventReversed(widget -> widget.keyPressed(e));
+        if (event.key() == GLFW.GLFW_KEY_F10) {
+            this.guiSystem.printLayout();
+        }
         return super.keyPressed(event);
     }
     

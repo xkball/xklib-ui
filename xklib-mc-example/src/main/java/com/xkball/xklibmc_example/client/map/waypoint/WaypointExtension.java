@@ -109,6 +109,9 @@ public class WaypointExtension implements WorldMapExtension {
     }
 
     private void openDetail(WorldMapExtensionService service, Waypoint waypoint, boolean temporary, double x, double y) {
+        if (this.detailWindow != null && waypoint.id().equals(this.detailWaypointId)) {
+            return;
+        }
         this.closeDetailWindow();
         var waypointId = waypoint.id();
         this.detailWaypointId = waypointId;
@@ -120,7 +123,7 @@ public class WaypointExtension implements WorldMapExtension {
             }
         };
         var title = temporary ? "Temporary Waypoint" : "Waypoint";
-        this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, 260, 560);
+        this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, 262, 565);
     }
 
     private void openManager(WorldMapExtensionService service) {

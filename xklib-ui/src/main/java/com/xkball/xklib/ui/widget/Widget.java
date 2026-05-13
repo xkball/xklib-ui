@@ -414,10 +414,18 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
     public final void render(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if(!this.visible()) return;
         if (this.overflow()){
+            for(var p : this.styleSheet.renderableProperty()){
+                p.render(this,graphics,mouseX,mouseY,a);
+            }
             this.doRender(graphics, mouseX, mouseY, a);
         }
         else {
-            this.renderInScissor(graphics,() -> this.doRender(graphics, mouseX, mouseY, a));
+            this.renderInScissor(graphics,() -> {
+                for(var p : this.styleSheet.renderableProperty()){
+                    p.render(this,graphics,mouseX,mouseY,a);
+                }
+                this.doRender(graphics, mouseX, mouseY, a);
+            });
         }
         
     }
@@ -427,11 +435,19 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         if(this.hovered && XKLib.IS_DEBUG){
             this.renderDebug(graphics, mouseX, mouseY);
         }
+        for(var p : this.styleSheet.renderableProperty()){
+            p.renderAbove(this,graphics,mouseX,mouseY,a);
+        }
     }
     
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a){
+
+    }
+    
+    @Override
+    public void renderBelow(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         for(var p : this.styleSheet.renderableProperty()){
-            p.render(this,graphics,mouseX,mouseY,a);
+            p.renderBelow(this,graphics,mouseX,mouseY,a);
         }
     }
     

@@ -87,11 +87,11 @@ public class RegionStorage {
                     var pos = new ChunkPos((x0 << REGION_SHIFT) + dx, (z0 << REGION_SHIFT) + dz);
                     var storage = this.getChunk(pos);
                     if(storage != null){
-                        storage.dirty = false;
                         byteBuf.writeBoolean(true);
                         CodecUtils.AABB_STREAM_CODEC.encode(byteBuf, storage.aabb);
                         ChunkHeightMap.STREAM_CODEC.encode(byteBuf, storage.heightMap);
                         ChunkStorage.ChunkStorageData.STREAM_CODEC.encode(byteBuf,storage.data);
+                        storage.dirty = false;
                     }
                     else{
                         byteBuf.writeBoolean(false);

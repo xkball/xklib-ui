@@ -4,9 +4,10 @@ import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.ICharEvent;
 import com.xkball.xklib.api.gui.input.IKeyEvent;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.resource.ResourceLocation;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.system.GuiSystem;
-import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -28,11 +29,8 @@ public class WindowedContainer extends AbsoluteContainer {
     private static final int RESIZE_TOP = 4;
     private static final int RESIZE_BOTTOM = 8;
     private static final String DEFAULT_WINDOW_CSS = """
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: 10rpx 1fr;
-            align-items: stretch;
-            justify-content: stretch;
+            display: flex;
+            flex-direction: column;
             """;
     private static final String TOP_BAR_CSS = """
             display: flex;
@@ -43,7 +41,7 @@ public class WindowedContainer extends AbsoluteContainer {
             background-color: 0xEE1E293B;
             """;
     private static final String TITLE_CSS = """
-            size: 100%-10px 10rpx;
+            size: 100%-10rpx 10rpx;
             margin-left: 4px;
             text-color: 0xFFE2E8F0;
             text-drop-shadow: false;
@@ -53,15 +51,12 @@ public class WindowedContainer extends AbsoluteContainer {
             display: flex;
             align-items: stretch;
             justify-content: stretch;
-            size: 100% 100%;
+            size: 100% 100%-10rpx;
             background-color: 0xEE0F172A;
             """;
     private static final String CLOSE_BUTTON_CSS = """
             size: 10rpx 10rpx;
             margin-right: 2rpx;
-            text-align: center;
-            background-color: 0xEE334155;
-            text-color: 0xFFE2E8F0;
             """;
 
     private float nextWindowX = DEFAULT_WINDOW_OFFSET;
@@ -166,7 +161,14 @@ public class WindowedContainer extends AbsoluteContainer {
     public boolean charTyped(ICharEvent event) {
         return super.charTyped(event) || (this.enabled && this.visible() && this.blockInput);
     }
-
+    
+    @Override
+    public boolean mouseMoved(double mouseX, double mouseY) {
+        super.mouseMoved(mouseX, mouseY);
+        //如果返回super的结果, 则多层时, 下层组件永远无法拿到hover的状态
+        return blockInput;
+    }
+    
     @Override
     public void resize(float offsetX, float offsetY) {
         super.resize(offsetX, offsetY);
@@ -276,7 +278,7 @@ public class WindowedContainer extends AbsoluteContainer {
         private final ContainerWidget topBar = new ContainerWidget();
         private final ContainerWidget contentPanel = new ContainerWidget();
         private final Label titleLabel = new Label();
-        private final Button closeButton = new Button("X", this::close);
+        private final IconButton closeButton = new IconButton(new ResourceLocation("xklibmc", "icon/close"), this::close);
         private final boolean resizable;
         private int resizeMode = RESIZE_NONE;
         private boolean moving = false;

@@ -47,7 +47,7 @@ public class BackgroundColorProperty implements IStyleProperty<Integer> {
     }
 
     @Override
-    public void render(IGuiWidget widget, IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+    public void renderBelow(IGuiWidget widget, IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         graphics.fill(widget.getX(), widget.getY(), widget.getMaxX(), widget.getMaxY(), this.color);
     }
 }

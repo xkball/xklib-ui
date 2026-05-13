@@ -89,7 +89,7 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
         var layer = new WindowedContainer();
         layer.setAutoRemoveFromGuiSystemWhenEmpty(true);
-        layer.inlineStyle("size: 100% 100%;");
+        layer.inlineStyle("size: 100% 100%; background-color: 0x55000000;");
         layer.setBlockInput(true);
         var parent = this.widget.windowLayer();
         var window = layer.addSubWindow(content, title, resizable, x, y, width, height);

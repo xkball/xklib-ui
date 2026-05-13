@@ -97,6 +97,9 @@ public class ScalableContainer extends AbsoluteContainer {
     @Override
     public void renderBelow(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if (!this.visible()) return;
+        for(var p : this.styleSheet.renderableProperty()){
+            p.renderBelow(this,graphics,mouseX,mouseY,a);
+        }
 //        super.renderBelow(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
@@ -115,6 +118,9 @@ public class ScalableContainer extends AbsoluteContainer {
     @Override
     public void renderAbove(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
         if (!this.visible()) return;
+        for(var p : this.styleSheet.renderableProperty()){
+            p.renderAbove(this,graphics,mouseX,mouseY,a);
+        }
 //        super.renderAbove(graphics, mouseX, mouseY, a);
         var selfRect = this.getRectangle();
         graphics.enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);

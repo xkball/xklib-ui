@@ -4,6 +4,7 @@ import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.container.AbsoluteContainer;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import dev.vfyjxf.taffy.style.TaffyDisplay;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
@@ -57,6 +58,10 @@ public class WaypointOverlayWidget extends AbsoluteContainer {
         var screen = this.service.projWorld2Screen(new Vector3f(pos.getX(), pos.getY(), pos.getZ()));
         if (screen != null) {
             icon.setAbsoluteSize(screen.x - this.getX(), screen.y - this.getY() - 16);
+            icon.setStyle(s -> s.display = TaffyDisplay.DEFAULT);
+        }
+        else{
+            icon.setStyle(s -> s.display = TaffyDisplay.NONE);
         }
     }
 }

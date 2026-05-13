@@ -101,14 +101,12 @@ public class WidgetWrapper extends Widget {
     
     @Override
     protected boolean onMouseReleased(IMouseButtonEvent event) {
-        widget.mouseReleased(convertMouseButtonEvent(event));
-        return false;
+        return widget.mouseReleased(convertMouseButtonEvent(event));
     }
     
     @Override
     protected boolean onMouseDragged(IMouseButtonEvent event, double dx, double dy) {
-        widget.mouseDragged(convertMouseButtonEvent(event), dx, dy);
-        return false;
+        return widget.mouseDragged(convertMouseButtonEvent(event), dx, dy);
     }
     
     @Override

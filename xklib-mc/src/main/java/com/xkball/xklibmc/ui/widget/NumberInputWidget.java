@@ -168,8 +168,10 @@ public class NumberInputWidget<T extends Number> extends ContainerWidget impleme
     @Override
     public void setValue(T value) {
         if (value == null) return;
-        if (value.equals(this.value)) return;
         var v = clamp(value);
+        if (v.equals(this.value) && Objects.equals(this.inputBox.getValue(), this.formatter.apply(v))) {
+            return;
+        }
         this.value = v;
         updateTextFromValue(v);
         for (var bind : bindings) {

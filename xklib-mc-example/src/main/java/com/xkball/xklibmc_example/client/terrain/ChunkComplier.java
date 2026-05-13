@@ -28,7 +28,9 @@ import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @NonNullByDefault
 public class ChunkComplier {
@@ -41,7 +43,17 @@ public class ChunkComplier {
             Blocks.GRASS_BLOCK, Identifier.parse("block/grass_block_top"),
             Blocks.SNOW, Identifier.parse("block/snow")
     );
-    
+    private static final Set<Block> IGNORED_BLOCKS = new HashSet<>(Set.of(
+            Blocks.SHORT_DRY_GRASS,
+            Blocks.SHORT_GRASS,
+            Blocks.TALL_GRASS,
+            Blocks.TALL_DRY_GRASS,
+            Blocks.FERN,
+            Blocks.LARGE_FERN,
+            Blocks.BUSH,
+            Blocks.DEAD_BUSH,
+            Blocks.FIREFLY_BUSH
+    ));
     public @Nullable ChunkStorage compile(LevelChunkStorage storage, ClientLevel level, ChunkPos chunkPos){
         if (level.getChunk(chunkPos.x(), chunkPos.z(), ChunkStatus.FULL, false) == null)  return null;
         return compile(storage, level, level.getChunk(chunkPos.x(), chunkPos.z()), chunkPos, false);
@@ -63,6 +75,9 @@ public class ChunkComplier {
                 var hMax = context.getHeight(Heightmap.Types.WORLD_SURFACE,px,pz) + 1;
                 var hMin = context.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,px,pz) - 1;
                 var hm = hMax - 1;
+                while (context.getBlockState(pos.set(px, hm, pz)).isAir() && hm > chunkMinY) {
+                    hm-=1;
+                }
                 heightMap.set(px,pz,hm);
                 pos.set(px,hm,pz);
                 var bs_ = context.getBlockState(pos);
@@ -143,10 +158,13 @@ public class ChunkComplier {
         }
         
         public BlockState getBlockState(BlockPos pos){
+            BlockState result;
             if(insideChunk(pos)){
-                return chunkAccess.getBlockState(pos);
+                result = chunkAccess.getBlockState(pos);
             }
-            return level.getBlockState(pos);
+            else result = level.getBlockState(pos);
+            if(IGNORED_BLOCKS.contains(result.getBlock())) return Blocks.AIR.defaultBlockState();
+            return result;
         }
         
         public int getBlockColor(BlockPos pos, BlockState state){

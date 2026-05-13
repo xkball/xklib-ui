@@ -3,11 +3,14 @@ package com.xkball.xklibmc.ui.widget;
 import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.widget.IInputWidget;
 import com.xkball.xklib.api.gui.widget.ILayoutVariable;
+import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.ui.widget.Label;
+import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +22,23 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
 
     private static final String ROOT_STYLE = """
             .color_input_row {
-                size: 100% 25%;
+                size: 100% 20%;
                 flex-direction: row;
             }
+            .color_input_label {
+                size: 7% 100%;
+                text-color: 0xFFFFFFFF;
+                text-align: center;
+            }
             .color_input_slider {
-                size: 70% 100%;
+                size: 63% 100%;
             }
             .color_input_number {
                 size: 30% 100%;
+            }
+            .color_preview_row {
+                size: 100% 20%;
+                flex-direction: row;
             }
             """;
 
@@ -79,22 +91,29 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
         inputB.setCallback(w -> onInputChanged(2, w.getValue()));
         inputA.setCallback(w -> onInputChanged(3, w.getValue()));
 
-        sliderR.setValue(r);
-        sliderG.setValue(g);
-        sliderB.setValue(b);
-        sliderA.setValue(a);
+        sliderR.setActualValue(r);
+        sliderG.setActualValue(g);
+        sliderB.setActualValue(b);
+        sliderA.setActualValue(a);
 
         inputR.setValue(r);
         inputG.setValue(g);
         inputB.setValue(b);
         inputA.setValue(a);
 
-        addSliderRow(sliderR, inputR);
-        addSliderRow(sliderG, inputG);
-        addSliderRow(sliderB, inputB);
-        addSliderRow(sliderA, inputA);
-    }
+        var previewRow = new ContainerWidget();
+        previewRow.setCSSClassName("color_preview_row");
+        var colorPreview = new ColorPreview(this);
+        colorPreview.inlineStyle("size: 63% 90%; aspect-ratio: 1; margin-left: 7%");
+        previewRow.addChild(colorPreview);
+        this.addChild(previewRow);
 
+        addSliderRow(sliderR, inputR, "R");
+        addSliderRow(sliderG, inputG, "G");
+        addSliderRow(sliderB, inputB, "B");
+        addSliderRow(sliderA, inputA, "A");
+    }
+    
     public int getR() {
         return r;
     }
@@ -153,11 +172,16 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
         return this;
     }
 
-    private void addSliderRow(GradientSlider slider, NumberInputWidget<Integer> input) {
+    private void addSliderRow(GradientSlider slider, NumberInputWidget<Integer> input, String label) {
         var row = new ContainerWidget();
         row.setCSSClassName("color_input_row");
 
+        var labelWidget = new Label(label);
+        labelWidget.setCSSClassName("color_input_label");
+        row.addChild(labelWidget);
+
         var sliderWrapper = new WidgetWrapper(slider);
+        sliderWrapper.setUserInput(true);
         sliderWrapper.setCSSClassName("color_input_slider");
         row.addChild(sliderWrapper);
 
@@ -203,10 +227,10 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
     }
 
     private void syncSliders() {
-        sliderR.setValue(r);
-        sliderG.setValue(g);
-        sliderB.setValue(b);
-        sliderA.setValue(a);
+        sliderR.setActualValue(r);
+        sliderG.setActualValue(g);
+        sliderB.setActualValue(b);
+        sliderA.setActualValue(a);
     }
 
     private void syncInputs() {
@@ -225,7 +249,25 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
         return Math.clamp(v, 0, 255);
     }
 
-    private static class GradientSlider extends ExtendedSlider {
+    private static class ColorPreview extends Widget {
+
+        private final ColorInputWidget parent;
+
+        ColorPreview(ColorInputWidget parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
+            super.doRender(graphics, mouseX, mouseY, a);
+            int color = VanillaUtils.getColor(parent.r, parent.g, parent.b, parent.a);
+            int borderColor = 0xFF888888;
+            graphics.fill((int) x, (int) y, (int) (x + width), (int) (y + height), borderColor);
+            graphics.fill((int) x + 1, (int) y + 1, (int) (x + width - 1), (int) (y + height - 1), color);
+        }
+    }
+
+    private static class GradientSlider extends AbstractSliderButton {
 
         private static final int CHANNEL_R = 0;
         private static final int CHANNEL_G = 1;
@@ -247,13 +289,18 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
                 IntSupplier aSup,
                 Consumer<Integer> onChange
         ) {
-            super(0, 0, 0, 0, Component.empty(), Component.empty(), 0, 255, 0, 1, 0, false);
+            super(0, 0, 0, 0, Component.empty(), 0D);
             this.channel = channel;
             this.rSup = rSup;
             this.gSup = gSup;
             this.bSup = bSup;
             this.aSup = aSup;
             this.onChange = onChange;
+        }
+
+        void setActualValue(int actualValue) {
+            this.value = Math.clamp(actualValue / 255D, 0D, 1D);
+            updateMessage();
         }
 
         @Override
@@ -294,15 +341,25 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
                 }
             }
 
-            double handlePos = (this.value - this.minValue) / (this.maxValue - this.minValue);
-            int handleX = x0 + (int) (handlePos * (w - HANDLE_WIDTH));
+            int handleX = x0 + (int) (this.value * (w - HANDLE_WIDTH));
             guiGraphics.fill(handleX, y0, handleX + HANDLE_WIDTH, y0 + h, 0xFFFFFFFF);
             guiGraphics.fill(handleX + 1, y0 + 1, handleX + HANDLE_WIDTH - 1, y0 + h - 1, 0xFFAAAAAA);
+            handleCursor(guiGraphics);
+        }
+
+        @Override
+        public boolean keyPressed(net.minecraft.client.input.KeyEvent keyEvent) {
+            return false;
+        }
+
+        @Override
+        protected void updateMessage() {
+            this.setMessage(Component.empty());
         }
 
         @Override
         protected void applyValue() {
-            onChange.accept((int) this.value);
+            onChange.accept((int) (this.value * 255));
         }
 
     }

@@ -111,7 +111,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 .addChild(z)
                 .addChild(new Label("Color").inlineStyle("height: 8rpx;"))
                 .addChild(colorRow);
-        var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 100% auto; margin: 3rpx;");
+        var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 90% auto; margin: 3rpx;");
         var teleport = new Button("Teleport", () -> WaypointActions.teleport(waypoint)).setCSSClassName("action_btn");
         teleport.setEnabled(WaypointActions.canTeleport());
         actions.addChild(teleport);
@@ -179,14 +179,14 @@ public class WaypointDetailWindow extends ContainerWidget {
                         """)
                 .asRootStyle("""
                         ColorInputWidget {
-                            size: 100% 75%;
-                            margin-bottom: 4rpx;
+                            size: 100% 85%;
                         }
                         .color_actions {
                             size: 100% 15%;
                             flex-direction: row;
                         }
                         .color_action_btn {
+                            margin: 1rpx;
                             size: 50% 100%;
                             text-align: center;
                             text-scale: expand-width;
