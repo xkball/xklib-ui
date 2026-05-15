@@ -3,16 +3,13 @@ package com.xkball.xklibmc.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.GpuOutOfMemoryException;
 import com.mojang.blaze3d.opengl.GlConst;
-import com.mojang.blaze3d.opengl.GlDebugLabel;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlProgram;
 import com.mojang.blaze3d.opengl.GlRenderPipeline;
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.ShaderSource;
 
-import com.mojang.blaze3d.systems.GpuDeviceBackend;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.xkball.xklibmc.api.client.mixin.IExtendedGLProgram;
@@ -26,10 +23,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL42;
 import org.lwjgl.opengl.GL43;
-import org.lwjgl.opengl.GL46;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -48,7 +42,7 @@ public abstract class MixinGLDevice implements IExtendedGpuDevice {
     }
     
     @Override
-    public GpuTexture xklib$createSparseTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers) {
+    public GpuTexture xklib$createSparseTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int clearColor) {
         GlStateManager.clearGlErrors();
         int id = GlStateManager._genTexture();
         if (label == null) {
@@ -72,7 +66,7 @@ public abstract class MixinGLDevice implements IExtendedGpuDevice {
         } else if (error != 0) {
             throw new IllegalStateException("OpenGL error " + error);
         } else {
-            return new GLSparseTexture(usage, label, format, width, height, depthOrLayers, 1, id, pageSizeX, pageSizeY);
+            return new GLSparseTexture(usage, label, format, width, height, depthOrLayers, 1, id, pageSizeX, pageSizeY, clearColor);
         }
     }
 }

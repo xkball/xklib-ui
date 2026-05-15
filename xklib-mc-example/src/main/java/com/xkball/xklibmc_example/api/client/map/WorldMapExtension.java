@@ -9,6 +9,10 @@ public interface WorldMapExtension {
 
     String id();
 
+    default int order() {
+        return 0;
+    }
+
     default void init(WorldMapExtensionContext context) {
     }
 

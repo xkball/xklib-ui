@@ -7,7 +7,7 @@ import org.jspecify.annotations.Nullable;
 public interface IExtendedGpuDevice {
     
     default GpuTexture xklib$createSparseTexture(
-            @Nullable String label, @GpuTexture.Usage final int usage, TextureFormat format, int width, int height, int depthOrLayers
+            @Nullable String label, @GpuTexture.Usage final int usage, TextureFormat format, int width, int height, int depthOrLayers, int clearColor
     ){
         throw new UnsupportedOperationException();
     }

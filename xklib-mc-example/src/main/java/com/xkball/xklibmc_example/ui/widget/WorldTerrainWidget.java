@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.ui.widget;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
@@ -13,6 +14,7 @@ import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import com.xkball.xklibmc_example.ServerConfig;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
@@ -65,6 +67,12 @@ public class WorldTerrainWidget extends ContainerWidget {
                             iconcheckbox-bg-color: 0xAA666666;
                             flex-shrink: 0;
                         }
+                        IconButton {
+                            size: 14rpx 14rpx;
+                            margin-top: 1rpx;
+                            margin-left: 1rpx;
+                            flex-shrink: 0;
+                        }
                         .update_button {
                             size: content 14rpx;
                             margin-top: 1rpx;
@@ -86,8 +94,8 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .splitter {
                             size: 2px 100%;
                             background-color: 0xEEAAAAAA;
-                            margin-left: 1rpx;
-                            margin-right: 1rpx;
+                            margin-left: 2rpx;
+                            margin-right: 2rpx;
                             flex-shrink: 0;
                         }
                         NumberInputWidget {
@@ -182,6 +190,9 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .withTooltip(IComponent.literal("Update chunks in view distance."))
                         .inlineStyle("margin-left: auto;"))
                 .addChild(new Button("Request Geomatics",() -> {
+                    if (!ServerConfig.ALLOW_SERVER_SENT_CHUNK.get() && !XKLib.IS_DEBUG) {
+                        return;
+                    }
                     var player = Minecraft.getInstance().player;
                     if(player == null) return;
                     var centerChunk = ChunkPos.containing(player.blockPosition());

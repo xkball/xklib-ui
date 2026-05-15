@@ -3,7 +3,6 @@ package com.xkball.xklibmc_example.client.terrain;
 import com.mojang.blaze3d.GraphicsWorkarounds;
 import com.mojang.blaze3d.vertex.UberGpuBuffer;
 import com.mojang.logging.LogUtils;
-import com.xkball.xklibmc.client.b3d.buffer.ManagedGpuBuffer;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionStorage;
@@ -41,7 +40,7 @@ public class LevelChunkStorage {
     public UberGpuBuffer<ChunkPos> gpuBufferBlockData;
     public EnumMap<Direction, UberGpuBuffer<ChunkPos>> gpuBufferByFace = new EnumMap<>(Direction.class);
     public UberGpuBuffer<ChunkPosLod> gpuBufferByLodFullMesh;
-    public TerrainTextureManager terrainTextureManager = new TerrainTextureManager();
+    public TerrainTextureManager terrainTextureManager = new TerrainTextureManager(this);
     private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
     public final Map<RegionPos, RegionStorage> regionMap = new LinkedHashMap<>();
     private final Map<String, WorldMapExtensionStorage> extensionStorageMap = new LinkedHashMap<>();

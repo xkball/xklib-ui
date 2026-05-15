@@ -2,8 +2,9 @@ package com.xkball.xklibmc_example.client.map.waypoint;
 
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
-import com.xkball.xklib.ui.widget.Button;
+import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.IconCheckBox;
+import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
@@ -23,6 +24,7 @@ public class WaypointExtension implements WorldMapExtension {
     private WindowedContainer.@Nullable SubWindow managerWindow;
     private WindowedContainer.@Nullable SubWindow detailWindow;
     private @Nullable UUID detailWaypointId;
+    private boolean addingWaypoint;
 
     @Override
     public String id() {
@@ -47,7 +49,9 @@ public class WaypointExtension implements WorldMapExtension {
         this.visible.addCallback(_ -> service.refreshInnerOverlay());
         this.visible.addCallback(value -> service.setBooleanState("visible", value));
         service.addLeftBarWidget(new IconCheckBox(VanillaUtils.modrl("icon/waypoint")).bind(this.visible).withTooltip(IComponent.literal("show waypoints")));
-        service.addTopBar2Widget(new Button("Waypoints", () -> this.openManager(service)).setCSSClassName("update_button").withTooltip(IComponent.literal("Open waypoint manager.")));
+        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/add_waypoint"), () -> this.addingWaypoint = true).withTooltip(IComponent.literal("Add waypoint. Left-click on map to place.")));
+        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/manage_waypoint"), () -> this.openManager(service)).withTooltip(IComponent.literal("Open waypoint manager.")));
+        service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
         service.setInnerOverlayProvider(() -> this.createOverlay(service));
         service.refreshInnerOverlay();
     }
@@ -62,6 +66,19 @@ public class WaypointExtension implements WorldMapExtension {
     @Override
     public void onMapEvent(WorldMapExtensionService service, WorldMapEvent event) {
         if (!(event instanceof WorldMapEvent.MouseClicked clicked) || clicked.event().button() != 0) {
+            return;
+        }
+        if (this.addingWaypoint) {
+            var worldPos = service.projScreen2World(clicked.event().x(), clicked.event().y());
+            if (worldPos == null) {
+                return;
+            }
+            var pos = new BlockPos((int) Math.floor(worldPos.x), (int) Math.floor(worldPos.y), (int) Math.floor(worldPos.z));
+            this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), "Waypoint", pos, 0xFF66CCFF, false);
+            this.openDetail(service, this.temporaryWaypoint, true, clicked.event().x(), clicked.event().y());
+            service.refreshInnerOverlay();
+            this.addingWaypoint = false;
+            clicked.consume();
             return;
         }
         if (!clicked.doubleClick()) {
@@ -87,7 +104,7 @@ public class WaypointExtension implements WorldMapExtension {
     }
 
     private WaypointOverlayWidget createOverlay(WorldMapExtensionService service) {
-        return new WaypointOverlayWidget(service, this.visible, () -> this.storage(service), () -> this.temporaryWaypoint, (waypoint, temporary) -> this.openDetail(service, waypoint, temporary));
+        return new WaypointOverlayWidget(service, this.visible, () -> this.storage(service), () -> this.temporaryWaypoint, (mouse, waypoint, temporary) -> this.openDetail(service, waypoint, temporary, mouse.x, mouse.y));
     }
 
     private WaypointStorage storage(WorldMapExtensionService service) {

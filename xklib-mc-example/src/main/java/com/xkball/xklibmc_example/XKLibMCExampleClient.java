@@ -1,6 +1,5 @@
 package com.xkball.xklibmc_example;
 
-import com.xkball.xklibmc_example.client.compatibility.CompatibilityConfig;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.ui.WorldTerrainScreen;
 import net.minecraft.client.Minecraft;
@@ -23,7 +22,7 @@ public class XKLibMCExampleClient {
     
     public XKLibMCExampleClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        container.registerConfig(ModConfig.Type.CLIENT, CompatibilityConfig.SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
     @SubscribeEvent

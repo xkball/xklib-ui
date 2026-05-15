@@ -254,10 +254,10 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             return new Vector3f(ray).mul(distance).add(origin);
         }
         
-        private @Nullable Float rayTerrainDelta(LevelChunkStorage storage, Vector3f point) {
+        private Float rayTerrainDelta(LevelChunkStorage storage, Vector3f point) {
             var x = (int) Math.floor(point.x);
             var z = (int) Math.floor(point.z);
-            if(storage.getChunk(new ChunkPos(x >> 4, z >> 4)) == null) return null;
+            if(storage.getChunk(new ChunkPos(x >> 4, z >> 4)) == null) return point.y - 64;
             return point.y - storage.getHeight(x, z);
         }
         

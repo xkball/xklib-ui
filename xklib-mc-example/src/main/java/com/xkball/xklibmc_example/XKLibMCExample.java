@@ -6,6 +6,7 @@ import net.minecraft.server.level.TicketType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class XKLibMCExample {
     
     public XKLibMCExample(IEventBus modEventBus, ModContainer modContainer) {
         TICKET_TYPE.register(modEventBus);
+        modContainer.registerConfig(ModConfig.Type.COMMON, ServerConfig.SPEC);
     }
     
 }

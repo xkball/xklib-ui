@@ -5,18 +5,19 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.container.AbsoluteContainer;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
+import org.apache.commons.lang3.function.TriConsumer;
+import org.joml.Vector2d;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class WaypointOverlayWidget extends AbsoluteContainer {
 
     private final WorldMapExtensionService service;
-    private final BiConsumer<Waypoint, Boolean> openHandler;
+    private final TriConsumer<Vector2d, Waypoint, Boolean> openHandler;
 
-    public WaypointOverlayWidget(WorldMapExtensionService service, BooleanLayoutVariable visible, Supplier<WaypointStorage> storage, Supplier<@Nullable Waypoint> temporary, BiConsumer<Waypoint, Boolean> openHandler) {
+    public WaypointOverlayWidget(WorldMapExtensionService service, BooleanLayoutVariable visible, Supplier<WaypointStorage> storage, Supplier<@Nullable Waypoint> temporary, TriConsumer<Vector2d, Waypoint, Boolean> openHandler) {
         this.service = service;
         this.openHandler = openHandler;
         this.autoReorder = false;
@@ -49,7 +50,7 @@ public class WaypointOverlayWidget extends AbsoluteContainer {
     }
 
     private void addWaypointIcon(Waypoint waypoint, boolean temporary) {
-        var icon = new WaypointIconWidget(waypoint, temporary, () -> this.openHandler.accept(waypoint, temporary));
+        var icon = new WaypointIconWidget(waypoint, temporary, (p) -> this.openHandler.accept(p,waypoint, temporary));
         this.addChild(icon);
     }
 

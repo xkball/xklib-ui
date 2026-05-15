@@ -13,9 +13,11 @@ import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
+import com.xkball.xklibmc_example.client.b3d.XKLibExampleUniforms;
 import com.xkball.xklibmc_example.client.b3d.pipeline.XKLibExampleRenderPipelines;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
@@ -42,6 +44,8 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
     
     @Override
     public void render(WorldTerrainPipRenderer pip, WorldTerrainPipRenderer.WorldTerrainState renderState, PoseStack poseStack, GpuTextureView texture, GpuTextureView depth) {
+        var level = Minecraft.getInstance().level;
+        if(level == null) return;
         RenderSystem.getModelViewStack().pushMatrix();
         var modelView = RenderSystem.getModelViewStack().mul(poseStack.last().pose(), new Matrix4f());
         var frustum = new Frustum(modelView,WorldTerrainPipRenderer.projMatrix);
@@ -49,6 +53,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
                 b.putVec3(VanillaUtils.dirVec(Mth.clamp(renderState.xRot(),45,90),renderState.yRot() + 2))
                  .putVec3(renderState.cameraPos()));
+        XKLibExampleUniforms.LEVEL_DATA.updateUnsafe(b -> b.putVec2(level.getMinY(), level.getMaxY()));
         if(TerrainChunkManager.INSTANCE.compatibleMode){
             try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfoCompatibleMode(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance())){
                 if(!renderInfo.lodFullMesh().isEmpty()){
@@ -101,7 +106,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
                         }
                     }
                 }
-            };
+            }
 
         }
         var cp = renderState.cameraPos();

@@ -18,14 +18,15 @@ public class GLSparseTexture extends GlTexture {
     
     private final int pagesX;
     private final int pagesY;
-    
+    private final int clearColor;
     private final boolean[][] committed;
     
     
-    public GLSparseTexture(@Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, int pageSizeX, int pageSizeY) {
+    public GLSparseTexture(@Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, int pageSizeX, int pageSizeY, int clearColor) {
         super(usage, label, format, width, height, depthOrLayers, mipLevels, id);
         this.pageSizeX = pageSizeX;
         this.pageSizeY = pageSizeY;
+        this.clearColor = clearColor;
         this.pagesX = (int)Math.ceil((double)width / pageSizeX);
         this.pagesY = (int)Math.ceil((double)height / pageSizeY);
         this.committed = new boolean[pagesX][pagesY];
@@ -38,7 +39,7 @@ public class GLSparseTexture extends GlTexture {
         ARBSparseTexture.glTexPageCommitmentARB(GL11.GL_TEXTURE_2D, 0, x, y, 0, pageSizeX, pageSizeY, 1, true);
         var buffer = MemoryUtil.memAlloc(pagesX * pagesY * 4);
         for (int i = 0; i < pageSizeX * pageSizeY; i++) {
-            buffer.putInt(0);
+            buffer.putInt(clearColor);
         }
         buffer.flip();
         var format = NativeImage.Format.RGBA;

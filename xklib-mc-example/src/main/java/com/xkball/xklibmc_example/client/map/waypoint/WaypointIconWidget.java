@@ -6,6 +6,9 @@ import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
+import org.joml.Vector2d;
+
+import java.util.function.Consumer;
 
 public class WaypointIconWidget extends Widget {
 
@@ -14,9 +17,9 @@ public class WaypointIconWidget extends Widget {
 
     private final Waypoint waypoint;
     private final boolean temporary;
-    private final Runnable openAction;
+    private final Consumer<Vector2d> openAction;
 
-    public WaypointIconWidget(Waypoint waypoint, boolean temporary, Runnable openAction) {
+    public WaypointIconWidget(Waypoint waypoint, boolean temporary, Consumer<Vector2d> openAction) {
         this.waypoint = waypoint;
         this.temporary = temporary;
         this.openAction = openAction;
@@ -46,7 +49,7 @@ public class WaypointIconWidget extends Widget {
     @Override
     protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
         if (event.button() == 0) {
-            this.openAction.run();
+            this.openAction.accept(new Vector2d(event.x(), event.y()));
             return true;
         }
         return false;

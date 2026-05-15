@@ -1,4 +1,5 @@
 #version 460 core
+#extension GL_ARB_sparse_texture2 : require
 
 layout(std140) uniform DynamicTransforms {
     mat4 ModelViewMat;
@@ -9,6 +10,10 @@ layout(std140) uniform DynamicTransforms {
 
 layout(std140) uniform Projection {
     mat4 ProjMat;
+};
+
+layout(std140) uniform LevelData {
+    vec2 minMaxHeight;
 };
 
 struct cmddata{
@@ -44,7 +49,12 @@ out vec3 worldPos;
 out vec3 pNormal;
 
 float getHeight(vec2 uv){
-    return float(int(packUnorm4x8(texture(heightTexture, uv))));
+    vec4 c;
+    int residency = sparseTextureARB(heightTexture, uv, c);
+    if (!sparseTexelsResidentARB(residency)){
+        return minMaxHeight.x - 1;
+    }
+    return float(int(packUnorm4x8(c)));
 }
 
 void main() {

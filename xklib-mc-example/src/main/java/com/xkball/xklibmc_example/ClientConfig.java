@@ -1,8 +1,8 @@
-package com.xkball.xklibmc_example.client.compatibility;
+package com.xkball.xklibmc_example;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public class CompatibilityConfig {
+public class ClientConfig {
 
     public static final ModConfigSpec SPEC;
     public static final ModConfigSpec.BooleanValue FORCE_COMPATIBILITY_MODE;

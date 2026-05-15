@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -30,6 +31,7 @@ public class WorldMapExtensionRegistry {
                 LOGGER.error("Failed to initialize world map extension {}", extension.id(), e);
             }
         }
+        this.extensions.sort(Comparator.comparingInt(WorldMapExtension::order));
     }
 
     public List<WorldMapExtension> extensions() {

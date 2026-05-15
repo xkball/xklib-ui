@@ -7,6 +7,7 @@ import com.xkball.xklib.ui.widget.CheckBox;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
+import com.xkball.xklibmc_example.ClientConfig;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
@@ -32,7 +33,7 @@ public class CompatibilityExtension implements WorldMapExtension {
     public static void initCompatibilityMode() {
         var reasons = new ArrayList<String>();
 
-        if (CompatibilityConfig.FORCE_COMPATIBILITY_MODE.get()) {
+        if (ClientConfig.FORCE_COMPATIBILITY_MODE.get()) {
             reasons.add("Config: forceCompatibilityMode is enabled");
         }
 
