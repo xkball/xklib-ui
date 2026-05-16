@@ -40,7 +40,7 @@ public record LineRenderState(
     }
 
     @Override
-    public void buildVertices(VertexConsumer vertexConsumer) {
+    public void buildVertices(@NonNull VertexConsumer vertexConsumer) {
         if (vertexConsumer instanceof IExtendedBufferBuilder bufferBuilder) {
             Vector2f p0w = this.pose().transformPosition(this.x0(), this.y0(), new Vector2f());
             float p0x = p0w.x();
