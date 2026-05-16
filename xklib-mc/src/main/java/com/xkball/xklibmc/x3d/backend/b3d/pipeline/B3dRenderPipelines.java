@@ -30,7 +30,7 @@ public class B3dRenderPipelines {
             .withLocation(VanillaUtils.modRL("line"))
             .withVertexShader(VanillaUtils.modRL("core/line"))
             .withFragmentShader(VanillaUtils.modRL("core/pos_color"))
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL,VertexFormat.Mode.TRIANGLES)
+            .withVertexFormat(B3dVertexFormats.LINE,VertexFormat.Mode.TRIANGLES)
             .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
             .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))

@@ -15,7 +15,7 @@ public class WaypointActions {
         if (player == null || !player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
             return;
         }
-        player.connection.sendCommand("tp " + waypoint.pos().getX() + " " + waypoint.pos().getY() + " " + waypoint.pos().getZ());
+        player.connection.sendCommand("tp " + waypoint.pos().getX() + " " + (waypoint.pos().getY() + 1) + " " + waypoint.pos().getZ());
     }
 
     public static void share(Waypoint waypoint) {

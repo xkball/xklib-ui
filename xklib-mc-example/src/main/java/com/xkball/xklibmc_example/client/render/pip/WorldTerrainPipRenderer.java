@@ -185,7 +185,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         public Matrix4f calculateProjMatrix(boolean revZ) {
             var aspect = (x1 - x0) / ((float) y1 - (float) y0);
             var cameraPos = cameraPos();
-            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, Math.max(1,cameraPos.y-1000), Math.max(cameraLength * 2, 8000), revZ)
+            return new Matrix4f().perspective((float) Math.toRadians(fov), aspect, Math.max(1,cameraPos.y/10), Math.max(cameraLength * 3, 16000), revZ)
                     .lookAt(cameraPos.x, cameraPos.y, cameraPos.z,
                             cameraTarget.x, cameraTarget.y, cameraTarget.z,
                             0, 1, 0);
@@ -209,8 +209,7 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             var prevDelta = this.rayTerrainDelta(storage, origin);
             for(var distance = step; distance <= maxDistance; distance += step) {
                 var delta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, distance));
-                if(delta == null) continue;
-                if(prevDelta != null && prevDelta * delta <= 0) {
+                if(prevDelta * delta <= 0) {
                     return this.searchRayTerrainHit(storage, origin, ray, prevDistance, distance);
                 }
                 prevDistance = distance;
@@ -234,11 +233,9 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             var low = nearDistance;
             var high = farDistance;
             var lowDelta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, low));
-            if(lowDelta == null) return null;
             for(var i = 0; i < 32; i++) {
                 var mid = (low + high) * 0.5f;
                 var midDelta = this.rayTerrainDelta(storage, this.rayPoint(origin, ray, mid));
-                if(midDelta == null) return null;
                 if(lowDelta * midDelta <= 0) {
                     high = mid;
                 }

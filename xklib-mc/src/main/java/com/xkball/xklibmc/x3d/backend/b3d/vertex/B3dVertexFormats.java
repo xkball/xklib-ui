@@ -15,6 +15,26 @@ public class B3dVertexFormats {
             VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, false, 1
     );
     
+    public static final VertexFormatElement P0 = VertexFormatElement.register(
+            VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, false, 3
+    );
+
+    public static final VertexFormatElement P1 = VertexFormatElement.register(
+            VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, false, 3
+    );
+
+    public static final VertexFormatElement CORNER = VertexFormatElement.register(
+            VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, false, 2
+    );
+
+    public static final VertexFormat LINE = VertexFormat.builder()
+            .add("Position", VertexFormatElement.POSITION)
+            .add("Color", VertexFormatElement.COLOR)
+            .add("P0", P0)
+            .add("P1", P1)
+            .add("Corner", CORNER)
+            .build();
+
     public static final VertexFormat POSITION_TEX_UV2_COLOR_EXTRA = VertexFormat.builder()
             .add("Position", VertexFormatElement.POSITION)
             .add("UV", VertexFormatElement.UV)
