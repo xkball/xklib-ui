@@ -118,4 +118,16 @@ public class WorldMapExtensionRegistry {
             }
         }
     }
+
+    public List<String> enabledLayers(WorldMapExtensionService service) {
+        var layers = new ArrayList<String>();
+        for (var extension : this.extensions) {
+            try {
+                layers.addAll(extension.enabledLayers(service.scope(extension.id())));
+            } catch (Exception e) {
+                LOGGER.error("Failed to collect enabled layers from world map extension {}", extension.id(), e);
+            }
+        }
+        return layers;
+    }
 }

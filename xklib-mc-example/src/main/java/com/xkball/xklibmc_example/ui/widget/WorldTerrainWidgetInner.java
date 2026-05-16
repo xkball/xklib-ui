@@ -38,6 +38,11 @@ import java.util.function.Supplier;
 @NonNullByDefault
 public class WorldTerrainWidgetInner extends ContainerWidget {
 
+    public enum MapMode {
+        NORMAL,
+        MINIMAP
+    }
+
     private final Vector3f cameraTarget = new Vector3f();
     private BlockPos centerPos = BlockPos.ZERO;
     private float xRot = 89.0f;
@@ -61,8 +66,16 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     private final IntLayoutVariable fixY;
     private final IntLayoutVariable lodDistance;
     private final IntLayoutVariable viewDistance;
+    private final MapMode mapMode;
+    private final IntLayoutVariable minimapRenderRange;
+    private final IntLayoutVariable minimapHighDetailRange;
+    private final BooleanLayoutVariable minimapRotateWithPlayer;
 
     public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable cameraTarget, BooleanLayoutVariable depress_sphere, BooleanLayoutVariable debug, IntLayoutVariable yMode, IntLayoutVariable fixY, IntLayoutVariable lodDistance, IntLayoutVariable viewDistance) {
+        this(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance, MapMode.NORMAL, new IntLayoutVariable(16), new IntLayoutVariable(8), new BooleanLayoutVariable(false));
+    }
+
+    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable cameraTarget, BooleanLayoutVariable depress_sphere, BooleanLayoutVariable debug, IntLayoutVariable yMode, IntLayoutVariable fixY, IntLayoutVariable lodDistance, IntLayoutVariable viewDistance, MapMode mapMode, IntLayoutVariable minimapRenderRange, IntLayoutVariable minimapHighDetailRange, BooleanLayoutVariable minimapRotateWithPlayer) {
         this.terrain = terrain;
         this.grid = grid;
         this.player = player;
@@ -73,6 +86,10 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         this.fixY = fixY;
         this.lodDistance = lodDistance;
         this.viewDistance = viewDistance;
+        this.mapMode = mapMode;
+        this.minimapRenderRange = minimapRenderRange;
+        this.minimapHighDetailRange = minimapHighDetailRange;
+        this.minimapRotateWithPlayer = minimapRotateWithPlayer;
         this.initCamera();
         this.setOverflow(false);
         this.extensionOverlay.inlineStyle("size: 100% 100%;");
@@ -119,6 +136,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     public void reLocateCamera(){
         var player = Minecraft.getInstance().player;
         if(player == null) return;
+        if(this.isMinimap()) return;
         this.cameraTarget.x = player.blockPosition().getX();
         this.cameraTarget.z = player.blockPosition().getZ();
     }
@@ -144,6 +162,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             lastState = null;
             return;
         }
+        this.updateMinimapCamera();
         var list = new ArrayList<String>();
         if(terrain.get()) list.add("terrain");
         if(grid.get()) list.add("grid");
@@ -170,6 +189,9 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
                 1.0f,
                 depress_sphere.get(),
                 lodDistance.get(),
+                this.isMinimap(),
+                this.minimapRenderRange.get(),
+                this.minimapHighDetailRange.get(),
                 null,
                 new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
         );
@@ -286,14 +308,17 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
                 return false;
             }
             float sens = 0.25f * Math.max(0.4f,fov/100);
-            yRot = yRot - (float) dx * sens;
             xRot = xRot + (float) dy * sens;
             xRot = Math.clamp(xRot, -89.9f, 89.9f);
-            yRot = (yRot + 360) % 360;
+            if(!this.isMinimap()) {
+                yRot = yRot - (float) dx * sens;
+                yRot = (yRot + 360) % 360;
+            }
             this.setCameraY();
             return true;
         }
         if (event.button() == 1) {
+            if(this.isMinimap()) return true;
             var speed = 1 + (cameraLength/100);
             this.moveCamera((float) (-dx / 100) * speed, (float) (-dy / 100) * speed);
             return true;
@@ -323,6 +348,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             return true;
         }
         int key = event.key();
+        if(this.isMinimap()) return false;
         float dx = 0;
         float dz = 0;
         if (key == InputConstants.KEY_W) {
@@ -366,6 +392,22 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
                 cameraTarget.y = fixY.get();
             }
         }
+    }
+
+    public boolean isMinimap() {
+        return this.mapMode == MapMode.MINIMAP;
+    }
+
+    private void updateMinimapCamera() {
+        if(!this.isMinimap()) return;
+        var mc = Minecraft.getInstance();
+        var level = mc.level;
+        var player = mc.player;
+        if(level == null || player == null) return;
+        this.centerPos = player.blockPosition().atY(level.getMinY());
+        this.cameraTarget.set((float) player.getX(), 0, (float) player.getZ());
+        this.yRot = this.minimapRotateWithPlayer.get() ? player.getYRot() : 0.0f;
+        this.setCameraY();
     }
     
     @Override

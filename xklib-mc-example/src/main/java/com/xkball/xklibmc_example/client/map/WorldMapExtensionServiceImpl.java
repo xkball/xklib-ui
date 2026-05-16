@@ -43,16 +43,19 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
 
     @Override
     public void addLeftBarWidget(Widget widget) {
+        if(this.widget == null) return;
         this.widget.addExtensionLeftBarWidget(widget);
     }
 
     @Override
     public void addTopBar1Widget(Widget widget) {
+        if(this.widget == null) return;
         this.widget.addExtensionTopBar1Widget(widget);
     }
 
     @Override
     public void addTopBar2Widget(Widget widget) {
+        if(this.widget == null) return;
         this.widget.addExtensionTopBar2Widget(widget);
     }
 
@@ -108,16 +111,19 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
 
     @Override
     public void addEnabledLayer(String layerName) {
+        if(this.widget == null) return;
         this.widget.inner.addExtensionEnabledLayer(this.extensionId, layerName);
     }
 
     @Override
     public void setInnerOverlayProvider(Supplier<Widget> provider) {
+        if(this.widget == null) return;
         this.widget.inner.setExtensionOverlayProvider(this.extensionId, provider);
     }
 
     @Override
     public void refreshInnerOverlay() {
+        if(this.widget == null) return;
         this.widget.inner.refreshExtensionOverlay(this.extensionId);
     }
 
@@ -193,11 +199,13 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
 
     @Override
     public @Nullable Vector3f projScreen2World(double screenX, double screenY) {
+        if(this.widget == null) return null;
         return this.widget.inner.projScreen2World(screenX, screenY);
     }
 
     @Override
     public @Nullable Vector2f projWorld2Screen(Vector3f worldPos) {
+        if(this.widget == null) return null;
         return this.widget.inner.projWorld2Screen(worldPos);
     }
 
@@ -208,6 +216,9 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
 
     @Override
     public WorldTerrainWidgetInner inner() {
+        if(this.widget == null) {
+            throw new IllegalStateException("No world terrain widget is attached to this service");
+        }
         return this.widget.inner;
     }
 

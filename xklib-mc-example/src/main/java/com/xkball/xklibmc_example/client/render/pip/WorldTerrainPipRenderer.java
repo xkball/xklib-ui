@@ -125,6 +125,9 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         private final float scale;
         private final boolean cullNear;
         private final int lodDistance;
+        private final boolean minimap;
+        private final int minimapRenderRangeChunks;
+        private final int minimapHighDetailRangeChunks;
         private final @Nullable ScreenRectangle scissorArea;
         private final @Nullable ScreenRectangle bounds;
         private final Matrix4f projMatrix;
@@ -144,6 +147,9 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
                                  float scale,
                                  boolean cullNear,
                                  int lodDistance,
+                                 boolean minimap,
+                                 int minimapRenderRangeChunks,
+                                 int minimapHighDetailRangeChunks,
                                  @Nullable ScreenRectangle scissorArea,
                                  @Nullable ScreenRectangle bounds) {
             this.enabledLayers = enabledLayers;
@@ -160,6 +166,9 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
             this.scale = scale;
             this.cullNear = cullNear;
             this.lodDistance = lodDistance;
+            this.minimap = minimap;
+            this.minimapRenderRangeChunks = Math.clamp(minimapRenderRangeChunks, 4, 64);
+            this.minimapHighDetailRangeChunks = Math.clamp(minimapHighDetailRangeChunks, 4, 64);
             this.scissorArea = scissorArea;
             this.bounds = bounds;
             this.projMatrix = this.calculateProjMatrix(false);
@@ -317,6 +326,18 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         
         public int lodDistance() {
             return lodDistance;
+        }
+
+        public boolean minimap() {
+            return minimap;
+        }
+
+        public int minimapRenderRangeChunks() {
+            return minimapRenderRangeChunks;
+        }
+
+        public int minimapHighDetailRangeChunks() {
+            return minimapHighDetailRangeChunks;
         }
         
         @Override
