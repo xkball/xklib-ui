@@ -50,6 +50,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public boolean compatibleMode = false;
     public List<String> compatibilityReasons = Collections.emptyList();
     public boolean compatibilityWarningSuppressed = false;
+    public int viewDistance = 1024;
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -64,10 +65,19 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 }
             }
         }
+        if(XKLibMCClient.tickCount % 100 == 0){
+            var level = Minecraft.getInstance().level;
+            if(level != null){
+                var storage = INSTANCE.storageMap.get(level.dimension());
+                if(storage != null){
+                    INSTANCE.checkRegionResidency(storage);
+                }
+            }
+        }
         if(XKLibMCClient.tickCount % 1200 == 0){
             for(var s : INSTANCE.storageMap.values()){
                 INSTANCE.worldMapExtensionRegistry.onStorageSaving(s);
-                s.saveFile();
+                s.saveFile(true);
             }
         }
     }
@@ -108,6 +118,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public int getLodLevel(Vector3f pos, int baseLodDistance, Vector3f camPos){
         var len = camPos.distance(pos);
+        return getLodLevel(len, baseLodDistance);
+    }
+    
+    public int getLodLevel(float len, int baseLodDistance){
         if(len < baseLodDistance){
             return 0;
         }
@@ -132,13 +146,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var gather2 = new RenderInfoWithBufferBlockGather();
         for(var region : storage.regionMap.values()){
             if(!frustum.isVisible(region.aabb)) continue;
-            var lod = this.getLodLevel(region.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
+            var lod = this.getLodLevel(region.aabb.getCenter().toVector3f(), (int) (baseLodDistance + 256 * Math.sqrt(2)), camPos);
             if(lod == 0){
+                var haveRegion = storage.residentRegions.contains(region.regionPos);
                 for(var chunk : region.chunks()){
-                    var chunkLod = this.getLodLevel(chunk.aabb.getCenter().toVector3f(), baseLodDistance + 256, camPos);
+                    var chunkLod = this.getLodLevel(chunk.aabb.getCenter().toVector3f(), baseLodDistance, camPos);
                     var aabb = chunk.aabb;
                     if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
-                    if(chunkLod == 0){
+                    if(chunkLod == 0 && haveRegion){
                         for (int i = 0; i < 6; i++) {
                             var dir = VanillaUtils.DIRECTIONS[i];
                             if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
@@ -229,6 +244,10 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         this.taskQueue.submitWorker(runnable);
     }
     
+    public void submitTaskOnMainThread(Runnable runnable){
+        this.taskQueue.submitMain(runnable);
+    }
+    
     public void submitUpdate(ChunkPos chunkPos, boolean force){
         this.submitUpdate(null, chunkPos, force);
     }
@@ -256,17 +275,20 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 LevelChunkStorage finalStorage = storage;
                 this.taskQueue.submitMain(() -> {
                     finalStorage.putChunk(chunkStorage);
-                    chunkStorage.uploadGpu0();
-                    for (int dx = 0; dx < 2; dx++) {
-                        for (int dz = 0; dz < 2; dz++) {
-                            var cp = finalStorage.getChunk(new ChunkPos(chunkPos.x()-dx,chunkPos.z()-dz));
-                            if(cp == null) continue;
-                            if(compatibleMode){
+                    if(!compatibleMode){
+                        chunkStorage.uploadGpu0();
+                        chunkStorage.uploadToTexture();
+                    }
+                    else {
+                        for (int dx = 0; dx < 2; dx++) {
+                            for (int dz = 0; dz < 2; dz++) {
+                                var cp = finalStorage.getChunk(new ChunkPos(chunkPos.x()-dx,chunkPos.z()-dz));
+                                if(cp == null) continue;
                                 cp.uploadGpuLodFullMesh();
                             }
-                            else cp.uploadToTexture();
                         }
                     }
+
                 });
             }
         };
@@ -280,7 +302,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 this.worldMapExtensionRegistry.onStorageClosed(storage);
                 this.worldMapExtensionRegistry.onStorageSaving(storage);
                 storage.unloadGpu();
-                storage.saveFile();
+                storage.saveFile(false);
             }
             this.storageMap.remove(level.dimension());
         }
@@ -304,9 +326,81 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                     result += p.getFirst().totalMemorySize;
                 }
             }
-            
+
         }
         return result;
+    }
+    
+    public boolean canRegionResident(RegionPos regionPos){
+        var player = Minecraft.getInstance().player;
+        if(player == null) return false;
+        float threshold = this.viewDistance + 256f * 1.41421356f;
+        float px = (float) player.getX();
+        float pz = (float) player.getZ();
+        float regionCenterX = regionPos.x() * 512f + 256f;
+        float regionCenterZ = regionPos.z() * 512f + 256f;
+        float dx = regionCenterX - px;
+        float dz = regionCenterZ - pz;
+        float dist = (float) Math.sqrt(dx * dx + dz * dz);
+        return dist < threshold;
+    }
+
+    private void checkRegionResidency(LevelChunkStorage storage){
+        for(var region : storage.regionMap.values()){
+            if(canRegionResident(region.regionPos)){
+                if(!storage.residentRegions.contains(region.regionPos)){
+                    storage.residentRegions.add(region.regionPos);
+                    if(region.haveNoDataChunk()){
+                        this.submitTask(() -> {
+                            var file = region.getFile(storage.getDirectory());
+                            var newRegionStorage = RegionStorage.loadFromFile(file,storage);
+                            if(newRegionStorage == null) return;
+                            for(var chunk : region.chunks()){
+                                this.submitTaskOnMainThread(() ->{
+                                    if(chunk.state == ChunkStorage.State.NO_DATA){
+                                        var newChunk = newRegionStorage.getChunk(chunk.chunkPos);
+                                        if(newChunk == null) return;
+                                        chunk.writeData(newChunk.data.data());
+                                    }
+                                    if(storage.compatibleMode){
+                                        chunk.uploadGpuLodFullMesh();
+                                    }
+                                    else {
+                                        chunk.uploadGpu0();
+                                    }
+                                    chunk.releaseData();
+                                    chunk.state = ChunkStorage.State.ONLY_ON_GPU;
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        for (var chunk : region.chunks()){
+                            if(chunk.state == ChunkStorage.State.ONLY_ON_GPU) continue;
+                            this.submitTaskOnMainThread(() ->{
+                                if(storage.compatibleMode){
+                                    chunk.uploadGpuLodFullMesh();
+                                }
+                                else {
+                                    chunk.uploadGpu0();
+                                }
+                            });
+                        }
+                    }
+                }
+            } else {
+                if(storage.residentRegions.contains(region.regionPos)){
+                    storage.residentRegions.remove(region.regionPos);
+                    if(!region.haveDirtyChunk()){
+                        for(var chunk : region.chunks()){
+                            chunk.unloadGpu();
+                            chunk.releaseData();
+                            chunk.state = ChunkStorage.State.NO_DATA;
+                        }
+                    }
+                }
+            }
+        }
     }
     
     public record RenderInfoCompatible(List<RenderInfoWithBufferBlock> lodFullMesh) implements AutoCloseable{

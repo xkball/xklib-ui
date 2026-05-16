@@ -120,7 +120,6 @@ public class ChunkComplier {
         chunkStorage.aabb = new AABB(chunkPos.getMinBlockX(), chunkMinY, chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), chunkMaxY, chunkPos.getMaxBlockZ());
         chunkStorage.writeData(result);
         chunkStorage.heightMap = heightMap;
-        chunkStorage.markDirty();
         return chunkStorage;
     }
     

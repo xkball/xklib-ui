@@ -15,6 +15,7 @@ import com.xkball.xklibmc.ui.widget.NumberInputWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.ServerConfig;
+import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
@@ -33,22 +34,25 @@ public class WorldTerrainWidget extends ContainerWidget {
     public final BooleanLayoutVariable depress_sphere = new BooleanLayoutVariable(false);
     public final IntLayoutVariable yMode = new IntLayoutVariable(1);
     public final IntLayoutVariable fixY = new IntLayoutVariable();
-    public final IntLayoutVariable lodDistance = new IntLayoutVariable(500);
-    public final IntLayoutVariable viewDistance = new  IntLayoutVariable(4096);
+    public final IntLayoutVariable lodDistance = new IntLayoutVariable(512);
+    public final IntLayoutVariable viewDistance = new  IntLayoutVariable(1024);
     public final WorldTerrainWidgetInner inner;
     private final ContainerWidget leftExtensionWidgets = new ContainerWidget();
     private final ContainerWidget top1ExtensionWidgets = new ContainerWidget();
     private final ContainerWidget top2ExtensionWidgets = new ContainerWidget();
     private final WindowedContainer windowLayer;
-    private WorldMapExtensionService extensionService;
+    private final WorldMapExtensionService service;
     
-    public WorldTerrainWidget(WindowedContainer windowLayer) {
+    public WorldTerrainWidget(WindowedContainer windowLayer, WorldMapExtensionServiceImpl service) {
+        this.service = service;
+        service.widget = this;
         this.windowLayer = windowLayer;
         var level = Minecraft.getInstance().level;
         var minY = level == null ? -64 : level.getMinY();
         var maxY = level == null ? 384 : level.getMaxY();
         fixY.set(level == null ? 64 : level.getSeaLevel());
         this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
+        this.initExtensions();
         this.leftExtensionWidgets.inlineStyle("""
                 flex-direction: column;
                 flex-shrink: 0;
@@ -116,14 +120,13 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .addChild(this.createToolbarTop2())
                         .addChild(inner.inlineStyle("height: 100%-35rpx;"))
                 );
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapOpened(this.service);
     }
 
-    public void initExtensions(WorldMapExtensionService service) {
-        this.extensionService = service;
-        this.inner.setExtensionService(service);
+    public void initExtensions() {
+        this.inner.setExtensionService(this.service);
         this.loadPersistentUiState();
         this.bindPersistentUiState();
-        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapOpened(service);
     }
     
     public Widget createToolbarLeft(){
@@ -261,33 +264,37 @@ public class WorldTerrainWidget extends ContainerWidget {
     }
 
     private void loadPersistentUiState() {
-        this.terrain.set(this.extensionService.getBooleanState("terrain", this.terrain.get()));
-        this.grid.set(this.extensionService.getBooleanState("grid", this.grid.get()));
-        this.player.set(this.extensionService.getBooleanState("player", this.player.get()));
-        this.debug.set(this.extensionService.getBooleanState("debug", this.debug.get()));
-        this.cameraTarget.set(this.extensionService.getBooleanState("camera_target", this.cameraTarget.get()));
-        this.depress_sphere.set(this.extensionService.getBooleanState("depress_sphere", this.depress_sphere.get()));
-        this.yMode.set(this.extensionService.getIntState("y_mode", this.yMode.get()));
-        this.fixY.set(this.extensionService.getIntState("fix_y", this.fixY.get()));
-        this.lodDistance.set(this.extensionService.getIntState("lod_distance", this.lodDistance.get()));
-        this.viewDistance.set(this.extensionService.getIntState("view_distance", this.viewDistance.get()));
+        this.terrain.set(this.service.getBooleanState("terrain", this.terrain.get()));
+        this.grid.set(this.service.getBooleanState("grid", this.grid.get()));
+        this.player.set(this.service.getBooleanState("player", this.player.get()));
+        this.debug.set(this.service.getBooleanState("debug", this.debug.get()));
+        this.cameraTarget.set(this.service.getBooleanState("camera_target", this.cameraTarget.get()));
+        this.depress_sphere.set(this.service.getBooleanState("depress_sphere", this.depress_sphere.get()));
+        this.yMode.set(this.service.getIntState("y_mode", this.yMode.get()));
+        this.fixY.set(this.service.getIntState("fix_y", this.fixY.get()));
+        this.lodDistance.set(this.service.getIntState("lod_distance", this.lodDistance.get()));
+        this.viewDistance.set(this.service.getIntState("view_distance", this.viewDistance.get()));
+        TerrainChunkManager.INSTANCE.viewDistance = this.viewDistance.get();
     }
 
     private void bindPersistentUiState() {
-        this.terrain.addCallback(value -> this.extensionService.setBooleanState("terrain", value));
-        this.grid.addCallback(value -> this.extensionService.setBooleanState("grid", value));
-        this.player.addCallback(value -> this.extensionService.setBooleanState("player", value));
-        this.debug.addCallback(value -> this.extensionService.setBooleanState("debug", value));
-        this.cameraTarget.addCallback(value -> this.extensionService.setBooleanState("camera_target", value));
-        this.depress_sphere.addCallback(value -> this.extensionService.setBooleanState("depress_sphere", value));
-        this.yMode.addCallback(value -> this.extensionService.setIntState("y_mode", value));
-        this.fixY.addCallback(value -> this.extensionService.setIntState("fix_y", value));
-        this.lodDistance.addCallback(value -> this.extensionService.setIntState("lod_distance", value));
-        this.viewDistance.addCallback(value -> this.extensionService.setIntState("view_distance", value));
+        this.terrain.addCallback(value -> this.service.setBooleanState("terrain", value));
+        this.grid.addCallback(value -> this.service.setBooleanState("grid", value));
+        this.player.addCallback(value -> this.service.setBooleanState("player", value));
+        this.debug.addCallback(value -> this.service.setBooleanState("debug", value));
+        this.cameraTarget.addCallback(value -> this.service.setBooleanState("camera_target", value));
+        this.depress_sphere.addCallback(value -> this.service.setBooleanState("depress_sphere", value));
+        this.yMode.addCallback(value -> this.service.setIntState("y_mode", value));
+        this.fixY.addCallback(value -> this.service.setIntState("fix_y", value));
+        this.lodDistance.addCallback(value -> this.service.setIntState("lod_distance", value));
+        this.viewDistance.addCallback(value -> {
+            this.service.setIntState("view_distance", value);
+            TerrainChunkManager.INSTANCE.viewDistance = value;
+        });
     }
 
     public void closeMapExtensions() {
-        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapClosed(this.extensionService);
+        TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapClosed(this.service);
     }
     
 }

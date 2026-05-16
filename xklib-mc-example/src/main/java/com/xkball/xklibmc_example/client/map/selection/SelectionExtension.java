@@ -183,10 +183,7 @@ public class SelectionExtension implements WorldMapExtension {
         var levelStorage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
         if (levelStorage != null) {
             for (var chunkPos : this.storage.selectedChunks()) {
-                var chunk = levelStorage.getChunk(chunkPos);
-                if (chunk != null) {
-                    levelStorage.markDirty();
-                }
+                levelStorage.deleteChunk(chunkPos);
             }
         }
         this.clearSelection();

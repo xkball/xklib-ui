@@ -121,6 +121,36 @@ public class TerrainTextureManager implements AutoCloseable {
         return new ChunkUploadInfo(materialPos, localChunkX * CHUNK_SIZE, localChunkZ * CHUNK_SIZE);
     }
     
+    public void clearChunk(ChunkPos chunkPos){
+        var uploadInfo = this.getUploadInfo(chunkPos);
+        var textures = this.getTextures(uploadInfo.texturePos());
+        var clearColor = MemoryUtil.memAlloc(CHUNK_SIZE * CHUNK_SIZE * BYTES_PER_PIXEL);
+        var clearDepth = MemoryUtil.memAlloc(CHUNK_SIZE * CHUNK_SIZE * BYTES_PER_PIXEL);
+        try {
+            for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
+                clearColor.putInt(0);
+                clearDepth.putInt(levelChunkStorage.minHeight - 1);
+            }
+            clearColor.flip();
+            clearDepth.flip();
+            ClientUtils.getCommandEncoder().writeToTexture(
+                    textures.colorTexture(), clearColor,
+                    NativeImage.Format.RGBA, 0, 0,
+                    uploadInfo.destX(), uploadInfo.destY(),
+                    CHUNK_SIZE, CHUNK_SIZE
+            );
+            ClientUtils.getCommandEncoder().writeToTexture(
+                    textures.depthTexture(), clearDepth,
+                    NativeImage.Format.RGBA, 0, 0,
+                    uploadInfo.destX(), uploadInfo.destY(),
+                    CHUNK_SIZE, CHUNK_SIZE
+            );
+        } finally {
+            MemoryUtil.memFree(clearColor);
+            MemoryUtil.memFree(clearDepth);
+        }
+    }
+
     public void clear(){
         for(var textures : this.texturesMap.values()){
             textures.colorTextureView().close();

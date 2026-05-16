@@ -22,13 +22,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class LevelChunkStorage {
     
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ChunkComplier COMPLIER =  new ChunkComplier();
     
@@ -43,8 +45,8 @@ public class LevelChunkStorage {
     public TerrainTextureManager terrainTextureManager = new TerrainTextureManager(this);
     private final List<UberGpuBuffer<?>> gpuBuffers = new ArrayList<>();
     public final Map<RegionPos, RegionStorage> regionMap = new LinkedHashMap<>();
+    public final Set<RegionPos> residentRegions = new LinkedHashSet<>();
     private final Map<String, WorldMapExtensionStorage> extensionStorageMap = new LinkedHashMap<>();
-    public boolean dirty = false;
     
     public LevelChunkStorage(ResourceKey<Level> dimension, int minHeight, int maxHeight, boolean compatibleMode) {
         this.dimension = dimension;
@@ -73,9 +75,15 @@ public class LevelChunkStorage {
     public List<UberGpuBuffer<?>> getGpuBuffers(){
         return this.gpuBuffers;
     }
-    
-    public void markDirty(){
-        this.dirty = true;
+
+    public void deleteChunk(ChunkPos chunkPos){
+        var region = this.getRegion(RegionStorage.toRegionPos(chunkPos));
+        if (region != null) {
+            region.deleteChunk(chunkPos);
+            if (!this.compatibleMode) {
+                this.terrainTextureManager.clearChunk(chunkPos);
+            }
+        }
     }
 
     public void registerExtensionStorage(WorldMapExtensionStorage storage) {
@@ -95,18 +103,17 @@ public class LevelChunkStorage {
             b.close();
         }
         this.terrainTextureManager.close();
-        this.markDirty();
     }
     
-    public void saveFile(){
-        if(!this.dirty && !this.hasDirtyExtensionStorage()) return;
-        this.dirty = false;
+    public void saveFile(boolean async){
         for(var entry : this.regionMap.entrySet()){
-            if(entry.getValue().hasDirtyChunk()){
-                this.saveRegion(entry.getKey());
-            }
-            else{
-                entry.getValue().releaseData();
+            if(entry.getValue().haveDirtyChunk()){
+                if(async){
+                    TerrainChunkManager.INSTANCE.submitTask(() -> this.saveRegion(entry.getKey()));
+                }
+                else {
+                    this.saveRegion(entry.getKey());
+                }
             }
         }
         this.saveExtensionFiles();
@@ -134,17 +141,32 @@ public class LevelChunkStorage {
         var taskList = new ArrayList<CompletableFuture<Void>>();
         for(var file : files){
             taskList.add(CompletableFuture.runAsync(() -> {
-                var regionStorage = RegionStorage.loadFromFile(file.toPath(), this, LOGGER);
+                var regionStorage = RegionStorage.loadFromFile(file.toPath(), this);
                 if(regionStorage == null){
                     return;
                 }
-                TerrainChunkManager.INSTANCE.taskQueue.submitMain(() -> {
-                    for(var chunkStorage : regionStorage.chunks()){
-                        if(this.containsChunk(chunkStorage.chunkPos)){
-                            continue;
+                TerrainChunkManager.INSTANCE.submitTaskOnMainThread(() -> {
+                    this.regionMap.putIfAbsent(regionStorage.regionPos, regionStorage);
+                    if(TerrainChunkManager.INSTANCE.canRegionResident(regionStorage.regionPos)){
+                        for(var chunkStorage : regionStorage.chunks()){
+                            TerrainChunkManager.INSTANCE.submitTaskOnMainThread(() -> {
+                                if (!compatibleMode) {
+                                    chunkStorage.uploadGpu0();
+                                }
+                                else chunkStorage.uploadGpuLodFullMesh();
+                                if(chunkStorage.state == ChunkStorage.State.ONLY_ON_MEM){
+                                    chunkStorage.state = ChunkStorage.State.ON_BOTH_SIDE;
+                                }
+                            });
                         }
-                        this.putChunk(chunkStorage);
-                        chunkStorage.uploadGpu0();
+                    }
+                    else {
+                        for(var chunkStorage : regionStorage.chunks()){
+                            if(chunkStorage.state == ChunkStorage.State.ONLY_ON_MEM){
+                                chunkStorage.releaseData();
+                                chunkStorage.state = ChunkStorage.State.NO_DATA;
+                            }
+                        }
                     }
                 });
             }, TerrainChunkManager.INSTANCE.taskQueue.workers));
@@ -152,9 +174,9 @@ public class LevelChunkStorage {
         }
         var task = CompletableFuture.allOf(taskList.toArray(CompletableFuture[]::new));
         task.thenRunAsync(() -> {
-            TerrainChunkManager.INSTANCE.taskQueue.submitMain(() -> {
+            TerrainChunkManager.INSTANCE.submitTaskOnMainThread(() -> {
                 for(var chunkStorage : this.getChunks()){
-                    TerrainChunkManager.INSTANCE.taskQueue.submitMain( () -> {
+                    TerrainChunkManager.INSTANCE.submitTaskOnMainThread( () -> {
                         if(!this.containsChunk(chunkStorage.chunkPos)) return;
                         if(compatibleMode){
                             chunkStorage.uploadGpuLodFullMesh();
@@ -172,7 +194,7 @@ public class LevelChunkStorage {
         if(regionStorage == null){
             return;
         }
-        regionStorage.saveToFile(this.getDirectory(), this, LOGGER);
+        regionStorage.saveToFile(this.getDirectory(), this);
     }
     
     public RegionStorage getOrCreateRegion(RegionPos regionPos){

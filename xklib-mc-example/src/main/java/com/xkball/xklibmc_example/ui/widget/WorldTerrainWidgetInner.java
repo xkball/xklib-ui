@@ -22,11 +22,9 @@ import dev.vfyjxf.taffy.style.TaffyDimension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix2f;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -141,38 +139,46 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         }
     }
     
+    public void calculateNewPipState(){
+        if(width == 0 && height == 0){
+            lastState = null;
+            return;
+        }
+        var list = new ArrayList<String>();
+        if(terrain.get()) list.add("terrain");
+        if(grid.get()) list.add("grid");
+        if(player.get()) list.add("player");
+        if(cameraTarget_.get()) list.add("cameraTarget");
+        for (var layers : this.extensionEnabledLayers.values()) {
+            list.addAll(layers);
+        }
+        
+        var scaleX = XKLibBaseScreen.tryGetScaleX();
+        var scaleY = XKLibBaseScreen.tryGetScaleY();
+        lastState = new WorldTerrainPipRenderer.WorldTerrainState(
+                list,
+                new Vector3f(cameraTarget),
+                centerPos,
+                fov,
+                cameraLength,
+                xRot,
+                yRot,
+                (int) (x/scaleX),
+                (int) ((x + width)/scaleX),
+                (int) (y/scaleY),
+                (int) ((y + height)/scaleY),
+                1.0f,
+                depress_sphere.get(),
+                lodDistance.get(),
+                null,
+                new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
+        );
+    }
+    
     @Override
     public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {
-        if(graphics instanceof B3dGuiGraphics b3dGuiGraphics){
+        if(graphics instanceof B3dGuiGraphics b3dGuiGraphics && lastState != null) {
             var inner = b3dGuiGraphics.getInner();
-            var scaleX = XKLibBaseScreen.tryGetScaleX();
-            var scaleY = XKLibBaseScreen.tryGetScaleY();
-            var list = new ArrayList<String>();
-            if(terrain.get()) list.add("terrain");
-            if(grid.get()) list.add("grid");
-            if(player.get()) list.add("player");
-            if(cameraTarget_.get()) list.add("cameraTarget");
-            for (var layers : this.extensionEnabledLayers.values()) {
-                list.addAll(layers);
-            }
-            lastState = new WorldTerrainPipRenderer.WorldTerrainState(
-                    list,
-                    new Vector3f(cameraTarget),
-                    centerPos,
-                    fov,
-                    cameraLength,
-                    xRot,
-                    yRot,
-                    (int) (x/scaleX),
-                    (int) ((x + width)/scaleX),
-                    (int) (y/scaleY),
-                    (int) ((y + height)/scaleY),
-                    1.0f,
-                    depress_sphere.get(),
-                    lodDistance.get(),
-                    null,
-                    new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
-            );
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
             if(debug.get()) {

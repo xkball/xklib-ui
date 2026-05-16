@@ -1,7 +1,6 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
-import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.container.AbsoluteContainer;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import dev.vfyjxf.taffy.style.TaffyDisplay;
@@ -34,11 +33,11 @@ public class WaypointOverlayWidget extends AbsoluteContainer {
             this.addWaypointIcon(temporaryWaypoint, true);
         }
     }
-
+    
     @Override
-    public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void resize(float offsetX, float offsetY) {
         this.updatePositions();
-        super.doRender(graphics, mouseX, mouseY, partialTick);
+        super.resize(offsetX, offsetY);
     }
 
     public void updatePositions() {

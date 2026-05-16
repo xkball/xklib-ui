@@ -19,8 +19,12 @@ import java.util.function.Supplier;
 
 public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
 
-    private final WorldTerrainWidget widget;
-    private final String extensionId;
+    public WorldTerrainWidget widget;
+    public final String extensionId;
+    
+    public WorldMapExtensionServiceImpl(String extensionId) {
+        this.extensionId = extensionId;
+    }
 
     public WorldMapExtensionServiceImpl(WorldTerrainWidget widget, String extensionId) {
         this.widget = widget;

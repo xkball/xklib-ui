@@ -26,7 +26,7 @@ import java.util.Objects;
 public class ChunkStorage {
     
     public final ChunkPos chunkPos;
-    public final LevelChunkStorage parent;
+    public final LevelChunkStorage levelStorage;
     public final ChunkStorageData data;
     /**
      * 虽然没有初始值, 但是通过文件加载或编译产生的对象, 这两个字段均不为null, 为null则说明产生非法状态
@@ -35,12 +35,11 @@ public class ChunkStorage {
     public AABB aabb;
     @SuppressWarnings("NotNullFieldNotInitialized")
     public ChunkHeightMap heightMap;
-    public boolean dirty = false;
-    public boolean onGpuL0 = false;
+    public State state = State.NO_DATA;
     
-    public ChunkStorage(ChunkPos chunkPos, LevelChunkStorage parent) {
+    public ChunkStorage(ChunkPos chunkPos, LevelChunkStorage levelStorage) {
         this.chunkPos = chunkPos;
-        this.parent = parent;
+        this.levelStorage = levelStorage;
         this.data = new ChunkStorageData(chunkPos, new ArrayList<>());
     }
     
@@ -52,41 +51,48 @@ public class ChunkStorage {
     }
     
     public TlsfAllocator.@Nullable Allocation getLodBufferFullMesh(int lodLevel){
-        if(lodLevel <= 3) return this.parent.gpuBufferByLodFullMesh.getAllocation(new ChunkPosLod(this.chunkPos, lodLevel));
+        if(lodLevel <= 3) return this.levelStorage.gpuBufferByLodFullMesh.getAllocation(new ChunkPosLod(this.chunkPos, lodLevel));
         return null;
-    }
-    
-    public void markDirty(){
-        this.dirty = true;
-        this.parent.markDirty();
     }
     
     public void writeData(List<ABlock.ABlockData> data){
         this.data.data.clear();
         this.data.data.addAll(data);
+        if(this.state == State.NO_DATA || this.state == State.ON_BOTH_SIDE){
+            this.state = State.DIRTY;
+        }
+        else if(this.state == State.ONLY_ON_GPU){
+            this.state = State.ON_BOTH_SIDE;
+        }
     }
     
     public void releaseData(){
         this.data.data.clear();
+        if(this.state == State.ON_BOTH_SIDE){
+            this.state = State.ONLY_ON_GPU;
+        }
+        else if(this.state == State.ONLY_ON_MEM){
+            this.state = State.NO_DATA;
+        }
     }
     
     public void uploadGpuLodFullMesh(){
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
         this.uploadGpuLodFullMesh(1,2);
         this.uploadGpuLodFullMesh(2,4);
         this.uploadGpuLodFullMesh(3,8);
     }
     
     public void uploadToTexture(){
-        this.parent.terrainTextureManager.uploadChunk(this);
+        this.levelStorage.terrainTextureManager.uploadChunk(this);
     }
     
     private void uploadGpuLodFullMesh(int lodLevel, int step){
         var x0 = chunkPos.getMinBlockX();
         var z0 = chunkPos.getMinBlockZ();
-        var minY = this.parent.minHeight;
+        var minY = this.levelStorage.minHeight;
         try (var builder = BufferBuilder.start(VertexFormat.Mode.TRIANGLES, VertexFormats.POSITION_NORMAL_COLOR)){
             for (int x = 0; x < 16; x+=step) {
                 for (int z = 0; z < 16; z+=step) {
@@ -107,9 +113,9 @@ public class ChunkStorage {
                         h11 = this.heightMap.get(nx,nz); c11 = this.heightMap.getColor(nx,nz);
                     }
                     else{
-                        h01 = this.parent.getHeight(x0 + nx, z0 + z);  c01 = this.parent.getColor(x0 + nx, z0 + z);
-                        h10 = this.parent.getHeight(x0 + x, z0 + nz);  c10 = this.parent.getColor(x0 + x, z0 + nz);
-                        h11 = this.parent.getHeight(x0 + nx, z0 + nz); c11 = this.parent.getColor(x0 + nx, z0 + nz);
+                        h01 = this.levelStorage.getHeight(x0 + nx, z0 + z);  c01 = this.levelStorage.getColor(x0 + nx, z0 + z);
+                        h10 = this.levelStorage.getHeight(x0 + x, z0 + nz);  c10 = this.levelStorage.getColor(x0 + x, z0 + nz);
+                        h11 = this.levelStorage.getHeight(x0 + nx, z0 + nz); c11 = this.levelStorage.getColor(x0 + nx, z0 + nz);
                     }
                     if(h01 == minY) h01 = h;
                     if(h10 == minY) h10 = h;
@@ -131,7 +137,7 @@ public class ChunkStorage {
                 }
             }
             var buffer = builder.build();
-            var gpuBuffer = this.parent.gpuBufferByLodFullMesh;
+            var gpuBuffer = this.levelStorage.gpuBufferByLodFullMesh;
             var success = gpuBuffer.addAllocation(new ChunkPosLod(this.chunkPos,lodLevel),(_) -> {}, buffer);
             if(!success){
                 gpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
@@ -141,8 +147,8 @@ public class ChunkStorage {
     }
     
     public void uploadGpu0(){
-        removeFromUberBuffer(this.parent.gpuBufferBlockData, this.chunkPos);
-        for(var b : this.parent.gpuBufferByFace.values()){
+        removeFromUberBuffer(this.levelStorage.gpuBufferBlockData, this.chunkPos);
+        for(var b : this.levelStorage.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
         var l1List = new ArrayList<ABlock>();
@@ -159,7 +165,7 @@ public class ChunkStorage {
             blockDataBuffer.putInt(ab.color());
         }
         blockDataBuffer.flip();
-        var blockDataGpuBuffer = this.parent.gpuBufferBlockData;
+        var blockDataGpuBuffer = this.levelStorage.gpuBufferBlockData;
         blockDataGpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
         blockDataGpuBuffer.addAllocation(this.chunkPos, (_) -> {}, blockDataBuffer);
         blockDataGpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
@@ -180,7 +186,7 @@ public class ChunkStorage {
                 buffer.putInt(index);
             }
             buffer.flip();
-            var gpuBuffer = this.parent.gpuBufferByFace.get(dir);
+            var gpuBuffer = this.levelStorage.gpuBufferByFace.get(dir);
             var success = gpuBuffer.addAllocation(this.chunkPos,(_) -> {}, buffer);
             if(!success){
                 gpuBuffer.uploadStagedAllocations(ClientUtils.getGpuDevice(), ClientUtils.getCommandEncoder());
@@ -188,17 +194,16 @@ public class ChunkStorage {
             }
             MemoryUtil.memFree(buffer);
         }
-        this.onGpuL0 = true;
     }
     
     public void unloadGpu(){
-        removeFromUberBuffer(this.parent.gpuBufferBlockData, this.chunkPos);
-        for(var b : this.parent.gpuBufferByFace.values()){
+        removeFromUberBuffer(this.levelStorage.gpuBufferBlockData, this.chunkPos);
+        for(var b : this.levelStorage.gpuBufferByFace.values()){
             removeFromUberBuffer(b, this.chunkPos);
         }
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
-        removeFromUberBuffer(this.parent.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,1));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,2));
+        removeFromUberBuffer(this.levelStorage.gpuBufferByLodFullMesh, new ChunkPosLod(this.chunkPos,3));
         
     }
     
@@ -219,4 +224,17 @@ public class ChunkStorage {
         );
     }
     
+    public enum State{
+        /**
+         * 刚编译出chunk, 此时数据双方都有
+         */
+        DIRTY,
+        ONLY_ON_GPU,
+        /**
+         * 刚从硬盘加载chunk
+         */
+        ONLY_ON_MEM,
+        ON_BOTH_SIDE,
+        NO_DATA
+    }
 }
