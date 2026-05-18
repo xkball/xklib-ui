@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
@@ -11,6 +12,7 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.ui.widget.IntSliderWidget;
 import org.jspecify.annotations.Nullable;
@@ -35,7 +37,7 @@ public class MinimapExtension implements WorldMapExtension {
     }
 
     @Override
-    public void init(com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext context) {
+    public void init(WorldMapExtensionContext context) {
         INSTANCE = this;
     }
 
@@ -80,12 +82,12 @@ public class MinimapExtension implements WorldMapExtension {
     private void openConfig(WorldMapExtensionService service) {
         if(this.configWindow != null && this.configWindow.visible()) return;
         this.load(service);
-        this.configWindow = service.addSubWindow(this.createConfigContent(service), "Minimap", false, 300, 460);
+        this.configWindow = service.addSubWindow(this.createConfigContent(service), "Minimap", false, 140 * CssLengthUnit.rpxScaleWorkaround, 240 * CssLengthUnit.rpxScaleWorkaround);
     }
 
     private Widget createConfigContent(WorldMapExtensionService service) {
         var preview = MinimapWidgets.createMinimapWidget(service, this, true)
-                .inlineStyle("size: 120px 120px; flex-shrink: 0; margin: 6rpx auto 8rpx auto; border: 1rpx; border-color: 0xCCAAAAAA;");
+                .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx; border: 2rpx; border-color: 0xCCAAAAAA;");
         return new ContainerWidget()
                 .inlineStyle("""
                         flex-direction: column;
@@ -96,21 +98,22 @@ public class MinimapExtension implements WorldMapExtension {
                         """)
                 .asRootStyle("""
                         .minimap_row {
-                            height: 24rpx;
+                            height: 12rpx;
                             flex-direction: row;
                             align-items: center;
-                            margin-top: 5rpx;
+                            margin-top: 2rpx;
                             flex-shrink: 0;
                         }
                         .minimap_label {
-                            size: 92rpx 16rpx;
+                            size: 50% 12rpx;
                             text-color: -1;
                             text-scale: expand-width;
                             flex-shrink: 0;
                         }
                         CheckBox {
-                            size: 34rpx 16rpx;
+                            size: 34rpx 12rpx;
                             flex-shrink: 0;
+                            margin-left: auto;
                         }
                         """)
                 .addChild(preview)

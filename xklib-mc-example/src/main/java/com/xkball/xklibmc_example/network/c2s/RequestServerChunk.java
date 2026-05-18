@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.Ticket;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -43,7 +44,7 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
     public void handle(IPayloadContext context) {
         if(!(context.player() instanceof ServerPlayer serverPlayer) || !(context.player().level() instanceof ServerLevel level)) return;
         context.enqueueWork(() -> {
-            var t = new Ticket(XKLibMCExample.MAP_GEOMATICS.get(), ChunkLevel.byStatus(ChunkStatus.EMPTY));
+            var t = new Ticket(XKLibMCExample.MAP_GEOMATICS.get(), ChunkLevel.byStatus(generate ? ChunkStatus.FULL : ChunkStatus.EMPTY));
             for (var p : this.pos) {
                 level.getChunkSource().addTicket(t, p);
             }
@@ -51,15 +52,20 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
             Thread.startVirtualThread(() -> {
                 for(var p : this.pos){
                     level.getChunkSource()
-                            .getChunkFuture(p.x(),p.z(), ChunkStatus.EMPTY, true)
-                            .thenAcceptAsync(it -> it.ifSuccess( chunkAccess -> {
-                                if (chunkAccess.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
-                                    if(chunkAccess instanceof ImposterProtoChunk ipc){
-                                        PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, ipc.getWrapped()));
+                            .getChunkFuture(p.x(),p.z(), generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, true)
+                            .thenAcceptAsync(it -> {
+                                it.ifSuccess( chunkAccess -> {
+                                    if (chunkAccess.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
+                                        if(chunkAccess instanceof ImposterProtoChunk ipc){
+                                            PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, ipc.getWrapped()));
+                                        }
+                                        if(chunkAccess instanceof LevelChunk levelChunk){
+                                            PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, levelChunk));
+                                        }
                                     }
-                                }
+                                });
                                 level.getServer().submit(() -> level.getChunkSource().ticketStorage.removeTicket(t, p));
-                            }));
+                            });
                 }
             });
         });

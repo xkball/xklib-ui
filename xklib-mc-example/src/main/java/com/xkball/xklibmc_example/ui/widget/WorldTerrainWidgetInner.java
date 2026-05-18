@@ -15,6 +15,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import com.xkball.xklibmc_example.client.map.minimap.MinimapPlayerMarker;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -130,7 +131,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         centerPos = centerPos.atY(level.getMinY());
         cameraTarget.set(centerPos.getX(), 0, centerPos.getZ());
         this.setCameraY();
-        WorldTerrainPipRenderer.update();
+        TerrainChunkManager.update();
     }
     
     public void reLocateCamera(){
@@ -165,7 +166,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         this.updateMinimapCamera();
         var list = new ArrayList<String>();
         if(terrain.get()) list.add("terrain");
-        if(grid.get()) list.add("grid");
+        if(!isMinimap() && grid.get()) list.add("grid");
         if(player.get()) list.add("player");
         if(cameraTarget_.get()) list.add("cameraTarget");
         for (var layers : this.extensionEnabledLayers.values()) {
@@ -203,6 +204,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             var inner = b3dGuiGraphics.getInner();
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
+            if(this.isMinimap()) this.renderMinimapPlayerMarker(b3dGuiGraphics);
             if(debug.get()) {
                 var y_ = y;
                 graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;
@@ -257,6 +259,12 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             return null;
         }
         return this.lastState.projWorld2Screen(this, worldPos);
+    }
+
+    private void renderMinimapPlayerMarker(B3dGuiGraphics guiGraphics) {
+        var player = Minecraft.getInstance().player;
+        if(player == null) return;
+        MinimapPlayerMarker.render(guiGraphics, x, y, x + width, y + height, player.getYRot(), this.minimapRotateWithPlayer.get());
     }
     
     @Override
@@ -404,10 +412,9 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         var level = mc.level;
         var player = mc.player;
         if(level == null || player == null) return;
-        this.centerPos = player.blockPosition().atY(level.getMinY());
-        this.cameraTarget.set((float) player.getX(), 0, (float) player.getZ());
-        this.yRot = this.minimapRotateWithPlayer.get() ? player.getYRot() : 0.0f;
-        this.setCameraY();
+        this.centerPos = player.blockPosition();
+        this.cameraTarget.set((float) player.getX(), (float) player.getY(), (float) player.getZ());
+        this.yRot = this.minimapRotateWithPlayer.get() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
     }
     
     @Override

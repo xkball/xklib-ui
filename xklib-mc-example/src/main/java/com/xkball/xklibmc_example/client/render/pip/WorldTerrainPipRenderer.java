@@ -13,9 +13,7 @@ import com.xkball.xklibmc_example.client.render.pip.layers.GridRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.PlayerOnMapRenderer;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
-import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc.annotation.NonNullByDefault;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -52,12 +50,6 @@ public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerra
         regRenderLayers(new GridRenderer());
         regRenderLayers(new PlayerOnMapRenderer());
         regRenderLayers(new CameraTargetRenderer());
-    }
-    
-    public static void update(){
-        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        var viewDistance = Minecraft.getInstance().options.renderDistance().get();
-        TerrainChunkManager.INSTANCE.submitUpdate(camera.blockPosition(),viewDistance - 1, false);
     }
     
     public static void regRenderLayers(PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState> renderLayer) {

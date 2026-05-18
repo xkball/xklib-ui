@@ -72,6 +72,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 if(storage != null){
                     INSTANCE.checkRegionResidency(storage);
                 }
+                TerrainChunkManager.update();
             }
         }
         if(XKLibMCClient.tickCount % 1200 == 0){
@@ -109,6 +110,12 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public TerrainChunkManager() {
         this.worldMapExtensionRegistry.init(new WorldMapExtensionContext(this, this.worldMapExtensionRegistry));
+    }
+    
+    public static void update(){
+        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        var viewDistance = Minecraft.getInstance().options.renderDistance().get();
+        INSTANCE.submitUpdate(camera.blockPosition(),viewDistance - 1, false);
     }
     
     public @Nullable LevelChunkStorage getCurrentLevelChunkStorage(){

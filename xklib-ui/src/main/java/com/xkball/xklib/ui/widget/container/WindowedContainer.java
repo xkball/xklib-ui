@@ -315,8 +315,6 @@ public class WindowedContainer extends AbsoluteContainer {
             var newHeight = Math.max(this.minHeight, height);
             this.outerWidth = newWidth;
             this.outerHeight = newHeight;
-            this.setWidth(newWidth);
-            this.setHeight(newHeight);
             this.setStyle(s -> s.size = TaffySize.of(TaffyDimension.length(newWidth), TaffyDimension.length(newHeight)));
             this.markDirty();
             return this;

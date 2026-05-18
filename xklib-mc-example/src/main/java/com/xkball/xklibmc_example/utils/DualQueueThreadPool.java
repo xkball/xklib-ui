@@ -70,9 +70,9 @@ public class DualQueueThreadPool {
                 break;
             }
             Runnable task = mainQueue.poll();
-//            if (task == null) {
-//                task = workerQueue.poll();
-//            }
+            if (task == null) {
+                task = workerQueue.poll();
+            }
             if (task != null) {
                 task.run();
             } else {
