@@ -2,4 +2,4 @@ com.xkball.xklibmc_example.client.map.waypoint.WaypointExtension
 com.xkball.xklibmc_example.client.map.minimap.MinimapExtension
 com.xkball.xklibmc_example.client.map.uistate.WorldMapUiStateExtension
 com.xkball.xklibmc_example.client.map.selection.SelectionExtension
-com.xkball.xklibmc_example.client.compatibility.CompatibilityExtension
+com.xkball.xklibmc_example.client.map.compatibility.CompatibilityExtension

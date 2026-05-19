@@ -1,4 +1,4 @@
-package com.xkball.xklibmc_example.client.compatibility;
+package com.xkball.xklibmc_example.client.map.compatibility;
 
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.system.GuiSystem;

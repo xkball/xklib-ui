@@ -27,6 +27,10 @@ public class MinimapExtension implements WorldMapExtension {
     private final IntLayoutVariable renderRange = new IntLayoutVariable(16);
     private final IntLayoutVariable highDetailRange = new IntLayoutVariable(8);
     private final BooleanLayoutVariable rotateWithPlayer = new BooleanLayoutVariable(false);
+    private float camXRot = 89.0f;
+    private float camYRot = 0.0f;
+    private float camFov = 60.0f;
+    private float camCameraLength = 0.0f;
     private WindowedContainer.@Nullable SubWindow configWindow;
 
     public static @Nullable MinimapExtension INSTANCE;
@@ -79,6 +83,30 @@ public class MinimapExtension implements WorldMapExtension {
         return rotateWithPlayer;
     }
 
+    public float camXRot() {
+        return camXRot;
+    }
+
+    public void setCamXRot(float value) {
+        this.camXRot = Math.clamp(value, -89.9f, 89.9f);
+    }
+
+    public float camFov() {
+        return camFov;
+    }
+
+    public void setCamFov(float value) {
+        this.camFov = Math.clamp(value, 5, 90);
+    }
+
+    public float camCameraLength() {
+        return camCameraLength;
+    }
+
+    public void setCamCameraLength(float value) {
+        this.camCameraLength = Math.max(value, 0);
+    }
+
     private void openConfig(WorldMapExtensionService service) {
         if(this.configWindow != null && this.configWindow.visible()) return;
         this.load(service);
@@ -86,7 +114,7 @@ public class MinimapExtension implements WorldMapExtension {
     }
 
     private Widget createConfigContent(WorldMapExtensionService service) {
-        var preview = MinimapWidgets.createMinimapWidget(service, this, true)
+        var preview = new MinimapPreviewWidget(renderRange, highDetailRange, rotateWithPlayer)
                 .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx; border: 2rpx; border-color: 0xCCAAAAAA;");
         return new ContainerWidget()
                 .inlineStyle("""

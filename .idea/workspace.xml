@@ -4,33 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="compatibility rendering">
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/XKLibExampleUniforms.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/add.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/add_waypoint.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/manage_waypoint.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/textures/gui/sprites/icon/section_renew_server.png" afterDir="false" />
+    <list default="true" id="b8938ab8-213d-4e3e-bd60-adee6ab2ec5a" name="更改" comment="mini map">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExample.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/XKLibMCExampleClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/map/WorldMapExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/map/WorldMapExtension.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/map/WorldMapExtensionRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/api/client/map/WorldMapExtensionRegistry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/b3d/pipeline/XKLibExampleRenderPipelines.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/compatibility/CompatibilityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ClientConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/compatibility/CompatibilityExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/compatibility/CompatibilityExtension.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointExtension.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointIconWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointIconWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointOverlayWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/waypoint/WaypointOverlayWidget.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/WorldTerrainPipRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/render/pip/layers/TerrainRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/LevelChunkStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainTextureManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainTextureManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/compatibility/CompatibilityExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/compatibility/CompatibilityExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/compatibility/GLCompatibilityChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/compatibility/GLCompatibilityChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/minimap/MinimapExtension.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/minimap/MinimapExtension.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/minimap/MinimapHudRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/minimap/MinimapHudRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/map/minimap/MinimapWidgets.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/client/terrain/TerrainChunkManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/network/c2s/RequestServerChunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/network/c2s/RequestServerChunk.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/WorldTerrainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/WorldTerrainScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/ui/widget/WorldTerrainWidgetInner.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/META-INF/services/com.xkball.xklibmc_example.api.client.map.WorldMapExtension" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/META-INF/services/com.xkball.xklibmc_example.api.client.map.WorldMapExtension" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip_lod.vsh" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc-example/src/main/resources/assets/xklibmc/shaders/core/world_terrain_pip_lod.vsh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/api/client/mixin/IExtendedGpuDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/api/client/mixin/IExtendedGpuDevice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/texture/GLSparseTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/client/b3d/texture/GLSparseTexture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLDevice.java" beforeDir="false" afterPath="$PROJECT_DIR$/xklib-mc/src/main/java/com/xkball/xklibmc/mixin/MixinGLDevice.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,12 +38,12 @@
     </selectedModels>
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="723534" />
+    <option name="totalTimeSeconds" value="769708" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="7495" />
+    <option name="cachedIndexableFilesCount" value="7373" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -257,7 +243,7 @@
     &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.4668275&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.mcpserver.settings&quot;,
     &quot;sweep.chatMode&quot;: &quot;Agent&quot;,
     &quot;sweep.selectedModel&quot;: &quot;Auto&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
@@ -283,6 +269,9 @@
       <recent name="E:\code\java\others\xklib\xklib-3d\src\main\resources\assets" />
       <recent name="E:\code\java\others\xklib\xklib-ui\src\main\java\com\xkball\xklib\ui\css" />
       <recent name="E:\code\java\others\xklib\xklib-3d\src\main\resources" />
+    </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="com.xkball.xklibmc_example.client.terrain.TerrainChunkManager" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.xkball.xklibmc_example" />
@@ -598,55 +587,9 @@
       <workItem from="1778596559113" duration="12550000" />
       <workItem from="1778648106074" duration="23090000" />
       <workItem from="1778851145003" duration="6217000" />
-      <workItem from="1778869384624" duration="3019000" />
-    </task>
-    <task id="LOCAL-00013" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1773408977672</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1773408977672</updated>
-    </task>
-    <task id="LOCAL-00014" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1773430327866</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1773430327866</updated>
-    </task>
-    <task id="LOCAL-00015" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1773559932244</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1773559932244</updated>
-    </task>
-    <task id="LOCAL-00016" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1773597909518</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1773597909518</updated>
-    </task>
-    <task id="LOCAL-00017" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1773762231898</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1773762231898</updated>
-    </task>
-    <task id="LOCAL-00018" summary="refactor">
-      <option name="closed" value="true" />
-      <created>1774233695324</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1774233695324</updated>
+      <workItem from="1778869384624" duration="27031000" />
+      <workItem from="1778939302122" duration="24946000" />
+      <workItem from="1779004238037" duration="28992000" />
     </task>
     <task id="LOCAL-00019" summary="refactor">
       <option name="closed" value="true" />
@@ -992,7 +935,55 @@
       <option name="project" value="LOCAL" />
       <updated>1778657233722</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="section">
+      <option name="closed" value="true" />
+      <created>1778873113499</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1778873113500</updated>
+    </task>
+    <task id="LOCAL-00063" summary="fix line rendering">
+      <option name="closed" value="true" />
+      <created>1778907110846</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1778907110846</updated>
+    </task>
+    <task id="LOCAL-00064" summary="fix line rendering">
+      <option name="closed" value="true" />
+      <created>1778911866163</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1778911866163</updated>
+    </task>
+    <task id="LOCAL-00065" summary="new file format">
+      <option name="closed" value="true" />
+      <created>1778955732969</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1778955732970</updated>
+    </task>
+    <task id="LOCAL-00066" summary="mini map">
+      <option name="closed" value="true" />
+      <created>1778960764797</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1778960764797</updated>
+    </task>
+    <task id="LOCAL-00067" summary="mini map">
+      <option name="closed" value="true" />
+      <created>1779084681819</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1779084681819</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1010,10 +1001,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="light" />
-    <MESSAGE value="resize and tooltip" />
-    <MESSAGE value="codec and lod1" />
-    <MESSAGE value="pose process" />
     <MESSAGE value="try ssao" />
     <MESSAGE value="a fail lod method, gui" />
     <MESSAGE value="terrain gui" />
@@ -1035,19 +1022,31 @@
     <MESSAGE value="fix" />
     <MESSAGE value="compatibility check" />
     <MESSAGE value="compatibility rendering" />
-    <option name="LAST_COMMIT_MESSAGE" value="compatibility rendering" />
+    <MESSAGE value="section" />
+    <MESSAGE value="fix line rendering" />
+    <MESSAGE value="new file format" />
+    <MESSAGE value="mini map" />
+    <option name="LAST_COMMIT_MESSAGE" value="mini map" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="6" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/xklib-mc-example/src/main/java/com/xkball/xklibmc_example/network/c2s/RequestServerChunk.java</url>
+          <line>47</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="com.xkball.xklib.ui.screen.DebugScreen" memberName="children" />
       </pinned-members>
     </pin-to-top-manager>
-    <watches-manager>
-      <configuration name="GradleRunConfiguration">
-        <watch expression="((ClientboundLevelChunkPacketData)this.data).buffer" custom="net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

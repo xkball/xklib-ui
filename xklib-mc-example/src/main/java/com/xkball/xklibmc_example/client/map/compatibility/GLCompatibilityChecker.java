@@ -1,4 +1,4 @@
-package com.xkball.xklibmc_example.client.compatibility;
+package com.xkball.xklibmc_example.client.map.compatibility;
 
 import com.mojang.logging.LogUtils;
 import org.lwjgl.opengl.GL;

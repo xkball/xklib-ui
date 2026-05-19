@@ -51,7 +51,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         var minY = level == null ? -64 : level.getMinY();
         var maxY = level == null ? 384 : level.getMaxY();
         fixY.set(level == null ? 64 : level.getSeaLevel());
-        this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance, viewDistance);
+        this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance);
         this.initExtensions();
         this.leftExtensionWidgets.inlineStyle("""
                 flex-direction: column;

@@ -3,7 +3,7 @@ package com.xkball.xklibmc_example.ui;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.ui.XKLibBaseScreen;
-import com.xkball.xklibmc_example.client.compatibility.CompatibilityExtension;
+import com.xkball.xklibmc_example.client.map.compatibility.CompatibilityExtension;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

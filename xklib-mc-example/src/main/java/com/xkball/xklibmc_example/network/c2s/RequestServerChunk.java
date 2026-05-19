@@ -21,6 +21,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @NonNullByDefault
 public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implements CustomPacketPayload {
@@ -42,30 +43,42 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
     }
     
     public void handle(IPayloadContext context) {
-        if(!(context.player() instanceof ServerPlayer serverPlayer) || !(context.player().level() instanceof ServerLevel level)) return;
+        if (!(context.player() instanceof ServerPlayer serverPlayer) || !(context.player().level() instanceof ServerLevel level))
+            return;
         context.enqueueWork(() -> {
             var t = new Ticket(XKLibMCExample.MAP_GEOMATICS.get(), ChunkLevel.byStatus(generate ? ChunkStatus.FULL : ChunkStatus.EMPTY));
-            for (var p : this.pos) {
-                level.getChunkSource().addTicket(t, p);
-            }
-            level.getChunkSource().runDistanceManagerUpdates();
             Thread.startVirtualThread(() -> {
-                for(var p : this.pos){
-                    level.getChunkSource()
-                            .getChunkFuture(p.x(),p.z(), generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, true)
+                var chunkFutures = new ArrayList<CompletableFuture<Void>>(1024);
+                for (int i = 0; i < this.pos.size(); i++) {
+                    var p = this.pos.get(i);
+                    var future = CompletableFuture.runAsync(() -> {
+                                level.getChunkSource().addTicket(t, p);
+                                level.getChunkSource().runDistanceManagerUpdates();
+                            }, level.getServer())
+                            .thenCombineAsync(
+                                    level.getChunkSource().getChunkFuture(p.x(), p.z(), generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, true),
+                                    (_, it) -> it)
                             .thenAcceptAsync(it -> {
-                                it.ifSuccess( chunkAccess -> {
+                                it.ifSuccess(chunkAccess -> {
                                     if (chunkAccess.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
-                                        if(chunkAccess instanceof ImposterProtoChunk ipc){
-                                            PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, ipc.getWrapped()));
+                                        if (chunkAccess instanceof ImposterProtoChunk ipc) {
+                                            var pack = new SentChunkToClient(p, ipc.getWrapped());
+                                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(serverPlayer, pack));
+                                            
                                         }
-                                        if(chunkAccess instanceof LevelChunk levelChunk){
-                                            PacketDistributor.sendToPlayer(serverPlayer,new SentChunkToClient(p, levelChunk));
+                                        if (chunkAccess instanceof LevelChunk levelChunk) {
+                                            var pack = new SentChunkToClient(p, levelChunk);
+                                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(serverPlayer, pack));
                                         }
                                     }
                                 });
-                                level.getServer().submit(() -> level.getChunkSource().ticketStorage.removeTicket(t, p));
-                            });
+                                level.getChunkSource().ticketStorage.removeTicket(t, p);
+                            }, level.getServer());
+                    chunkFutures.add(future);
+                    if (chunkFutures.size() == 1024 || i == this.pos.size() - 1) {
+                        CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new)).join();
+                        chunkFutures.clear();
+                    }
                 }
             });
         });

@@ -10,7 +10,7 @@ import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionRegistry;
-import com.xkball.xklibmc_example.client.compatibility.CompatibilityExtension;
+import com.xkball.xklibmc_example.client.map.compatibility.CompatibilityExtension;
 import com.xkball.xklibmc_example.client.render.pip.layers.TerrainRenderer;
 import com.xkball.xklibmc_example.utils.DualQueueThreadPool;
 import net.minecraft.client.Minecraft;

@@ -29,8 +29,6 @@ public final class MinimapHudRenderer {
         if(mc.level == null || mc.player == null || mc.options.hideGui || mc.screen != null) return;
         var minimap = MinimapExtension.INSTANCE;
         if(minimap == null) return;
-        var service = HUD_SERVICE.scope(MinimapExtension.EXTENSION_ID);
-
         var window = mc.getWindow();
         var x0 = window.getGuiScaledWidth() - SIZE - MARGIN;
         var y0 = MARGIN;
@@ -41,7 +39,6 @@ public final class MinimapHudRenderer {
         var target = new Vector3f((float) player.getX(), (float) player.getY(), (float) player.getZ());
         var layers = new ArrayList<String>();
         if(HUD_SERVICE.getBooleanState("terrain", true)) layers.add("terrain");
-        if(HUD_SERVICE.getBooleanState("grid", true)) layers.add("grid");
         if(HUD_SERVICE.getBooleanState("player", true)) layers.add("player");
         if(HUD_SERVICE.getBooleanState("camera_target", false)) layers.add("cameraTarget");
         layers.addAll(TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.enabledLayers(HUD_SERVICE));
@@ -50,9 +47,9 @@ public final class MinimapHudRenderer {
                 layers,
                 target,
                 blockPos,
-                60,
-                0,
-                89.0f,
+                minimap.camFov(),
+                minimap.camCameraLength(),
+                minimap.camXRot(),
                 yRot,
                 x0,
                 x1,
