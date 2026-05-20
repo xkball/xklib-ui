@@ -38,4 +38,9 @@ public class LayoutVariable<T> implements ILayoutVariable<T> {
     public void addCallback(Consumer<T> runnable) {
         this.callbacks.add(runnable);
     }
+    
+    @Override
+    public void removeCallbacks() {
+        this.callbacks.clear();
+    }
 }

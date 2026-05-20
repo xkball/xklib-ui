@@ -195,52 +195,6 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         }
         return new RenderInfo(gather2.finishGather(),gather.finishGather());
     }
-
-    public RenderInfo gatherRenderInfoMinimap(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int renderRangeChunks, int highDetailRangeChunks){
-        var level = Minecraft.getInstance().level;
-        if(level == null) return RenderInfo.empty();
-        var storage = this.storageMap.get(level.dimension());
-        if(storage == null ) return RenderInfo.empty();
-        var centerChunk = ChunkPos.containing(new BlockPos((int) camTar.x, (int) camTar.y, (int) camTar.z));
-        var renderRange = Math.clamp(renderRangeChunks, 4, 64);
-        var highDetailRange = Math.min(Math.clamp(highDetailRangeChunks, 4, 64), renderRange);
-        var gather = new RenderInfoBlockGather();
-        var gather2 = new RenderInfoWithBufferBlockGather();
-        for(var dx = -renderRange; dx <= renderRange; dx++){
-            for(var dz = -renderRange; dz <= renderRange; dz++){
-                var chunkPos = new ChunkPos(centerChunk.x() + dx, centerChunk.z() + dz);
-                var chunk = storage.getChunk(chunkPos);
-                if(chunk == null) continue;
-                var aabb = chunk.aabb;
-                if(!frustum.isVisible(aabb)) continue;
-                if(cullNear && new Vector2f((float) Mth.lerp(0.5f, aabb.minX, aabb.maxX), (float) Mth.lerp(0.5f, aabb.minZ, aabb.maxZ)).sub(new Vector2f(camTar.x, camTar.z)).lengthSquared() < 64 * 64) continue;
-                var highDetail = Math.max(Math.abs(dx), Math.abs(dz)) <= highDetailRange;
-                if(highDetail){
-                    for (int i = 0; i < 6; i++) {
-                        var dir = VanillaUtils.DIRECTIONS[i];
-                        if(!(dirToFace(dir, aabb, camPos).dot(dir.getUnitVec3f()) < 0)) continue;
-                        var faceIndexGpuBuffer = storage.gpuBufferByFace.get(dir);
-                        var faceIndexAlloc = faceIndexGpuBuffer.getAllocation(chunk.chunkPos);
-                        if(faceIndexAlloc == null) continue;
-                        var blockDataAlloc = storage.gpuBufferBlockData.getAllocation(chunk.chunkPos);
-                        if(blockDataAlloc == null) continue;
-                        var faceIndexBuffer = faceIndexGpuBuffer.getGpuBuffer(faceIndexAlloc);
-                        var blockDataBuffer = storage.gpuBufferBlockData.getGpuBuffer(blockDataAlloc);
-                        var offset = faceIndexAlloc.getOffsetFromHeap() / 4;
-                        var size = faceIndexAlloc.getSize() / 4;
-                        var cmd = new IndirectDrawCommand(6, (int) size, i*6,0, (int) offset);
-                        gather2.add(blockDataBuffer, faceIndexBuffer, cmd);
-                    }
-                }
-                else {
-                    var info = storage.terrainTextureManager.getUploadInfo(chunkPos);
-                    var texture = storage.terrainTextureManager.getTextures(info.texturePos());
-                    gather.add(texture, 0, new IndirectDrawCommand(TerrainRenderer.LODS[0].getIndexCount(), 1,0,0,0, chunkPos.getMinBlockX(), chunkPos.getMinBlockZ()));
-                }
-            }
-        }
-        return new RenderInfo(gather2.finishGather(),gather.finishGather());
-    }
     
     //todo 不用mdi
     public RenderInfoCompatible gatherRenderInfoCompatibleMode(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int baseLodDistance){
@@ -269,14 +223,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         return new RenderInfoCompatible(gather2.finishGather());
     }
 
-    public RenderInfoCompatible gatherRenderInfoCompatibleModeMinimap(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar, int renderRangeChunks, int highDetailRangeChunks){
+    public RenderInfoCompatible gatherRenderInfoCompatibleModeMinimap(Frustum frustum, boolean cullNear, Vector3f camPos, Vector3f camTar,  int highDetailRangeChunks){
         var level = Minecraft.getInstance().level;
         if(level == null) return RenderInfoCompatible.empty();
         var storage = this.storageMap.get(level.dimension());
         if(storage == null ) return RenderInfoCompatible.empty();
         var centerChunk = ChunkPos.containing(new BlockPos((int) camTar.x, (int) camTar.y, (int) camTar.z));
-        var renderRange = Math.clamp(renderRangeChunks, 4, 64);
-        var highDetailRange = Math.min(Math.clamp(highDetailRangeChunks, 4, 64), renderRange);
+        var renderRange = 32;
+        var highDetailRange = Math.min(highDetailRangeChunks, renderRange);
         var gather2 = new RenderInfoCompatibleBlockGather();
         for(var dx = -renderRange; dx <= renderRange; dx++){
             for(var dz = -renderRange; dz <= renderRange; dz++){

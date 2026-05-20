@@ -21,13 +21,11 @@ public class MinimapPreviewWidget extends ContainerWidget {
 
     private boolean dragging;
     private WorldTerrainPipRenderer.WorldTerrainState lastState;
-
-    private final IntLayoutVariable renderRange;
+    
     private final IntLayoutVariable highDetailRange;
     private final BooleanLayoutVariable rotateWithPlayer;
 
-    public MinimapPreviewWidget(IntLayoutVariable renderRange, IntLayoutVariable highDetailRange, BooleanLayoutVariable rotateWithPlayer) {
-        this.renderRange = renderRange;
+    public MinimapPreviewWidget(IntLayoutVariable highDetailRange, BooleanLayoutVariable rotateWithPlayer) {
         this.highDetailRange = highDetailRange;
         this.rotateWithPlayer = rotateWithPlayer;
         this.setOverflow(false);
@@ -141,7 +139,6 @@ public class MinimapPreviewWidget extends ContainerWidget {
                 MINIMAP_SERVICE.getBooleanState("depress_sphere", false),
                 MINIMAP_SERVICE.getIntState("lod_distance", 512),
                 true,
-                renderRange.get(),
                 highDetailRange.get(),
                 null,
                 new ScreenRectangle((int) (x / scaleX), (int) (y / scaleY), (int) (width / scaleX), (int) (height / scaleY))

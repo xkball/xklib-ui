@@ -11,4 +11,6 @@ public interface ILayoutVariable<T> {
     void addCallback(Consumer<T> runnable);
     
     void triggerCallbacks();
+    
+    void removeCallbacks();
 }

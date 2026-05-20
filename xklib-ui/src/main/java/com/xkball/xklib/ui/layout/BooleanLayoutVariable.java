@@ -47,4 +47,9 @@ public class BooleanLayoutVariable implements ILayoutVariable<Boolean> {
     public void addCallback(Consumer<Boolean> runnable) {
         this.callbacks.add(runnable);
     }
+    
+    @Override
+    public void removeCallbacks() {
+        this.callbacks.clear();
+    }
 }

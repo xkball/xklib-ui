@@ -189,7 +189,6 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
                 lodDistance.get(),
                 false,
                 0,
-                0,
                 null,
                 new ScreenRectangle((int) (x/scaleX), (int) (y/scaleY), (int) (width/scaleX), (int) (height/scaleY))
         );

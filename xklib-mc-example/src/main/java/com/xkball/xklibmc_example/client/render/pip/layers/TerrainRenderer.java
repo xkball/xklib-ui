@@ -61,7 +61,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         });
         if(TerrainChunkManager.INSTANCE.compatibleMode){
             try(var renderInfo = renderState.minimap()
-                    ? TerrainChunkManager.INSTANCE.gatherRenderInfoCompatibleModeMinimap(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.minimapRenderRangeChunks(), renderState.minimapHighDetailRangeChunks())
+                    ? TerrainChunkManager.INSTANCE.gatherRenderInfoCompatibleModeMinimap(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.minimapHighDetailRangeChunks())
                     : TerrainChunkManager.INSTANCE.gatherRenderInfoCompatibleMode(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance())){
                 if(!renderInfo.lodFullMesh().isEmpty()){
                     try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering lod full mesh", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
@@ -81,9 +81,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
             }
         }
         else {
-            try(var renderInfo = renderState.minimap()
-                    ? TerrainChunkManager.INSTANCE.gatherRenderInfoMinimap(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.minimapRenderRangeChunks(), renderState.minimapHighDetailRangeChunks())
-                    : TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.lodDistance())){
+            try(var renderInfo = TerrainChunkManager.INSTANCE.gatherRenderInfo(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(),renderState.minimap() ? renderState.minimapHighDetailRangeChunks() * 16 : renderState.lodDistance())){
                 if(renderInfo.blocks() != null){
                     try (var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> "world terrain pip rendering", texture, OptionalInt.empty(), depth, OptionalDouble.empty())){
                         RenderSystem.bindDefaultUniforms(renderpass);

@@ -42,4 +42,9 @@ public class FloatLayoutVariable implements ILayoutVariable<Float> {
     public void addCallback(Consumer<Float> runnable) {
         this.callbacks.add(runnable);
     }
+    
+    @Override
+    public void removeCallbacks() {
+        this.callbacks.clear();
+    }
 }

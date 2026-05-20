@@ -49,7 +49,6 @@ public final class MinimapHudRenderer {
                 HUD_SERVICE.getBooleanState("depress_sphere", false),
                 HUD_SERVICE.getIntState("lod_distance", 512),
                 true,
-                minimap.renderRange(),
                 minimap.highDetailRange(),
                 null,
                 new ScreenRectangle(x0, y0, SIZE, SIZE)

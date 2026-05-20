@@ -51,4 +51,9 @@ public class IntLayoutVariable implements ILayoutVariable<Integer> {
     public void addCallback(Consumer<Integer> runnable) {
         this.callbacks.add(runnable);
     }
+    
+    @Override
+    public void removeCallbacks() {
+        this.callbacks.clear();
+    }
 }

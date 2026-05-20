@@ -21,20 +21,11 @@ import org.jspecify.annotations.Nullable;
 public class MinimapExtension implements WorldMapExtension {
 
     public static final String EXTENSION_ID = "minimap";
-    public static final String KEY_RENDER_RANGE = "render_range_chunks";
-    public static final String KEY_HIGH_DETAIL_RANGE = "high_detail_range_chunks";
-    public static final String KEY_ROTATE_WITH_PLAYER = "rotate_with_player";
-    private static final String KEY_CAM_XROT = "cam_xrot_minimap";
-    private static final String KEY_CAM_FOV = "cam_fov_minimap";
-    private static final String KEY_CAM_CAMERA_LENGTH = "cam_camera_length_minimap";
-
-    private final IntLayoutVariable renderRange = new IntLayoutVariable(16);
+    
     private final IntLayoutVariable highDetailRange = new IntLayoutVariable(8);
     private final BooleanLayoutVariable rotateWithPlayer = new BooleanLayoutVariable(false);
-    private float camXRot = 89.0f;
-    private float camFov = 60.0f;
-    private float camCameraLength = 0.0f;
     private WindowedContainer.@Nullable SubWindow configWindow;
+    private final MinimapSettingsStorage settingsStorage = new MinimapSettingsStorage();
 
     public static @Nullable MinimapExtension INSTANCE;
 
@@ -47,17 +38,18 @@ public class MinimapExtension implements WorldMapExtension {
     public void init(WorldMapExtensionContext context) {
         INSTANCE = this;
     }
-    
-    
+
     @Override
     public void onStorageLoaded(LevelChunkStorage storage) {
-    
+        if (storage.getExtensionStorage(MinimapSettingsStorage.EXTENSION_ID) == null) {
+            storage.registerExtensionStorage(this.settingsStorage);
+        }
+        this.highDetailRange.set(this.settingsStorage.highDetailRange);
+        this.rotateWithPlayer.set(this.settingsStorage.rotateWithPlayer);
     }
-    
-    
+
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
-        this.load(service);
         this.bindPersistence(service);
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/map"), () -> this.openConfig(service))
                 .withTooltip(IComponent.literal("Open minimap settings.")));
@@ -67,26 +59,23 @@ public class MinimapExtension implements WorldMapExtension {
     @Override
     public void onMapClosed(WorldMapExtensionService service) {
         this.configWindow = null;
-        service.setFloatState(KEY_CAM_XROT, camXRot);
-        service.setFloatState(KEY_CAM_FOV, camFov);
-        service.setFloatState(KEY_CAM_CAMERA_LENGTH, camCameraLength);
+        this.highDetailRange.removeCallbacks();
+        this.rotateWithPlayer.removeCallbacks();
+        if(this.settingsStorage != null) {
+            this.settingsStorage.highDetailRange = this.highDetailRange.get();
+            this.settingsStorage.rotateWithPlayer = this.rotateWithPlayer.get();
+        }
     }
-
-    public int renderRange() {
-        return Math.clamp(this.renderRange.get(), 4, 64);
-    }
+    
 
     public int highDetailRange() {
-        return Math.min(Math.clamp(this.highDetailRange.get(), 4, 64), this.renderRange());
+        return highDetailRange.get();
     }
 
     public boolean rotateWithPlayer() {
         return this.rotateWithPlayer.get();
     }
-
-    public IntLayoutVariable renderRangeVariable() {
-        return renderRange;
-    }
+    
 
     public IntLayoutVariable highDetailRangeVariable() {
         return highDetailRange;
@@ -97,39 +86,42 @@ public class MinimapExtension implements WorldMapExtension {
     }
 
     public float camXRot() {
-        return camXRot;
+        return settingsStorage.camXRot;
     }
 
     public void setCamXRot(float value) {
-        this.camXRot = Math.clamp(value, -89.9f, 89.9f);
+        this.settingsStorage.camXRot = Math.clamp(value, -89.9f, 89.9f);
+        this.settingsStorage.markDirty();
+        
     }
 
     public float camFov() {
-        return camFov;
+        return this.settingsStorage.camFov;
     }
 
     public void setCamFov(float value) {
-        this.camFov = Math.clamp(value, 5, 90);
+        this.settingsStorage.camFov = Math.clamp(value, 5, 90);
+        this.settingsStorage.markDirty();
     }
 
     public float camCameraLength() {
-        return camCameraLength;
+        return this.settingsStorage.camCameraLength;
     }
 
     public void setCamCameraLength(float value) {
-        this.camCameraLength = Math.max(value, 0);
+        this.settingsStorage.camCameraLength = Math.max(value, 0);
+        this.settingsStorage.markDirty();
     }
 
     private void openConfig(WorldMapExtensionService service) {
-        if(this.configWindow != null && this.configWindow.visible()) return;
-        this.load(service);
+        if (this.configWindow != null && this.configWindow.visible()) return;
         this.configWindow = service.addSubWindow(this.createConfigContent(service), "Minimap", false, 140 * CssLengthUnit.rpxScaleWorkaround, 240 * CssLengthUnit.rpxScaleWorkaround);
     }
 
     private Widget createConfigContent(WorldMapExtensionService service) {
-        var preview = new MinimapPreviewWidget(renderRange, highDetailRange, rotateWithPlayer)
+        var preview = new MinimapPreviewWidget(highDetailRange, rotateWithPlayer)
                 .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx; border: 2rpx; border-color: 0xCCAAAAAA;");
-        return new ContainerWidget(){
+        return new ContainerWidget() {
             @Override
             public void onRemove() {
                 super.onRemove();
@@ -164,7 +156,6 @@ public class MinimapExtension implements WorldMapExtension {
                         }
                         """)
                 .addChild(preview)
-                .addChild(this.sliderRow("Render Range", this.renderRange))
                 .addChild(this.sliderRow("High Detail", this.highDetailRange))
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")
@@ -176,21 +167,17 @@ public class MinimapExtension implements WorldMapExtension {
         return new ContainerWidget()
                 .setCSSClassName("minimap_row")
                 .addChild(new Label(label).setCSSClassName("minimap_label"))
-                .addChild(new IntSliderWidget(4, 64, variable.get()).bind(variable));
-    }
-
-    private void load(WorldMapExtensionService service) {
-        this.renderRange.set(Math.clamp(service.getIntState(KEY_RENDER_RANGE, this.renderRange.get()), 4, 64));
-        this.highDetailRange.set(Math.clamp(service.getIntState(KEY_HIGH_DETAIL_RANGE, this.highDetailRange.get()), 4, 64));
-        this.rotateWithPlayer.set(service.getBooleanState(KEY_ROTATE_WITH_PLAYER, this.rotateWithPlayer.get()));
-        this.camXRot = service.getFloatState(KEY_CAM_XROT, this.camXRot);
-        this.camFov = service.getFloatState(KEY_CAM_FOV, this.camFov);
-        this.camCameraLength = service.getFloatState(KEY_CAM_CAMERA_LENGTH, this.camCameraLength);
+                .addChild(new IntSliderWidget(0, 64, variable.get()).bind(variable));
     }
 
     private void bindPersistence(WorldMapExtensionService service) {
-        this.renderRange.addCallback(value -> service.setIntState(KEY_RENDER_RANGE, Math.clamp(value, 4, 64)));
-        this.highDetailRange.addCallback(value -> service.setIntState(KEY_HIGH_DETAIL_RANGE, Math.clamp(value, 4, 64)));
-        this.rotateWithPlayer.addCallback(value -> service.setBooleanState(KEY_ROTATE_WITH_PLAYER, value));
+        this.highDetailRange.addCallback(value -> {
+                settingsStorage.highDetailRange = value;
+                settingsStorage.markDirty();
+        });
+        this.rotateWithPlayer.addCallback(value -> {
+                settingsStorage.rotateWithPlayer = value;
+                settingsStorage.markDirty();
+        });
     }
 }
