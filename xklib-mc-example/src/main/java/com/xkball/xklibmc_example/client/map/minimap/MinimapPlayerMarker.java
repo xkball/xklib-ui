@@ -6,7 +6,7 @@ import com.xkball.xklib.resource.ResourceLocation;
 
 public final class MinimapPlayerMarker {
 
-    private static final ResourceLocation ICON = VanillaUtils.modrl("icon/waypoint");
+    private static final ResourceLocation ICON = VanillaUtils.modrl("icon/arrow");
     private static final int COLOR = 0xFF2F80FF;
 
     private MinimapPlayerMarker() {
@@ -31,7 +31,7 @@ public final class MinimapPlayerMarker {
         var pose = graphics.getPose();
         pose.pushMatrix();
         pose.translate(cx, cy);
-        pose.rotate((float) Math.toRadians(rotationDegrees));
+        pose.rotate((float) Math.toRadians(rotationDegrees + 180.0f));
         pose.scale(0.5f,0.5f);
         pose.translate(-cx, -cy);
         graphics.blitSprite(ICON, cx - size * 0.5f, cy - size * 0.5f, size, size, COLOR);

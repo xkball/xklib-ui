@@ -10,13 +10,10 @@ import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
-import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.core.BlockPos;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
 
 @NonNullByDefault
 public class MinimapPreviewWidget extends ContainerWidget {
@@ -46,12 +43,11 @@ public class MinimapPreviewWidget extends ContainerWidget {
             var y0 = (int) y;
             var x1 = (int) (x + width);
             var y1 = (int) (y + height);
-            inner.fill(x0 - 1, y0 - 1, x1 + 1, y0, 0xCCAAAAAA);
-            inner.fill(x0 - 1, y1, x1 + 1, y1 + 1, 0xCCAAAAAA);
-            inner.fill(x0 - 1, y0, x0, y1, 0xCCAAAAAA);
-            inner.fill(x1, y0, x1 + 1, y1, 0xCCAAAAAA);
+            MinimapRenderHelper.drawBorder(inner, x0, y0, x1, y1);
             var player = Minecraft.getInstance().player;
             if (player != null) {
+                var yRot = rotateWithPlayer.get() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
+                CompassRenderer.render(b3dGuiGraphics, x0, y0, x1, y1, yRot, 0);
                 MinimapPlayerMarker.render(b3dGuiGraphics, x0, y0, x1, y1, player.getYRot(), rotateWithPlayer.get());
             }
         }
@@ -125,11 +121,7 @@ public class MinimapPreviewWidget extends ContainerWidget {
         var player = mc.player;
         var target = new Vector3f((float) player.getX(), (float) player.getY(), (float) player.getZ());
         var blockPos = player.blockPosition();
-        var layers = new ArrayList<String>();
-        if (MINIMAP_SERVICE.getBooleanState("terrain", true)) layers.add("terrain");
-        if (MINIMAP_SERVICE.getBooleanState("player", true)) layers.add("player");
-        if (MINIMAP_SERVICE.getBooleanState("camera_target", false)) layers.add("cameraTarget");
-        layers.addAll(TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.enabledLayers(MINIMAP_SERVICE));
+        var layers = MinimapRenderHelper.buildEnabledLayers(MINIMAP_SERVICE);
         var yRot = rotateWithPlayer.get() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
         var scaleX = XKLibBaseScreen.tryGetScaleX();
         var scaleY = XKLibBaseScreen.tryGetScaleY();

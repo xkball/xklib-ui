@@ -16,6 +16,7 @@ import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.client.map.minimap.MinimapPlayerMarker;
+import com.xkball.xklibmc_example.client.map.minimap.CompassRenderer;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import dev.vfyjxf.taffy.geometry.TaffySize;
@@ -60,17 +61,19 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     private final BooleanLayoutVariable grid;
     private final BooleanLayoutVariable player;
     private final BooleanLayoutVariable cameraTarget_;
+    private final BooleanLayoutVariable compass;
     private final BooleanLayoutVariable depress_sphere;
     private final BooleanLayoutVariable debug;
     private final IntLayoutVariable yMode;
     private final IntLayoutVariable fixY;
     private final IntLayoutVariable lodDistance;
     
-    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable cameraTarget, BooleanLayoutVariable depress_sphere, BooleanLayoutVariable debug, IntLayoutVariable yMode, IntLayoutVariable fixY, IntLayoutVariable lodDistance) {
+    public WorldTerrainWidgetInner(BooleanLayoutVariable terrain, BooleanLayoutVariable grid, BooleanLayoutVariable player, BooleanLayoutVariable cameraTarget, BooleanLayoutVariable compass, BooleanLayoutVariable depress_sphere, BooleanLayoutVariable debug, IntLayoutVariable yMode, IntLayoutVariable fixY, IntLayoutVariable lodDistance) {
         this.terrain = terrain;
         this.grid = grid;
         this.player = player;
         this.cameraTarget_ = cameraTarget;
+        this.compass = compass;
         this.depress_sphere = depress_sphere;
         this.debug = debug;
         this.yMode = yMode;
@@ -198,6 +201,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             var inner = b3dGuiGraphics.getInner();
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
+            if(compass.get()) CompassRenderer.render(b3dGuiGraphics, x, y, x + width, y + height, yRot, 6);
             if(debug.get()) {
                 var y_ = y;
                 graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;

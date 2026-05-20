@@ -31,6 +31,7 @@ public class WorldTerrainWidget extends ContainerWidget {
     public final BooleanLayoutVariable player = new BooleanLayoutVariable(true);
     public final BooleanLayoutVariable debug = new BooleanLayoutVariable(false);
     public final BooleanLayoutVariable cameraTarget = new BooleanLayoutVariable(false);
+    public final BooleanLayoutVariable compass = new BooleanLayoutVariable(true);
     public final BooleanLayoutVariable depress_sphere = new BooleanLayoutVariable(false);
     public final IntLayoutVariable yMode = new IntLayoutVariable(1);
     public final IntLayoutVariable fixY = new IntLayoutVariable();
@@ -51,7 +52,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         var minY = level == null ? -64 : level.getMinY();
         var maxY = level == null ? 384 : level.getMaxY();
         fixY.set(level == null ? 64 : level.getSeaLevel());
-        this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, depress_sphere, debug, yMode, fixY, lodDistance);
+        this.inner = new WorldTerrainWidgetInner(terrain, grid, player, cameraTarget, compass, depress_sphere, debug, yMode, fixY, lodDistance);
         this.initExtensions();
         this.leftExtensionWidgets.inlineStyle("""
                 flex-direction: column;
@@ -156,6 +157,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .withTooltip(IComponent.literal("Focus camera on yourself.")))
                 .addChild(new Widget().setCSSClassName("splitter_y"))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/compass")).bind(compass).withTooltip(IComponent.literal("show compass")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.literal("show camera target")))
@@ -269,6 +271,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         this.player.set(this.service.getBooleanState("player", this.player.get()));
         this.debug.set(this.service.getBooleanState("debug", this.debug.get()));
         this.cameraTarget.set(this.service.getBooleanState("camera_target", this.cameraTarget.get()));
+        this.compass.set(this.service.getBooleanState("compass", this.compass.get()));
         this.depress_sphere.set(this.service.getBooleanState("depress_sphere", this.depress_sphere.get()));
         this.yMode.set(this.service.getIntState("y_mode", this.yMode.get()));
         this.fixY.set(this.service.getIntState("fix_y", this.fixY.get()));
@@ -283,6 +286,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         this.player.addCallback(value -> this.service.setBooleanState("player", value));
         this.debug.addCallback(value -> this.service.setBooleanState("debug", value));
         this.cameraTarget.addCallback(value -> this.service.setBooleanState("camera_target", value));
+        this.compass.addCallback(value -> this.service.setBooleanState("compass", value));
         this.depress_sphere.addCallback(value -> this.service.setBooleanState("depress_sphere", value));
         this.yMode.addCallback(value -> this.service.setIntState("y_mode", value));
         this.fixY.addCallback(value -> this.service.setIntState("fix_y", value));

@@ -1,19 +1,13 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
-import com.xkball.xklib.XKLib;
-import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
-import com.xkball.xklibmc.x3d.backend.b3d.B3dRenderContext;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
-import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.core.BlockPos;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
 
 public final class MinimapHudRenderer {
 
@@ -37,11 +31,7 @@ public final class MinimapHudRenderer {
         var player = mc.player;
         var blockPos = player.blockPosition();
         var target = new Vector3f((float) player.getX(), (float) player.getY(), (float) player.getZ());
-        var layers = new ArrayList<String>();
-        if(HUD_SERVICE.getBooleanState("terrain", true)) layers.add("terrain");
-        if(HUD_SERVICE.getBooleanState("player", true)) layers.add("player");
-        if(HUD_SERVICE.getBooleanState("camera_target", false)) layers.add("cameraTarget");
-        layers.addAll(TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.enabledLayers(HUD_SERVICE));
+        var layers = MinimapRenderHelper.buildEnabledLayers(HUD_SERVICE);
         var yRot = minimap.rotateWithPlayer() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
         var state = new WorldTerrainPipRenderer.WorldTerrainState(
                 layers,
@@ -65,19 +55,10 @@ public final class MinimapHudRenderer {
                 new ScreenRectangle(x0, y0, SIZE, SIZE)
         );
         graphics.submitPictureInPictureRenderState(state);
-        graphics.fill(x0 - 1, y0 - 1, x1 + 1, y0, 0xCCAAAAAA);
-        graphics.fill(x0 - 1, y1, x1 + 1, y1 + 1, 0xCCAAAAAA);
-        graphics.fill(x0 - 1, y0, x0, y1, 0xCCAAAAAA);
-        graphics.fill(x1, y0, x1 + 1, y1, 0xCCAAAAAA);
-        MinimapPlayerMarker.render(guiGraphics(graphics), x0, y0, x1, y1, player.getYRot(), minimap.rotateWithPlayer());
-    }
-
-    private static B3dGuiGraphics guiGraphics(GuiGraphicsExtractor graphics) {
-        if(XKLib.RENDER_CONTEXT.get() == null) {
-            XKLib.RENDER_CONTEXT.set(new B3dRenderContext());
-        }
-        var guiGraphics = (B3dGuiGraphics) XKLib.RENDER_CONTEXT.get().getGUIGraphics();
-        guiGraphics.setInner(graphics);
-        return guiGraphics;
+        MinimapRenderHelper.drawBorder(graphics, x0, y0, x1, y1);
+        var b3dGraphics = MinimapRenderHelper.getOrCreateB3dGuiGraphics(graphics);
+        if(HUD_SERVICE.getBooleanState("compass", true)) CompassRenderer.render(b3dGraphics, x0, y0, x1, y1, yRot, 0);
+        MinimapPlayerMarker.render(b3dGraphics, x0, y0, x1, y1, player.getYRot(), minimap.rotateWithPlayer());
+        b3dGraphics.drawCenteredString("%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ()), (x0 + x1) / 2f, y1 + 8, 0xCCFFFFFF);
     }
 }
