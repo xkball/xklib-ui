@@ -53,7 +53,12 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
                 b.putVec3(VanillaUtils.dirVec(Mth.clamp(renderState.xRot(),45,90),renderState.yRot() + 2))
                  .putVec3(renderState.cameraPos()));
-        XKLibExampleUniforms.LEVEL_DATA.updateUnsafe(b -> b.putVec2(level.getMinY(), level.getMaxY()));
+        XKLibExampleUniforms.LEVEL_DATA.updateUnsafe(b -> {
+            b.putFloat(level.getMinY());
+            b.putFloat(level.getMaxY());
+            b.putFloat(level.getSeaLevel());
+            b.putFloat(0);
+        });
         if(TerrainChunkManager.INSTANCE.compatibleMode){
             try(var renderInfo = renderState.minimap()
                     ? TerrainChunkManager.INSTANCE.gatherRenderInfoCompatibleModeMinimap(frustum, renderState.cullNear(), renderState.cameraOffset().add(renderState.cameraTarget()), renderState.cameraTarget(), renderState.minimapRenderRangeChunks(), renderState.minimapHighDetailRangeChunks())

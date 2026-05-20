@@ -14,6 +14,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
+import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import com.xkball.xklibmc_example.ui.widget.IntSliderWidget;
 import org.jspecify.annotations.Nullable;
 
@@ -46,7 +47,14 @@ public class MinimapExtension implements WorldMapExtension {
     public void init(WorldMapExtensionContext context) {
         INSTANCE = this;
     }
-
+    
+    
+    @Override
+    public void onStorageLoaded(LevelChunkStorage storage) {
+    
+    }
+    
+    
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
         this.load(service);

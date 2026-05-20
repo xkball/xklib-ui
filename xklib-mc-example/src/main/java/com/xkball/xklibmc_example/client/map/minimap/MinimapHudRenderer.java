@@ -6,7 +6,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.core.BlockPos;
 import org.joml.Vector3f;
 
 public final class MinimapHudRenderer {
@@ -30,7 +29,8 @@ public final class MinimapHudRenderer {
         var y1 = y0 + SIZE;
         var player = mc.player;
         var blockPos = player.blockPosition();
-        var target = new Vector3f((float) player.getX(), (float) player.getY(), (float) player.getZ());
+        var targetY = MinimapRenderHelper.getCameraTargetY(player.getY(), blockPos.getX(), blockPos.getZ(), mc.level.getMinY());
+        var target = new Vector3f((float) player.getX(), targetY, (float) player.getZ());
         var layers = MinimapRenderHelper.buildEnabledLayers(HUD_SERVICE);
         var yRot = minimap.rotateWithPlayer() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
         var state = new WorldTerrainPipRenderer.WorldTerrainState(
@@ -57,7 +57,7 @@ public final class MinimapHudRenderer {
         graphics.submitPictureInPictureRenderState(state);
         MinimapRenderHelper.drawBorder(graphics, x0, y0, x1, y1);
         var b3dGraphics = MinimapRenderHelper.getOrCreateB3dGuiGraphics(graphics);
-        if(HUD_SERVICE.getBooleanState("compass", true)) CompassRenderer.render(b3dGraphics, x0, y0, x1, y1, yRot, 0);
+        if(HUD_SERVICE.getBooleanState("compass", true)) CompassRenderer.render(b3dGraphics, x0, y0, x1, y1, yRot, 0, 8f);
         MinimapPlayerMarker.render(b3dGraphics, x0, y0, x1, y1, player.getYRot(), minimap.rotateWithPlayer());
         var coords = "%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         var textX = (x0 + x1) / 2f;

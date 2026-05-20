@@ -13,7 +13,10 @@ layout(std140) uniform Projection {
 };
 
 layout(std140) uniform LevelData {
-    vec2 minMaxHeight;
+    float minHeight;
+    float maxHieight;
+    float seaLevel;
+    float unusedPadding;
 };
 
 struct cmddata{
@@ -52,7 +55,7 @@ float getHeight(vec2 uv){
     vec4 c;
     int residency = sparseTextureARB(heightTexture, uv, c);
     if (!sparseTexelsResidentARB(residency)){
-        return minMaxHeight.x - 1;
+        return minHeight - 1;
     }
     return float(int(packUnorm4x8(c)));
 }

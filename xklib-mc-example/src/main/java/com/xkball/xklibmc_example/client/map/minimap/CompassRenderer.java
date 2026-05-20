@@ -12,7 +12,7 @@ public final class CompassRenderer {
     private CompassRenderer() {
     }
 
-    public static void render(B3dGuiGraphics graphics, float x0, float y0, float x1, float y1, float yRot, float margin) {
+    public static void render(B3dGuiGraphics graphics, float x0, float y0, float x1, float y1, float yRot, float margin, float fontHeight) {
         float cx = (x0 + x1) / 2f;
         float cy = (y0 + y1) / 2f;
         float halfW = (x1 - x0) / 2f - margin;
@@ -21,13 +21,13 @@ public final class CompassRenderer {
 
         var yRotClamped = ((yRot % 360) + 360) % 360;
 
-        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped), "N", N_COLOR);
-        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 90), "E", LABEL_COLOR);
-        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 180), "S", LABEL_COLOR);
-        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 270), "W", LABEL_COLOR);
+        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped), "N", N_COLOR, fontHeight);
+        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 90), "E", LABEL_COLOR, fontHeight);
+        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 180), "S", LABEL_COLOR, fontHeight);
+        placeLabel(graphics, cx, cy, halfW, halfH, (float) Math.toRadians(yRotClamped + 270), "W", LABEL_COLOR, fontHeight);
     }
 
-    private static void placeLabel(B3dGuiGraphics graphics, float cx, float cy, float halfW, float halfH, float theta, String label, int color) {
+    private static void placeLabel(B3dGuiGraphics graphics, float cx, float cy, float halfW, float halfH, float theta, String label, int color, float fontHeight) {
         float dx = (float) Math.sin(theta);
         float dy = -(float) Math.cos(theta);
 
@@ -39,17 +39,17 @@ public final class CompassRenderer {
 
         float x = cx + dx * t;
         float y = cy + dy * t;
-        float textY = y - 4;
+        float textY = y - fontHeight / 2f;
 
         var font = Minecraft.getInstance().font;
-        var textWidth = font.width(label);
-        var textHeight = font.lineHeight;
+        var scale = fontHeight / (float) font.lineHeight;
+        var textWidth = font.width(label) * scale;
         var bgX0 = (int) (x - textWidth / 2f - 1);
         var bgY0 = (int) (textY - 1);
         var bgX1 = (int) (x + textWidth / 2f);
-        var bgY1 = (int) (textY + textHeight);
+        var bgY1 = (int) (textY + fontHeight);
         graphics.getInner().fill(bgX0, bgY0, bgX1, bgY1, BG_COLOR);
 
-        graphics.drawCenteredString(label, x, textY, color);
+        graphics.drawCenteredString(label, x, textY, color, fontHeight);
     }
 }

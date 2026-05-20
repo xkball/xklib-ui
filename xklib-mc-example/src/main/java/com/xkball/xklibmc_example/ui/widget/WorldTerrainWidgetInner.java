@@ -201,7 +201,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             var inner = b3dGuiGraphics.getInner();
             inner.submitPictureInPictureRenderState(lastState);
             if(player.get()) this.renderPlayerHead(b3dGuiGraphics);
-            if(compass.get()) CompassRenderer.render(b3dGuiGraphics, x, y, x + width, y + height, yRot, 6);
+            if(compass.get()) CompassRenderer.render(b3dGuiGraphics, x + 8, y + 10, x + width, y + height, yRot, 6, 24f);
             if(debug.get()) {
                 var y_ = y;
                 graphics.drawString("fov: " + fov,x,y_,-1); y_ += 10;

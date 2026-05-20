@@ -7,6 +7,9 @@ public class XKLibExampleUniforms {
     
     public static final UpdatableUBO LEVEL_DATA = new UpdatableUBO.UBOBuilder("level_data")
             .closeOnExit()
-            .putVec2("max_min_height", Vector2f::new)
+            .putFloat("min_height", () -> 0)
+            .putFloat("max_height", () -> 0)
+            .putFloat("sea_level", () -> 0)
+            .putFloat("unused_padding", () -> 0)
             .build();
 }

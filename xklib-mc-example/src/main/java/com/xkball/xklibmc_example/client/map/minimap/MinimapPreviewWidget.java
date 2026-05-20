@@ -46,7 +46,7 @@ public class MinimapPreviewWidget extends ContainerWidget {
             var player = Minecraft.getInstance().player;
             if (player != null) {
                 var yRot = rotateWithPlayer.get() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
-                CompassRenderer.render(b3dGuiGraphics, x0, y0, x1, y1, yRot, 0);
+                CompassRenderer.render(b3dGuiGraphics, x0+2, y0+2, x1, y1, yRot, 0, 24f);
                 MinimapPlayerMarker.render(b3dGuiGraphics, x0, y0, x1, y1, player.getYRot(), rotateWithPlayer.get());
             }
         }
@@ -118,8 +118,9 @@ public class MinimapPreviewWidget extends ContainerWidget {
             return;
         }
         var player = mc.player;
-        var target = new Vector3f((float) player.getX(), (float) player.getY(), (float) player.getZ());
         var blockPos = player.blockPosition();
+        var targetY = MinimapRenderHelper.getCameraTargetY(player.getY(), blockPos.getX(), blockPos.getZ(), mc.level.getMinY());
+        var target = new Vector3f((float) player.getX(), targetY, (float) player.getZ());
         var layers = MinimapRenderHelper.buildEnabledLayers(MINIMAP_SERVICE);
         var yRot = rotateWithPlayer.get() ? MinimapPlayerMarker.mapYawForPlayerUp(player.getYRot()) : 0.0f;
         var scaleX = XKLibBaseScreen.tryGetScaleX();

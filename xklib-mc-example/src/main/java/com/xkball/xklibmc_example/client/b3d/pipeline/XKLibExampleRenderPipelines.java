@@ -74,6 +74,8 @@ public class XKLibExampleRenderPipelines {
             .withSampler("heightTexture")
             .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            .withUniform("LevelData", UniformType.UNIFORM_BUFFER)
+            .bindUniform("LevelData", XKLibExampleUniforms.LEVEL_DATA)
             .withSSBO("cmd")
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))

@@ -32,6 +32,18 @@ public final class MinimapRenderHelper {
         graphics.fill(x1, y0, x1 + 1, y1, 0xCCAAAAAA);
     }
 
+    public static float getCameraTargetY(double playerY, int blockX, int blockZ, int minY) {
+        var targetY = (float) playerY;
+        var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
+        if (storage != null) {
+            var h = storage.getHeight(blockX, blockZ);
+            if (h != minY && playerY < h) {
+                return h;
+            }
+        }
+        return targetY;
+    }
+
     public static B3dGuiGraphics getOrCreateB3dGuiGraphics(GuiGraphicsExtractor graphics) {
         if (XKLib.RENDER_CONTEXT.get() == null) {
             XKLib.RENDER_CONTEXT.set(new B3dRenderContext());
