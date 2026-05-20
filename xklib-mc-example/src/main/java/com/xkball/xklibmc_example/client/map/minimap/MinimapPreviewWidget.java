@@ -12,7 +12,6 @@ import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.core.BlockPos;
 import org.joml.Vector3f;
 
 @NonNullByDefault

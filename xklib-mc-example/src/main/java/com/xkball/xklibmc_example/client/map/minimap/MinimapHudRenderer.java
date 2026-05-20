@@ -59,6 +59,13 @@ public final class MinimapHudRenderer {
         var b3dGraphics = MinimapRenderHelper.getOrCreateB3dGuiGraphics(graphics);
         if(HUD_SERVICE.getBooleanState("compass", true)) CompassRenderer.render(b3dGraphics, x0, y0, x1, y1, yRot, 0);
         MinimapPlayerMarker.render(b3dGraphics, x0, y0, x1, y1, player.getYRot(), minimap.rotateWithPlayer());
-        b3dGraphics.drawCenteredString("%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ()), (x0 + x1) / 2f, y1 + 8, 0xCCFFFFFF);
+        var coords = "%d %d %d".formatted(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        var textX = (x0 + x1) / 2f;
+        var textY = y1 + 8;
+        var font = Minecraft.getInstance().font;
+        var cw = font.width(coords);
+        var ch = font.lineHeight;
+        graphics.fill((int) (textX - cw / 2f - 1), (int) (textY - 1), (int) (textX + cw / 2f + 1), (int) (textY + ch + 1), 0x90505050);
+        b3dGraphics.drawCenteredString(coords, textX, textY, 0xCCFFFFFF);
     }
 }

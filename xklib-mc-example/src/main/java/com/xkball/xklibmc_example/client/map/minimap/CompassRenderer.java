@@ -1,11 +1,13 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
+import net.minecraft.client.Minecraft;
 
 public final class CompassRenderer {
 
     private static final int N_COLOR = 0xFFFF5555;
     private static final int LABEL_COLOR = 0xFFFFFFFF;
+    private static final int BG_COLOR = 0x90505050;
 
     private CompassRenderer() {
     }
@@ -37,7 +39,17 @@ public final class CompassRenderer {
 
         float x = cx + dx * t;
         float y = cy + dy * t;
+        float textY = y - 4;
 
-        graphics.drawCenteredString(label, x, y - 4, color);
+        var font = Minecraft.getInstance().font;
+        var textWidth = font.width(label);
+        var textHeight = font.lineHeight;
+        var bgX0 = (int) (x - textWidth / 2f - 1);
+        var bgY0 = (int) (textY - 1);
+        var bgX1 = (int) (x + textWidth / 2f);
+        var bgY1 = (int) (textY + textHeight);
+        graphics.getInner().fill(bgX0, bgY0, bgX1, bgY1, BG_COLOR);
+
+        graphics.drawCenteredString(label, x, textY, color);
     }
 }
