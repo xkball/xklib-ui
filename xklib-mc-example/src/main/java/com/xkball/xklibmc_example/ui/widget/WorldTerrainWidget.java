@@ -262,7 +262,7 @@ public class WorldTerrainWidget extends ContainerWidget {
     public WindowedContainer windowLayer() {
         return this.windowLayer;
     }
-
+    
     private void loadPersistentUiState() {
         this.terrain.set(this.service.getBooleanState("terrain", this.terrain.get()));
         this.grid.set(this.service.getBooleanState("grid", this.grid.get()));
@@ -292,8 +292,10 @@ public class WorldTerrainWidget extends ContainerWidget {
             TerrainChunkManager.INSTANCE.viewDistance = value;
         });
     }
+    
 
     public void closeMapExtensions() {
+        this.inner.onMapClosed(this.service);
         TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.onMapClosed(this.service);
     }
     

@@ -23,12 +23,14 @@ public class MinimapExtension implements WorldMapExtension {
     public static final String KEY_RENDER_RANGE = "render_range_chunks";
     public static final String KEY_HIGH_DETAIL_RANGE = "high_detail_range_chunks";
     public static final String KEY_ROTATE_WITH_PLAYER = "rotate_with_player";
+    private static final String KEY_CAM_XROT = "cam_xrot_minimap";
+    private static final String KEY_CAM_FOV = "cam_fov_minimap";
+    private static final String KEY_CAM_CAMERA_LENGTH = "cam_camera_length_minimap";
 
     private final IntLayoutVariable renderRange = new IntLayoutVariable(16);
     private final IntLayoutVariable highDetailRange = new IntLayoutVariable(8);
     private final BooleanLayoutVariable rotateWithPlayer = new BooleanLayoutVariable(false);
     private float camXRot = 89.0f;
-    private float camYRot = 0.0f;
     private float camFov = 60.0f;
     private float camCameraLength = 0.0f;
     private WindowedContainer.@Nullable SubWindow configWindow;
@@ -57,6 +59,9 @@ public class MinimapExtension implements WorldMapExtension {
     @Override
     public void onMapClosed(WorldMapExtensionService service) {
         this.configWindow = null;
+        service.setFloatState(KEY_CAM_XROT, camXRot);
+        service.setFloatState(KEY_CAM_FOV, camFov);
+        service.setFloatState(KEY_CAM_CAMERA_LENGTH, camCameraLength);
     }
 
     public int renderRange() {
@@ -116,7 +121,13 @@ public class MinimapExtension implements WorldMapExtension {
     private Widget createConfigContent(WorldMapExtensionService service) {
         var preview = new MinimapPreviewWidget(renderRange, highDetailRange, rotateWithPlayer)
                 .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx; border: 2rpx; border-color: 0xCCAAAAAA;");
-        return new ContainerWidget()
+        return new ContainerWidget(){
+            @Override
+            public void onRemove() {
+                super.onRemove();
+                configWindow = null;
+            }
+        }
                 .inlineStyle("""
                         flex-direction: column;
                         size: 100% 100%;
@@ -164,6 +175,9 @@ public class MinimapExtension implements WorldMapExtension {
         this.renderRange.set(Math.clamp(service.getIntState(KEY_RENDER_RANGE, this.renderRange.get()), 4, 64));
         this.highDetailRange.set(Math.clamp(service.getIntState(KEY_HIGH_DETAIL_RANGE, this.highDetailRange.get()), 4, 64));
         this.rotateWithPlayer.set(service.getBooleanState(KEY_ROTATE_WITH_PLAYER, this.rotateWithPlayer.get()));
+        this.camXRot = service.getFloatState(KEY_CAM_XROT, this.camXRot);
+        this.camFov = service.getFloatState(KEY_CAM_FOV, this.camFov);
+        this.camCameraLength = service.getFloatState(KEY_CAM_CAMERA_LENGTH, this.camCameraLength);
     }
 
     private void bindPersistence(WorldMapExtensionService service) {

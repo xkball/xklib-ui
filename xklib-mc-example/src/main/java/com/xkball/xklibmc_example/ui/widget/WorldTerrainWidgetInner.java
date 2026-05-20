@@ -38,6 +38,10 @@ import java.util.function.Supplier;
 
 @NonNullByDefault
 public class WorldTerrainWidgetInner extends ContainerWidget {
+    private static final String KEY_CAM_XROT = "cam_xrot";
+    private static final String KEY_CAM_YROT = "cam_yrot";
+    private static final String KEY_CAM_FOV = "cam_fov";
+    private static final String KEY_CAM_CAMERA_LENGTH = "cam_camera_length";
 
     private final Vector3f cameraTarget = new Vector3f();
     private BlockPos centerPos = BlockPos.ZERO;
@@ -82,6 +86,17 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
 
     public void setExtensionService(WorldMapExtensionService extensionService) {
         this.extensionService = extensionService;
+        this.xRot = this.extensionService.getFloatState(KEY_CAM_XROT, this.xRot);
+        this.yRot = this.extensionService.getFloatState(KEY_CAM_YROT, this.yRot);
+        this.fov = this.extensionService.getFloatState(KEY_CAM_FOV, this.fov);
+        this.cameraLength = this.extensionService.getFloatState(KEY_CAM_CAMERA_LENGTH, this.cameraLength);
+    }
+    
+    public void onMapClosed(WorldMapExtensionService service){
+        service.setFloatState(KEY_CAM_XROT, this.xRot);
+        service.setFloatState(KEY_CAM_YROT, this.yRot);
+        service.setFloatState(KEY_CAM_FOV, this.fov);
+        service.setFloatState(KEY_CAM_CAMERA_LENGTH, this.cameraLength);
     }
 
     public void setExtensionOverlayProvider(String extensionId, Supplier<Widget> provider) {
