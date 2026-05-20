@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import net.minecraft.client.DeltaTracker;
@@ -10,8 +11,8 @@ import org.joml.Vector3f;
 
 public final class MinimapHudRenderer {
 
-    private static final int SIZE = 128;
-    private static final int MARGIN = 8;
+    private static final int SIZE = 42;
+    private static final int MARGIN = 6;
     private static final WorldMapExtensionServiceImpl HUD_SERVICE = new WorldMapExtensionServiceImpl("");
 
     private MinimapHudRenderer() {
@@ -23,10 +24,11 @@ public final class MinimapHudRenderer {
         var minimap = MinimapExtension.INSTANCE;
         if(minimap == null) return;
         var window = mc.getWindow();
-        var x0 = window.getGuiScaledWidth() - SIZE - MARGIN;
-        var y0 = MARGIN;
-        var x1 = x0 + SIZE;
-        var y1 = y0 + SIZE;
+        var s = CssLengthUnit.rpxScaleWorkaround;
+        int x0 = (int) (window.getGuiScaledWidth() - SIZE * s - MARGIN * s);
+        int y0 = (int) (MARGIN * s);
+        int x1 = (int) (x0 + SIZE * s);
+        int y1 = (int) (y0 + SIZE * s);
         var player = mc.player;
         var blockPos = player.blockPosition();
         var targetY = MinimapRenderHelper.getCameraTargetY(player.getY(), blockPos.getX(), blockPos.getZ(), mc.level.getMinY());

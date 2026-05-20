@@ -10,6 +10,7 @@ import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -348,7 +349,7 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
         }
 
         @Override
-        public boolean keyPressed(net.minecraft.client.input.KeyEvent keyEvent) {
+        public boolean keyPressed(KeyEvent keyEvent) {
             return false;
         }
 

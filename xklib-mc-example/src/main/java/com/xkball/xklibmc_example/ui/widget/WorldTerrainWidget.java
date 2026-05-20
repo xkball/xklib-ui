@@ -156,7 +156,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                                """)
                         .withTooltip(IComponent.literal("Focus camera on yourself.")))
                 .addChild(new Widget().setCSSClassName("splitter_y"))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/terrain")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/map")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/compass")).bind(compass).withTooltip(IComponent.literal("show compass")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
                 .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))

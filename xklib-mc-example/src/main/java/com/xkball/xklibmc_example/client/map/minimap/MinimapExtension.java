@@ -51,7 +51,7 @@ public class MinimapExtension implements WorldMapExtension {
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
         this.bindPersistence(service);
-        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/map"), () -> this.openConfig(service))
+        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/minimap"), () -> this.openConfig(service))
                 .withTooltip(IComponent.literal("Open minimap settings.")));
         service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
     }
@@ -120,7 +120,7 @@ public class MinimapExtension implements WorldMapExtension {
 
     private Widget createConfigContent(WorldMapExtensionService service) {
         var preview = new MinimapPreviewWidget(highDetailRange, rotateWithPlayer)
-                .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx; border: 2rpx; border-color: 0xCCAAAAAA;");
+                .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx;");
         return new ContainerWidget() {
             @Override
             public void onRemove() {
