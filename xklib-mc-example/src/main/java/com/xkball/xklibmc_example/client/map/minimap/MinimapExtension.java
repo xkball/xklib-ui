@@ -54,7 +54,7 @@ public class MinimapExtension implements WorldMapExtension {
         this.highDetailRange.set(this.settingsStorage.highDetailRange);
         this.rotateWithPlayer.set(this.settingsStorage.rotateWithPlayer);
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/minimap"), () -> this.openConfig(service))
-                .withTooltip(IComponent.literal("Open minimap settings.")));
+                .withTooltip(IComponent.translatable("xklibmc.minimap.open_settings")));
         service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
     }
 

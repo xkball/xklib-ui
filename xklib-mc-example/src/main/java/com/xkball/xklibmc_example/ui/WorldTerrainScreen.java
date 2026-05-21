@@ -21,7 +21,7 @@ public class WorldTerrainScreen extends XKLibBaseScreen {
         this.windowLayer.inlineStyle("size: 100% 100%;");
         this.extensionService = new WorldMapExtensionServiceImpl("");
         this.worldTerrainWidget = new WorldTerrainWidget(this.windowLayer, extensionService);
-        this.addScreenLayer(XKLibBaseScreen.frame(IComponent.literal("x3d map"), this.worldTerrainWidget));
+        this.addScreenLayer(XKLibBaseScreen.frame(IComponent.translatable("xklibmc.screen.x3d_map"), this.worldTerrainWidget));
         this.addScreenLayer(this.windowLayer);
 
 

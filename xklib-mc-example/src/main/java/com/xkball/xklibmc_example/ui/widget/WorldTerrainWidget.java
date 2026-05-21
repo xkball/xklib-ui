@@ -93,6 +93,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
+                            text-height: 8rpx;
                         }
                         .property_label {
                             size: content 14rpx;
@@ -100,6 +101,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                             margin-left: 2rpx;
                             text-scale: expand-width;
                             text-color: -1;
+                            text-height: 8rpx;
                         }
                         .splitter {
                             size: 2px 100%;
@@ -159,16 +161,16 @@ public class WorldTerrainWidget extends ContainerWidget {
                                margin: 1rpx;
                                flex-shrink: 0;
                                """)
-                        .withTooltip(IComponent.literal("Focus camera on yourself.")))
+                        .withTooltip(IComponent.translatable("xklibmc.world_terrain.focus_camera")))
                 .addChild(new Widget().setCSSClassName("splitter_y"))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/map")).bind(terrain).withTooltip(IComponent.literal("show terrain")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/compass")).bind(compass).withTooltip(IComponent.literal("show compass")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.literal("show grid")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.literal("show player")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.literal("show camera target")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/depress_sphere")).bind(depress_sphere).withTooltip(IComponent.literal("cull too near chunks")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/map")).bind(terrain).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/compass")).bind(compass).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_compass")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/grid")).bind(grid).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_grid")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/player")).bind(player).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_player")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/locate_camera")).bind(cameraTarget).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_camera_target")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/depress_sphere")).bind(depress_sphere).withTooltip(IComponent.translatable("xklibmc.world_terrain.cull_near_chunks")))
                 .addChild(this.leftExtensionWidgets)
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.literal("show debug info")));
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/debug")).bind(debug).withTooltip(IComponent.translatable("xklibmc.world_terrain.show_debug_info")));
     }
     
     public Widget createToolbarTop1(int minY, int maxY){
@@ -181,16 +183,16 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         scrollbar-width: 0;
                                         overflow-x: scroll;
                                         """)
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/tracked_y")).bindInGroup(0,yMode).withTooltip(IComponent.literal("camera target y tracks to terrain")))
-                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/fixed_y")).bindInGroup(1,yMode).withTooltip(IComponent.literal("camera target y is fixed")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/tracked_y")).bindInGroup(0,yMode).withTooltip(IComponent.translatable("xklibmc.world_terrain.camera_track_terrain")))
+                .addChild(new IconCheckBox(VanillaUtils.modrl("icon/fixed_y")).bindInGroup(1,yMode).withTooltip(IComponent.translatable("xklibmc.world_terrain.camera_fixed_y")))
                 .addChild(NumberInputWidget.ofInt(minY, maxY,1).bind(fixY))
                 .addChild(new Widget().setCSSClassName("splitter"))
-                .addChild(new Label("LOD Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
+                .addChild(new Label(IComponent.translatable("xklibmc.world_terrain.lod_distance")).setCSSClassName("property_label").withTooltip(IComponent.translatable("xklibmc.world_terrain.in_blocks")))
                 .addChild(NumberInputWidget.ofInt(1,114514,16).bind(lodDistance))
-                .addChild(new Label("View Distance:").setCSSClassName("property_label").withTooltip(IComponent.literal("In blocks.")))
+                .addChild(new Label(IComponent.translatable("xklibmc.world_terrain.load_distance")).setCSSClassName("property_label").withTooltip(IComponent.translatable("xklibmc.world_terrain.in_blocks")))
                 .addChild(NumberInputWidget.ofInt(256,1145141919,16).bind(viewDistance))
                 .addChild(this.top1ExtensionWidgets)
-                .addChild(new Button("Force Update",() -> {
+                .addChild(new Button(IComponent.translatable("xklibmc.world_terrain.force_update"),() -> {
                     var player = Minecraft.getInstance().player;
                     var viewDistance = Minecraft.getInstance().options.renderDistance().get();
                     if(player == null) return;
@@ -200,7 +202,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                         .withTooltip(IComponent.literal("Update chunks in view distance."))
                         .inlineStyle("margin-left: auto;"));
         if (ServerConfig.ALLOW_SERVER_SENT_CHUNK.get() || XKLib.IS_DEBUG) {
-            toolbar.addChild(new Button("Request Geomatics",() -> {
+            toolbar.addChild(new Button(IComponent.translatable("xklibmc.world_terrain.request_geomatics_btn"),() -> {
                 var player = Minecraft.getInstance().player;
                 if(player == null) return;
                 var centerChunk = ChunkPos.containing(player.blockPosition());
@@ -216,7 +218,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                 ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
             }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")));
         }
-        toolbar.addChild(new Button("Delete",this::showDeleteConfirmation)
+        toolbar.addChild(new Button(IComponent.translatable("xklibmc.world_terrain.delete"),this::showDeleteConfirmation)
                 .setCSSClassName("update_button")
                 .inlineStyle("""
                                     button-bg-color: rgb(221,0,27);
@@ -229,22 +231,22 @@ public class WorldTerrainWidget extends ContainerWidget {
     private void showDeleteConfirmation() {
         var content = new ContainerWidget()
                 .inlineStyle("flex-direction: column; padding: 8px; size: 100% 100%;");
-        content.addChild(new Label("Delete all cached chunks?"));
-        content.addChild(new Label("This cannot be undone.")
+        content.addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_confirm_msg")));
+        content.addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_irreversible"))
                 .inlineStyle("text-color: 0xFFFF5555; margin-top: 4px;"));
 
         var bottomRow = new ContainerWidget()
                 .inlineStyle("flex-direction: row; align-items: center; margin-top: auto;");
         var subWindowRef = new WindowedContainer.SubWindow[1];
 
-        var cancelButton = new Button("Cancel",() -> {
+        var cancelButton = new Button(IComponent.translatable("xklibmc.common.cancel"),() -> {
             if (subWindowRef[0] != null) {
                 subWindowRef[0].close();
             }
         });
         cancelButton.inlineStyle("size: content 16px; text-scale: expand-width; text-align: center; margin-left: auto; margin-right: 8px; button-shape: rect; button-bg-color: rgb(75,85,99); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx;");
 
-        var confirmButton = new Button("Delete",() -> {
+        var confirmButton = new Button(IComponent.translatable("xklibmc.world_terrain.delete"),() -> {
             var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
             if (storage != null) {
                 for (var chunk : storage.getChunks()) {
@@ -275,7 +277,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         """)
                 .addChild(this.top2ExtensionWidgets)
                 .addChild(new IconButton(VanillaUtils.modrl("icon/setting"),this::openConfigFile)
-                        .withTooltip(IComponent.literal("Open config file."))
+                        .withTooltip(IComponent.translatable("xklibmc.world_terrain.open_config"))
                         .inlineStyle("margin-left: auto; margin-right: 5rpx;"));
     }
 

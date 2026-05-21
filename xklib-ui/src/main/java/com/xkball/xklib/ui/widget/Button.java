@@ -14,6 +14,11 @@ public class Button extends Label {
         this.callback = callback;
     }
     
+    public Button(IComponent text, Runnable callback){
+        this.text = text;
+        this.callback = callback;
+    }
+    
     public Button() {
     }
     

@@ -48,9 +48,9 @@ public class WaypointExtension implements WorldMapExtension {
         this.visible.set(service.getBooleanState("visible", this.visible.get()));
         this.visible.addCallback(_ -> service.refreshInnerOverlay());
         this.visible.addCallback(value -> service.setBooleanState("visible", value));
-        service.addLeftBarWidget(new IconCheckBox(VanillaUtils.modrl("icon/waypoint")).bind(this.visible).withTooltip(IComponent.literal("show waypoints")));
-        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/add_waypoint"), () -> this.addingWaypoint = true).withTooltip(IComponent.literal("Add waypoint. Left-click on map to place.")));
-        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/manage_waypoint"), () -> this.openManager(service)).withTooltip(IComponent.literal("Open waypoint manager.")));
+        service.addLeftBarWidget(new IconCheckBox(VanillaUtils.modrl("icon/waypoint")).bind(this.visible).withTooltip(IComponent.translatable("xklibmc.waypoint.show_waypoints")));
+        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/add_waypoint"), () -> this.addingWaypoint = true).withTooltip(IComponent.translatable("xklibmc.waypoint.add_waypoint")));
+        service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/manage_waypoint"), () -> this.openManager(service)).withTooltip(IComponent.translatable("xklibmc.waypoint.open_manager")));
         service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
         service.setInnerOverlayProvider(() -> this.createOverlay(service));
         service.refreshInnerOverlay();

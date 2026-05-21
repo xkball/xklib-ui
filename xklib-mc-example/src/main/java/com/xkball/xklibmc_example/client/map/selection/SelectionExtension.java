@@ -63,15 +63,15 @@ public class SelectionExtension implements WorldMapExtension {
     public void onMapOpened(WorldMapExtensionService service) {
         currentStorage = this.storage;
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section"), () -> this.selecting = !this.selecting)
-                .withTooltip(IComponent.literal("Toggle selection mode. Left-drag on map to select chunks.")));
+                .withTooltip(IComponent.translatable("xklibmc.selection.toggle_mode")));
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section_clear"), this::clearSelection)
-                .withTooltip(IComponent.literal("Clear selected chunks.")));
+                .withTooltip(IComponent.translatable("xklibmc.selection.clear_selected")));
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section_renew"), this::clientRerender)
-                .withTooltip(IComponent.literal("Re-render selected chunks from client data.")));
+                .withTooltip(IComponent.translatable("xklibmc.selection.rerender_chunks")));
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section_renew_server"), this::serverRerender)
-                .withTooltip(IComponent.literal("Request server to re-send selected chunks.")));
+                .withTooltip(IComponent.translatable("xklibmc.selection.request_resend")));
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section_delete"), this::deleteSelection)
-                .withTooltip(IComponent.literal("Delete selected chunks from client cache.")));
+                .withTooltip(IComponent.translatable("xklibmc.selection.delete_chunks")));
         service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
 
         service.setInnerOverlayProvider(() -> this.selectionRectWidget);

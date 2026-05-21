@@ -1,0 +1,39 @@
+{
+  "xklibmc.world_terrain.focus_camera": "Focus camera on yourself.",
+  "xklibmc.world_terrain.show_terrain": "Show terrain",
+  "xklibmc.world_terrain.show_compass": "Show compass",
+  "xklibmc.world_terrain.show_grid": "Show grid",
+  "xklibmc.world_terrain.show_player": "Show player",
+  "xklibmc.world_terrain.show_camera_target": "Show camera target",
+  "xklibmc.world_terrain.cull_near_chunks": "Cull too near chunks",
+  "xklibmc.world_terrain.show_debug_info": "Show debug info",
+  "xklibmc.world_terrain.camera_track_terrain": "Camera target Y tracks to terrain",
+  "xklibmc.world_terrain.camera_fixed_y": "Camera target Y is fixed",
+  "xklibmc.world_terrain.in_blocks": "In blocks.",
+  "xklibmc.world_terrain.update_chunks": "Update chunks in view distance.",
+  "xklibmc.world_terrain.lod_distance": "LOD Distance:",
+  "xklibmc.world_terrain.load_distance": "Load Distance:",
+  "xklibmc.world_terrain.force_update": "Force Update",
+  "xklibmc.world_terrain.request_geomatics_btn": "Request Geomatics",
+  "xklibmc.world_terrain.request_geomatics": "Request Geomatics from Server (Requires permission from the server).",
+  "xklibmc.world_terrain.delete": "Delete",
+  "xklibmc.world_terrain.delete_confirm_msg": "Delete all cached chunks?",
+  "xklibmc.world_terrain.delete_irreversible": "This cannot be undone.",
+  "xklibmc.world_terrain.open_config": "Open config file.",
+
+  "xklibmc.waypoint.show_waypoints": "Show waypoints",
+  "xklibmc.waypoint.add_waypoint": "Add waypoint. Left-click on map to place.",
+  "xklibmc.waypoint.open_manager": "Open waypoint manager.",
+
+  "xklibmc.screen.x3d_map": "3D Map",
+
+  "xklibmc.selection.toggle_mode": "Toggle selection mode. Left-drag on map to select chunks.",
+  "xklibmc.selection.clear_selected": "Clear selected chunks.",
+  "xklibmc.selection.rerender_chunks": "Re-render selected chunks from client data.",
+  "xklibmc.selection.request_resend": "Request server to re-send selected chunks.",
+  "xklibmc.selection.delete_chunks": "Delete selected chunks from client cache.",
+
+  "xklibmc.minimap.open_settings": "Open minimap settings.",
+
+  "xklibmc.common.cancel": "Cancel"
+}

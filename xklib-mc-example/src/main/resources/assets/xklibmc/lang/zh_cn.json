@@ -1,0 +1,39 @@
+{
+  "xklibmc.world_terrain.focus_camera": "将相机聚焦到自己身上",
+  "xklibmc.world_terrain.show_terrain": "显示地形",
+  "xklibmc.world_terrain.show_compass": "显示指南针",
+  "xklibmc.world_terrain.show_grid": "显示网格",
+  "xklibmc.world_terrain.show_player": "显示玩家",
+  "xklibmc.world_terrain.show_camera_target": "显示相机目标",
+  "xklibmc.world_terrain.cull_near_chunks": "剔除过近的区块",
+  "xklibmc.world_terrain.show_debug_info": "显示调试信息",
+  "xklibmc.world_terrain.camera_track_terrain": "相机目标Y轴跟踪地形",
+  "xklibmc.world_terrain.camera_fixed_y": "相机目标Y轴固定",
+  "xklibmc.world_terrain.in_blocks": "以方块为单位",
+  "xklibmc.world_terrain.update_chunks": "更新视野范围内的区块",
+  "xklibmc.world_terrain.lod_distance": "LOD距离：",
+  "xklibmc.world_terrain.load_distance": "加载距离：",
+  "xklibmc.world_terrain.force_update": "强制更新地图",
+  "xklibmc.world_terrain.request_geomatics_btn": "请求地理数据",
+  "xklibmc.world_terrain.request_geomatics": "向服务器请求地理数据（需要服务器权限）",
+  "xklibmc.world_terrain.delete": "删除地图",
+  "xklibmc.world_terrain.delete_confirm_msg": "删除所有缓存的区块？",
+  "xklibmc.world_terrain.delete_irreversible": "此操作不可撤销",
+  "xklibmc.world_terrain.open_config": "打开配置文件",
+
+  "xklibmc.waypoint.show_waypoints": "显示路径点",
+  "xklibmc.waypoint.add_waypoint": "添加路径点，在地图上左键放置",
+  "xklibmc.waypoint.open_manager": "打开路径点管理器",
+
+  "xklibmc.screen.x3d_map": "x3D地图",
+
+  "xklibmc.selection.toggle_mode": "选择部分地图区块，左键拖拽以选择区块",
+  "xklibmc.selection.clear_selected": "清除已选择的区块",
+  "xklibmc.selection.rerender_chunks": "从客户端数据重新渲染已选区块",
+  "xklibmc.selection.request_resend": "请求服务器重新发送已选区块",
+  "xklibmc.selection.delete_chunks": "从客户端缓存中删除已选区块",
+
+  "xklibmc.minimap.open_settings": "打开小地图设置",
+
+  "xklibmc.common.cancel": "取消"
+}
