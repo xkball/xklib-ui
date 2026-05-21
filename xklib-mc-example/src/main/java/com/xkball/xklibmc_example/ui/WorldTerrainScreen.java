@@ -37,6 +37,7 @@ public class WorldTerrainScreen extends XKLibBaseScreen {
     
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        this.worldTerrainWidget.inner.tick();
         this.worldTerrainWidget.inner.calculateNewPipState();
         super.extractRenderState(graphics, mouseX, mouseY, a);
     }

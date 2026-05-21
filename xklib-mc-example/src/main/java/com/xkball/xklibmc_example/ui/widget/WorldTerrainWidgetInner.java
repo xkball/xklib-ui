@@ -31,8 +31,10 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @NonNullByDefault
@@ -53,6 +55,8 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     private @Nullable WorldMapExtensionService extensionService;
     private final AbsoluteContainer extensionOverlay = new AbsoluteContainer();
     private final Map<String, Supplier<Widget>> extensionOverlayProviders = new LinkedHashMap<>();
+    private final Set<Integer> pressedMovementKeys = new HashSet<>();
+    private @Nullable Vector3f dragGrabbedWorldPos;
     
     private final BooleanLayoutVariable terrain;
     private final BooleanLayoutVariable grid;
@@ -272,6 +276,10 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         if (event.button() == 2) {
             rotating = true;
         }
+        if (event.button() == 1) {
+            var worldPos = this.projScreen2World((float) event.x(), (float) event.y());
+            this.dragGrabbedWorldPos = worldPos != null ? new Vector3f(worldPos) : null;
+        }
         return true;
     }
 
@@ -282,6 +290,10 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         }
         if (event.button() == 2) {
             rotating = false;
+            return true;
+        }
+        if (event.button() == 1) {
+            this.dragGrabbedWorldPos = null;
             return true;
         }
         return false;
@@ -305,8 +317,30 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             return true;
         }
         if (event.button() == 1) {
-            var speed = 1 + (cameraLength/100);
-            this.moveCamera((float) (-dx / 100) * speed, (float) (-dy / 100) * speed);
+            if (this.dragGrabbedWorldPos != null) {
+                var cameraPos = this.dirVec().normalize(this.cameraLength + 100).add(this.cameraTarget);
+                var toW = this.dragGrabbedWorldPos.sub(cameraPos, new Vector3f());
+                float dist = Math.abs(toW.dot(this.dirVec()));
+                if (dist < 1f) {
+                    dist = 1f;
+                }
+                if (this.height <= 0) {
+                    return true;
+                }
+                float worldPerPixel = (float) (2 * dist * Math.tan(Math.toRadians(this.fov / 2)) / this.height);
+                float yawRad = (float) Math.toRadians(this.yRot);
+                float rightX = (float) Math.cos(yawRad);
+                float rightZ = (float) -Math.sin(yawRad);
+                float screenDownX = (float) Math.sin(yawRad);
+                float screenDownZ = (float) Math.cos(yawRad);
+                float camDX = (float) (-(dx * rightX + dy * screenDownX) * worldPerPixel);
+                float camDZ = (float) (-(dx * rightZ + dy * screenDownZ) * worldPerPixel);
+                this.cameraTarget.add(camDX, 0, camDZ);
+                this.setCameraY();
+            } else {
+                var speed = 1 + (cameraLength / 100);
+                this.moveCamera((float) (-dx / 100) * speed, (float) (-dy / 100) * speed);
+            }
             return true;
         }
         return false;
@@ -334,29 +368,63 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
             return true;
         }
         int key = event.key();
-        float dx = 0;
-        float dz = 0;
-        if (key == InputConstants.KEY_W) {
-            dz = -1;
-        } else if (key == InputConstants.KEY_S) {
-            dz = 1;
-        } else if (key == InputConstants.KEY_A) {
-            dx = -1;
-        } else if (key == InputConstants.KEY_D) {
-            dx = 1;
-        } else {
-            return false;
+        if (key == InputConstants.KEY_W || key == InputConstants.KEY_A
+                || key == InputConstants.KEY_S || key == InputConstants.KEY_D
+                || key == InputConstants.KEY_Q || key == InputConstants.KEY_E) {
+            this.pressedMovementKeys.add(key);
+            return true;
         }
-        this.moveCamera(dx,dz);
-        return true;
+        return false;
+    }
+
+    @Override
+    protected boolean onKeyReleased(IKeyEvent event) {
+        int key = event.key();
+        if (key == InputConstants.KEY_W || key == InputConstants.KEY_A
+                || key == InputConstants.KEY_S || key == InputConstants.KEY_D
+                || key == InputConstants.KEY_Q || key == InputConstants.KEY_E) {
+            this.pressedMovementKeys.remove(key);
+            return true;
+        }
+        return false;
     }
     
+    public void tick() {
+        if (this.pressedMovementKeys.isEmpty()) {
+            return;
+        }
+        float dx = 0;
+        float dz = 0;
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_W)) {
+            dz -= 1;
+        }
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_S)) {
+            dz += 1;
+        }
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_A)) {
+            dx -= 1;
+        }
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_D)) {
+            dx += 1;
+        }
+        if (dx != 0 || dz != 0) {
+            this.moveCamera(dx, dz);
+        }
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_Q)) {
+            this.yRot += 0.5f;
+            this.yRot = (this.yRot + 360) % 360;
+        }
+        if (this.pressedMovementKeys.contains(InputConstants.KEY_E)) {
+            this.yRot -= 0.5f;
+            this.yRot = (this.yRot + 360) % 360;
+        }
+    }
+
     private void moveCamera(float dx, float dz){
-        float speed = 30.0f * fov/120;
+        float speed = fov/120 * (1 + cameraLength / 100);
         var dir = new  Vector2f(dx,dz).mul(speed);
         dir.mul(new Matrix2f().rotate((float) Math.toRadians(-yRot)));
         cameraTarget.add(dir.x, 0, dir.y);
-//        cameraTarget.add(dx*speed,0,dz*speed);
         this.setCameraY();
     }
     

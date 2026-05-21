@@ -101,10 +101,6 @@ public class WaypointExtension implements WorldMapExtension {
         clicked.consume();
     }
 
-    @Override
-    public void tick(WorldMapExtensionService service) {
-    }
-
     private WaypointOverlayWidget createOverlay(WorldMapExtensionService service) {
         return new WaypointOverlayWidget(service, this.visible, () -> this.storage(service), () -> this.temporaryWaypoint, (mouse, waypoint, temporary) -> this.openDetail(service, waypoint, temporary, mouse.x, mouse.y));
     }
