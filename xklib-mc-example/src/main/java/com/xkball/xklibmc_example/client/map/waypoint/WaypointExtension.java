@@ -134,7 +134,7 @@ public class WaypointExtension implements WorldMapExtension {
         this.closeDetailWindow();
         var waypointId = waypoint.id();
         this.detailWaypointId = waypointId;
-        var content = new WaypointDetailWindow(service, this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null) {
+        var content = new WaypointDetailWindow(service, this.storage(service), waypoint, temporary, service::refreshInnerOverlay, () -> this.temporaryWaypoint = null, this::closeDetailWindow) {
             @Override
             public void onRemove() {
                 super.onRemove();

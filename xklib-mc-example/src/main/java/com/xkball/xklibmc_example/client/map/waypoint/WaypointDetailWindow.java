@@ -23,7 +23,7 @@ public class WaypointDetailWindow extends ContainerWidget {
     private final Runnable removeTemporary;
     private boolean temporaryResolved;
 
-    public WaypointDetailWindow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint, boolean temporary, Runnable changed, Runnable removeTemporary) {
+    public WaypointDetailWindow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint, boolean temporary, Runnable changed, Runnable removeTemporary, Runnable closeWindow) {
         this.temporary = temporary;
         this.changed = changed;
         this.removeTemporary = removeTemporary;
@@ -134,6 +134,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 storage.remove(waypoint);
             }
             changed.run();
+            closeWindow.run();
         }).setCSSClassName("action_btn"));
         if (temporary) {
             actions.addChild(new Button(IComponent.translatable("xklibmc.waypoint.save"), () -> {
@@ -142,6 +143,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                 this.temporaryResolved = true;
                 removeTemporary.run();
                 changed.run();
+                closeWindow.run();
             }).setCSSClassName("action_btn"));
         }
         this.addChild(editor);
