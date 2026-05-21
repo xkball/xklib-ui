@@ -1,6 +1,5 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
-import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
@@ -26,6 +25,7 @@ public class MinimapExtension implements WorldMapExtension {
     
     private final IntLayoutVariable highDetailRange = new IntLayoutVariable(8);
     private final BooleanLayoutVariable rotateWithPlayer = new BooleanLayoutVariable(false);
+    public final BooleanLayoutVariable minimapEnabled = new BooleanLayoutVariable(true);
     private WindowedContainer.@Nullable SubWindow configWindow;
     private final MinimapSettingsStorage settingsStorage = new MinimapSettingsStorage();
 
@@ -46,13 +46,13 @@ public class MinimapExtension implements WorldMapExtension {
         if (storage.getExtensionStorage(MinimapSettingsStorage.EXTENSION_ID) == null) {
             storage.registerExtensionStorage(this.settingsStorage);
         }
-        this.highDetailRange.set(this.settingsStorage.highDetailRange);
-        this.rotateWithPlayer.set(this.settingsStorage.rotateWithPlayer);
     }
 
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
         this.bindPersistence(service);
+        this.highDetailRange.set(this.settingsStorage.highDetailRange);
+        this.rotateWithPlayer.set(this.settingsStorage.rotateWithPlayer);
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/minimap"), () -> this.openConfig(service))
                 .withTooltip(IComponent.literal("Open minimap settings.")));
         service.addTopBar2Widget(new Widget().setCSSClassName("splitter"));
@@ -63,10 +63,9 @@ public class MinimapExtension implements WorldMapExtension {
         this.configWindow = null;
         this.highDetailRange.removeCallbacks();
         this.rotateWithPlayer.removeCallbacks();
-        if(this.settingsStorage != null) {
-            this.settingsStorage.highDetailRange = this.highDetailRange.get();
-            this.settingsStorage.rotateWithPlayer = this.rotateWithPlayer.get();
-        }
+        this.minimapEnabled.removeCallbacks();
+        this.settingsStorage.highDetailRange = this.highDetailRange.get();
+        this.settingsStorage.rotateWithPlayer = this.rotateWithPlayer.get();
     }
     
 
@@ -152,26 +151,17 @@ public class MinimapExtension implements WorldMapExtension {
                             flex-shrink: 0;
                         }
                         CheckBox {
-                            size: 34rpx 12rpx;
+                            size: 24rpx 12rpx;
                             flex-shrink: 0;
                             margin-left: auto;
+                            margin-right: 2rpx;
                         }
                         """)
                 .addChild(preview)
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")
                         .addChild(new Label("Enable Minimap").setCSSClassName("minimap_label"))
-                        .addChild(new CheckBox() {
-                            {
-                                this.setValue(ClientConfig.MINIMAP_ENABLED.get());
-                            }
-                            @Override
-                            protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
-                                var result = super.onMouseClicked(event, doubleClick);
-                                ClientConfig.MINIMAP_ENABLED.set(this.getValue());
-                                return result;
-                            }
-                        }))
+                        .addChild(new CheckBox().bind(this.minimapEnabled)))
                 .addChild(this.sliderRow("High Detail", this.highDetailRange))
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")
@@ -183,7 +173,7 @@ public class MinimapExtension implements WorldMapExtension {
         return new ContainerWidget()
                 .setCSSClassName("minimap_row")
                 .addChild(new Label(label).setCSSClassName("minimap_label"))
-                .addChild(new IntSliderWidget(0, 64, variable.get()).bind(variable));
+                .addChild(new IntSliderWidget(0, 64, variable.get()).bind(variable).inlineStyle("size: 50% 12rpx;margin-right: 2rpx;"));
     }
 
     private void bindPersistence(WorldMapExtensionService service) {
@@ -195,5 +185,6 @@ public class MinimapExtension implements WorldMapExtension {
                 settingsStorage.rotateWithPlayer = value;
                 settingsStorage.markDirty();
         });
+        this.minimapEnabled.addCallback(ClientConfig.MINIMAP_ENABLED::set);
     }
 }

@@ -7,8 +7,7 @@ public class MinimapSettingsStorage implements WorldMapExtensionStorage {
 
     public static final String EXTENSION_ID = "minimap_settings";
     private static final int VERSION = 1;
-
-    int renderRange = 16;
+    
     int highDetailRange = 8;
     boolean rotateWithPlayer = false;
     float camXRot = 89.0f;
@@ -41,7 +40,6 @@ public class MinimapSettingsStorage implements WorldMapExtensionStorage {
         if (version != VERSION) {
             return;
         }
-        renderRange = buf.readInt();
         highDetailRange = buf.readInt();
         rotateWithPlayer = buf.readBoolean();
         camXRot = buf.readFloat();
@@ -53,7 +51,6 @@ public class MinimapSettingsStorage implements WorldMapExtensionStorage {
     @Override
     public void save(ByteBuf buf) {
         buf.writeInt(VERSION);
-        buf.writeInt(renderRange);
         buf.writeInt(highDetailRange);
         buf.writeBoolean(rotateWithPlayer);
         buf.writeFloat(camXRot);
