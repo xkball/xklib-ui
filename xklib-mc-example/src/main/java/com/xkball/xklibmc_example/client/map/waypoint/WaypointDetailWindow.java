@@ -1,6 +1,7 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
@@ -45,6 +46,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
+                            text-height: 8rpx;
                         }
                         ObjectInputWidget {
                             size: 100% 12rpx;
@@ -75,6 +77,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
+                            text-height: 8rpx;
                         }
                         """);
         var name = ObjectInputWidget.ofString();
@@ -101,29 +104,29 @@ public class WaypointDetailWindow extends ContainerWidget {
         var colorRow = this.createColorRow(service, storage, waypoint);
         var editor = new ContainerWidget()
                 .inlineStyle("flex-direction: column; size: 90% auto; margin: 3rpx;")
-                .addChild(new Label("Name").inlineStyle("height: 8rpx;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.waypoint.name")).inlineStyle("height: 8rpx;"))
                 .addChild(name)
-                .addChild(new Label("X").inlineStyle("height: 8rpx;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.waypoint.detail.x")).inlineStyle("height: 8rpx;"))
                 .addChild(x)
-                .addChild(new Label("Y").inlineStyle("height: 8rpx;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.waypoint.detail.y")).inlineStyle("height: 8rpx;"))
                 .addChild(y)
-                .addChild(new Label("Z").inlineStyle("height: 8rpx;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.waypoint.detail.z")).inlineStyle("height: 8rpx;"))
                 .addChild(z)
-                .addChild(new Label("Color").inlineStyle("height: 8rpx;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.waypoint.detail.color")).inlineStyle("height: 8rpx;"))
                 .addChild(colorRow);
         var actions = new ContainerWidget().inlineStyle("flex-direction: column; size: 90% auto; margin: 3rpx;");
-        var teleport = new Button("Teleport", () -> WaypointActions.teleport(waypoint)).setCSSClassName("action_btn");
+        var teleport = new Button(IComponent.translatable("xklibmc.waypoint.teleport"), () -> WaypointActions.teleport(waypoint)).setCSSClassName("action_btn");
         teleport.setEnabled(WaypointActions.canTeleport());
         actions.addChild(teleport);
-        actions.addChild(new Button("Share", () -> WaypointActions.share(waypoint)).setCSSClassName("action_btn"));
+        actions.addChild(new Button(IComponent.translatable("xklibmc.waypoint.share"), () -> WaypointActions.share(waypoint)).setCSSClassName("action_btn"));
         if (!temporary) {
-            actions.addChild(new Button(waypoint.hidden() ? "Show" : "Hide", () -> {
+            actions.addChild(new Button(IComponent.translatable(waypoint.hidden() ? "xklibmc.waypoint.show" : "xklibmc.waypoint.hide"), () -> {
                 waypoint.setHidden(!waypoint.hidden());
                 storage.markDirty();
                 changed.run();
             }).setCSSClassName("action_btn"));
         }
-        actions.addChild(new Button("Delete", () -> {
+        actions.addChild(new Button(IComponent.translatable("xklibmc.waypoint.delete"), () -> {
             if (temporary) {
                 this.temporaryResolved = true;
                 removeTemporary.run();
@@ -133,7 +136,7 @@ public class WaypointDetailWindow extends ContainerWidget {
             changed.run();
         }).setCSSClassName("action_btn"));
         if (temporary) {
-            actions.addChild(new Button("Save", () -> {
+            actions.addChild(new Button(IComponent.translatable("xklibmc.waypoint.save"), () -> {
                 var formal = new Waypoint(UUID.randomUUID(), waypoint.name(), waypoint.pos(), waypoint.color(), false);
                 storage.add(formal);
                 this.temporaryResolved = true;
@@ -165,7 +168,7 @@ public class WaypointDetailWindow extends ContainerWidget {
         return new ContainerWidget()
                 .setCSSClassName("color_row")
                 .addChild(new ColorPreviewWidget(waypoint).setCSSClassName("color_preview"))
-                .addChild(new Button("Edit", () -> this.openColorWindow(service, storage, waypoint)).setCSSClassName("color_edit_btn"));
+                .addChild(new Button(IComponent.translatable("xklibmc.waypoint.edit"), () -> this.openColorWindow(service, storage, waypoint)).setCSSClassName("color_edit_btn"));
     }
 
     private void openColorWindow(WorldMapExtensionService service, WaypointStorage storage, Waypoint waypoint) {
@@ -194,19 +197,20 @@ public class WaypointDetailWindow extends ContainerWidget {
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
+                            text-height: 8rpx;
                         }
                         """)
                 .addChild(colorInput)
                 .addChild(new ContainerWidget()
                         .setCSSClassName("color_actions")
-                        .addChild(new Button("Cancel", () -> holder[0].close()).setCSSClassName("color_action_btn"))
-                        .addChild(new Button("Confirm", () -> {
+                        .addChild(new Button(IComponent.translatable("xklibmc.common.cancel"), () -> holder[0].close()).setCSSClassName("color_action_btn"))
+                        .addChild(new Button(IComponent.translatable("xklibmc.waypoint.confirm"), () -> {
                             waypoint.setColor(colorInput.getValue());
                             this.markDirtyIfFormal(storage, this.temporary);
                             this.changed.run();
                             holder[0].close();
                         }).setCSSClassName("color_action_btn")));
-        holder[0] = service.addBlockingSubWindow(content, "Color", false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
+        holder[0] = service.addBlockingSubWindow(content, IComponent.translatable("xklibmc.waypoint.detail.color_title"), false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
     }
 
     private static class ColorPreviewWidget extends Widget {

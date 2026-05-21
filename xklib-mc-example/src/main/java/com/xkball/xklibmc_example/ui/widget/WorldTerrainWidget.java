@@ -311,10 +311,22 @@ public class WorldTerrainWidget extends ContainerWidget {
         return this.windowLayer.addSubWindow(content, x, y, w, h);
     }
 
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, IComponent title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, title, resizable, w, h);
+    }
+
     public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
         var w = width.resolve(this.windowLayer.getWidth());
         var h = height.resolve(this.windowLayer.getHeight());
         return this.windowLayer.addSubWindow(content, title, resizable, w, h);
+    }
+
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, IComponent title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, title, resizable, x, y, w, h);
     }
 
     public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height) {

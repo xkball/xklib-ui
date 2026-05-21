@@ -1,6 +1,7 @@
 package com.xkball.xklibmc_example.client.map;
 
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
@@ -69,8 +70,18 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     }
 
     @Override
+    public WindowedContainer.SubWindow addSubWindow(Widget content, IComponent title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
+        return this.widget.addMapSubWindow(content, title, resizable, width, height);
+    }
+
+    @Override
     public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
         return this.widget.addMapSubWindow(content, title, resizable, width, height);
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addSubWindow(Widget content, IComponent title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height) {
+        return this.widget.addMapSubWindow(content, title, resizable, x, y, width, height);
     }
 
     @Override
@@ -79,7 +90,7 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     }
 
     @Override
-    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, IComponent title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
         var parent = this.widget.windowLayer();
         var parentWidth = parent.getWidth();
         var parentHeight = parent.getHeight();
@@ -91,7 +102,12 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     }
 
     @Override
-    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height, boolean autoShrinkHeight) {
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
+        return addBlockingSubWindow(content, IComponent.literal(title), resizable, width, height);
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, IComponent title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height, boolean autoShrinkHeight) {
         var layer = new WindowedContainer();
         layer.setAutoRemoveFromGuiSystemWhenEmpty(true);
         layer.inlineStyle("size: 100% 100%; background-color: 0x55000000;");
@@ -103,6 +119,11 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
         window.setAutoHeight(autoShrinkHeight);
         GuiSystem.INSTANCE.get().insertLayerAfter(layer, parent);
         return window;
+    }
+
+    @Override
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height, boolean autoShrinkHeight) {
+        return addBlockingSubWindow(content, IComponent.literal(title), resizable, x, y, width, height, autoShrinkHeight);
     }
 
     @Override

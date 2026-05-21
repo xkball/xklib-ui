@@ -116,7 +116,7 @@ public class MinimapExtension implements WorldMapExtension {
 
     private void openConfig(WorldMapExtensionService service) {
         if (this.configWindow != null && this.configWindow.visible()) return;
-        this.configWindow = service.addSubWindow(this.createConfigContent(), "Minimap", false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
+        this.configWindow = service.addSubWindow(this.createConfigContent(), IComponent.translatable("xklibmc.minimap.config.title"), false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
     }
 
     private Widget createConfigContent() {
@@ -160,16 +160,16 @@ public class MinimapExtension implements WorldMapExtension {
                 .addChild(preview)
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")
-                        .addChild(new Label("Enable Minimap").setCSSClassName("minimap_label"))
+                        .addChild(new Label(IComponent.translatable("xklibmc.minimap.config.enable")).setCSSClassName("minimap_label"))
                         .addChild(new CheckBox().bind(this.minimapEnabled)))
-                .addChild(this.sliderRow("High Detail", this.highDetailRange))
+                .addChild(this.sliderRow(IComponent.translatable("xklibmc.minimap.config.high_detail"), this.highDetailRange))
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")
-                        .addChild(new Label("Rotate Map").setCSSClassName("minimap_label"))
+                        .addChild(new Label(IComponent.translatable("xklibmc.minimap.config.rotate")).setCSSClassName("minimap_label"))
                         .addChild(new CheckBox().bind(this.rotateWithPlayer)));
     }
 
-    private Widget sliderRow(String label, IntLayoutVariable variable) {
+    private Widget sliderRow(IComponent label, IntLayoutVariable variable) {
         return new ContainerWidget()
                 .setCSSClassName("minimap_row")
                 .addChild(new Label(label).setCSSClassName("minimap_label"))

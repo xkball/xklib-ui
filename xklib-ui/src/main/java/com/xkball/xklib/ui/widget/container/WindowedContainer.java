@@ -212,9 +212,6 @@ public class WindowedContainer extends AbsoluteContainer {
         GuiSystem.INSTANCE.get().removeScreenLayer(this);
     }
 
-    public SubWindow addSubWindow(Widget content, String frameCssStyle) {
-        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, frameCssStyle, true);
-    }
 
     public SubWindow addSubWindow(Widget content, float width, float height) {
         return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, "", true);
@@ -224,23 +221,27 @@ public class WindowedContainer extends AbsoluteContainer {
         return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, frameCssStyle, true);
     }
 
-    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+    public SubWindow addSubWindow(Widget content, IComponent title, boolean resizable, float width, float height) {
         return this.addSubWindow(content, title, resizable, this.nextWindowX, this.nextWindowY, width, height, "", true);
+    }
+
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+        return this.addSubWindow(content, IComponent.literal(title), resizable, this.nextWindowX, this.nextWindowY, width, height, "", true);
     }
 
     public SubWindow addSubWindow(Widget content, float x, float y, float width, float height) {
         return this.addSubWindow(content, "", true, x, y, width, height, "", true);
     }
 
-    public SubWindow addSubWindow(Widget content, float x, float y, float width, float height, String frameCssStyle) {
-        return this.addSubWindow(content, "", true, x, y, width, height, frameCssStyle, true);
-    }
-
-    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+    public SubWindow addSubWindow(Widget content, IComponent title, boolean resizable, float x, float y, float width, float height) {
         return this.addSubWindow(content, title, resizable, x, y, width, height, "", true);
     }
 
-    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height, String frameCssStyle, boolean autoShrinkHeight) {
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+        return this.addSubWindow(content, IComponent.literal(title), resizable, x, y, width, height, "", true);
+    }
+
+    public SubWindow addSubWindow(Widget content, IComponent title, boolean resizable, float x, float y, float width, float height, String frameCssStyle, boolean autoShrinkHeight) {
         var window = new SubWindow(content, title, resizable, frameCssStyle);
         window.setAutoHeight(autoShrinkHeight);
         window.setAbsoluteSize(x, y);
@@ -249,6 +250,10 @@ public class WindowedContainer extends AbsoluteContainer {
         this.nextWindowX = x + 14;
         this.nextWindowY = y + 14;
         return window;
+    }
+
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height, String frameCssStyle, boolean autoShrinkHeight) {
+        return this.addSubWindow(content, IComponent.literal(title), resizable, x, y, width, height, frameCssStyle, autoShrinkHeight);
     }
 
     @Override
@@ -302,12 +307,12 @@ public class WindowedContainer extends AbsoluteContainer {
         private float outerWidth;
         private float outerHeight;
 
-        public SubWindow(Widget content, String title, boolean resizable, String frameCssStyle) {
+        public SubWindow(Widget content, IComponent title, boolean resizable, String frameCssStyle) {
             this.resizable = resizable;
             this.inlineStyle(DEFAULT_WINDOW_CSS + frameCssStyle);
             this.topBar.inlineStyle(TOP_BAR_CSS);
             this.contentPanel.inlineStyle(CONTENT_PANEL_CSS);
-            this.titleLabel.setText(IComponent.literal(title));
+            this.titleLabel.setText(title);
             this.titleLabel.inlineStyle(TITLE_CSS);
             this.closeButton.inlineStyle(CLOSE_BUTTON_CSS);
             this.topBar.addChild(this.titleLabel);
@@ -315,6 +320,10 @@ public class WindowedContainer extends AbsoluteContainer {
             this.addChild(this.topBar);
             this.addChild(this.contentPanel);
             this.setContent(content);
+        }
+
+        public SubWindow(Widget content, String title, boolean resizable, String frameCssStyle) {
+            this(content, IComponent.literal(title), resizable, frameCssStyle);
         }
 
         public SubWindow setContent(Widget content) {

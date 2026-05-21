@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
+import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
 import com.xkball.xklib.ui.widget.Widget;
@@ -114,15 +115,15 @@ public class WaypointManagerWindow extends ContainerWidget {
                         """)
                 .addChild(new ContainerWidget()
                         .setCSSClassName("row_data")
-                        .addChild(new Label("Name").setCSSClassName("name_cell").inlineStyle("text-color: -1;"))
-                        .addChild(new Label("Pos").setCSSClassName("pos_cell").inlineStyle("text-color: -1;")))
+                        .addChild(new Label(IComponent.translatable("xklibmc.waypoint.name")).setCSSClassName("name_cell").inlineStyle("text-color: -1;"))
+                        .addChild(new Label(IComponent.translatable("xklibmc.waypoint.manager.pos")).setCSSClassName("pos_cell").inlineStyle("text-color: -1;")))
                 .addChild(new ContainerWidget()
                         .setCSSClassName("actions_cell")
-                        .addChild(new Label("Actions").inlineStyle("width: 100%; height: 100%; text-color: -1;")));
+                        .addChild(new Label(IComponent.translatable("xklibmc.waypoint.manager.actions")).inlineStyle("width: 100%; height: 100%; text-color: -1;")));
     }
 
     private Widget row(Waypoint waypoint) {
-        var teleport = new Button("Tp", () -> WaypointActions.teleport(waypoint));
+        var teleport = new Button(IComponent.translatable("xklibmc.waypoint.manager.tp"), () -> WaypointActions.teleport(waypoint));
         teleport.setEnabled(WaypointActions.canTeleport());
         var name = new Label(waypoint.name(), this.textColor(waypoint));
         name.setCSSClassName("name_cell");
@@ -135,13 +136,13 @@ public class WaypointManagerWindow extends ContainerWidget {
                 .addChild(new ContainerWidget()
                         .setCSSClassName("actions_cell")
                         .addChild(teleport)
-                        .addChild(new Button(waypoint.hidden() ? "Show" : "Hide", () -> {
+                        .addChild(new Button(IComponent.translatable(waypoint.hidden() ? "xklibmc.waypoint.show" : "xklibmc.waypoint.hide"), () -> {
                             waypoint.setHidden(!waypoint.hidden());
                             this.storage.markDirty();
                             this.changed.run();
                             this.rebuild();
                         }))
-                        .addChild(new Button("Edit", () -> this.openDetail.accept(waypoint)))
+                        .addChild(new Button(IComponent.translatable("xklibmc.waypoint.edit"), () -> this.openDetail.accept(waypoint)))
                 );
     }
 

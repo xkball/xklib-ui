@@ -34,6 +34,32 @@
   "xklibmc.selection.delete_chunks": "从客户端缓存中删除已选区块",
 
   "xklibmc.minimap.open_settings": "打开小地图设置",
+  "xklibmc.minimap.config.title": "小地图",
+  "xklibmc.minimap.config.enable": "启用小地图",
+  "xklibmc.minimap.config.high_detail": "高细节范围",
+  "xklibmc.minimap.config.rotate": "旋转地图",
+
+  "xklibmc.waypoint.name": "名称",
+  "xklibmc.waypoint.show": "显示",
+  "xklibmc.waypoint.hide": "隐藏",
+  "xklibmc.waypoint.edit": "编辑",
+  "xklibmc.waypoint.delete": "删除",
+  "xklibmc.waypoint.save": "保存",
+  "xklibmc.waypoint.teleport": "传送",
+  "xklibmc.waypoint.share": "分享",
+  "xklibmc.waypoint.confirm": "确认",
+  "xklibmc.waypoint.detail.x": "X",
+  "xklibmc.waypoint.detail.y": "Y",
+  "xklibmc.waypoint.detail.z": "Z",
+  "xklibmc.waypoint.detail.color": "颜色",
+  "xklibmc.waypoint.detail.color_title": "颜色选择",
+  "xklibmc.waypoint.manager.pos": "坐标",
+  "xklibmc.waypoint.manager.actions": "操作",
+  "xklibmc.waypoint.manager.tp": "传送",
+  "xklibmc.waypoint.title.temporary": "临时路径点",
+  "xklibmc.waypoint.title.detail": "路径点",
+  "xklibmc.waypoint.title.manager": "路径点管理器",
+  "xklibmc.waypoint.default_name": "路径点",
 
   "xklibmc.common.cancel": "取消"
 }

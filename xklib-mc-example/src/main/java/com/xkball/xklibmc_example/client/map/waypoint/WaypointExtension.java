@@ -13,6 +13,7 @@ import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
@@ -75,7 +76,7 @@ public class WaypointExtension implements WorldMapExtension {
                 return;
             }
             var pos = new BlockPos((int) Math.floor(worldPos.x), (int) Math.floor(worldPos.y), (int) Math.floor(worldPos.z));
-            this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), "Waypoint", pos, 0xFF66CCFF, false);
+            this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), Component.translatable("xklibmc.waypoint.default_name").getString(), pos, 0xFF66CCFF, false);
             this.openDetail(service, this.temporaryWaypoint, true, clicked.event().x(), clicked.event().y());
             service.refreshInnerOverlay();
             this.addingWaypoint = false;
@@ -94,7 +95,7 @@ public class WaypointExtension implements WorldMapExtension {
             return;
         }
         var pos = new BlockPos((int) Math.floor(worldPos.x), (int) Math.floor(worldPos.y), (int) Math.floor(worldPos.z));
-        this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), "Waypoint", pos, 0xFF66CCFF, false);
+        this.temporaryWaypoint = new Waypoint(UUID.randomUUID(), Component.translatable("xklibmc.waypoint.default_name").getString(), pos, 0xFF66CCFF, false);
         this.openDetail(service, this.temporaryWaypoint, true, clicked.event().x(), clicked.event().y());
         service.refreshInnerOverlay();
         clicked.consume();
@@ -140,7 +141,7 @@ public class WaypointExtension implements WorldMapExtension {
                 WaypointExtension.this.clearDetailWindow(waypointId);
             }
         };
-        var title = temporary ? "Temporary Waypoint" : "Waypoint";
+        var title = temporary ? IComponent.translatable("xklibmc.waypoint.title.temporary") : IComponent.translatable("xklibmc.waypoint.title.detail");
         this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, CssLengthUnit.rpx(80), CssLengthUnit.rpx(565));
     }
 
@@ -154,7 +155,7 @@ public class WaypointExtension implements WorldMapExtension {
                 super.onRemove();
                 WaypointExtension.this.managerWindow = null;
             }
-        }, "Waypoint Manager", false, CssLengthUnit.rpx(180), CssLengthUnit.rpx(800));
+        }, IComponent.translatable("xklibmc.waypoint.title.manager"), false, CssLengthUnit.rpx(180), CssLengthUnit.rpx(800));
     }
 
     private boolean isDetailWindowOpen() {

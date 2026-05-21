@@ -34,6 +34,32 @@
   "xklibmc.selection.delete_chunks": "Delete selected chunks from client cache.",
 
   "xklibmc.minimap.open_settings": "Open minimap settings.",
+  "xklibmc.minimap.config.title": "Minimap",
+  "xklibmc.minimap.config.enable": "Enable Minimap",
+  "xklibmc.minimap.config.high_detail": "High Detail Range",
+  "xklibmc.minimap.config.rotate": "Rotate Map",
+
+  "xklibmc.waypoint.name": "Name",
+  "xklibmc.waypoint.show": "Show",
+  "xklibmc.waypoint.hide": "Hide",
+  "xklibmc.waypoint.edit": "Edit",
+  "xklibmc.waypoint.delete": "Delete",
+  "xklibmc.waypoint.save": "Save",
+  "xklibmc.waypoint.teleport": "Teleport",
+  "xklibmc.waypoint.share": "Share",
+  "xklibmc.waypoint.confirm": "Confirm",
+  "xklibmc.waypoint.detail.x": "X",
+  "xklibmc.waypoint.detail.y": "Y",
+  "xklibmc.waypoint.detail.z": "Z",
+  "xklibmc.waypoint.detail.color": "Color",
+  "xklibmc.waypoint.detail.color_title": "Color",
+  "xklibmc.waypoint.manager.pos": "Pos",
+  "xklibmc.waypoint.manager.actions": "Actions",
+  "xklibmc.waypoint.manager.tp": "Tp",
+  "xklibmc.waypoint.title.temporary": "Temporary Waypoint",
+  "xklibmc.waypoint.title.detail": "Waypoint",
+  "xklibmc.waypoint.title.manager": "Waypoint Manager",
+  "xklibmc.waypoint.default_name": "Waypoint",
 
   "xklibmc.common.cancel": "Cancel"
 }
