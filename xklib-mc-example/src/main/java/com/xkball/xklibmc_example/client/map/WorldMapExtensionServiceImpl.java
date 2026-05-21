@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
@@ -58,46 +59,48 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
     }
 
     @Override
-    public WindowedContainer.SubWindow addSubWindow(Widget content, float width, float height) {
+    public WindowedContainer.SubWindow addSubWindow(Widget content, CssLengthUnit width, CssLengthUnit height) {
         return this.widget.addMapSubWindow(content, width, height);
     }
 
     @Override
-    public WindowedContainer.SubWindow addSubWindow(Widget content, float x, float y, float width, float height) {
+    public WindowedContainer.SubWindow addSubWindow(Widget content, float x, float y, CssLengthUnit width, CssLengthUnit height) {
         return this.widget.addMapSubWindow(content, x, y, width, height);
     }
 
     @Override
-    public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+    public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
         return this.widget.addMapSubWindow(content, title, resizable, width, height);
     }
 
     @Override
-    public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+    public WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height) {
         return this.widget.addMapSubWindow(content, title, resizable, x, y, width, height);
     }
 
     @Override
-    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, float width, float height) {
-        return this.addBlockingSubWindow(content, "", true, width, height);
-    }
-
-    @Override
-    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float width, float height) {
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
         var parent = this.widget.windowLayer();
-        var x = Math.max(0f, (parent.getWidth() - width) / 2f);
-        var y = Math.max(0f, (parent.getHeight() - height) / 2f);
+        var parentWidth = parent.getWidth();
+        var parentHeight = parent.getHeight();
+        var w = width.resolve(parentWidth);
+        var h = height.resolve(parentHeight);
+        var x = Math.max(0f, (parentWidth - w) / 2f);
+        var y = Math.max(0f, (parentHeight - h) / 2f);
         return this.addBlockingSubWindow(content, title, resizable, x, y, width, height);
     }
 
     @Override
-    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
+    public WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height, boolean autoShrinkHeight) {
         var layer = new WindowedContainer();
         layer.setAutoRemoveFromGuiSystemWhenEmpty(true);
         layer.inlineStyle("size: 100% 100%; background-color: 0x55000000;");
         layer.setBlockInput(true);
         var parent = this.widget.windowLayer();
-        var window = layer.addSubWindow(content, title, resizable, x, y, width, height);
+        var w = width.resolve(parent.getWidth());
+        var h = height.resolve(parent.getHeight());
+        var window = layer.addSubWindow(content, title, resizable, x, y, w, h);
+        window.setAutoHeight(autoShrinkHeight);
         GuiSystem.INSTANCE.get().insertLayerAfter(layer, parent);
         return window;
     }

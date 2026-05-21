@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.render.IGUIGraphics;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.Label;
@@ -28,8 +29,7 @@ public class WaypointDetailWindow extends ContainerWidget {
         this.inlineStyle("""
                 flex-direction: column;
                 size: 100% 100%;
-                overflow-y: scroll;
-                scrollbar-width: 8;
+                align-items: center;
                 """)
                 .asRootStyle("""
                         Label {
@@ -179,10 +179,10 @@ public class WaypointDetailWindow extends ContainerWidget {
                         """)
                 .asRootStyle("""
                         ColorInputWidget {
-                            size: 100% 85%;
+                            size: 100% 80rpx;
                         }
                         .color_actions {
-                            size: 100% 15%;
+                            size: 100% 16rpx;
                             flex-direction: row;
                         }
                         .color_action_btn {
@@ -191,6 +191,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             text-align: center;
                             text-scale: expand-width;
                             button-shape: rect;
+                            button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
                         }
@@ -205,7 +206,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             this.changed.run();
                             holder[0].close();
                         }).setCSSClassName("color_action_btn")));
-        holder[0] = service.addBlockingSubWindow(content, "Color", false, 400, 240);
+        holder[0] = service.addBlockingSubWindow(content, "Color", false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
     }
 
     private static class ColorPreviewWidget extends Widget {

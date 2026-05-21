@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.api.client.map;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
@@ -22,19 +23,25 @@ public interface WorldMapExtensionService {
 
     void addTopBar2Widget(Widget widget);
 
-    WindowedContainer.SubWindow addSubWindow(Widget content, float width, float height);
+    WindowedContainer.SubWindow addSubWindow(Widget content, CssLengthUnit width, CssLengthUnit height);
 
-    WindowedContainer.SubWindow addSubWindow(Widget content, float x, float y, float width, float height);
+    WindowedContainer.SubWindow addSubWindow(Widget content, float x, float y, CssLengthUnit width, CssLengthUnit height);
 
-    WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height);
+    WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height);
 
-    WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height);
+    WindowedContainer.SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height);
 
-    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, float width, float height);
+    default WindowedContainer.SubWindow addBlockingSubWindow(Widget content, CssLengthUnit width, CssLengthUnit height){
+        return addBlockingSubWindow(content, "", false, width, height);
+    }
 
-    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float width, float height);
+    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height);
 
-    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height);
+    default WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height){
+        return addBlockingSubWindow(content, title, resizable, x, y, width, height,true);
+    }
+    
+    WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height, boolean autoShrinkHeight);
 
     void setInnerOverlayProvider(Supplier<Widget> provider);
 

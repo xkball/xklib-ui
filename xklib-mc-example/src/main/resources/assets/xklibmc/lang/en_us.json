@@ -25,7 +25,7 @@
   "xklibmc.waypoint.add_waypoint": "Add waypoint. Left-click on map to place.",
   "xklibmc.waypoint.open_manager": "Open waypoint manager.",
 
-  "xklibmc.screen.x3d_map": "3D Map",
+  "xklibmc.screen.x3d_map": "x3D Map",
 
   "xklibmc.selection.toggle_mode": "Toggle selection mode. Left-drag on map to select chunks.",
   "xklibmc.selection.clear_selected": "Clear selected chunks.",

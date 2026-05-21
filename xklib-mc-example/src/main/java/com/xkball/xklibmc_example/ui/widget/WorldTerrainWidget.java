@@ -5,6 +5,7 @@ import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.widget.Button;
 import com.xkball.xklib.ui.widget.IconButton;
 import com.xkball.xklib.ui.widget.IconCheckBox;
@@ -263,7 +264,7 @@ public class WorldTerrainWidget extends ContainerWidget {
         bottomRow.addChild(confirmButton);
         content.addChild(bottomRow);
 
-        subWindowRef[0] = this.service.addBlockingSubWindow(content, "Confirm Delete", false, 260, 120);
+        subWindowRef[0] = this.service.addBlockingSubWindow(content, "Confirm Delete", false, CssLengthUnit.rpx(260), CssLengthUnit.rpx(120));
     }
     
     public Widget createToolbarTop2(){
@@ -298,20 +299,28 @@ public class WorldTerrainWidget extends ContainerWidget {
         this.top2ExtensionWidgets.addChild(widget);
     }
 
-    public WindowedContainer.SubWindow addMapSubWindow(Widget content, float width, float height) {
-        return this.windowLayer.addSubWindow(content, width, height);
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, w, h);
     }
 
-    public WindowedContainer.SubWindow addMapSubWindow(Widget content, float x, float y, float width, float height) {
-        return this.windowLayer.addSubWindow(content, x, y, width, height);
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, float x, float y, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, x, y, w, h);
     }
 
-    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float width, float height) {
-        return this.windowLayer.addSubWindow(content, title, resizable, width, height);
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, title, resizable, w, h);
     }
 
-    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
-        return this.windowLayer.addSubWindow(content, title, resizable, x, y, width, height);
+    public WindowedContainer.SubWindow addMapSubWindow(Widget content, String title, boolean resizable, float x, float y, CssLengthUnit width, CssLengthUnit height) {
+        var w = width.resolve(this.windowLayer.getWidth());
+        var h = height.resolve(this.windowLayer.getHeight());
+        return this.windowLayer.addSubWindow(content, title, resizable, x, y, w, h);
     }
 
     public WindowedContainer windowLayer() {

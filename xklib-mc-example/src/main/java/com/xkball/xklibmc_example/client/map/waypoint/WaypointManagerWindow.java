@@ -21,6 +21,8 @@ public class WaypointManagerWindow extends ContainerWidget {
         this.inlineStyle("""
                 flex-direction: column;
                 size: 100% 100%;
+                max-size: 180rpx 200rpx;
+                min-size: 180rpx 100rpx;
                 """)
                 .asRootStyle("""
                         Label {

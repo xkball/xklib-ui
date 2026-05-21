@@ -29,6 +29,14 @@ public class CssLengthUnit implements CalcExpression {
         this.expr = expr;
     }
     
+    public static CssLengthUnit rpx(float value) {
+        return new CssLengthUnit(Type.RPX, value);
+    }
+
+    public boolean isAuto() {
+        return type == Type.AUTO;
+    }
+
     public static CssLengthUnit of(String string){
         switch (string) {
             case "auto" -> {

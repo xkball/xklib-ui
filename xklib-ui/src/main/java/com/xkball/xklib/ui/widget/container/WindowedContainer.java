@@ -53,6 +53,13 @@ public class WindowedContainer extends AbsoluteContainer {
             size: 100% 100%-10rpx;
             background-color: 0xEE0F172A;
             """;
+    private static final String CONTENT_PANEL_CSS_AUTO_HEIGHT = """
+            display: flex;
+            align-items: stretch;
+            justify-content: stretch;
+            size: 100% auto;
+            background-color: 0xEE0F172A;
+            """;
     private static final String CLOSE_BUTTON_CSS = """
             size: 10rpx 10rpx;
             margin-right: 2rpx;
@@ -206,35 +213,36 @@ public class WindowedContainer extends AbsoluteContainer {
     }
 
     public SubWindow addSubWindow(Widget content, String frameCssStyle) {
-        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, frameCssStyle);
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, frameCssStyle, true);
     }
 
     public SubWindow addSubWindow(Widget content, float width, float height) {
-        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, "");
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, "", true);
     }
 
     public SubWindow addSubWindow(Widget content, float width, float height, String frameCssStyle) {
-        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, frameCssStyle);
+        return this.addSubWindow(content, "", true, this.nextWindowX, this.nextWindowY, width, height, frameCssStyle, true);
     }
 
     public SubWindow addSubWindow(Widget content, String title, boolean resizable, float width, float height) {
-        return this.addSubWindow(content, title, resizable, this.nextWindowX, this.nextWindowY, width, height, "");
+        return this.addSubWindow(content, title, resizable, this.nextWindowX, this.nextWindowY, width, height, "", true);
     }
 
     public SubWindow addSubWindow(Widget content, float x, float y, float width, float height) {
-        return this.addSubWindow(content, "", true, x, y, width, height, "");
+        return this.addSubWindow(content, "", true, x, y, width, height, "", true);
     }
 
     public SubWindow addSubWindow(Widget content, float x, float y, float width, float height, String frameCssStyle) {
-        return this.addSubWindow(content, "", true, x, y, width, height, frameCssStyle);
+        return this.addSubWindow(content, "", true, x, y, width, height, frameCssStyle, true);
     }
 
     public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height) {
-        return this.addSubWindow(content, title, resizable, x, y, width, height, "");
+        return this.addSubWindow(content, title, resizable, x, y, width, height, "", true);
     }
 
-    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height, String frameCssStyle) {
+    public SubWindow addSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height, String frameCssStyle, boolean autoShrinkHeight) {
         var window = new SubWindow(content, title, resizable, frameCssStyle);
+        window.setAutoHeight(autoShrinkHeight);
         window.setAbsoluteSize(x, y);
         window.setWindowSize(width, height);
         this.addChild(window);
@@ -288,6 +296,7 @@ public class WindowedContainer extends AbsoluteContainer {
         private int resizeMode = RESIZE_NONE;
         private boolean moving = false;
         private boolean closed = false;
+        private boolean autoHeight = false;
         private float minWidth = MIN_WINDOW_WIDTH;
         private float minHeight = MIN_WINDOW_HEIGHT;
         private float outerWidth;
@@ -329,6 +338,45 @@ public class WindowedContainer extends AbsoluteContainer {
             this.minWidth = width;
             this.minHeight = height;
             return this.setWindowSize(this.outerWidth, this.outerHeight);
+        }
+
+        public SubWindow setAutoHeight(boolean autoHeight) {
+            this.autoHeight = autoHeight;
+            if (autoHeight) {
+                this.contentPanel.inlineStyle(CONTENT_PANEL_CSS_AUTO_HEIGHT);
+            } else {
+                this.contentPanel.inlineStyle(CONTENT_PANEL_CSS);
+            }
+            this.markDirty();
+            return this;
+        }
+
+        public boolean isAutoHeight() {
+            return this.autoHeight;
+        }
+
+        @Override
+        public void resize(float offsetX, float offsetY) {
+            super.resize(offsetX, offsetY);
+            if (this.autoHeight) {
+                this.autoSizeHeight();
+            }
+        }
+
+        private void autoSizeHeight() {
+            var contentLayout = this.contentPanel.getLayout();
+            if (contentLayout == null) {
+                return;
+            }
+            var style = this.getStyle();
+            float minH = style.minSize.height.isLength() ? style.minSize.height.getValue() : MIN_WINDOW_HEIGHT;
+            float maxH = style.maxSize.height.isLength() ? style.maxSize.height.getValue() : Float.MAX_VALUE;
+            float contentHeight = contentLayout.size().getHeight();
+            float neededHeight = TOP_BAR_HEIGHT + contentHeight;
+            float newHeight = Math.clamp(neededHeight, minH, maxH);
+            if (Math.abs(newHeight - this.outerHeight) > 0.5f) {
+                this.setWindowSize(this.outerWidth, newHeight);
+            }
         }
 
         public void close() {

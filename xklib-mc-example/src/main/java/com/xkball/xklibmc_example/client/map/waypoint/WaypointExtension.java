@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.waypoint;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.IconButton;
@@ -140,7 +141,7 @@ public class WaypointExtension implements WorldMapExtension {
             }
         };
         var title = temporary ? "Temporary Waypoint" : "Waypoint";
-        this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, 262, 565);
+        this.detailWindow = service.addSubWindow(content, title, false, (float) x, (float) y, CssLengthUnit.rpx(80), CssLengthUnit.rpx(565));
     }
 
     private void openManager(WorldMapExtensionService service) {
@@ -153,7 +154,7 @@ public class WaypointExtension implements WorldMapExtension {
                 super.onRemove();
                 WaypointExtension.this.managerWindow = null;
             }
-        }, "Waypoint Manager", false, 560, 800);
+        }, "Waypoint Manager", false, CssLengthUnit.rpx(180), CssLengthUnit.rpx(800));
     }
 
     private boolean isDetailWindowOpen() {

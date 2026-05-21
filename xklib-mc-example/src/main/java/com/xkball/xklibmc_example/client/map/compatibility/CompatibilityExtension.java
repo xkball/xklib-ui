@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.compatibility;
 
+import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Button;
@@ -93,6 +94,6 @@ public class CompatibilityExtension implements WorldMapExtension {
         var gui = GuiSystem.INSTANCE.get();
         var x = Math.max(0f, (gui.screenWidth - 380) / 2f);
         var y = Math.max(0f, (gui.screenHeight - 240) / 2f);
-        subWindowRef[0] = service.addBlockingSubWindow(content, "Compatibility Mode Warning", false, x, y, 380, 240);
+        subWindowRef[0] = service.addBlockingSubWindow(content, "Compatibility Mode Warning", false, x, y, CssLengthUnit.rpx(120), CssLengthUnit.rpx(240));
     }
 }

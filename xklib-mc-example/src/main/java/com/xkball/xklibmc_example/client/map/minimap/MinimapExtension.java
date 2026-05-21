@@ -116,7 +116,7 @@ public class MinimapExtension implements WorldMapExtension {
 
     private void openConfig(WorldMapExtensionService service) {
         if (this.configWindow != null && this.configWindow.visible()) return;
-        this.configWindow = service.addSubWindow(this.createConfigContent(), "Minimap", false, 140 * CssLengthUnit.rpxScaleWorkaround, 240 * CssLengthUnit.rpxScaleWorkaround);
+        this.configWindow = service.addSubWindow(this.createConfigContent(), "Minimap", false, CssLengthUnit.rpx(140), CssLengthUnit.rpx(240));
     }
 
     private Widget createConfigContent() {
