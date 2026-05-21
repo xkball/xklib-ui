@@ -5,7 +5,6 @@ import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dRenderContext;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;

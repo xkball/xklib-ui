@@ -41,7 +41,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             margin-bottom: 2rpx;
                             text-align: center;
                             text-scale: expand-width;
-                            button-shape: round-rect;
+                            button-shape: rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
@@ -71,7 +71,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             size: 50% 100%;
                             text-align: center;
                             text-scale: expand-width;
-                            button-shape: round-rect;
+                            button-shape: rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
@@ -190,7 +190,7 @@ public class WaypointDetailWindow extends ContainerWidget {
                             size: 50% 100%;
                             text-align: center;
                             text-scale: expand-width;
-                            button-shape: round-rect;
+                            button-shape: rect;
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
                         }

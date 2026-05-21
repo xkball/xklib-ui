@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
+import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
@@ -11,6 +12,7 @@ import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.ContainerWidget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.ClientConfig;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
@@ -115,10 +117,10 @@ public class MinimapExtension implements WorldMapExtension {
 
     private void openConfig(WorldMapExtensionService service) {
         if (this.configWindow != null && this.configWindow.visible()) return;
-        this.configWindow = service.addSubWindow(this.createConfigContent(service), "Minimap", false, 140 * CssLengthUnit.rpxScaleWorkaround, 240 * CssLengthUnit.rpxScaleWorkaround);
+        this.configWindow = service.addSubWindow(this.createConfigContent(), "Minimap", false, 140 * CssLengthUnit.rpxScaleWorkaround, 240 * CssLengthUnit.rpxScaleWorkaround);
     }
 
-    private Widget createConfigContent(WorldMapExtensionService service) {
+    private Widget createConfigContent() {
         var preview = new MinimapPreviewWidget(highDetailRange, rotateWithPlayer)
                 .inlineStyle("size: 116rpx 116rpx; flex-shrink: 0; margin: 5rpx;");
         return new ContainerWidget() {
@@ -156,6 +158,20 @@ public class MinimapExtension implements WorldMapExtension {
                         }
                         """)
                 .addChild(preview)
+                .addChild(new ContainerWidget()
+                        .setCSSClassName("minimap_row")
+                        .addChild(new Label("Enable Minimap").setCSSClassName("minimap_label"))
+                        .addChild(new CheckBox() {
+                            {
+                                this.setValue(ClientConfig.MINIMAP_ENABLED.get());
+                            }
+                            @Override
+                            protected boolean onMouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+                                var result = super.onMouseClicked(event, doubleClick);
+                                ClientConfig.MINIMAP_ENABLED.set(this.getValue());
+                                return result;
+                            }
+                        }))
                 .addChild(this.sliderRow("High Detail", this.highDetailRange))
                 .addChild(new ContainerWidget()
                         .setCSSClassName("minimap_row")

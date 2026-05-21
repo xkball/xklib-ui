@@ -8,6 +8,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.ServerConfig;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtension;
+import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
@@ -20,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class SelectionExtension implements WorldMapExtension {
 
@@ -32,7 +34,6 @@ public class SelectionExtension implements WorldMapExtension {
     private boolean dragging;
     private Vector2f dragStartScreen;
     private Vector2f dragEndScreen;
-    private boolean layerRegistered;
 
     public static @Nullable SelectionStorage currentStorage() {
         return currentStorage;
@@ -47,15 +48,20 @@ public class SelectionExtension implements WorldMapExtension {
     public int order() {
         return 1;
     }
-
+    
+    @Override
+    public void init(WorldMapExtensionContext context) {
+        WorldTerrainPipRenderer.regRenderLayers(SelectionOverlayRenderer::new);
+    }
+    
+    @Override
+    public List<String> enabledLayers(WorldMapExtensionService service) {
+        return List.of("selection");
+    }
+    
     @Override
     public void onMapOpened(WorldMapExtensionService service) {
         currentStorage = this.storage;
-        if (!this.layerRegistered) {
-            WorldTerrainPipRenderer.regRenderLayers(new SelectionOverlayRenderer());
-            this.layerRegistered = true;
-        }
-        service.addEnabledLayer("selection");
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section"), () -> this.selecting = !this.selecting)
                 .withTooltip(IComponent.literal("Toggle selection mode. Left-drag on map to select chunks.")));
         service.addTopBar2Widget(new IconButton(VanillaUtils.modrl("icon/section_clear"), this::clearSelection)

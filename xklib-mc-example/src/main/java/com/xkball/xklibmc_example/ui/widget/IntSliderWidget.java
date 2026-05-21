@@ -86,11 +86,11 @@ public class IntSliderWidget extends Widget implements IInputWidget<Integer> {
         super.doRender(graphics, mouseX, mouseY, a);
         var trackY0 = this.y + this.height * 0.35f;
         var trackY1 = this.y + this.height * 0.65f;
-        graphics.fillRounded(this.x, trackY0, this.x + this.width, trackY1, VanillaUtils.getColor(60, 66, 74, 220), 2);
+        graphics.fillRounded(this.x, trackY0, this.x + this.width, trackY1, VanillaUtils.getColor(55, 55, 55, 200), 2);
         var ratio = (this.value - this.min) / (float) (this.max - this.min);
         var knobX = this.x + ratio * this.width;
-        graphics.fillRounded(this.x, trackY0, knobX, trackY1, VanillaUtils.getColor(82, 151, 255, 240), 2);
-        graphics.fillRounded(knobX - 4, this.y + 1, knobX + 4, this.y + this.height - 1, VanillaUtils.getColor(235, 238, 242, 255), 4);
+        graphics.fillRounded(this.x, trackY0, knobX, trackY1, VanillaUtils.getColor(85, 85, 85, 200), 2);
+        graphics.fillRounded(knobX - 4, this.y + 1, knobX + 4, this.y + this.height - 1, VanillaUtils.getColor(255, 255, 255, 255), 4);
         graphics.drawString(String.valueOf(this.value), this.x + this.width + 6, this.y + 3, -1);
     }
 

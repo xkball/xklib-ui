@@ -1,6 +1,7 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
 import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
+import com.xkball.xklibmc_example.ClientConfig;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import net.minecraft.client.DeltaTracker;
@@ -21,6 +22,7 @@ public final class MinimapHudRenderer {
     public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         var mc = Minecraft.getInstance();
         if(mc.level == null || mc.player == null || mc.options.hideGui || mc.screen != null) return;
+        if(!ClientConfig.MINIMAP_ENABLED.get()) return;
         var minimap = MinimapExtension.INSTANCE;
         if(minimap == null) return;
         var window = mc.getWindow();

@@ -15,7 +15,6 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc.x3d.backend.b3d.B3dGuiGraphics;
 import com.xkball.xklibmc_example.api.client.map.WorldMapEvent;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
-import com.xkball.xklibmc_example.client.map.minimap.MinimapPlayerMarker;
 import com.xkball.xklibmc_example.client.map.minimap.CompassRenderer;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
@@ -33,7 +32,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -55,7 +53,6 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
     private @Nullable WorldMapExtensionService extensionService;
     private final AbsoluteContainer extensionOverlay = new AbsoluteContainer();
     private final Map<String, Supplier<Widget>> extensionOverlayProviders = new LinkedHashMap<>();
-    private final Map<String, List<String>> extensionEnabledLayers = new LinkedHashMap<>();
     
     private final BooleanLayoutVariable terrain;
     private final BooleanLayoutVariable grid;
@@ -114,10 +111,6 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         }
     }
 
-    public void addExtensionEnabledLayer(String extensionId, String layerName) {
-        this.extensionEnabledLayers.computeIfAbsent(extensionId, _ -> new ArrayList<>()).add(layerName);
-    }
-
     private void initCamera() {
         var mc = Minecraft.getInstance();
         var level = mc.level;
@@ -166,9 +159,7 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         if(grid.get()) list.add("grid");
         if(player.get()) list.add("player");
         if(cameraTarget_.get()) list.add("cameraTarget");
-        for (var layers : this.extensionEnabledLayers.values()) {
-            list.addAll(layers);
-        }
+        list.addAll(TerrainChunkManager.INSTANCE.worldMapExtensionRegistry.enabledLayers(this.extensionService));
         
         var scaleX = XKLibBaseScreen.tryGetScaleX();
         var scaleY = XKLibBaseScreen.tryGetScaleY();

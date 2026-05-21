@@ -29,7 +29,7 @@ import java.util.OptionalInt;
 
 public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrainPipRenderer, WorldTerrainPipRenderer.WorldTerrainState> {
     
-    private static final CachedMesh CUBE = new CachedMesh("cube", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP,TerrainRenderer::createCubeMesh,true).setCloseOnExit();
+    public static final CachedMesh CUBE = new CachedMesh("cube", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP,TerrainRenderer::createCubeMesh,true).setCloseOnExit();
     public static final CachedMesh CHUNK1 = new CachedMesh("lod1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 16, 1),true).setCloseOnExit();
     public static final CachedMesh REGION1 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 1),true).setCloseOnExit();
     public static final CachedMesh REGION2 = new CachedMesh("region1", XKLibExampleRenderPipelines.WORLD_TERRAIN_PIP_LOD, (b) -> TerrainRenderer.createLodMesh(b, 512, 2),true).setCloseOnExit();
@@ -48,7 +48,7 @@ public class TerrainRenderer implements PictureInPictureRenderLayer<WorldTerrain
         if(level == null) return;
         RenderSystem.getModelViewStack().pushMatrix();
         var modelView = RenderSystem.getModelViewStack().mul(poseStack.last().pose(), new Matrix4f());
-        var frustum = new Frustum(modelView,WorldTerrainPipRenderer.projMatrix);
+        var frustum = new Frustum(modelView,renderState.projMatrix());
         var transformUBO = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Vector4f(1,1,1,1), new Vector3f(), new Matrix4f());
         XKLibExampleRenderPipelines.PHONE_LIGHT.updateUnsafe(b ->
                 b.putVec3(VanillaUtils.dirVec(Mth.clamp(renderState.xRot(),45,90),renderState.yRot() + 2))

@@ -11,6 +11,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -341,10 +342,8 @@ public class ColorInputWidget extends ContainerWidget implements IInputWidget<In
                     guiGraphics.fill(fillStartX, y0, x0 + w, y0 + h, prevColor);
                 }
             }
-
             int handleX = x0 + (int) (this.value * (w - HANDLE_WIDTH));
-            guiGraphics.fill(handleX, y0, handleX + HANDLE_WIDTH, y0 + h, 0xFFFFFFFF);
-            guiGraphics.fill(handleX + 1, y0 + 1, handleX + HANDLE_WIDTH - 1, y0 + h - 1, 0xFFAAAAAA);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.getHandleSprite(), handleX, y0, HANDLE_WIDTH, h, -1);
             handleCursor(guiGraphics);
         }
 

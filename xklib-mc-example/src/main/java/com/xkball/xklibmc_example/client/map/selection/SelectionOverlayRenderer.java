@@ -52,7 +52,7 @@ public class SelectionOverlayRenderer implements PictureInPictureRenderLayer<Wor
             }
             var uploadInfo = levelStorage.terrainTextureManager.getUploadInfo(chunkPos);
             groupedByTexture.computeIfAbsent(uploadInfo.texturePos(), _ -> new ArrayList<>())
-                    .add(new IndirectDrawCommand(TerrainRenderer.CHUNK1.getIndexCount(), 1, 0, 0, 0,
+                    .add(new IndirectDrawCommand(TerrainRenderer.LODS[0].getIndexCount(), 1, 0, 0, 0,
                             chunkPos.getMinBlockX(), chunkPos.getMinBlockZ()));
         }
 
@@ -73,8 +73,8 @@ public class SelectionOverlayRenderer implements PictureInPictureRenderLayer<Wor
                 RenderSystem.bindDefaultUniforms(renderpass);
                 renderpass.setPipeline(XKLibExampleRenderPipelines.SELECTION_OVERLAY);
                 renderpass.setUniform("DynamicTransforms", transformUBO);
-                renderpass.setVertexBuffer(0, TerrainRenderer.CHUNK1.getVertexBuffer());
-                renderpass.setIndexBuffer(TerrainRenderer.CHUNK1.getIndexBuffer(), TerrainRenderer.CHUNK1.getIndexType());
+                renderpass.setVertexBuffer(0, TerrainRenderer.LODS[0].getVertexBuffer());
+                renderpass.setIndexBuffer(TerrainRenderer.LODS[0].getIndexBuffer(), TerrainRenderer.LODS[0].getIndexType());
                 renderpass.bindTexture("heightTexture", textures.depthTextureView(), SamplerCacheCache.NEAREST_REPEAT);
                 IExtendedRenderPass.cast(renderpass).xklib$setSSBO("cmd", commandBuffer.slice());
                 IExtendedRenderPass.cast(renderpass).xklib$multiDrawElementsIndirect(commandBuffer, commands.size());

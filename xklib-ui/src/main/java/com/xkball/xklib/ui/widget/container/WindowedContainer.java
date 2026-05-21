@@ -18,7 +18,6 @@ public class WindowedContainer extends AbsoluteContainer {
 
     private static final float DEFAULT_WINDOW_WIDTH = 320f;
     private static final float DEFAULT_WINDOW_HEIGHT = 220f;
-    private static final float DEFAULT_WINDOW_OFFSET = 28f;
     private static final float TOP_BAR_HEIGHT = 24f;
     private static final float BORDER_HIT_SIZE = 2f;
     private static final float MIN_WINDOW_WIDTH = 120f;
@@ -59,8 +58,8 @@ public class WindowedContainer extends AbsoluteContainer {
             margin-right: 2rpx;
             """;
 
-    private float nextWindowX = DEFAULT_WINDOW_OFFSET;
-    private float nextWindowY = DEFAULT_WINDOW_OFFSET;
+    private float nextWindowX = 0;
+    private float nextWindowY = 0;
     private boolean dispatchingMouseClick = false;
     private SubWindow activeMouseWindow = null;
     private boolean autoRemoveFromGuiSystemWhenEmpty = false;
@@ -178,7 +177,13 @@ public class WindowedContainer extends AbsoluteContainer {
             }
         }
     }
-
+    
+    @Override
+    public void onSizeChanged() {
+        this.nextWindowX = this.width / 2;
+        this.nextWindowY = this.height / 2;
+    }
+    
     @Override
     public void removeChild(Widget widget) {
         super.removeChild(widget);
@@ -233,8 +238,8 @@ public class WindowedContainer extends AbsoluteContainer {
         window.setAbsoluteSize(x, y);
         window.setWindowSize(width, height);
         this.addChild(window);
-        this.nextWindowX = x + DEFAULT_WINDOW_OFFSET;
-        this.nextWindowY = y + DEFAULT_WINDOW_OFFSET;
+        this.nextWindowX = x + 14;
+        this.nextWindowY = y + 14;
         return window;
     }
 

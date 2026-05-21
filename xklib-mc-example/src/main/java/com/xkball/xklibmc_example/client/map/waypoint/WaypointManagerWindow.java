@@ -34,7 +34,7 @@ public class WaypointManagerWindow extends ContainerWidget {
                             height: 12rpx;
                             text-align: center;
                             text-scale: expand-width;
-                            button-shape: round-rect;
+                            button-shape: rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;

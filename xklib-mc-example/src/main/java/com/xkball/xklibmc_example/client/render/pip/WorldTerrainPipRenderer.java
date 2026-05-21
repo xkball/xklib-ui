@@ -30,34 +30,42 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
 @NonNullByDefault
 public class WorldTerrainPipRenderer extends PictureInPictureRenderer<WorldTerrainPipRenderer.WorldTerrainState> {
     
-    public static final ProjectionMatrixBuffer proj = new ProjectionMatrixBuffer("world_terrain_pip_proj");
-    public static Matrix4f projMatrix = new Matrix4f();
+    private static final Set<Supplier<PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState>>> regRenderLayers = new HashSet<>();
     @SuppressWarnings("NotNullFieldNotInitialized")
     public static GpuBufferSlice projBuffer;
+    
+    private final Map<String, PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState>> renderLayers = new LinkedHashMap<>();
+    public final ProjectionMatrixBuffer proj = new ProjectionMatrixBuffer("world_terrain_pip_proj");
+    public Matrix4f projMatrix = new Matrix4f();
     public CameraRenderState cameraRenderState = new CameraRenderState();
     
-    private static final Map<String, PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState>> renderLayers = new LinkedHashMap<>();
-    
     static {
-        regRenderLayers(new TerrainRenderer());
-        regRenderLayers(new GridRenderer());
-        regRenderLayers(new PlayerOnMapRenderer());
-        regRenderLayers(new CameraTargetRenderer());
+        regRenderLayers(TerrainRenderer::new);
+        regRenderLayers(GridRenderer::new);
+        regRenderLayers(PlayerOnMapRenderer::new);
+        regRenderLayers( CameraTargetRenderer::new);
     }
     
-    public static void regRenderLayers(PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState> renderLayer) {
-        renderLayers.put(renderLayer.name(), renderLayer);
+    public static void regRenderLayers(Supplier<PictureInPictureRenderLayer<WorldTerrainPipRenderer,WorldTerrainState>> renderLayer) {
+        regRenderLayers.add(renderLayer);
     }
     
     public WorldTerrainPipRenderer(MultiBufferSource.BufferSource bufferSource) {
         super(bufferSource);
+        for(var s : regRenderLayers) {
+            var layer = s.get();
+            this.renderLayers.put(layer.name(), layer);
+        }
     }
 
     @Override

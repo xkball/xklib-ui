@@ -1,5 +1,6 @@
 package com.xkball.xklibmc_example.ui.widget;
 
+import com.mojang.logging.LogUtils;
 import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ui.layout.BooleanLayoutVariable;
 import com.xkball.xklib.ui.layout.IntLayoutVariable;
@@ -19,13 +20,17 @@ import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 
 public class WorldTerrainWidget extends ContainerWidget {
-    
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+
     public final BooleanLayoutVariable terrain = new BooleanLayoutVariable(true);
     public final BooleanLayoutVariable grid = new BooleanLayoutVariable(true);
     public final BooleanLayoutVariable player = new BooleanLayoutVariable(true);
@@ -84,7 +89,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                             margin-left: 2rpx;
                             text-align: center;
                             text-scale: expand-width;
-                            button-shape: round-rect;
+                            button-shape: rect;
                             button-bg-color: rgb(229,233,239);
                             text-drop-shadow: false;
                             text-extra-width: 2rpx;
@@ -167,7 +172,7 @@ public class WorldTerrainWidget extends ContainerWidget {
     }
     
     public Widget createToolbarTop1(int minY, int maxY){
-        return new ContainerWidget()
+        var toolbar = new ContainerWidget()
                 .inlineStyle("""
                                         height: 18rpx;
                                         border-top: 1rpx;
@@ -193,32 +198,70 @@ public class WorldTerrainWidget extends ContainerWidget {
                     })
                         .setCSSClassName("update_button")
                         .withTooltip(IComponent.literal("Update chunks in view distance."))
-                        .inlineStyle("margin-left: auto;"))
-                .addChild(new Button("Request Geomatics",() -> {
-                    if (!ServerConfig.ALLOW_SERVER_SENT_CHUNK.get() && !XKLib.IS_DEBUG) {
-                        return;
+                        .inlineStyle("margin-left: auto;"));
+        if (ServerConfig.ALLOW_SERVER_SENT_CHUNK.get() || XKLib.IS_DEBUG) {
+            toolbar.addChild(new Button("Request Geomatics",() -> {
+                var player = Minecraft.getInstance().player;
+                if(player == null) return;
+                var centerChunk = ChunkPos.containing(player.blockPosition());
+                var range = 256;
+                var list = new ArrayList<ChunkPos>();
+                for(var dx = -range; dx <= range; dx++){
+                    for(var dz = -range; dz <= range; dz++){
+                        var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
+                        if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
+                        list.add(p);
                     }
-                    var player = Minecraft.getInstance().player;
-                    if(player == null) return;
-                    var centerChunk = ChunkPos.containing(player.blockPosition());
-                    var range = 256;
-                    var list = new ArrayList<ChunkPos>();
-                    for(var dx = -range; dx <= range; dx++){
-                        for(var dz = -range; dz <= range; dz++){
-                            var p = new ChunkPos(centerChunk.x() + dx,centerChunk.z() + dz);
-                            if(TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage().containsChunk(p)) continue;
-                            list.add(p);
-                        }
-                    }
-                    ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
-                }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")))
-                .addChild(new Button("Delete",() -> {})
-                        .setCSSClassName("update_button")
-                        .inlineStyle("""
-                                            button-bg-color: rgb(221,0,27);
-                                            margin-right: 5rpx;
-                                            text-color: -1;
-                                        """));
+                }
+                ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
+            }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")));
+        }
+        toolbar.addChild(new Button("Delete",this::showDeleteConfirmation)
+                .setCSSClassName("update_button")
+                .inlineStyle("""
+                                    button-bg-color: rgb(221,0,27);
+                                    margin-right: 5rpx;
+                                    text-color: -1;
+                                """));
+        return toolbar;
+    }
+
+    private void showDeleteConfirmation() {
+        var content = new ContainerWidget()
+                .inlineStyle("flex-direction: column; padding: 8px; size: 100% 100%;");
+        content.addChild(new Label("Delete all cached chunks?"));
+        content.addChild(new Label("This cannot be undone.")
+                .inlineStyle("text-color: 0xFFFF5555; margin-top: 4px;"));
+
+        var bottomRow = new ContainerWidget()
+                .inlineStyle("flex-direction: row; align-items: center; margin-top: auto;");
+        var subWindowRef = new WindowedContainer.SubWindow[1];
+
+        var cancelButton = new Button("Cancel",() -> {
+            if (subWindowRef[0] != null) {
+                subWindowRef[0].close();
+            }
+        });
+        cancelButton.inlineStyle("size: content 16px; text-scale: expand-width; text-align: center; margin-left: auto; margin-right: 8px; button-shape: rect; button-bg-color: rgb(75,85,99); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx;");
+
+        var confirmButton = new Button("Delete",() -> {
+            var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
+            if (storage != null) {
+                for (var chunk : storage.getChunks()) {
+                    storage.deleteChunk(chunk.chunkPos);
+                }
+            }
+            if (subWindowRef[0] != null) {
+                subWindowRef[0].close();
+            }
+        });
+        confirmButton.inlineStyle("size: content 16px; text-scale: expand-width; text-align: center; button-shape: rect; button-bg-color: rgb(221,0,27); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx;");
+
+        bottomRow.addChild(cancelButton);
+        bottomRow.addChild(confirmButton);
+        content.addChild(bottomRow);
+
+        subWindowRef[0] = this.service.addBlockingSubWindow(content, "Confirm Delete", false, 260, 120);
     }
     
     public Widget createToolbarTop2(){
@@ -230,7 +273,15 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         scrollbar-width: 0;
                                         overflow-x: scroll;
                                         """)
-                .addChild(this.top2ExtensionWidgets);
+                .addChild(this.top2ExtensionWidgets)
+                .addChild(new IconButton(VanillaUtils.modrl("icon/setting"),this::openConfigFile)
+                        .withTooltip(IComponent.literal("Open config file."))
+                        .inlineStyle("margin-left: auto; margin-right: 5rpx;"));
+    }
+
+    private void openConfigFile() {
+        var configFile = net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get().resolve("xklibmc_example-client.toml").toFile();
+        Util.getPlatform().openFile(configFile);
     }
 
     public void addExtensionLeftBarWidget(Widget widget) {

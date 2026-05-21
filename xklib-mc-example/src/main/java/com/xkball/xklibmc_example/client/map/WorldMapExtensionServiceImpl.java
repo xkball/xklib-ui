@@ -4,8 +4,6 @@ import com.xkball.xklib.ui.system.GuiSystem;
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
-import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
-import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.client.map.uistate.WorldMapUiStateStorage;
@@ -102,17 +100,6 @@ public class WorldMapExtensionServiceImpl implements WorldMapExtensionService {
         var window = layer.addSubWindow(content, title, resizable, x, y, width, height);
         GuiSystem.INSTANCE.get().insertLayerAfter(layer, parent);
         return window;
-    }
-
-    @Override
-    public void registerPipLayer(PictureInPictureRenderLayer<WorldTerrainPipRenderer, WorldTerrainPipRenderer.WorldTerrainState> layer) {
-        WorldTerrainPipRenderer.regRenderLayers(layer);
-    }
-
-    @Override
-    public void addEnabledLayer(String layerName) {
-        if(this.widget == null) return;
-        this.widget.inner.addExtensionEnabledLayer(this.extensionId, layerName);
     }
 
     @Override

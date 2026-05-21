@@ -2,8 +2,6 @@ package com.xkball.xklibmc_example.api.client.map;
 
 import com.xkball.xklib.ui.widget.Widget;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
-import com.xkball.xklibmc_example.api.client.render.PictureInPictureRenderLayer;
-import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.terrain.LevelChunkStorage;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidgetInner;
 import org.joml.Vector2f;
@@ -37,10 +35,6 @@ public interface WorldMapExtensionService {
     WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float width, float height);
 
     WindowedContainer.SubWindow addBlockingSubWindow(Widget content, String title, boolean resizable, float x, float y, float width, float height);
-
-    void registerPipLayer(PictureInPictureRenderLayer<WorldTerrainPipRenderer, WorldTerrainPipRenderer.WorldTerrainState> layer);
-
-    void addEnabledLayer(String layerName);
 
     void setInnerOverlayProvider(Supplier<Widget> provider);
 
