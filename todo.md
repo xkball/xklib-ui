@@ -20,7 +20,7 @@
 
 - [ ] fix: 兼容模式
 
-- [ ] fix: 经过包装的mc Widget没有正常的hover状态
+- [x] fix: 经过包装的mc Widget没有正常的hover状态
 
 - [ ] 上传maven
 

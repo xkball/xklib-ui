@@ -30,6 +30,7 @@
     "MixinSTD140Builder",
     "MixinSTD140Calculator",
     "MixinTextureAtlasSprite",
-    "MixinWindow"
+    "MixinWindow",
+    "MixinMCWidget"
   ]
 }
