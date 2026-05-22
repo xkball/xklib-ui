@@ -20,6 +20,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,12 +46,13 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
     public void handle(IPayloadContext context) {
         if (!(context.player() instanceof ServerPlayer serverPlayer) || !(context.player().level() instanceof ServerLevel level))
             return;
+        var sorted = this.pos.stream().sorted(Comparator.comparingInt(ChunkPos::x).thenComparing(ChunkPos::z)).toList();
         context.enqueueWork(() -> {
             var t = new Ticket(XKLibMCExample.MAP_GEOMATICS.get(), ChunkLevel.byStatus(generate ? ChunkStatus.FULL : ChunkStatus.EMPTY));
             Thread.startVirtualThread(() -> {
                 var chunkFutures = new ArrayList<CompletableFuture<Void>>(1024);
-                for (int i = 0; i < this.pos.size(); i++) {
-                    var p = this.pos.get(i);
+                for (int i = 0; i < sorted.size(); i++) {
+                    var p = sorted.get(i);
                     var future = CompletableFuture.runAsync(() -> {
                                 level.getChunkSource().addTicket(t, p);
                                 level.getChunkSource().runDistanceManagerUpdates();
@@ -75,7 +77,7 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
                                 level.getChunkSource().ticketStorage.removeTicket(t, p);
                             }, level.getServer());
                     chunkFutures.add(future);
-                    if (chunkFutures.size() == 1024 || i == this.pos.size() - 1) {
+                    if (chunkFutures.size() == 1024 || i == sorted.size() - 1) {
                         CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new)).join();
                         chunkFutures.clear();
                     }

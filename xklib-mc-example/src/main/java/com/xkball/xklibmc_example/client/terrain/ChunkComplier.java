@@ -170,52 +170,57 @@ public class ChunkComplier {
             var mc = Minecraft.getInstance();
             var tintSource = mc.getBlockColors().getTintSources(state);
             if (tintSource.isEmpty()) return -1;
+            var blockAndTintGetter = calcuColor ? new BlockAndTintGetter() {
+                @Override
+                public CardinalLighting cardinalLighting() {
+                    return level.cardinalLighting();
+                }
+
+                @Override
+                public int getBlockTint(BlockPos pos, ColorResolver color) {
+                    if(insideChunk(pos)){
+                        return color.getColor(chunkAccess.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2).value(), pos.getX(), pos.getZ());
+                    }
+                    return level.getBlockTint(pos, color);
+                }
+
+                @Override
+                public LevelLightEngine getLightEngine() {
+                    return level.getLightEngine();
+                }
+
+                @Override
+                public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
+                    return level.getBlockEntity(pos);
+                }
+
+                @Override
+                public BlockState getBlockState(BlockPos pos) {
+                    return level.getBlockState(pos);
+                }
+
+                @Override
+                public FluidState getFluidState(BlockPos pos) {
+                    return level.getFluidState(pos);
+                }
+
+                @Override
+                public int getHeight() {
+                    return level.getHeight();
+                }
+
+                @Override
+                public int getMinY() {
+                    return level.getMinY();
+                }
+            } : level;
             var color = -1;
             for(var source : tintSource){
-                color = VanillaUtils.mulColor(color,source.colorInWorld(state,calcuColor ? new BlockAndTintGetter() {
-                    @Override
-                    public CardinalLighting cardinalLighting() {
-                        return level.cardinalLighting();
-                    }
-                    
-                    @Override
-                    public int getBlockTint(BlockPos pos, ColorResolver color) {
-                        if(insideChunk(pos)){
-                            color.getColor(chunkAccess.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2).value(), pos.getX(), pos.getZ());
-                        }
-                        return level.getBlockTint(pos, color);
-                    }
-                    
-                    @Override
-                    public LevelLightEngine getLightEngine() {
-                        return level.getLightEngine();
-                    }
-                    
-                    @Override
-                    public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
-                        return level.getBlockEntity(pos);
-                    }
-                    
-                    @Override
-                    public BlockState getBlockState(BlockPos pos) {
-                        return level.getBlockState(pos);
-                    }
-                    
-                    @Override
-                    public FluidState getFluidState(BlockPos pos) {
-                        return level.getFluidState(pos);
-                    }
-                    
-                    @Override
-                    public int getHeight() {
-                        return level.getHeight();
-                    }
-                    
-                    @Override
-                    public int getMinY() {
-                        return level.getMinY();
-                    }
-                } : level, pos));
+                var tintColor = source.colorInWorld(state, blockAndTintGetter, pos);
+                if (tintColor == -1) {
+                    tintColor = source.colorAsTerrainParticle(state, blockAndTintGetter, pos);
+                }
+                color = VanillaUtils.mulColor(color, tintColor);
             }
             return color;
         }
