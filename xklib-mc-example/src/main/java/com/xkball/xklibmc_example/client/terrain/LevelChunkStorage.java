@@ -67,7 +67,7 @@ public class LevelChunkStorage {
         for(var dir : VanillaUtils.DIRECTIONS){
             this.gpuBufferByFace.put(dir, new UberGpuBuffer<>("terrain_"+dir+"_index",64, 64 * 1024 * 1024, 4, gpuDevice, 8 * 1024 * 1024, gpuWorkaround));
         }
-        this.gpuBufferByLodFullMesh = new UberGpuBuffer<>("terrain_lod",64, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 8 * 1024 * 1024, gpuWorkaround);
+        this.gpuBufferByLodFullMesh = new UberGpuBuffer<>("terrain_lod",32, 64 * 1024 * 1024, 20/*DefaultVertexFormat.POSITION_COLOR_NORMAL.getVertexSize()*/, gpuDevice, 8 * 1024 * 1024, gpuWorkaround);
         this.gpuBuffers.addAll(gpuBufferByFace.values());
         this.gpuBuffers.add(gpuBufferByLodFullMesh);
     }
