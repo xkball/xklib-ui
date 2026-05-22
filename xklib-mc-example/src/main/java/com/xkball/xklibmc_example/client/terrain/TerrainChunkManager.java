@@ -8,6 +8,7 @@ import com.xkball.xklibmc.api.client.b3d.ICloseOnExit;
 import com.xkball.xklibmc.client.b3d.IndirectDrawCommand;
 import com.xkball.xklibmc.utils.ClientUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
+import com.xkball.xklibmc_example.ClientConfig;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionContext;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionRegistry;
 import com.xkball.xklibmc_example.client.map.compatibility.CompatibilityExtension;
@@ -28,15 +29,19 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(Dist.CLIENT)
@@ -51,6 +56,8 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public List<String> compatibilityReasons = Collections.emptyList();
     public boolean compatibilityWarningSuppressed = false;
     public int viewDistance = 1024;
+    private final ArrayDeque<ChunkPos> updateQueue = new ArrayDeque<>();
+    private final Set<ChunkPos> updateQueueSet = new HashSet<>();
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -72,14 +79,42 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
                 if(storage != null){
                     INSTANCE.checkRegionResidency(storage);
                 }
-                TerrainChunkManager.update();
             }
         }
-        if(XKLibMCClient.tickCount % 1200 == 0){
+        int drawInterval = ClientConfig.DRAW_NEW_CHUNK_INTERVAL.get();
+        if(drawInterval > 0 && XKLibMCClient.tickCount % drawInterval == 0){
+            INSTANCE.processUpdateQueue(ClientConfig.DRAW_NEW_CHUNK_COUNT.get());
+        }
+        int saveInterval = ClientConfig.AUTO_SAVE_INTERVAL.get();
+        if(saveInterval > 0 && XKLibMCClient.tickCount % saveInterval == 0){
             for(var s : INSTANCE.storageMap.values()){
                 INSTANCE.worldMapExtensionRegistry.onStorageSaving(s);
                 s.saveFile(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        var level = event.getLevel();
+        if(!level.isClientSide()) return;
+//        event.getChunk().setUnsavedListener();
+        INSTANCE.enqueueUpdate(event.getChunk().getPos());
+    }
+
+    private void enqueueUpdate(ChunkPos chunkPos) {
+        if(updateQueueSet.contains(chunkPos)){
+            updateQueue.remove(chunkPos);
+        }
+        updateQueue.addLast(chunkPos);
+        updateQueueSet.add(chunkPos);
+    }
+
+    private void processUpdateQueue(int count) {
+        for(int i = 0; i < count && !updateQueue.isEmpty(); i++){
+            var chunkPos = updateQueue.pollFirst();
+            updateQueueSet.remove(chunkPos);
+            this.submitUpdate(chunkPos, true);
         }
     }
     
@@ -112,12 +147,6 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         this.worldMapExtensionRegistry.init(new WorldMapExtensionContext(this, this.worldMapExtensionRegistry));
     }
     
-    public static void update(){
-        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        var viewDistance = Minecraft.getInstance().options.renderDistance().get();
-        INSTANCE.submitUpdate(camera.blockPosition(),viewDistance - 1, false);
-    }
-    
     public @Nullable LevelChunkStorage getCurrentLevelChunkStorage(){
         if(Minecraft.getInstance().level == null) return null;
         return this.storageMap.get(Minecraft.getInstance().level.dimension());
@@ -148,7 +177,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
         var level = Minecraft.getInstance().level;
         if(level == null) return RenderInfo.empty();
         var storage = this.storageMap.get(level.dimension());
-        if(storage == null ) return RenderInfo.empty();
+        if(storage == null) return RenderInfo.empty();
         var gather = new RenderInfoBlockGather();
         var gather2 = new RenderInfoWithBufferBlockGather();
         for(var region : storage.regionMap.values()){

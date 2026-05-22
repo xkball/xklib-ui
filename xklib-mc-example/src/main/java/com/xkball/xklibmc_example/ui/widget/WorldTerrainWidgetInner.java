@@ -127,7 +127,6 @@ public class WorldTerrainWidgetInner extends ContainerWidget {
         centerPos = centerPos.atY(level.getMinY());
         cameraTarget.set(centerPos.getX(), 0, centerPos.getZ());
         this.setCameraY();
-        TerrainChunkManager.update();
     }
     
     public void reLocateCamera(){

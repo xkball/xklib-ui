@@ -10,6 +10,9 @@ public class ClientConfig {
     public static final ModConfigSpec SPEC;
     public static final ModConfigSpec.BooleanValue FORCE_COMPATIBILITY_MODE;
     public static final ModConfigSpec.BooleanValue MINIMAP_ENABLED;
+    public static final ModConfigSpec.IntValue AUTO_SAVE_INTERVAL;
+    public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_INTERVAL;
+    public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_COUNT;
 
     static {
         var builder = new ModConfigSpec.Builder();
@@ -19,6 +22,15 @@ public class ClientConfig {
         MINIMAP_ENABLED = builder
                 .comment("Enable the minimap HUD overlay.")
                 .define("minimapEnabled", true);
+        AUTO_SAVE_INTERVAL = builder
+                .comment("Interval in ticks for auto-saving map data. Default: 1200 (60s).")
+                .defineInRange("autoSaveInterval", 1200, 20, 72000);
+        DRAW_NEW_CHUNK_INTERVAL = builder
+                .comment("Interval in ticks for drawing new chunks from the update queue. Default: 20 (1s).")
+                .defineInRange("drawNewChunkInterval", 20, 1, 1200);
+        DRAW_NEW_CHUNK_COUNT = builder
+                .comment("Number of chunks to draw per interval from the update queue. Default: 20.")
+                .defineInRange("drawNewChunkCount", 20, 1, 500);
         SPEC = builder.build();
     }
     
