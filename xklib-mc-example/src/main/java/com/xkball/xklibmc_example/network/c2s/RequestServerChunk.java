@@ -4,15 +4,15 @@ import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.XKLibMCExample;
 import com.xkball.xklibmc_example.network.s2c.SentChunkToClient;
+import com.xkball.xklibmc_example.server.ChunkBatcher;
+import com.xkball.xklibmc_example.server.ChunkRequest;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ChunkLevel;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.Ticket;
+import net.minecraft.server.level.*;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -20,7 +20,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,46 +43,24 @@ public record RequestServerChunk(List<ChunkPos> pos, boolean generate) implement
     }
     
     public void handle(IPayloadContext context) {
-        if (!(context.player() instanceof ServerPlayer serverPlayer) || !(context.player().level() instanceof ServerLevel level))
+        if (!(context.player() instanceof ServerPlayer player) || !(context.player().level() instanceof ServerLevel level))
             return;
-        var sorted = this.pos.stream().sorted(Comparator.comparingInt(ChunkPos::x).thenComparing(ChunkPos::z)).toList();
-        context.enqueueWork(() -> {
-            var t = new Ticket(XKLibMCExample.MAP_GEOMATICS.get(), ChunkLevel.byStatus(generate ? ChunkStatus.FULL : ChunkStatus.EMPTY));
-            Thread.startVirtualThread(() -> {
-                var chunkFutures = new ArrayList<CompletableFuture<Void>>(1024);
-                for (int i = 0; i < sorted.size(); i++) {
-                    var p = sorted.get(i);
-                    var future = CompletableFuture.runAsync(() -> {
-                                level.getChunkSource().addTicket(t, p);
-                                level.getChunkSource().runDistanceManagerUpdates();
-                            }, level.getServer())
-                            .thenCombineAsync(
-                                    level.getChunkSource().getChunkFuture(p.x(), p.z(), generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, true),
-                                    (_, it) -> it)
-                            .thenAcceptAsync(it -> {
-                                it.ifSuccess(chunkAccess -> {
-                                    if (chunkAccess.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
-                                        if (chunkAccess instanceof ImposterProtoChunk ipc) {
-                                            var pack = new SentChunkToClient(p, ipc.getWrapped());
-                                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(serverPlayer, pack));
-                                            
-                                        }
-                                        if (chunkAccess instanceof LevelChunk levelChunk) {
-                                            var pack = new SentChunkToClient(p, levelChunk);
-                                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(serverPlayer, pack));
-                                        }
-                                    }
-                                });
-                                level.getChunkSource().ticketStorage.removeTicket(t, p);
-                            }, level.getServer());
-                    chunkFutures.add(future);
-                    if (chunkFutures.size() == 1024 || i == sorted.size() - 1) {
-                        CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new)).join();
-                        chunkFutures.clear();
+        context.enqueueWork(() -> ChunkBatcher.submitRequest(new ChunkRequest(this.pos, XKLibMCExample.MAP_GEOMATICS.get(), generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, player, level) {
+            @Override
+            public void accept(ChunkPos p, ChunkResult<ChunkAccess> it) {
+                it.ifSuccess(chunkAccess -> {
+                    if (chunkAccess.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
+                        if (chunkAccess instanceof ImposterProtoChunk ipc) {
+                            var pack = new SentChunkToClient(p, ipc.getWrapped());
+                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(player, pack));
+                        }
+                        if (chunkAccess instanceof LevelChunk levelChunk) {
+                            var pack = new SentChunkToClient(p, levelChunk);
+                            CompletableFuture.runAsync(() -> PacketDistributor.sendToPlayer(player, pack));
+                        }
                     }
-                }
-            });
-        });
-        
+                });
+            }
+        }));
     }
 }
