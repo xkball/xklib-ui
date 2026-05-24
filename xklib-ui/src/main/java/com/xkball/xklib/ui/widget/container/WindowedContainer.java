@@ -45,6 +45,7 @@ public class WindowedContainer extends AbsoluteContainer {
             text-color: 0xFFE2E8F0;
             text-drop-shadow: false;
             text-scale: expand-width;
+            text-height: 10rpx;
             """;
     private static final String CONTENT_PANEL_CSS = """
             display: flex;

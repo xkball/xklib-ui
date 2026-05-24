@@ -3,6 +3,8 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'antlr'
+    id 'maven-publish'
+    id "com.vanniktech.maven.publish"
 }
 
 group = 'com.xkball.xklib.ui'
@@ -45,4 +47,37 @@ jar {
 generateGrammarSource {
     arguments += ['-package', 'com.xkball.xklib.antlr.css']
     outputDirectory = outputDirectory.toPath().resolve("com/xkball/xklib/antlr/css").toFile()
+}
+
+mavenPublishing {
+    publishToMavenCentral(true)
+    signAllPublications()
+    coordinates("com.xkball", "xklib-ui", version)
+
+    pom {
+        name = "xklib-ui"
+        url = "https://github.com/xkball/xklib-ui"
+        description = "a minecraft mod lib."
+
+        licenses {
+            license {
+                name = 'GNU LESSER GENERAL PUBLIC LICENSE Version 3 '
+                url = 'https://www.gnu.org/licenses/lgpl-3.0.html'
+            }
+        }
+
+        developers {
+            developer {
+                id = 'xkball'
+                name = 'xkball'
+                email = 'xkball996@gmail.com'
+            }
+        }
+
+        scm {
+            connection = 'scm:git:git://github.com/xkball/xklib-ui.git'
+            developerConnection = 'scm:git:ssh://github.com/xkball/xklib-ui.git'
+            url = 'https://github.com/xkball/xklib-ui/tree/master'
+        }
+    }
 }
