@@ -200,7 +200,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                     TerrainChunkManager.INSTANCE.submitUpdate(player.blockPosition(),viewDistance - 1, true);
                     })
                         .setCSSClassName("update_button")
-                        .withTooltip(IComponent.literal("Update chunks in view distance."))
+                        .withTooltip(IComponent.translatable("xklibmc.world_terrain.update_chunks"))
                         .inlineStyle("margin-left: auto;"));
         if (ServerConfig.ALLOW_SERVER_SENT_CHUNK.get() || XKLib.IS_DEBUG) {
             toolbar.addChild(new Button(IComponent.translatable("xklibmc.world_terrain.request_geomatics_btn"),() -> {
@@ -217,7 +217,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                     }
                 }
                 ClientPacketDistributor.sendToServer(new RequestServerChunk(list,false));
-            }).setCSSClassName("update_button").withTooltip(IComponent.literal("Request Geomatics from Server(Requires permission from the server).")));
+            }).setCSSClassName("update_button").withTooltip(IComponent.translatable("xklibmc.world_terrain.request_geomatics")));
         }
         toolbar.addChild(new Button(IComponent.translatable("xklibmc.world_terrain.delete"),this::showDeleteConfirmation)
                 .setCSSClassName("update_button")
@@ -231,10 +231,10 @@ public class WorldTerrainWidget extends ContainerWidget {
 
     private void showDeleteConfirmation() {
         var content = new ContainerWidget()
-                .inlineStyle("flex-direction: column; padding: 8px; size: 100% 100%;");
-        content.addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_confirm_msg")));
-        content.addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_irreversible"))
-                .inlineStyle("text-color: 0xFFFF5555; margin-top: 4px;"));
+                .inlineStyle("flex-direction: column; size: 100% 100%;")
+                .addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_confirm_msg")).inlineStyle("text-color: 0xFFFF5555; size: 100% 12rpx; text-scale: fit_to_max;"))
+                .addChild(new Label(IComponent.translatable("xklibmc.world_terrain.delete_irreversible"))
+                        .inlineStyle("text-color: 0xFFFF5555; margin-top: 4px; size: 100% 12rpx; text-scale: fit_to_max;"));
 
         var bottomRow = new ContainerWidget()
                 .inlineStyle("flex-direction: row; align-items: center; margin-top: auto;");
@@ -245,7 +245,7 @@ public class WorldTerrainWidget extends ContainerWidget {
                 subWindowRef[0].close();
             }
         });
-        cancelButton.inlineStyle("size: content 16px; text-scale: expand-width; text-align: center; margin-left: auto; margin-right: 8px; button-shape: rect; button-bg-color: rgb(75,85,99); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx;");
+        cancelButton.inlineStyle("size: content 12rpx; text-scale: expand-width; text-align: center; margin-left: auto; margin-right: 8px; button-shape: rect; button-bg-color: rgb(75,85,99); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx; text-height: 10rpx;");
 
         var confirmButton = new Button(IComponent.translatable("xklibmc.world_terrain.delete"),() -> {
             var storage = TerrainChunkManager.INSTANCE.getCurrentLevelChunkStorage();
@@ -258,13 +258,13 @@ public class WorldTerrainWidget extends ContainerWidget {
                 subWindowRef[0].close();
             }
         });
-        confirmButton.inlineStyle("size: content 16px; text-scale: expand-width; text-align: center; button-shape: rect; button-bg-color: rgb(221,0,27); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx;");
+        confirmButton.inlineStyle("size: content 12rpx; text-scale: expand-width; text-align: center; button-shape: rect; button-bg-color: rgb(221,0,27); text-color: -1; text-drop-shadow: false; text-extra-width: 2rpx; text-height: 10rpx;");
 
         bottomRow.addChild(cancelButton);
         bottomRow.addChild(confirmButton);
         content.addChild(bottomRow);
 
-        subWindowRef[0] = this.service.addBlockingSubWindow(content, "Confirm Delete", false, CssLengthUnit.rpx(260), CssLengthUnit.rpx(120));
+        subWindowRef[0] = this.service.addBlockingSubWindow(content, IComponent.translatable("xklibmc.world_terrain.confirm_delete_title"), false, CssLengthUnit.rpx(180), CssLengthUnit.rpx(120));
     }
     
     public Widget createToolbarTop2(){

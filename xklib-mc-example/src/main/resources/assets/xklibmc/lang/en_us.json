@@ -19,6 +19,7 @@
   "xklibmc.world_terrain.delete": "Delete",
   "xklibmc.world_terrain.delete_confirm_msg": "Delete all cached chunks?",
   "xklibmc.world_terrain.delete_irreversible": "This cannot be undone.",
+    "xklibmc.world_terrain.confirm_delete_title": "Confirm Delete",
   "xklibmc.world_terrain.open_config": "Open config file.",
 
   "xklibmc.waypoint.show_waypoints": "Show waypoints",
@@ -61,5 +62,12 @@
   "xklibmc.waypoint.title.manager": "Waypoint Manager",
   "xklibmc.waypoint.default_name": "Waypoint",
 
-  "xklibmc.common.cancel": "Cancel"
+  "xklibmc.common.cancel": "Cancel",
+
+  "xklibmc.compatibility.mode_active": "Compatibility mode is active.",
+  "xklibmc.compatibility.reasons": "Reasons:",
+  "xklibmc.compatibility.dont_show_again": "Don't show again",
+  "xklibmc.compatibility.ok": "OK",
+  "xklibmc.compatibility.warning_title": "Compatibility Mode Warning",
+  "xklibmc.compatibility.warn": "In compatibility mode, severe frame drops or crashes may occur."
 }

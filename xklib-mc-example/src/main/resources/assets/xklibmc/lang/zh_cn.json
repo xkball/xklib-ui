@@ -19,6 +19,7 @@
   "xklibmc.world_terrain.delete": "删除地图",
   "xklibmc.world_terrain.delete_confirm_msg": "删除所有缓存的区块？",
   "xklibmc.world_terrain.delete_irreversible": "此操作不可撤销",
+    "xklibmc.world_terrain.confirm_delete_title": "确认删除",
   "xklibmc.world_terrain.open_config": "打开配置文件",
 
   "xklibmc.waypoint.show_waypoints": "显示路径点",
@@ -61,5 +62,12 @@
   "xklibmc.waypoint.title.manager": "路径点管理器",
   "xklibmc.waypoint.default_name": "路径点",
 
-  "xklibmc.common.cancel": "取消"
+  "xklibmc.common.cancel": "取消",
+
+  "xklibmc.compatibility.mode_active": "兼容模式已激活。",
+  "xklibmc.compatibility.reasons": "原因：",
+  "xklibmc.compatibility.dont_show_again": "不再显示",
+  "xklibmc.compatibility.ok": "确定",
+  "xklibmc.compatibility.warning_title": "兼容模式警告",
+  "xklibmc.compatibility.warn": "兼容模式下可能严重掉帧或崩溃。"
 }
