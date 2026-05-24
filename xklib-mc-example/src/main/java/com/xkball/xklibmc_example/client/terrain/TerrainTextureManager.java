@@ -94,7 +94,7 @@ public class TerrainTextureManager implements AutoCloseable {
     
     private VirtualTextures createTextures(VirtualTexturePos materialPos){
         @SuppressWarnings({"removal", "UnstableApiUsage"})
-        var device = IExtendedGpuDevice.cast(ClientUtils.getGpuDevice().getBackend());
+        var device = IExtendedGpuDevice.cast(ClientUtils.getGpuDevice().backend);
         var colorTexture = device.xklib$createSparseTexture(
                 "terrain_virtual_color_" + materialPos.x() + "_" + materialPos.z(),
                 textureUsage, TextureFormat.RGBA8, VIRTUAL_TEXTURE_SIZE, VIRTUAL_TEXTURE_SIZE, 1, 0
