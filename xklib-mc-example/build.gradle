@@ -7,7 +7,7 @@ plugins {
 
 evaluationDependsOn(':xklib-ui')
 
-version = mod_version
+version = xklib_mc_example_version
 group = mod_group_id
 
 base {
@@ -85,7 +85,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_id                 : mod_id,
             mod_name               : mod_name,
             mod_license            : mod_license,
-            mod_version            : mod_version,
+            mod_version            : xklib_mc_example_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

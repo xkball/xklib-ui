@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.xkball.xklib.x3d'
-version = '0.0.1'
+version = xklib_version
 
 repositories {
     mavenCentral()
@@ -30,9 +30,9 @@ dependencies {
     api "net.lenni0451:LambdaEvents:2.4.2"
 
     api project(":xklib-ap")
-    api "com.google.auto.service:auto-service:1.1.1"
+    api "com.google.auto.service:auto-service:$autoServiceVersion"
     annotationProcessor project(":xklib-ap")
-    annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
 
     api "org.lwjgl:lwjgl"
     api "org.lwjgl:lwjgl-glfw"
@@ -49,7 +49,7 @@ dependencies {
 
     runtimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:2.25.2"
 
-    runtimeOnly project(":xklib-3d-gl")
+//    runtimeOnly project(":xklib-3d-gl")
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

@@ -60,9 +60,6 @@ subprojects {
         }
     }
     tasks.withType(Javadoc).configureEach {
-        source = fileTree('src/main/java') {
-            exclude '*.*'
-        }
         options.addBooleanOption('Xdoclint:none', true)
     }
 }

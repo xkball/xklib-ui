@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'com.xkball.xklib.ui'
-version = '0.0.1'
+version = xklib_version
 
 repositories {
     mavenCentral()
@@ -22,10 +22,10 @@ dependencies {
     antlr "org.antlr:antlr4:4.13.2"
 
     implementation project(":xklib-3d")
-    runtimeOnly project(":xklib-3d-gl")
+//    runtimeOnly project(":xklib-3d-gl")
 
     annotationProcessor project(":xklib-ap")
-    annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
 
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'

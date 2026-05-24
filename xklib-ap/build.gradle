@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.xkball.xklib.ap'
-version = '0.0.1'
+version = xklib_version
 
 repositories {
     mavenCentral()
@@ -24,8 +24,8 @@ jar {
 }
 
 dependencies {
-    implementation "com.google.auto.service:auto-service:1.1.1"
-    annotationProcessor "com.google.auto.service:auto-service:1.1.1"
+    implementation "com.google.auto.service:auto-service:$autoServiceVersion"
+    annotationProcessor "com.google.auto.service:auto-service:$autoServiceVersion"
 }
 
 mavenPublishing {
