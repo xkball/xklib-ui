@@ -2,7 +2,9 @@
   "required": true,
   "package": "com.xkball.xklibmc_example.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "MixinLevelChunk"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

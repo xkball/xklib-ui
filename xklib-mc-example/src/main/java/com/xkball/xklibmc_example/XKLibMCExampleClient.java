@@ -2,6 +2,7 @@ package com.xkball.xklibmc_example;
 
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
 import com.xkball.xklibmc_example.client.map.minimap.MinimapHudRenderer;
+import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.ui.WorldTerrainScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -27,6 +28,7 @@ public class XKLibMCExampleClient {
     public XKLibMCExampleClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        XKLibMCExample.MARK_DIRTY_CALLBACK = c -> TerrainChunkManager.INSTANCE.enqueueUpdate(c.getPos());
     }
 
     @SubscribeEvent

@@ -98,16 +98,14 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public static void onChunkLoad(ChunkEvent.Load event) {
         var level = event.getLevel();
         if(!level.isClientSide()) return;
-//        event.getChunk().setUnsavedListener();
         INSTANCE.enqueueUpdate(event.getChunk().getPos());
     }
 
-    private void enqueueUpdate(ChunkPos chunkPos) {
-        if(updateQueueSet.contains(chunkPos)){
-            updateQueue.remove(chunkPos);
+    public void enqueueUpdate(ChunkPos chunkPos) {
+        if (!updateQueueSet.contains(chunkPos)) {
+            updateQueue.add(chunkPos);
+            updateQueueSet.add(chunkPos);
         }
-        updateQueue.addLast(chunkPos);
-        updateQueueSet.add(chunkPos);
     }
 
     private void processUpdateQueue(int count) {
@@ -317,7 +315,9 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     
     public void submitUpdate(@Nullable LevelChunk chunk, ChunkPos chunkPos, boolean force){
         var level = Minecraft.getInstance().level;
-        if(level == null) return;
+        if(level == null || chunkPos == null){
+            return;
+        }
         var dim = level.dimension();
         Runnable task = () -> {
             var level_ = Minecraft.getInstance().level;
