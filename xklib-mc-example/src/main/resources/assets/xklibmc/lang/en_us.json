@@ -69,5 +69,17 @@
   "xklibmc.compatibility.dont_show_again": "Don't show again",
   "xklibmc.compatibility.ok": "OK",
   "xklibmc.compatibility.warning_title": "Compatibility Mode Warning",
-  "xklibmc.compatibility.warn": "In compatibility mode, severe frame drops or crashes may occur."
+  "xklibmc.compatibility.warn": "In compatibility mode, severe frame drops or crashes may occur.",
+
+  "xklibmc.map_info.button": "Map Info",
+  "xklibmc.map_info.title": "Map Info",
+  "xklibmc.map_info.line.0": "Instructions:",
+  "xklibmc.map_info.line.1": "    -Right-click drag / WASD: Move map.",
+  "xklibmc.map_info.line.2": "    -Middle-click drag / QE: Rotate map.",
+  "xklibmc.map_info.line.3": "    -Double left-click: Quick add waypoint.",
+  "xklibmc.map_info.line.4": "    -Scroll wheel: Zoom in/out.",
+  "xklibmc.map_info.line.5": "",
+  "xklibmc.map_info.line.6": "3D map does not support cave views.",
+  "xklibmc.map_info.line.7": "In non-compatibility mode, the map has high-detail block-level terrain and less detailed heightfield terrain.",
+  "xklibmc.map_info.line.8": "The map loads block-level terrain based on load distance and renders it based on LOD distance."
 }

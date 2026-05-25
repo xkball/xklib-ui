@@ -13,6 +13,7 @@ public class ClientConfig {
     public static final ModConfigSpec.IntValue AUTO_SAVE_INTERVAL;
     public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_INTERVAL;
     public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_COUNT;
+    public static final ModConfigSpec.BooleanValue SHOW_MAP_INFO;
 
     static {
         var builder = new ModConfigSpec.Builder();
@@ -31,6 +32,9 @@ public class ClientConfig {
         DRAW_NEW_CHUNK_COUNT = builder
                 .comment("Number of chunks to draw per interval from the update queue. Default: 20.")
                 .defineInRange("drawNewChunkCount", 20, 1, 500);
+        SHOW_MAP_INFO = builder
+                .comment("Show map info window when first opening the map. Automatically set to false after shown once.")
+                .define("showMapInfo", true);
         SPEC = builder.build();
     }
     

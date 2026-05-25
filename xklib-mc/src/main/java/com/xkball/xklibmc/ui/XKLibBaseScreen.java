@@ -171,7 +171,20 @@ public class XKLibBaseScreen extends Screen {
     
     @Override
     public void mouseMoved(double x, double y) {
-        this.guiSystem.dispatchEventReversed(widget -> widget.mouseMoved(x * guiScale,y * guiScale));
+        boolean handled = false;
+        for (int i = this.guiSystem.screenLayers.size() - 1; i >= 0; i--) {
+            var pair = this.guiSystem.screenLayers.get(i);
+            var layer = pair.widget();
+            if (!handled && layer.mouseMoved(x * guiScale, y * guiScale)) {
+                handled = true;
+                continue;
+            }
+            if (layer instanceof ContainerWidget acw) {
+                acw.clearHoveredRecursive();
+            } else {
+                layer.setHovered(false);
+            }
+        }
     }
     
     @Override

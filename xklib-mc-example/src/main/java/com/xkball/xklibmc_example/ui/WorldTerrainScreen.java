@@ -4,6 +4,7 @@ import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.widget.container.WindowedContainer;
 import com.xkball.xklibmc.ui.XKLibBaseScreen;
 import com.xkball.xklibmc_example.client.map.compatibility.CompatibilityExtension;
+import com.xkball.xklibmc_example.client.map.mapinfo.MapInfoHelper;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.ui.widget.WorldTerrainWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -29,6 +30,7 @@ public class WorldTerrainScreen extends XKLibBaseScreen {
     protected void init() {
         super.init();
         CompatibilityExtension.showWarningIfNeeded(this.extensionService);
+        MapInfoHelper.showInfoIfNeeded(this.extensionService);
     }
     
     @Override

@@ -18,6 +18,7 @@ import com.xkball.xklibmc.utils.VanillaUtils;
 import com.xkball.xklibmc_example.api.client.map.WorldMapExtensionService;
 import com.xkball.xklibmc_example.ServerConfig;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
+import com.xkball.xklibmc_example.client.map.mapinfo.MapInfoHelper;
 import com.xkball.xklibmc_example.client.terrain.TerrainChunkManager;
 import com.xkball.xklibmc_example.network.c2s.RequestServerChunk;
 import net.minecraft.client.Minecraft;
@@ -277,9 +278,12 @@ public class WorldTerrainWidget extends ContainerWidget {
                                         overflow-x: scroll;
                                         """)
                 .addChild(this.top2ExtensionWidgets)
+                .addChild(new IconButton(VanillaUtils.modrl("icon/info"), () -> MapInfoHelper.showInfoWindow(this.service))
+                        .withTooltip(IComponent.translatable("xklibmc.map_info.button"))
+                        .inlineStyle("margin-left: auto;"))
                 .addChild(new IconButton(VanillaUtils.modrl("icon/setting"),this::openConfigFile)
                         .withTooltip(IComponent.translatable("xklibmc.world_terrain.open_config"))
-                        .inlineStyle("margin-left: auto; margin-right: 5rpx;"));
+                        .inlineStyle("margin-right: 5rpx;"));
     }
 
     private void openConfigFile() {

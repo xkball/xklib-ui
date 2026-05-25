@@ -55,15 +55,15 @@ public class CompatibilityExtension implements WorldMapExtension {
                             text-align: left;
                             text-color: -1;
                         }
-                        """);
-        
-        content.addChild(new Label(IComponent.translatable("xklibmc.compatibility.mode_active")));
-        content.addChild(new Label(IComponent.translatable("xklibmc.compatibility.warn")));
-        content.addChild(new Label(IComponent.translatable("xklibmc.compatibility.reasons")));
+                        """)
+                .addChild(new Label(IComponent.translatable("xklibmc.compatibility.mode_active")))
+                .addChild(new Label(IComponent.translatable("xklibmc.compatibility.warn")))
+                .addChild(new Label(IComponent.translatable("xklibmc.compatibility.reasons")));
         
         for (var reason : TerrainChunkManager.INSTANCE.compatibilityReasons) {
             content.addChild(new Label("  - " + reason));
         }
+        
         var subWindowRef = new WindowedContainer.SubWindow[1];
         var bottomRow = new ContainerWidget()
                 .inlineStyle("size: 100% 18rpx; flex-direction: row; align-items: center;")
