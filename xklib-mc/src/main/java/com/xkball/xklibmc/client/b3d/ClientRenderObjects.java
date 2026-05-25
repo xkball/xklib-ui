@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.xkball.xklibmc.api.client.b3d.IEndFrameListener;
 import com.xkball.xklibmc.api.client.b3d.IUpdatable;
 import com.xkball.xklibmc.client.b3d.uniform.XKLibUniforms;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
@@ -14,7 +15,7 @@ import org.lwjgl.opengl.GLCapabilities;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class ClientRenderObjects {
     
     public static boolean SUPPORT_NV_COMMAND_LIST = false;
