@@ -12,6 +12,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -38,6 +40,11 @@ public class XKLibMCExample {
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {
         ChunkBatcher.init(event.getServer());
+    }
+    
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        ChunkBatcher.deInit();
     }
 
     @SubscribeEvent

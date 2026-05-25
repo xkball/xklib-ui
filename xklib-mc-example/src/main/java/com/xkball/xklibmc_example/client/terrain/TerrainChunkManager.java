@@ -57,7 +57,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public boolean compatibilityWarningSuppressed = false;
     public int viewDistance = 1024;
     private final ArrayDeque<ChunkPos> updateQueue = new ArrayDeque<>();
-    private final Set<ChunkPos> updateQueueSet = new HashSet<>();
+    private final Set<ChunkPos> updateChunkSet = new HashSet<>();
     
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -98,20 +98,20 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
     public static void onChunkLoad(ChunkEvent.Load event) {
         var level = event.getLevel();
         if(!level.isClientSide()) return;
-        INSTANCE.enqueueUpdate(event.getChunk().getPos());
+        INSTANCE.submitUpdate(event.getChunk().getPos(),true);
     }
 
     public void enqueueUpdate(ChunkPos chunkPos) {
-        if (!updateQueueSet.contains(chunkPos)) {
+        if (!updateChunkSet.contains(chunkPos)) {
             updateQueue.add(chunkPos);
-            updateQueueSet.add(chunkPos);
+            updateChunkSet.add(chunkPos);
         }
     }
 
     private void processUpdateQueue(int count) {
         for(int i = 0; i < count && !updateQueue.isEmpty(); i++){
             var chunkPos = updateQueue.pollFirst();
-            updateQueueSet.remove(chunkPos);
+            updateChunkSet.remove(chunkPos);
             this.submitUpdate(chunkPos, true);
         }
     }

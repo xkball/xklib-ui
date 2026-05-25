@@ -22,6 +22,11 @@ public class ChunkBatcher implements Runnable {
         Preconditions.checkState(HANDLE == null);
         HANDLE = new ChunkBatcher(server);
     }
+    
+    public static void deInit() {
+        Preconditions.checkState(HANDLE != null);
+        HANDLE = null;
+    }
 
     public static void scheduleIfNeeded(MinecraftServer server) {
         Preconditions.checkState(HANDLE != null);
@@ -53,7 +58,7 @@ public class ChunkBatcher implements Runnable {
         pendingTasks.add(request);
         needSchedule = true;
     }
-
+    
     @Override
     public void run() {
         if (!server.isSameThread()) {

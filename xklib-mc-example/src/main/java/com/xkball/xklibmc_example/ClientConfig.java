@@ -39,7 +39,7 @@ public class ClientConfig {
                 .defineInRange("drawNewChunkInterval", 20, 1, 1200);
         DRAW_NEW_CHUNK_COUNT = builder
                 .comment("Number of chunks to draw per interval from the update queue. Default: 20.")
-                .defineInRange("drawNewChunkCount", 20, 1, 500);
+                .defineInRange("drawNewChunkCount", 1000, 1, 50000);
         SHOW_MAP_INFO = builder
                 .comment("Show map info window when first opening the map. Automatically set to false after shown once.")
                 .define("showMapInfo", true);
