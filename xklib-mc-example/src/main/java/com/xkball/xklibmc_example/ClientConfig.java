@@ -10,6 +10,8 @@ public class ClientConfig {
     public static final ModConfigSpec SPEC;
     public static final ModConfigSpec.BooleanValue FORCE_COMPATIBILITY_MODE;
     public static final ModConfigSpec.BooleanValue MINIMAP_ENABLED;
+    public static final ModConfigSpec.IntValue MINIMAP_SIZE;
+    public static final ModConfigSpec.IntValue MINIMAP_PADDING;
     public static final ModConfigSpec.IntValue AUTO_SAVE_INTERVAL;
     public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_INTERVAL;
     public static final ModConfigSpec.IntValue DRAW_NEW_CHUNK_COUNT;
@@ -23,6 +25,12 @@ public class ClientConfig {
         MINIMAP_ENABLED = builder
                 .comment("Enable the minimap HUD overlay.")
                 .define("minimapEnabled", true);
+        MINIMAP_SIZE = builder
+                .comment("Minimap size as percentage of screen height. Default: 15.")
+                .defineInRange("minimapSize", 25, 1, 50);
+        MINIMAP_PADDING = builder
+                .comment("Minimap padding from screen edge as percentage of screen height. Default: 5.")
+                .defineInRange("minimapPadding", 5, 0, 25);
         AUTO_SAVE_INTERVAL = builder
                 .comment("Interval in ticks for auto-saving map data. Default: 1200 (60s).")
                 .defineInRange("autoSaveInterval", 1200, 20, 72000);

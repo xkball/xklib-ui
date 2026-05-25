@@ -46,6 +46,10 @@ public class MinimapSettingsStorage implements WorldMapExtensionStorage {
         camFov = buf.readFloat();
         camCameraLength = buf.readFloat();
         clearDirty();
+        if(MinimapExtension.INSTANCE != null){
+            MinimapExtension.INSTANCE.highDetailRange.set(this.highDetailRange);
+            MinimapExtension.INSTANCE.rotateWithPlayer.set(this.rotateWithPlayer);
+        }
     }
 
     @Override

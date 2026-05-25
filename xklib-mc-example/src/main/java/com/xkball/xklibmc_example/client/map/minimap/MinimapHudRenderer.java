@@ -1,6 +1,5 @@
 package com.xkball.xklibmc_example.client.map.minimap;
 
-import com.xkball.xklib.ui.css.property.value.CssLengthUnit;
 import com.xkball.xklibmc_example.ClientConfig;
 import com.xkball.xklibmc_example.client.map.WorldMapExtensionServiceImpl;
 import com.xkball.xklibmc_example.client.render.pip.WorldTerrainPipRenderer;
@@ -12,8 +11,6 @@ import org.joml.Vector3f;
 
 public final class MinimapHudRenderer {
 
-    private static final int SIZE = 42;
-    private static final int MARGIN = 6;
     private static final WorldMapExtensionServiceImpl HUD_SERVICE = new WorldMapExtensionServiceImpl("");
 
     private MinimapHudRenderer() {
@@ -26,11 +23,16 @@ public final class MinimapHudRenderer {
         var minimap = MinimapExtension.INSTANCE;
         if(minimap == null) return;
         var window = mc.getWindow();
-        var s = CssLengthUnit.rpxScaleWorkaround;
-        int x0 = (int) (window.getGuiScaledWidth() - SIZE * s - MARGIN * s);
-        int y0 = (int) (MARGIN * s);
-        int x1 = (int) (x0 + SIZE * s);
-        int y1 = (int) (y0 + SIZE * s);
+        var guiScaledHeight = window.getGuiScaledHeight();
+        var guiScaledWidth = window.getGuiScaledWidth();
+        float sizePercent = ClientConfig.MINIMAP_SIZE.get() / 100.0f;
+        float paddingPercent = ClientConfig.MINIMAP_PADDING.get() / 100.0f;
+        int size = (int) (guiScaledHeight * sizePercent);
+        int padding = (int) (guiScaledHeight * paddingPercent);
+        int x0 = guiScaledWidth - size - padding;
+        int y0 = padding;
+        int x1 = x0 + size;
+        int y1 = y0 + size;
         var player = mc.player;
         var blockPos = player.blockPosition();
         var targetY = MinimapRenderHelper.getCameraTargetY(player.getY(), blockPos.getX(), blockPos.getZ(), mc.level.getMinY());
@@ -55,7 +57,7 @@ public final class MinimapHudRenderer {
                 true,
                 minimap.highDetailRange(),
                 null,
-                new ScreenRectangle(x0, y0, SIZE, SIZE)
+                new ScreenRectangle(x0, y0, size, size)
         );
         graphics.submitPictureInPictureRenderState(state);
         MinimapRenderHelper.drawBorder(graphics, x0, y0, x1, y1);
