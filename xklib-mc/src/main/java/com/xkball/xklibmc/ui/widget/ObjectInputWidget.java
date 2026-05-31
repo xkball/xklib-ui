@@ -53,7 +53,7 @@ public class ObjectInputWidget<T> extends ContainerWidget implements IInputWidge
         this.inputBox.setResponder(_ -> {
             if(this.callback != null) this.callback.accept(this);
         });
-        
+        this.inputBox.setMaxLength(114514);
         this.addChild(new Widget() {
             @Override
             public void doRender(IGUIGraphics graphics, int mouseX, int mouseY, float a) {

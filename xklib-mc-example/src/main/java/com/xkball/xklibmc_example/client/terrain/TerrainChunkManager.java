@@ -326,8 +326,7 @@ public class TerrainChunkManager implements ICloseOnExit<TerrainChunkManager> {
             if(dimNew != dim) return;
             var storage = this.storageMap.get(dimNew);
             if(storage == null){
-                storage = new LevelChunkStorage(dimNew,level_.getMinY(), level_.getMaxY(), INSTANCE.compatibleMode);
-                this.storageMap.put(dimNew, storage);
+                return;
             }
             var chunkOld = storage.getChunk(chunkPos);
             if(chunkOld != null && !force) return;

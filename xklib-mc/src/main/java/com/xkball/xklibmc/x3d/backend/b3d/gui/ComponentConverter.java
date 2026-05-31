@@ -32,11 +32,11 @@ public class ComponentConverter {
     
     public static Style toStyle(ComponentStyle componentStyle) {
         var result = Style.EMPTY;
-        if(componentStyle.color() != null) result.withColor(componentStyle.color());
-        if(componentStyle.baseline()) result.withUnderlined(true);
-        if(componentStyle.strikethrough()) result.withStrikethrough(true);
-        if(componentStyle.bold()) result.withBold(true);
-        if(componentStyle.italic()) result.withItalic(true);
+        if(componentStyle.color() != null) result = result.withColor(componentStyle.color());
+        if(componentStyle.baseline()) result = result.withUnderlined(true);
+        if(componentStyle.strikethrough()) result = result.withStrikethrough(true);
+        if(componentStyle.bold()) result = result.withBold(true);
+        if(componentStyle.italic()) result = result.withItalic(true);
         return result;
     }
 }
