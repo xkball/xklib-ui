@@ -86,7 +86,7 @@ public class PostProcess {
         if(w != this.xSize || h != this.ySize){
                 this.resize(w, h);
         }
-        boolean override =w != Minecraft.getInstance().getMainRenderTarget().width || h != Minecraft.getInstance().getMainRenderTarget().height;
+        boolean override = w != Minecraft.getInstance().getMainRenderTarget().width || h != Minecraft.getInstance().getMainRenderTarget().height;
         if(override){
             XKLibUniforms.SCREEN_SIZE.startOverride(
                     b -> b.putVec2(w,h)
