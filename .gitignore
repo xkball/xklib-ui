@@ -11,6 +11,7 @@ docs/
 .worktrees
 .claude
 CLAUDE.md
+AGENTS.md
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
