@@ -55,7 +55,6 @@ public class XKLibBaseContainerScreen<T extends AbstractContainerMenu> extends A
     
     @Override
     public void containerTick() {
-        super.tick();
         if(guiSystem.screenLayers.isEmpty()){
             Objects.requireNonNull(this.minecraft.player).closeContainer();
         }

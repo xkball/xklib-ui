@@ -15,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @GuiWidgetClass
 public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends ContainerWidget implements IInputWidget<List<V>> {
 
-    private final Supplier<T> inputFactory;
+    private final Function<Widget,T> inputFactory;
+    private final Supplier<T> inputFactory_;
     private final BiFunction<IComponent, Runnable, Widget> buttonFactory;
     private final List<ILayoutVariable<List<V>>> bindings = new ArrayList<>();
     private final Map<Integer, ListRowWidget> rowWidgetsById = new HashMap<>();
@@ -30,13 +32,14 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
     private Integer previewInsertIndex;
     private Integer draggingRowId;
     private boolean syncingBinding;
-
-    public ListInputWidget(Supplier<T> inputFactory, BiFunction<IComponent, Runnable, Widget> buttonFactory) {
+    
+    private ListInputWidget(Function<Widget,T> inputFactory, Supplier<T> inputFactory_, BiFunction<IComponent, Runnable, Widget> buttonFactory) {
         this.inputFactory = inputFactory;
+        this.inputFactory_ = inputFactory_;
         this.buttonFactory = buttonFactory;
         Widget addButton = this.buttonFactory.apply(IComponent.literal("+"), this::addNextInput);
         addButton.setCSSClassName("list_input_btn");
-        this.addChild(addButton.inlineStyle("margin-left: 95%-24rpx;"));
+        this.addChild(addButton.inlineStyle("margin-left: auto; margin-right: 8px;"));
         this.addChild(this.rowsContainer);
         this.inlineStyle("flex-direction: column;").asRootStyle("""
                 .list_input_rows {
@@ -78,6 +81,14 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
                 }
                 """);
     }
+    
+    public ListInputWidget(Supplier<T> inputFactory, BiFunction<IComponent, Runnable, Widget> buttonFactory){
+        this(null, inputFactory, buttonFactory);
+    }
+
+    public ListInputWidget(Function<Widget,T> inputFactory, BiFunction<IComponent, Runnable, Widget> buttonFactory) {
+        this(inputFactory, null, buttonFactory);
+    }
 
     @Override
     public List<V> getValue() {
@@ -111,7 +122,8 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         if (value != null) {
             for (V v : value) {
                 int rowId = this.nextId++;
-                ListRowWidget row = new ListRowWidget(rowId, v);
+                ListRowWidget row = new ListRowWidget(rowId);
+                row.setValue(v);
                 this.rowWidgetsById.put(rowId, row);
                 this.rowOrder.add(rowId);
             }
@@ -137,7 +149,7 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
 
     public void addNextInput() {
         int rowId = this.nextId++;
-        ListRowWidget row = new ListRowWidget(rowId, this.createDefaultValue());
+        ListRowWidget row = new ListRowWidget(rowId);
         this.rowWidgetsById.put(rowId, row);
         this.rowOrder.add(rowId);
         this.refreshRows();
@@ -188,11 +200,6 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         this.refreshRows();
         this.pushBindings();
         return true;
-    }
-
-    private V createDefaultValue() {
-        T input = this.inputFactory.get();
-        return input.getValue();
     }
 
     private void pushBindings() {
@@ -259,18 +266,27 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         private final int rowId;
         private final T input;
         
-        private ListRowWidget(int rowId, V value) {
+        private ListRowWidget(int rowId) {
             this.rowId = rowId;
-            this.input = ListInputWidget.this.inputFactory.get();
+            this.setCSSClassName("list_input_row");
+            Widget removeButton = ListInputWidget.this.buttonFactory.apply(IComponent.literal("-"), () -> ListInputWidget.this.removeRow(this.rowId));
+            removeButton.setCSSClassName("list_input_btn");
+            if(ListInputWidget.this.inputFactory == null){
+                this.input = ListInputWidget.this.inputFactory_.get();
+                this.input.setCSSClassName("list_input_row_input");
+                this.addChild(this.input);
+                this.addChild(removeButton);
+            }
+            else{
+                this.input = ListInputWidget.this.inputFactory.apply(removeButton);
+                this.addChild(this.input);
+            }
+        }
+        
+        private void setValue(V value) {
             if (value != null) {
                 this.input.setValue(value);
             }
-            Widget removeButton = ListInputWidget.this.buttonFactory.apply(IComponent.literal("-"), () -> ListInputWidget.this.removeRow(this.rowId));
-            this.setCSSClassName("list_input_row");
-            this.input.setCSSClassName("list_input_row_input");
-            removeButton.setCSSClassName("list_input_btn");
-            this.addChild(this.input);
-            this.addChild(removeButton);
         }
 
         @Override
@@ -282,11 +298,11 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
             if (!this.isMouseOver(event.x(), event.y())) {
                 return false;
             }
-            for(Widget child : this.children){
-                if(child.isMouseOver(event.x(), event.y())){
-                    return false;
-                }
-            }
+//            for(Widget child : this.children){
+//                if(child.isMouseOver(event.x(), event.y())){
+//                    return false;
+//                }
+//            }
             GuiSystem guiSystem = GuiSystem.INSTANCE.get();
             if (guiSystem.haveDraggingWidget()) {
                 return false;
