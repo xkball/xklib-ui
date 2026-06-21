@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.client.b3d.mesh;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -43,8 +44,8 @@ public class MeshBundleWrapped<T> extends MeshBundle<T>{
     }
     
     @Override
-    public VertexFormat.Mode getVertexFormatMode() {
-        return this.inner.getVertexFormatMode();
+    public PrimitiveTopology getPrimitiveTopology() {
+        return this.inner.getPrimitiveTopology();
     }
     
     @Override

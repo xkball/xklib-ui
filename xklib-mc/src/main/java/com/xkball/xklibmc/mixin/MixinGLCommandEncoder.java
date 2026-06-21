@@ -127,11 +127,11 @@ public abstract class MixinGLCommandEncoder implements IExtendedCommandEncoder {
     public void xklib$multiDrawElementsIndirect(GlRenderPass renderPass, GpuBuffer command, int drawCount) {
         if (this.trySetup(renderPass, Collections.emptyList())){
             var pipeline = renderPass.pipeline;
-            this.device.vertexArrayCache().bindVertexArray(pipeline.info().getVertexFormat(), (GlBuffer)renderPass.vertexBuffers[0]);
+            this.device.vertexArrayCache().bindVertexArray(pipeline.info().getVertexFormatBinding(0), (GlBuffer)renderPass.vertexBuffers[0]);
             GlStateManager._glBindBuffer(GL43.GL_ELEMENT_ARRAY_BUFFER, ((GlBuffer)renderPass.indexBuffer).handle);
             GlStateManager._glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER,((GlBuffer) command).handle);
             GL43.glMultiDrawElementsIndirect(
-                    GlConst.toGl(pipeline.info().getVertexFormatMode()),
+                    GlConst.toGl(pipeline.info().getPrimitiveTopology()),
                     GlConst.toGl(renderPass.indexType),
                     MemoryUtil.NULL,
                     drawCount,

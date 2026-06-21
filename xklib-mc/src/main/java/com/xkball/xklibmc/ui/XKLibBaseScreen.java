@@ -53,7 +53,7 @@ public class XKLibBaseScreen extends Screen {
     public void tick() {
         super.tick();
         if(guiSystem.screenLayers.isEmpty()){
-            this.minecraft.setScreen(null);
+            this.minecraft.setScreenAndShow(null);
         }
     }
     

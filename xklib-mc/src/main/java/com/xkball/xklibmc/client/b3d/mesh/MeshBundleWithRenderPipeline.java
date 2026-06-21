@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.client.b3d.mesh;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -32,21 +33,21 @@ public class MeshBundleWithRenderPipeline extends MeshBundle<RenderPipeline> {
     
     @Override
     public @Nullable GpuTextureView getColorTarget() {
-        return RenderSystem.outputColorTextureOverride != null ? RenderSystem.outputColorTextureOverride : Minecraft.getInstance().getMainRenderTarget().getColorTextureView();
+        return RenderSystem.outputColorTextureOverride != null ? RenderSystem.outputColorTextureOverride : Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView();
     }
     
     @Override
     public @Nullable GpuTextureView getDepthTarget() {
-        return RenderSystem.outputDepthTextureOverride != null ? RenderSystem.outputDepthTextureOverride : Minecraft.getInstance().getMainRenderTarget().getDepthTextureView();
+        return RenderSystem.outputDepthTextureOverride != null ? RenderSystem.outputDepthTextureOverride : Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView();
     }
     
     @Override
-    public VertexFormat.Mode getVertexFormatMode() {
-        return this.getRenderSettings().getVertexFormatMode();
+    public PrimitiveTopology getPrimitiveTopology() {
+        return this.getRenderSettings().getPrimitiveTopology();
     }
     
     @Override
     public VertexFormat getVertexFormat() {
-        return this.getRenderSettings().getVertexFormat();
+        return this.getRenderSettings().getVertexFormatBinding(0);
     }
 }

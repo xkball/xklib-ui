@@ -1,10 +1,10 @@
 package com.xkball.xklibmc.client.b3d.texture;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.textures.TextureFormat;
 import org.lwjgl.opengl.ARBSparseTexture;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
@@ -22,7 +22,7 @@ public class GLSparseTexture extends GlTexture {
     private final boolean[][] committed;
     
     
-    public GLSparseTexture(@Usage int usage, String label, TextureFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, int pageSizeX, int pageSizeY, int clearColor) {
+    public GLSparseTexture(@Usage int usage, String label, GpuFormat format, int width, int height, int depthOrLayers, int mipLevels, int id, int pageSizeX, int pageSizeY, int clearColor) {
         super(usage, label, format, width, height, depthOrLayers, mipLevels, id);
         this.pageSizeX = pageSizeX;
         this.pageSizeY = pageSizeY;

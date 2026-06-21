@@ -63,26 +63,26 @@ public record RoundedRectangleRenderState(
         var r = this.radius();
         if(vertexConsumer instanceof IExtendedBufferBuilder bufferBuilder){
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setUv(0, 0).setColor(this.col1());
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
                 MemoryUtil.memPutFloat(ptr,w);
                 MemoryUtil.memPutFloat(ptr + 4,h);
             });
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setUv(0, h).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
                 MemoryUtil.memPutFloat(ptr,w);
                 MemoryUtil.memPutFloat(ptr + 4,h);
             });
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setUv(w, h).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
                 MemoryUtil.memPutFloat(ptr,w);
                 MemoryUtil.memPutFloat(ptr + 4,h);
             });
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setUv(w, 0).setColor(this.col1());
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
-            bufferBuilder.setUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_FLOAT,ptr -> MemoryUtil.memPutFloat(ptr,r));
+            bufferBuilder.putUnsafe(B3dVertexFormats.EXTRA_UV,ptr -> {
                 MemoryUtil.memPutFloat(ptr,w);
                 MemoryUtil.memPutFloat(ptr + 4,h);
             });

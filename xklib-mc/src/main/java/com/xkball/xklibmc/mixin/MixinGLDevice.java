@@ -1,6 +1,7 @@
 package com.xkball.xklibmc.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.GpuOutOfMemoryException;
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlDevice;
@@ -11,7 +12,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.ShaderSource;
 
 import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.TextureFormat;
 import com.xkball.xklibmc.api.client.mixin.IExtendedGLProgram;
 import com.xkball.xklibmc.api.client.mixin.IExtendedGpuDevice;
 import com.xkball.xklibmc.client.b3d.pipeline.ExtendedRenderPipeline;
@@ -42,7 +42,7 @@ public abstract class MixinGLDevice implements IExtendedGpuDevice {
     }
     
     @Override
-    public GpuTexture xklib$createSparseTexture(@Nullable String label, int usage, TextureFormat format, int width, int height, int depthOrLayers, int clearColor) {
+    public GpuTexture xklib$createSparseTexture(@Nullable String label, int usage, GpuFormat format, int width, int height, int depthOrLayers, int clearColor) {
         GlStateManager.clearGlErrors();
         int id = GlStateManager._genTexture();
         if (label == null) {

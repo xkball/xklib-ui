@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+import org.joml.Vector4f;
 
 import java.util.Objects;
 
@@ -25,10 +26,10 @@ public class GLUtils {
     
     public static void clear(RenderTarget target, boolean clearDepth){
         if(target.useDepth && clearDepth){
-            RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(Objects.requireNonNull(target.getColorTexture()),0,Objects.requireNonNull(target.getDepthTexture()),1d);
+            RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(Objects.requireNonNull(target.getColorTexture()),new Vector4f(),Objects.requireNonNull(target.getDepthTexture()),1d);
         }
         else {
-            RenderSystem.getDevice().createCommandEncoder().clearColorTexture(Objects.requireNonNull(target.getColorTexture()),0);
+            RenderSystem.getDevice().createCommandEncoder().clearColorTexture(Objects.requireNonNull(target.getColorTexture()),new Vector4f());
         }
     }
     

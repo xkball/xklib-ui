@@ -1,5 +1,7 @@
 package com.xkball.xklibmc.client.b3d.postprocess;
 
+import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -18,6 +20,7 @@ import com.xkball.xklibmc.utils.GLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.BiConsumer;
@@ -54,7 +58,7 @@ public class PostProcess {
     }
     
     public CachedMesh createScreenQuad(int xSize, int ySize){
-        return new CachedMesh("screen_blit", VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION, b -> {
+        return new CachedMesh("screen_blit", PrimitiveTopology.QUADS, DefaultVertexFormat.POSITION, b -> {
             b.addVertex(0.0f, 0.0f, 500.0f);
             b.addVertex(xSize, 0.0f, 500.0f);
             b.addVertex(xSize,  ySize, 500.0f);
@@ -63,7 +67,7 @@ public class PostProcess {
     }
     
     public void drawcall(RenderPass renderpass){
-        renderpass.drawIndexed(0,0, cachedMesh.getIndexCount(), 1);
+        renderpass.drawIndexed(cachedMesh.getIndexCount(), 1, 0, 0, 0);
     }
     
     public void resize(int xSize, int ySize){
@@ -86,7 +90,7 @@ public class PostProcess {
         if(w != this.xSize || h != this.ySize){
                 this.resize(w, h);
         }
-        boolean override = w != Minecraft.getInstance().getMainRenderTarget().width || h != Minecraft.getInstance().getMainRenderTarget().height;
+        boolean override = w != Minecraft.getInstance().gameRenderer.mainRenderTarget().width || h != Minecraft.getInstance().gameRenderer.mainRenderTarget().height;
         if(override){
             XKLibUniforms.SCREEN_SIZE.startOverride(
                     b -> b.putVec2(w,h)
@@ -119,14 +123,14 @@ public class PostProcess {
         RenderSystem.setProjectionMatrix(projMatCache.getBuffer(projMat), ProjectionType.ORTHOGRAPHIC);
         if(drawData.uniformSetup != null) drawData.uniformSetup.run();
         try(var renderpass = ClientUtils.getCommandEncoder().createRenderPass(() -> name + " processing",
-                Objects.requireNonNull(getTextureView(drawData.to, false)), OptionalInt.of(0),
+                Objects.requireNonNull(getTextureView(drawData.to, false)), Optional.of(new Vector4f()),
                 getTextureView(drawData.to, true), OptionalDouble.empty())){
             RenderSystem.bindDefaultUniforms(renderpass);
             for(var ts : drawData.textureSetups){
                 renderpass.bindTexture("input" + ts.binding,getTextureView(ts.target, ts.depth), ts.sampler);
             }
             renderpass.setPipeline(drawData.pipeline);
-            renderpass.setVertexBuffer(0, cachedMesh.getVertexBuffer());
+            renderpass.setVertexBuffer(0, cachedMesh.getVertexBuffer().slice());
             renderpass.setIndexBuffer(cachedMesh.getIndexBuffer(),cachedMesh.getIndexType());
             drawData.drawFunc.accept(this,renderpass);
         }
@@ -201,7 +205,7 @@ public class PostProcess {
         public PostProcess build(String name){
             var result = new PostProcess(name);
             for(var entry : regRenderTargets.entrySet()){
-                result.renderTarget.put(entry.getKey(), new TextureTarget(entry.getKey(),result.xSize, result.ySize, entry.getValue()));
+                result.renderTarget.put(entry.getKey(), new TextureTarget(entry.getKey(),result.xSize, result.ySize, entry.getValue(), GpuFormat.RGBA8_UNORM));
             }
             result.drawData.addAll(this.drawData);
             result.swapBack = this.swapBack;

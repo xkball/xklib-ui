@@ -1,19 +1,14 @@
 package com.xkball.xklibmc.utils;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.logging.LogUtils;
 import com.xkball.xklibmc.XKLibMCClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.data.AtlasIds;
@@ -24,8 +19,8 @@ import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 public class ClientUtils {
     
@@ -40,31 +35,16 @@ public class ClientUtils {
     }
     
     public static RenderPass createRenderPass(String name){
-        var colorTarget = Minecraft.getInstance().getMainRenderTarget().getColorTextureView();
-        var depthTarget = Minecraft.getInstance().getMainRenderTarget().getDepthTextureView();
+        var colorTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView();
+        var depthTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView();
         //noinspection DataFlowIssue
-        return getCommandEncoder().createRenderPass(() -> name, colorTarget, OptionalInt.empty(), depthTarget, OptionalDouble.empty());
+        return getCommandEncoder().createRenderPass(() -> name, colorTarget, Optional.empty(), depthTarget, OptionalDouble.empty());
     }
     
     public static PoseStack fromPose(PoseStack.Pose pose){
         var result = new PoseStack();
         result.last().set(pose);
         return result;
-    }
-    
-    public static void renderAxis(MultiBufferSource bufferSource, PoseStack poseStack, float lineLength) {
-        var buffer = bufferSource.getBuffer(RenderTypes.lines());
-        var matrix = poseStack.last();
-        buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, -1, 0, 0).setLineWidth(2f).setColor(0xFFFF0000);
-        buffer.addVertex(matrix, lineLength, 0, 0).setNormal(matrix, 1, 0, 0).setLineWidth(2f).setColor(0xFFFF0000);
-        buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, 0, -1, 0).setLineWidth(2f).setColor(0xFF00FF00);
-        buffer.addVertex(matrix, 0, lineLength, 0).setNormal(matrix, 0, 1, 0).setLineWidth(2f).setColor(0xFF00FF00);
-        buffer.addVertex(matrix, 0, 0, 0).setNormal(matrix, 0, 0, -1).setLineWidth(2f).setColor(0xFF0000FF);
-        buffer.addVertex(matrix, 0, 0, lineLength).setNormal(matrix, 0, 0, 1).setLineWidth(2f).setColor(0xFF0000FF);
-    }
-    
-    public static BufferBuilder beginWithRenderPipeline(RenderPipeline pipeline){
-        return Tesselator.getInstance().begin(pipeline.getVertexFormatMode(),pipeline.getVertexFormat());
     }
     
     public static float clientTickWithPartialTick(){

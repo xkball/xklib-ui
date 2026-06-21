@@ -1,5 +1,6 @@
 package com.xkball.xklibmc.client.b3d.mesh;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -30,10 +31,10 @@ public class MeshBundleWithRenderType extends MeshBundle<RenderType> {
     public void beforeSetupRenderPass() {
         this.contextTransform = RenderSystem.getDynamicUniforms()
                 .writeTransform(
-                        RenderSystem.getModelViewMatrix(),
+                        RenderSystem.getModelViewMatrixCopy(),
                         new Vector4f(1.0F, 1.0F, 1.0F, 1.0F),
                         new Vector3f(),
-                        this.getRenderSettings().state.textureTransform.getMatrix()
+                        this.getRenderSettings().state.textureTransform.createMatrix()
                 );
     }
     
@@ -46,8 +47,9 @@ public class MeshBundleWithRenderType extends MeshBundle<RenderType> {
         }
         RenderSystem.bindDefaultUniforms(renderPass);
         renderPass.setUniform("DynamicTransforms", contextTransform);
-        for(var entry : this.getRenderSettings().state.getTextures().entrySet()) {
-            renderPass.bindTexture(entry.getKey(), entry.getValue().textureView(), entry.getValue().sampler());
+        var prepared = this.getRenderSettings().prepare();
+        for(var texture : prepared.textures()) {
+            renderPass.bindTexture(texture.name(), texture.textureView(), texture.sampler());
         }
     }
     
@@ -74,8 +76,8 @@ public class MeshBundleWithRenderType extends MeshBundle<RenderType> {
     }
     
     @Override
-    public VertexFormat.Mode getVertexFormatMode() {
-        return this.getRenderSettings().mode();
+    public PrimitiveTopology getPrimitiveTopology() {
+        return this.getRenderSettings().primitiveTopology();
     }
     
     @Override

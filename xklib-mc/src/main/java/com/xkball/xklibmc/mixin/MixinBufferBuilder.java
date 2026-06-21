@@ -22,8 +22,11 @@ public abstract class MixinBufferBuilder implements IExtendedBufferBuilder {
     @Shadow
     protected abstract long beginElement(VertexFormatElement element);
     
+    @Shadow
+    protected abstract long beginElement(int semanticID);
+    
     @Override
-    public BufferBuilder setUnsafe(VertexFormatElement element, LongConsumer ptr) {
+    public BufferBuilder putUnsafe(VertexFormatElement element, LongConsumer ptr) {
         if (vertexPointer == -1L) {
             throw new IllegalStateException("Must call addVertex first");
         }

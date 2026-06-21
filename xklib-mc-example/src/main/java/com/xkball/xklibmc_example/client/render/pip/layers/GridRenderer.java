@@ -84,17 +84,17 @@ public class GridRenderer implements PictureInPictureRenderLayer<WorldTerrainPip
     }
 
     private static void writeLineAttribs(IExtendedBufferBuilder buffer, float p0x, float p0y, float p0z, float p1x, float p1y, float p1z, float cornerX, float cornerY) {
-        buffer.setUnsafe(B3dVertexFormats.P0, ptr -> {
+        buffer.putUnsafe(B3dVertexFormats.P0, ptr -> {
             MemoryUtil.memPutFloat(ptr, p0x);
             MemoryUtil.memPutFloat(ptr + 4, p0y);
             MemoryUtil.memPutFloat(ptr + 8, p0z);
         });
-        buffer.setUnsafe(B3dVertexFormats.P1, ptr -> {
+        buffer.putUnsafe(B3dVertexFormats.P1, ptr -> {
             MemoryUtil.memPutFloat(ptr, p1x);
             MemoryUtil.memPutFloat(ptr + 4, p1y);
             MemoryUtil.memPutFloat(ptr + 8, p1z);
         });
-        buffer.setUnsafe(B3dVertexFormats.CORNER, ptr -> {
+        buffer.putUnsafe(B3dVertexFormats.CORNER, ptr -> {
             MemoryUtil.memPutFloat(ptr, cornerX);
             MemoryUtil.memPutFloat(ptr + 4, cornerY);
         });

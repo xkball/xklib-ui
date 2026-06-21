@@ -1,14 +1,15 @@
 package com.xkball.xklibmc.client.b3d.pipeline;
 
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.pipeline.BindGroupLayout;
+import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.PolygonMode;
-import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.RenderPassBackend;
 import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 
@@ -23,7 +24,7 @@ import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,33 +37,31 @@ public class ExtendedRenderPipeline extends RenderPipeline {
     public final Map<String, UpdatableUBO> UBOBindings;
     public final Map<String, Supplier<Pair<GpuTextureView, GpuSampler>>> samplerBindings;
     public final List<String> SSBOs;
-    public final List<Pair<Integer, Supplier<GpuTextureView>>> multiTargetBindings;
     public final Lazy<RenderType> asRenderType = Lazy.of(this::toRenderType);
     
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public ExtendedRenderPipeline(Identifier location,
-                                  Identifier vertexShader,
-                                  Identifier fragmentShader,
-                                  ShaderDefines shaderDefines,
-                                  List<String> samplers,
-                                  List<RenderPipeline.UniformDescription> uniforms,
-                                  ColorTargetState colorTargetState,
-                                  @Nullable DepthStencilState depthStencilState,
-                                  PolygonMode polygonMode,
-                                  boolean cull,
-                                  VertexFormat vertexFormat,
-                                  VertexFormat.Mode vertexFormatMode,
-                                  int sortKey,
-                                  Optional<StencilTest> stencilTest,
-                                  Map<String, UpdatableUBO> UBOBindings,
-                                  Map<String, Supplier<Pair<GpuTextureView, GpuSampler>>> samplerBindings,
-                                  List<String> SSBOs,
-                                  List<Pair<Integer, Supplier<GpuTextureView>>> multiTargetBindings) {
-        super(location, vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, sortKey, stencilTest);
+    public ExtendedRenderPipeline(
+                            Identifier location,
+                            Identifier vertexShader,
+                            Identifier fragmentShader,
+                            ShaderDefines shaderDefines,
+                            List<BindGroupLayout> bindGroupLayouts,
+                            @Nullable ColorTargetState[] colorTargetStates,
+                            @Nullable DepthStencilState depthStencilState,
+                            PolygonMode polygonMode,
+                            boolean cull,
+                            @Nullable VertexFormat[] vertexFormatPerBuffer,
+                            PrimitiveTopology primitiveTopology,
+                            Optional<StencilTest> stencilTest,
+                            int sortKey,
+                            Map<String, UpdatableUBO> UBOBindings,
+                            Map<String, Supplier<Pair<GpuTextureView, GpuSampler>>> samplerBindings,
+                            List<String> SSBOs,
+                            List<Pair<Integer, Supplier<GpuTextureView>>> multiTargetBindings) {
+        super(location, vertexShader, fragmentShader, shaderDefines, bindGroupLayouts, colorTargetStates, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, primitiveTopology, stencilTest, sortKey);
         this.UBOBindings = UBOBindings;
         this.samplerBindings = samplerBindings;
         this.SSBOs = SSBOs;
-        this.multiTargetBindings = multiTargetBindings;
     }
     
     public void apply(RenderPassBackend renderPass) {
@@ -85,38 +84,34 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         return builder;
     }
     
-    public static Builder extendedbuilder(ExtendedRenderPipeline renderPipeline) {
-        var  builder = new Builder();
-        builder.location = Optional.of(renderPipeline.getLocation());
-        builder.fragmentShader = Optional.of(renderPipeline.getFragmentShader());
-        builder.vertexShader = Optional.of(renderPipeline.getVertexShader());
-        if (!renderPipeline.getShaderDefines().isEmpty()) {
+    public Builder extendedbuilder() {
+        var builder = new Builder();
+        builder.location = Optional.of(this.getLocation());
+        builder.fragmentShader = Optional.of(this.getFragmentShader());
+        builder.vertexShader = Optional.of(this.getVertexShader());
+        if (!this.getShaderDefines().isEmpty()) {
             ShaderDefines.Builder defBuilder = ShaderDefines.builder();
-            for (Map.Entry<String, String> entry : renderPipeline.getShaderDefines().values().entrySet()) {
+            for (Map.Entry<String, String> entry : this.getShaderDefines().values().entrySet()) {
                 defBuilder.define(entry.getKey(), entry.getValue());
             }
-            for (String flag : renderPipeline.getShaderDefines().flags()) {
+            for (String flag : this.getShaderDefines().flags()) {
                 defBuilder.define(flag);
             }
             builder.definesBuilder = Optional.of(defBuilder);
         }
-        if (!renderPipeline.getSamplers().isEmpty()) {
-            builder.samplers = Optional.of(new ArrayList<>(renderPipeline.getSamplers()));
+        if (!this.getBindGroupLayouts().isEmpty()) {
+            builder.bindGroupLayouts = Optional.of(new ArrayList<>(this.getBindGroupLayouts()));
         }
-        if (!renderPipeline.getUniforms().isEmpty()) {
-            builder.uniforms = Optional.of(new ArrayList<>(renderPipeline.getUniforms()));
-        }
-        builder.depthStencilState = Optional.ofNullable(renderPipeline.getDepthStencilState());
-        builder.polygonMode = Optional.of(renderPipeline.getPolygonMode());
-        builder.cull = Optional.of(renderPipeline.isCull());
-        builder.colorTargetState = Optional.of(renderPipeline.getColorTargetState());
-        builder.vertexFormat = Optional.of(renderPipeline.getVertexFormat());
-        builder.vertexFormatMode = Optional.of(renderPipeline.getVertexFormatMode());
-        builder.stencilTest = renderPipeline.getStencilTest();
-        builder.UBOBindings.putAll(renderPipeline.UBOBindings);
-        builder.samplerBindings.putAll(renderPipeline.samplerBindings);
-        builder.SSBOs.addAll(renderPipeline.SSBOs);
-        builder.multiTargetBindings.addAll(renderPipeline.multiTargetBindings);
+        builder.depthStencilState = Optional.ofNullable(this.getDepthStencilState());
+        builder.polygonMode = Optional.of(this.getPolygonMode());
+        builder.cull = Optional.of(this.isCull());
+        System.arraycopy(this.getColorTargetStates(), 0, builder.colorTargetStates, 0, this.getColorTargetStates().length);
+        System.arraycopy(this.getVertexFormatBindings(), 0, builder.vertexFormatPerBuffer, 0, this.getVertexFormatBindings().length);
+        builder.primitiveTopology = Optional.of(this.getPrimitiveTopology());
+        builder.stencilTest = this.getStencilTest();
+        builder.UBOBindings.putAll(this.UBOBindings);
+        builder.samplerBindings.putAll(this.samplerBindings);
+        builder.SSBOs.addAll(this.SSBOs);
         return builder;
     }
     
@@ -145,7 +140,6 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         private final Map<String, UpdatableUBO> UBOBindings = new HashMap<>();
         public final Map<String, Supplier<Pair<GpuTextureView, GpuSampler>>> samplerBindings = new HashMap<>();
         private final List<String> SSBOs = new ArrayList<>();
-        private final List<Pair<Integer, Supplier<GpuTextureView>>> multiTargetBindings = new ArrayList<>();
         
         public Builder(){
             super();
@@ -163,12 +157,6 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         
         public Builder withSSBO(String name){
             this.SSBOs.add(name);
-            return this;
-        }
-        
-        public Builder bindMultiTarget(int index, Supplier<GpuTextureView> texture){
-            if(index < 1 || index > 31) throw new IllegalArgumentException("Invalid multi-target index: " + index + ", must between 1 and 31");
-            this.multiTargetBindings.add(Pair.of(index, texture));
             return this;
         }
         
@@ -209,12 +197,12 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         }
         
         @Override
-        public Builder withShaderDefine(String flag) {
+        public Builder withShaderDefine(String key) {
             if (this.definesBuilder.isEmpty()) {
                 this.definesBuilder = Optional.of(ShaderDefines.builder());
             }
             
-            this.definesBuilder.get().define(flag);
+            this.definesBuilder.get().define(key);
             return this;
         }
         
@@ -239,41 +227,13 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         }
         
         @Override
-        public Builder withSampler(String sampler) {
-            if (this.samplers.isEmpty()) {
-                this.samplers = Optional.of(new ArrayList<>());
+        public Builder withBindGroupLayout(BindGroupLayout bindGroupLayout) {
+            if (this.bindGroupLayouts.isEmpty()) {
+                this.bindGroupLayouts = Optional.of(new ArrayList<>());
             }
             
-            this.samplers.get().add(sampler);
+            this.bindGroupLayouts.get().add(bindGroupLayout);
             return this;
-        }
-        
-        @Override
-        public Builder withUniform(String uniform, UniformType type) {
-            if (this.uniforms.isEmpty()) {
-                this.uniforms = Optional.of(new ArrayList<>());
-            }
-            
-            if (type == UniformType.TEXEL_BUFFER) {
-                throw new IllegalArgumentException("Cannot use texel buffer without specifying texture format");
-            } else {
-                this.uniforms.get().add(new UniformDescription(uniform, type));
-                return this;
-            }
-        }
-        
-        @Override
-        public Builder withUniform(String uniform, UniformType type, TextureFormat format) {
-            if (this.uniforms.isEmpty()) {
-                this.uniforms = Optional.of(new ArrayList<>());
-            }
-            
-            if (type != UniformType.TEXEL_BUFFER) {
-                throw new IllegalArgumentException("Only texel buffer can specify texture format");
-            } else {
-                this.uniforms.get().add(new UniformDescription(uniform, format));
-                return this;
-            }
         }
         
         @Override
@@ -289,28 +249,22 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         }
         
         @Override
-        public Builder withVertexFormat(VertexFormat vertexFormat, VertexFormat.Mode vertexFormatMode) {
-            this.vertexFormat = Optional.of(vertexFormat);
-            this.vertexFormatMode = Optional.of(vertexFormatMode);
+        public Builder withColorTargetState(int index, ColorTargetState colorTargetState) {
+            this.colorTargetStates[index] = colorTargetState;
+            this.activeColorTargetStateCount = Math.max(this.activeColorTargetStateCount, index + 1);
             return this;
         }
         
         @Override
-        public Builder withStencilTest(StencilTest stencilTest) {
-            this.stencilTest = Optional.of(stencilTest);
-            return this;
-        }
-        
-        @Override
-        public Builder withoutStencilTest(){
-            this.stencilTest = Optional.empty();
+        public Builder withUnusedColorTargetState(int index) {
+            this.colorTargetStates[index] = null;
+            this.activeColorTargetStateCount = Math.max(this.activeColorTargetStateCount, index + 1);
             return this;
         }
         
         @Override
         public Builder withColorTargetState(ColorTargetState colorTargetState) {
-            this.colorTargetState = Optional.of(colorTargetState);
-            return this;
+            return this.withColorTargetState(0, colorTargetState);
         }
         
         @Override
@@ -326,44 +280,103 @@ public class ExtendedRenderPipeline extends RenderPipeline {
         }
         
         @Override
+        public Builder withVertexBinding(int bindingIndex, VertexFormat vertexFormat) {
+            this.vertexFormatPerBuffer[bindingIndex] = vertexFormat;
+            return this;
+        }
+        
+        @Override
+        public Builder withPrimitiveTopology(PrimitiveTopology primitiveTopology) {
+            this.primitiveTopology = Optional.of(primitiveTopology);
+            return this;
+        }
+        
+        @Override
+        public Builder withStencilTest(net.neoforged.neoforge.client.stencil.StencilTest stencilTest) {
+            this.stencilTest = Optional.of(stencilTest);
+            return this;
+        }
+        
+        @Override
+        public Builder withoutStencilTest(){
+            this.stencilTest = Optional.empty();
+            return this;
+        }
+        
+        @Override
         public RenderPipeline build() {
             return this.buildExtended();
         }
         
         public ExtendedRenderPipeline buildExtended(){
-            if (this.location.isEmpty()) {
+                        if (this.location.isEmpty()) {
                 throw new IllegalStateException("Missing location");
-            } else if (this.vertexShader.isEmpty()) {
+            }
+
+            if (this.vertexShader.isEmpty()) {
                 throw new IllegalStateException("Missing vertex shader");
-            } else if (this.fragmentShader.isEmpty()) {
+            }
+
+            if (this.fragmentShader.isEmpty()) {
                 throw new IllegalStateException("Missing fragment shader");
-            } else if (this.vertexFormat.isEmpty()) {
-                throw new IllegalStateException("Missing vertex buffer format");
-            } else if (this.vertexFormatMode.isEmpty()) {
-                throw new IllegalStateException("Missing vertex mode");
+            }
+
+            if (this.primitiveTopology.isEmpty()) {
+                throw new IllegalStateException("Missing primitive topology");
+            }
+
+            ColorTargetState[] activeColorTargetStates;
+            if (this.activeColorTargetStateCount == 0) {
+                activeColorTargetStates = new ColorTargetState[]{ColorTargetState.DEFAULT};
+            } else {
+                activeColorTargetStates = Arrays.copyOf(this.colorTargetStates, this.activeColorTargetStateCount);
+                Optional<BlendFunction> lastBlend = Optional.empty();
+
+                for (ColorTargetState activeColorTargetState : activeColorTargetStates) {
+                    if (activeColorTargetState != null) {
+                        Optional<BlendFunction> currentBlend = activeColorTargetState.blendFunction();
+                        if (currentBlend.isPresent()) {
+                            if (lastBlend.isEmpty()) {
+                                lastBlend = currentBlend;
+                            } else if (!currentBlend.equals(lastBlend)) {
+                                throw new IllegalStateException("Blend functions must currently be the same for all color targets");
+                            }
+                        }
+                    }
+                }
+            }
+
+            int boundVertexAttribCount = 0;
+
+            for (VertexFormat bindings : this.vertexFormatPerBuffer) {
+                if (bindings != null) {
+                    boundVertexAttribCount += bindings.getElements().size();
+                }
+            }
+
+            if (boundVertexAttribCount > 16) {
+                throw new IllegalStateException("Binding more than 16 vertex attributes is not supported");
             } else {
                 return new ExtendedRenderPipeline(
-                        this.location.get(),
-                        this.vertexShader.get(),
-                        this.fragmentShader.get(),
-                        this.definesBuilder.orElse(ShaderDefines.builder()).build(),
-                        List.copyOf(this.samplers.orElse(new ArrayList<>())),
-                        this.uniforms.orElse(Collections.emptyList()),
-                        this.colorTargetState.orElse(ColorTargetState.DEFAULT),
-                        this.depthStencilState.orElse(null),
-                        this.polygonMode.orElse(PolygonMode.FILL),
-                        this.cull.orElse(true),
-                        this.vertexFormat.get(),
-                        this.vertexFormatMode.get(),
-                        nextPipelineSortKey++,
-                        this.stencilTest,
+                    this.location.get(),
+                    this.vertexShader.get(),
+                    this.fragmentShader.get(),
+                    this.definesBuilder.orElse(ShaderDefines.builder()).build(),
+                    List.copyOf(this.bindGroupLayouts.orElse(new ArrayList<>())),
+                    activeColorTargetStates,
+                    this.depthStencilState.orElse(null),
+                    this.polygonMode.orElse(PolygonMode.FILL),
+                    this.cull.orElse(true),
+                    this.vertexFormatPerBuffer,
+                    this.primitiveTopology.get(),
+                    this.stencilTest,
+                    nextPipelineSortKey++,
                         this.UBOBindings,
                         this.samplerBindings,
-                        this.SSBOs,
-                        this.multiTargetBindings);
+                        this.SSBOs
+                );
             }
         }
-        
     }
     
 }

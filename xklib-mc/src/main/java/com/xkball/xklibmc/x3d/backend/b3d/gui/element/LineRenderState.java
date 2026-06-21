@@ -51,34 +51,34 @@ public record LineRenderState(
             float p1y = p1w.y();
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col1());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, -1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col1());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 1.0f); });
 
             vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col2());
-            bufferBuilder.setUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
-            bufferBuilder.setUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P0, ptr -> { MemoryUtil.memPutFloat(ptr, p0x); MemoryUtil.memPutFloat(ptr + 4, p0y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.P1, ptr -> { MemoryUtil.memPutFloat(ptr, p1x); MemoryUtil.memPutFloat(ptr + 4, p1y); MemoryUtil.memPutFloat(ptr + 8, 0.0f); });
+            bufferBuilder.putUnsafe(B3dVertexFormats.CORNER, ptr -> { MemoryUtil.memPutFloat(ptr, 1.0f); MemoryUtil.memPutFloat(ptr + 4, 0.0f); });
         }
     }
 

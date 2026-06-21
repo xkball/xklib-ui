@@ -6,5 +6,5 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import java.util.function.LongConsumer;
 
 public interface IExtendedBufferBuilder {
-    BufferBuilder setUnsafe(VertexFormatElement element, LongConsumer ptr);
+    BufferBuilder putUnsafe(VertexFormatElement element, LongConsumer ptr);
 }

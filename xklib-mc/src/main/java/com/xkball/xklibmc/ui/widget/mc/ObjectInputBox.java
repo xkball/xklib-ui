@@ -1,6 +1,7 @@
 package com.xkball.xklibmc.ui.widget.mc;
 
-import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
+
+import com.xkball.xklibmc.annotation.NonNullByDefault;
 import com.xkball.xklibmc.utils.ParserUtils;
 import com.xkball.xklibmc.utils.VanillaUtils;
 import net.minecraft.client.Minecraft;
@@ -8,7 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -16,7 +16,6 @@ import net.minecraft.resources.Identifier;
 
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,8 +23,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@NonNullByDefault
 public class ObjectInputBox<T> extends EditBox implements Renderable {
     
     public static final Predicate<String> PASS_VALIDATOR = (str) -> true;
