@@ -345,6 +345,11 @@ public class GuiSystem implements AutoCloseable {
             tooltip.parent = null;
             tooltip.widgetEntry = null;
         } else {
+            if(mouseX != this.tooltip.mouseX || mouseY != this.tooltip.mouseY) {
+                this.setTooltip(this.tooltip.parent);
+                this.tooltip.mouseX = mouseX;
+                this.tooltip.mouseY = mouseY;
+            }
             tooltip.widget().updateStyle(tooltip.widget().getStyleSheetAsRoot());
             tooltip.tree().computeLayout(tooltip.widget().getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
             var w = tooltip.widget().getLayout().contentBoxWidth();
@@ -474,8 +479,12 @@ public class GuiSystem implements AutoCloseable {
         this.draggingWidget.yOffset = (float) (lastMouseY - widget.getY());
     }
     
-    public void setTooltip(Widget tooltip, Widget parent) {
+    public void setTooltip(Widget parent) {
+        var tooltip_ = parent.createTooltip((int) this.lastMouseX, (int) this.lastMouseY);
+        if(!(tooltip_ instanceof Widget tooltip)) return;
         this.tooltip.parent = parent;
+        this.tooltip.mouseX = (int) this.lastMouseX;
+        this.tooltip.mouseY = (int) this.lastMouseY;
         tooltip.asTreeRoot();
         tooltip.setGuiSystem(this);
         tooltip.init();
@@ -505,6 +514,8 @@ public class GuiSystem implements AutoCloseable {
     public static class TooltipData {
         WidgetEntry widgetEntry;
         Widget parent;
+        int mouseX;
+        int mouseY;
         
         public Widget widget() {
             return widgetEntry.widget();

@@ -119,6 +119,11 @@ public interface IGuiWidget {
         return List.of();
     }
     
+    default @Nullable IGuiWidget createTooltip(int mouseX, int mouseY) {
+        return createTooltip();
+    }
+    
+    @Deprecated
     default @Nullable IGuiWidget createTooltip(){
         return null;
     }
@@ -159,11 +164,8 @@ public interface IGuiWidget {
     }
     
     default void onHoverChanged(boolean hovered) {
-        if (hovered ) {
-            var tooltip = this.createTooltip();
-            if(tooltip instanceof Widget && this instanceof Widget ) {
-                GuiSystem.INSTANCE.get().setTooltip((Widget) tooltip, (Widget) this);
-            }
+        if (hovered) {
+            GuiSystem.INSTANCE.get().setTooltip((Widget) this);
         }
     }
 
