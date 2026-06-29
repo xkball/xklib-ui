@@ -9,10 +9,20 @@ public interface IFont {
     
     int lineHeight();
     
+    default float width(String text, float lineHeight) {
+        return width(text) * (lineHeight /(float) lineHeight());
+    }
+    
+    default float width(IComponent text, float lineHeight){
+        return width(text) * (lineHeight /(float) lineHeight());
+    }
+    
+    @Deprecated
     default int width(String text, int lineHeight){
         return (int) (width(text) * ((float)lineHeight /(float) lineHeight()));
     }
     
+    @Deprecated
     default int width(IComponent text, int lineHeight){
         return (int) (width(text) * ((float)lineHeight /(float) lineHeight()));
     }

@@ -3,7 +3,9 @@ package com.xkball.xklib.ui.render;
 import com.xkball.xklib.annotation.NoImplInMinecraft;
 import com.xkball.xklib.resource.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface IComponent {
 
@@ -20,11 +22,22 @@ public interface IComponent {
     }
 
     static IComponent sequence(IComponent... parts) {
-        return new SequenceComponent(List.of(parts), ComponentStyle.EMPTY);
+        return new SequenceComponent(flat(List.of(parts)), ComponentStyle.EMPTY);
     }
 
     static IComponent sequence(List<IComponent> parts) {
-        return new SequenceComponent(List.copyOf(parts), ComponentStyle.EMPTY);
+        return new SequenceComponent(flat(List.copyOf(parts)), ComponentStyle.EMPTY);
+    }
+    
+    private static List<IComponent> flat(List<IComponent> parts){
+        var result = new ArrayList<IComponent>();
+        for(var c : parts){
+            if(c instanceof SequenceComponent sc){
+                result.addAll(flat(sc.parts()));
+            }
+            else result.add(c);
+        }
+        return result;
     }
     
     static IComponent icon(ResourceLocation icon) {
@@ -54,6 +67,14 @@ public interface IComponent {
     @NoImplInMinecraft
     default IComponent withBaseline(boolean baseline) {
         return withStyle(style().withBaselineOffset(baseline));
+    }
+    
+    default IComponent withTooltip(Supplier<Object> tooltip) {
+        return withStyle(style().withTooltip(tooltip));
+    }
+    
+    default IComponent withClickEvent(Runnable runnable){
+        return withStyle(style().withClickEvent(runnable));
     }
 
     @NoImplInMinecraft

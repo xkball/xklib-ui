@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record SequenceComponent(List<IComponent> parts, ComponentStyle style) implements IComponent {
-
+  
     @Override
     public ComponentStyle style() {
         return style;

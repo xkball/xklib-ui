@@ -313,6 +313,8 @@ public class GuiSystem implements AutoCloseable {
         }
         this.graphics.draw();
         profiler.pop();
+        this.lastMouseX = mouseX;
+        this.lastMouseY = mouseY;
     }
     
     private void renderWidget(Widget widget, int mouseX, int mouseY, float partialTicks) {
@@ -350,6 +352,7 @@ public class GuiSystem implements AutoCloseable {
                 this.tooltip.mouseX = mouseX;
                 this.tooltip.mouseY = mouseY;
             }
+            if(this.tooltip.widgetEntry == null) return;
             tooltip.widget().updateStyle(tooltip.widget().getStyleSheetAsRoot());
             tooltip.tree().computeLayout(tooltip.widget().getNodeId(), new TaffySize<>(AvailableSpace.definite(this.screenWidth), AvailableSpace.definite(this.screenHeight)));
             var w = tooltip.widget().getLayout().contentBoxWidth();
@@ -481,8 +484,9 @@ public class GuiSystem implements AutoCloseable {
     
     public void setTooltip(Widget parent) {
         var tooltip_ = parent.createTooltip((int) this.lastMouseX, (int) this.lastMouseY);
-        if(!(tooltip_ instanceof Widget tooltip)) return;
         this.tooltip.parent = parent;
+        this.tooltip.widgetEntry = null;
+        if(!(tooltip_ instanceof Widget tooltip)) return;
         this.tooltip.mouseX = (int) this.lastMouseX;
         this.tooltip.mouseY = (int) this.lastMouseY;
         tooltip.asTreeRoot();

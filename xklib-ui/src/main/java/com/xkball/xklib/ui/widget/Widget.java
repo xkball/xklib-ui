@@ -562,13 +562,20 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
         return this.tooltipFactory.get();
     }
     
+
+    
     public Widget withTooltip(IComponent text){
-        this.tooltipFactory = () -> {
+        this.tooltipFactory = createTooltipFactory(text);
+        return this;
+    }
+    
+    public static Supplier<Widget> createTooltipFactory(IComponent text) {
+        return () -> {
             var font =  XKLib.RENDER_CONTEXT.get().getGUIGraphics().defaultFont();
             var w = font.width(text, 20);
             return new ContainerWidget()
                     .addChild(
-                    new Label(text).inlineStyle(String.format("""
+                            new Label(text).inlineStyle(String.format("""
                             size: %spx %spx;
                             border: 2px;
                             border-color: -1;
@@ -579,8 +586,42 @@ public class Widget implements IGuiWidget, IRenderable, IGuiEventListener, IAbso
                             background-color: 0xdd263136;
                         """,w+16,30))
                     );
-
+            
         };
-        return this;
+    }
+    
+    public static Supplier<Widget> createTooltipFactory(IComponent... text) {
+        return () -> {
+            var font = XKLib.RENDER_CONTEXT.get().getGUIGraphics().defaultFont();
+            var wMax = 0f;
+            for(var c : text){
+                wMax = Math.max(wMax,font.width(c, 20f));
+            }
+            var result =  new ContainerWidget()
+                    .inlineStyle(String.format("""
+                            size: %spx %spx;
+                            flex-direction: column;
+                            justify-content: space-around;
+                            margin-left: 6rpx;
+                            margin-top: 6rpx;
+                            background-color: 0xdd263136;
+                            border: 2px;
+                            border-color: -1;
+                            """, wMax+16, text.length * 20 + 10));
+            for(var c : text){
+                result.addChild(
+                        new Label(c).inlineStyle("""
+                            size: 100% 20px;
+                            flex-shrink: 0;
+                            margin-left: 8px;
+                            text-color: -1;
+                            text-height: 20;
+                            text-align: left;
+                            text-drop-shadow: false;
+                        """));
+            }
+            return new ContainerWidget()
+                    .addChild(result);
+        };
     }
 }

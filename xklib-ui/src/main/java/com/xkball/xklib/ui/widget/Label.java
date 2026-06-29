@@ -1,12 +1,17 @@
 package com.xkball.xklib.ui.widget;
 
+import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ap.annotation.GuiWidgetClass;
+import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
+import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.api.gui.widget.ITextDisplayWidget;
 import com.xkball.xklib.ui.layout.TextScale;
 import com.xkball.xklib.ui.render.IComponent;
 import com.xkball.xklib.ui.render.IGUIGraphics;
+import com.xkball.xklib.ui.render.SequenceComponent;
 import com.xkball.xklib.ui.system.GuiSystem;
 import dev.vfyjxf.taffy.style.TextAlign;
+import org.jspecify.annotations.Nullable;
 
 @GuiWidgetClass
 @SuppressWarnings("unused")
@@ -41,7 +46,54 @@ public class Label extends Widget implements ITextDisplayWidget {
     public Label(String text) {
         this.text = IComponent.literal(text);
     }
-
+    
+    @Override
+    public @Nullable IGuiWidget createTooltip(int mouseX, int mouseY) {
+        if(this.text.style().tooltip() != null) {
+            var tooltip = this.text.style().tooltip().get();
+            if(tooltip instanceof IGuiWidget widget) return widget;
+        }
+        var c = findComponent(mouseX);
+        if(c != null && c.style().tooltip() != null){
+            var tooltip = c.style().tooltip().get();
+            if(tooltip instanceof IGuiWidget widget) return widget;
+        }
+        return null;
+    }
+    
+    @Override
+    public boolean mouseClicked(IMouseButtonEvent event, boolean doubleClick) {
+        if(event.button() != 0) return false;
+        if(this.text.style().clickEvent() != null) {
+            this.text.style().clickEvent().run();
+            return true;
+        }
+        var c = findComponent((float) event.x());
+        if(c != null && c.style().clickEvent() != null) {
+            c.style().clickEvent().run();
+            return true;
+        }
+        return false;
+    }
+    
+    private @Nullable IComponent findComponent(float mouseX){
+        if(this.text instanceof SequenceComponent sc){
+            float x = 0;
+            float xLast = 0;
+            float px = mouseX - this.x;
+            var font = GuiSystem.INSTANCE.get().getGuiGraphics().defaultFont();
+            var lineHeight = textScale.getTextHeight(this.lineHeight, font, text, this.width - 4, this.height * 0.9f);
+            for(var i : sc.parts()){
+                x += font.width(i, lineHeight);
+                if(px > xLast && px < x){
+                    return i;
+                }
+                xLast = x;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public void init() {
         super.init();
@@ -75,6 +127,19 @@ public class Label extends Widget implements ITextDisplayWidget {
                 break;
         }
         
+    }
+    
+    @Override
+    public void renderDebug(IGUIGraphics graphics, int mouseX, int mouseY) {
+        super.renderDebug(graphics, mouseX, mouseY);
+        if(this.text instanceof SequenceComponent component){
+            float x = 0;
+            var lineHeight = textScale.getTextHeight(this.lineHeight, graphics.defaultFont(), text, this.width - 4, this.height * 0.9f);
+            for(var i : component.parts()){
+                x += graphics.defaultFont().width(i, lineHeight);
+                graphics.vLine(this.x + x, this.getY(), this.getMaxY(),-1);
+            }
+        }
     }
     
     public IComponent getText() {
