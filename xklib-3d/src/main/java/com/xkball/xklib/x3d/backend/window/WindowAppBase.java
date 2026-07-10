@@ -22,7 +22,7 @@ public class WindowAppBase implements Runnable, AutoCloseable {
     @Override
     public void close() throws Exception {
         this.isClosed = true;
-        window.close();
+        if(this.window != null) window.close();
     }
     
     public boolean isClosed(){

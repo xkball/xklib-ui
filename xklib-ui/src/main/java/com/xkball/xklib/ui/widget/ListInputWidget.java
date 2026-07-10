@@ -44,7 +44,7 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
         this.inlineStyle("flex-direction: column;").asRootStyle("""
                 .list_input_rows {
                     flex-direction: column;
-                    align-items: center;
+                    align-items: stretch;
                     justify-content: start;
                     overflow-y: scroll;
                     scrollbar-width: 8;
@@ -59,7 +59,7 @@ public class ListInputWidget<V, T extends Widget & IInputWidget<V>> extends Cont
                     flex-direction: row;
                     align-items: stretch;
                     justify-content: space-between;
-                    size: 90% 20rpx;
+                    size: 100%-24rpx 20rpx;
                     flex-shrink: 0;
                     margin-top: 1rpx;
                     margin-bottom: 1rpx;

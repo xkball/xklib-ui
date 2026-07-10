@@ -22,7 +22,7 @@ public class WidgetTestFrame extends WindowAppBase {
     
     @Override
     public void close() throws Exception {
-        this.guiSystem.close();
+        if(this.guiSystem != null) this.guiSystem.close();
         super.close();
     }
     

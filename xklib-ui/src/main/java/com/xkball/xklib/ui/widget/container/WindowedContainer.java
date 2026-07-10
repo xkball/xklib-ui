@@ -15,9 +15,7 @@ import dev.vfyjxf.taffy.style.TaffyDimension;
 
 @GuiWidgetClass
 public class WindowedContainer extends AbsoluteContainer {
-
-    private static final float DEFAULT_WINDOW_WIDTH = 320f;
-    private static final float DEFAULT_WINDOW_HEIGHT = 220f;
+    
     private static final float TOP_BAR_HEIGHT = 24f;
     private static final float BORDER_HIT_SIZE = 2f;
     private static final float MIN_WINDOW_WIDTH = 120f;
@@ -174,6 +172,12 @@ public class WindowedContainer extends AbsoluteContainer {
         super.mouseMoved(mouseX, mouseY);
         //如果返回super的结果, 则多层时, 下层组件永远无法拿到hover的状态
         return blockInput;
+    }
+    
+    @Override
+    public void setHovered(boolean hovered) {
+        //todo 以后GuiSystem不应该是分层的
+        //这相当于一个窗口管理器 不应该持有hover状态
     }
     
     @Override
