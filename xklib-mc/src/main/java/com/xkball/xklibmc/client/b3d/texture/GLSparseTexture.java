@@ -43,6 +43,10 @@ public class GLSparseTexture extends GlTexture {
         }
         buffer.flip();
         var format = NativeImage.Format.RGBA;
+        var rowLengthOld = GL11.glGetInteger(GL11.GL_UNPACK_ROW_LENGTH);
+        var skipRowsOld = GL11.glGetInteger(GL11.GL_UNPACK_SKIP_ROWS);
+        var skipPixelsOld = GL11.glGetInteger(GL11.GL_UNPACK_SKIP_PIXELS);
+        var alignmentOld = GL11.glGetInteger(GL11.GL_UNPACK_ALIGNMENT);
         GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, 0);
         GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_ROWS, 0);
         GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_PIXELS, 0);
@@ -54,6 +58,10 @@ public class GLSparseTexture extends GlTexture {
         );
         MemoryUtil.memFree(buffer);
         committed[px][py] = true;
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, rowLengthOld);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_ROWS, skipRowsOld);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_PIXELS, skipPixelsOld);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ALIGNMENT, alignmentOld);
     }
     
     public void upload(int x, int y, int w, int h, NativeImage.Format format, ByteBuffer data) {

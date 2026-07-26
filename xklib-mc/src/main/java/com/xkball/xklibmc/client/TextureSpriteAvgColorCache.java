@@ -3,12 +3,12 @@ package com.xkball.xklibmc.client;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TextureSpriteAvgColorCache {
     
-    public final Map<Identifier, Integer> colorCache = new HashMap<>();
+    public final Map<Identifier, Integer> colorCache = new ConcurrentHashMap<>();
     
     public int getAvgColor(TextureAtlasSprite sprite) {
         var key = sprite.contents().name();
