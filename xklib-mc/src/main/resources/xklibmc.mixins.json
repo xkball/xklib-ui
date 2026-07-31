@@ -19,8 +19,11 @@
     "MixinGLDevice",
     "MixinGLProgram",
     "MixinGLRenderPass",
+    "MixinGLStateManager",
+    "MixinGLTexture",
     "MixinGpuDeviceBackend",
     "MixinLevelRenderer",
+    "MixinMCWidget",
     "MixinMinecraft",
     "MixinPIPRenderer",
     "MixinRenderPass",
@@ -29,7 +32,6 @@
     "MixinSTD140Builder",
     "MixinSTD140Calculator",
     "MixinTextureAtlasSprite",
-    "MixinWindow",
-    "MixinMCWidget"
+    "MixinWindow"
   ]
 }

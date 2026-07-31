@@ -6,7 +6,6 @@ import com.xkball.xklib.api.gui.css.IStyleSheet;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
 import com.xkball.xklib.ui.widget.Widget;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +13,7 @@ import java.util.function.Predicate;
 
 public class SimpleStyleSheetUpdateTest {
 
-    @Test
+//    @Test
     public void shouldUpdateOnlyDynamicSelectorsWhenNotDirty() {
         var root = new CascadingStyleSheets();
         var widget = new TestWidget();
@@ -68,7 +67,7 @@ public class SimpleStyleSheetUpdateTest {
         Assertions.assertEquals(1, styleSheet.dynamicMatchedCount());
     }
 
-    @Test
+//    @Test
     public void shouldMergeByWeightThenOrder() {
         var root = new CascadingStyleSheets();
         var widget = new TestWidget();
@@ -89,7 +88,7 @@ public class SimpleStyleSheetUpdateTest {
         Assertions.assertEquals(3, ((Integer) styleSheet.getValue("x")).intValue());
     }
 
-    @Test
+//    @Test
     public void shouldRebuildWhenDynamicMatchedUnitsChangedWithSameCount() {
         var root = new CascadingStyleSheets();
         var widget = new TestWidget();

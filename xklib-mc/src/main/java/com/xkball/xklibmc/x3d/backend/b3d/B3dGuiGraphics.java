@@ -151,6 +151,26 @@ public class B3dGuiGraphics implements IGUIGraphics {
                 )
         );
     }
+
+    public void innerBlit(IRenderPipeline renderPipeline, GpuTextureView textureView, GpuSampler sampler, float x0, float x1, float y0, float y1, float u0, float u1, float v0, float v1, int color) {
+        inner.submitGuiElementRenderState(
+                new XKLibBlitRenderState(
+                        (RenderPipeline) renderPipeline,
+                        TextureSetup.singleTexture(textureView, sampler),
+                        new Matrix3x2f(this.getPose()),
+                        x0,
+                        y0,
+                        x1,
+                        y1,
+                        u0,
+                        u1,
+                        v0,
+                        v1,
+                        color,
+                        inner.scissorStack.peek()
+                )
+        );
+    }
     
     @Override
     public void blitSprite(IRenderPipeline renderPipeline, ResourceLocation location, float x, float y, float width, float height, int color) {

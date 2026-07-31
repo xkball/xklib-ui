@@ -32,7 +32,6 @@ public class ScalableContainer extends AbsoluteContainer {
     
     public ScalableContainer setScale(float value) {
         this.scale = clampScale(value);
-        this.markDirty();
         return this;
     }
     
@@ -43,26 +42,22 @@ public class ScalableContainer extends AbsoluteContainer {
     public ScalableContainer setMinScale(float value) {
         this.minScale = value;
         this.scale = clampScale(this.scale);
-        this.markDirty();
         return this;
     }
     
     public ScalableContainer setMaxScale(float value) {
         this.maxScale = value;
         this.scale = clampScale(this.scale);
-        this.markDirty();
         return this;
     }
     
     public ScalableContainer setGridEnabled(boolean value) {
         this.renderGrid = value;
-        this.markDirty();
         return this;
     }
     
     public ScalableContainer setGridColor(int value) {
         this.gridColor = value;
-        this.markDirty();
         return this;
     }
     
@@ -266,7 +261,6 @@ public class ScalableContainer extends AbsoluteContainer {
         if (this.draggingPanel && event.button() == 0) {
             this.xOffset += (float) dx;
             this.yOffset += (float) dy;
-            this.markDirty();
             return true;
         }
         return super.mouseDragged(event, dx, dy);
@@ -294,18 +288,15 @@ public class ScalableContainer extends AbsoluteContainer {
                 var ny = this.y + this.yOffset + cy * this.scale;
                 this.xOffset += (float) (x - nx);
                 this.yOffset += (float) (y - ny);
-                this.markDirty();
             }
             return true;
         }
         if (shiftDown && scrollY != 0) {
             this.yOffset += (float) (scrollY * 20.0);
-            this.markDirty();
             return true;
         }
         if (controlDown && scrollY != 0) {
             this.xOffset += (float) (scrollY * 20.0);
-            this.markDirty();
             return true;
         }
         double cx = this.toChildX(x);
