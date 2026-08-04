@@ -31,6 +31,8 @@ public class B3dRenderPipelines {
             .withVertexShader(VanillaUtils.modRL("core/line"))
             .withFragmentShader(VanillaUtils.modRL("core/pos_color"))
             .withVertexFormat(B3dVertexFormats.LINE,VertexFormat.Mode.TRIANGLES)
+            .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             .withUniform("ScreenSize", UniformType.UNIFORM_BUFFER)
             .bindUniform("ScreenSize", XKLibUniforms.SCREEN_SIZE)
             .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))

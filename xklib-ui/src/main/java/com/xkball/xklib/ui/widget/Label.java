@@ -1,6 +1,5 @@
 package com.xkball.xklib.ui.widget;
 
-import com.xkball.xklib.XKLib;
 import com.xkball.xklib.ap.annotation.GuiWidgetClass;
 import com.xkball.xklib.api.gui.input.IMouseButtonEvent;
 import com.xkball.xklib.api.gui.widget.IGuiWidget;
@@ -114,17 +113,26 @@ public class Label extends Widget implements ITextDisplayWidget {
         super.doRender(graphics, mouseX, mouseY, a);
         var lineHeight = textScale.getTextHeight(this.lineHeight, graphics.defaultFont(), text, this.width - 4, this.height * 0.9f);
         var textY = this.y + (this.height - lineHeight)/2 + lineHeight * 0.1f;
-        switch (style.textAlign){
-            case LEFT:
-                graphics.drawString(this.text, this.x + 2, textY, this.color, dropShadow, lineHeight);
-                break;
-            case CENTER:
-                graphics.drawCenteredString(this.text, this.x + this.width/2f, textY, this.color, dropShadow, lineHeight);
-                break;
-            case RIGHT:
-                var length = graphics.defaultFont().width(this.text);
-                graphics.drawString(this.text, this.x + this.width - length - 2, textY, this.color,dropShadow, lineHeight);
-                break;
+        var textW = graphics.defaultFont().width(this.text, lineHeight);
+        if (textW < this.width - 4) {
+            switch (style.textAlign){
+                case LEFT:
+                    graphics.drawString(this.text, this.x + 2, textY, this.color, dropShadow, lineHeight);
+                    break;
+                case CENTER:
+                    graphics.drawCenteredString(this.text, this.x + this.width/2f, textY, this.color, dropShadow, lineHeight);
+                    break;
+                case RIGHT:
+                    var length = graphics.defaultFont().width(this.text);
+                    graphics.drawString(this.text, this.x + this.width - length - 2, textY, this.color,dropShadow, lineHeight);
+                    break;
+            }
+        }
+        else {
+            var extraW = textW - this.width + 4;
+            var center = this.x + this.width/2f;
+            var d = Math.clamp((mouseX - center) / (this.width/2f), -1, 1) * extraW/2;
+            this.renderInScissor(graphics, () -> graphics.drawCenteredString(this.text, center+d, textY, this.color, dropShadow, lineHeight));
         }
         
     }

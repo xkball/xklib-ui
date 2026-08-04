@@ -95,8 +95,8 @@ public class CachedMesh implements ICloseOnExit<CachedMesh> {
     }
     
     public void render(RenderPipeline pipeline, PoseStack poseStack) {
-        var colorTarget = Minecraft.getInstance().getMainRenderTarget().getColorTextureView();
-        var depthTarget = Minecraft.getInstance().getMainRenderTarget().getDepthTextureView();
+        var colorTarget = RenderSystem.outputColorTextureOverride != null ? RenderSystem.outputColorTextureOverride : Minecraft.getInstance().getMainRenderTarget().getColorTextureView();
+        var depthTarget = RenderSystem.outputDepthTextureOverride != null ? RenderSystem.outputDepthTextureOverride : Minecraft.getInstance().getMainRenderTarget().getDepthTextureView();
         if(colorTarget == null || depthTarget == null) return;
         
         var modelView = RenderSystem.getModelViewStack().mul(poseStack.last().pose(), new Matrix4f());

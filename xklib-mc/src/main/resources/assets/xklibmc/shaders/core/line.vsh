@@ -8,6 +8,13 @@ layout(std140) uniform Projection {
     mat4 ProjMat;
 };
 
+layout(std140) uniform DynamicTransforms {
+    mat4 ModelViewMat;
+    vec4 ColorModulator;
+    vec3 ModelOffset;
+    mat4 TextureMat;
+};
+
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
 layout(location = 2) in vec3 P0;
@@ -17,8 +24,8 @@ layout(location = 4) in vec2 Corner;
 out vec4 vColor;
 
 void main() {
-    vec4 clip0 = ProjMat * vec4(P0, 1.0);
-    vec4 clip1 = ProjMat * vec4(P1, 1.0);
+    vec4 clip0 = ProjMat * ModelViewMat * vec4(P0, 1.0);
+    vec4 clip1 = ProjMat * ModelViewMat * vec4(P1, 1.0);
 
     bool aBehind = clip0.z < -clip0.w;
     bool bBehind = clip1.z < -clip1.w;
