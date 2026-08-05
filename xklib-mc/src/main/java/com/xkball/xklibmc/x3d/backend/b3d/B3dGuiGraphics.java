@@ -18,12 +18,14 @@ import com.xkball.xklibmc.x3d.backend.b3d.gui.element.LineRenderState;
 import com.xkball.xklibmc.x3d.backend.b3d.gui.element.RoundedRectangleRenderState;
 import com.xkball.xklibmc.x3d.backend.b3d.gui.element.XKLibBlitRenderState;
 import com.xkball.xklibmc.x3d.backend.b3d.gui.element.XKLibColoredRectangleRenderState;
+import com.xkball.xklibmc.x3d.backend.b3d.gui.element.XKLibGuiTextRenderState;
 import com.xkball.xklibmc.x3d.backend.b3d.gui.element.XKLibTiledBliRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.renderer.state.gui.GuiTextRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
@@ -106,7 +108,7 @@ public class B3dGuiGraphics implements IGUIGraphics {
     
     @Override
     public void drawString(IFont font, IComponent text, float x, float y, int color, boolean drawShadow) {
-        inner.text((Font) font, ComponentConverter.toComponent(text), (int) x, (int) y,color,drawShadow);
+        inner.guiRenderState.addText(new XKLibGuiTextRenderState((Font) font, ComponentConverter.toComponent(text).getVisualOrderText(), new Matrix3x2f(this.getPose()), x, y, color, 0, drawShadow, false, inner.scissorStack.peek()));
     }
     
     @Override
