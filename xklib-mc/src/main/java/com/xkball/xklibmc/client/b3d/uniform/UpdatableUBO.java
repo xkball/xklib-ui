@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -103,6 +104,17 @@ public class UpdatableUBO implements ICloseOnExit<UpdatableUBO>, IEndFrameListen
     
     public int getSize() {
         return size;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof UpdatableUBO that)) return false;
+        return size == that.size && Objects.equals(name, that.name) && updateWhen == that.updateWhen && Objects.equals(buffer, that.buffer) && Objects.equals(updateFunc, that.updateFunc);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, size, updateWhen, buffer, updateFunc);
     }
     
     private record BuildUniformBlock(Consumer<Std140Builder> updateFunc) implements DynamicUniformStorage.DynamicUniform{

@@ -12,8 +12,8 @@ import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import org.lwjgl.opengl.GLCapabilities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class ClientRenderObjects {
@@ -21,10 +21,10 @@ public class ClientRenderObjects {
     public static boolean SUPPORT_NV_COMMAND_LIST = false;
     public static boolean SUPPORT_NV_SHADER_BUFFER_LOAD = false;
 
-    public final List<AutoCloseable> closeOnExit = new ArrayList<>();
-    public final List<IEndFrameListener> endFrame = new ArrayList<>();
-    public final List<IUpdatable> everyFrame = new ArrayList<>();
-    public final List<IUpdatable> reload = new ArrayList<>();
+    public final Set<AutoCloseable> closeOnExit = new HashSet<>();
+    public final Set<IEndFrameListener> endFrame = new HashSet<>();
+    public final Set<IUpdatable> everyFrame = new HashSet<>();
+    public final Set<IUpdatable> reload = new HashSet<>();
     
     public static ClientRenderObjects INSTANCE;
     

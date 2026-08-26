@@ -57,7 +57,7 @@ public class Label extends Widget implements ITextDisplayWidget {
             var tooltip = c.style().tooltip().get();
             if(tooltip instanceof IGuiWidget widget) return widget;
         }
-        return null;
+        return super.createTooltip(mouseX, mouseY);
     }
     
     @Override
